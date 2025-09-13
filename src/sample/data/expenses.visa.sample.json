@@ -1,0 +1,10 @@
+{
+  "type": "visa",
+  "who_pays": "company",
+  "is_free": false,
+  "amount": 1200,
+  "currency": "AED",
+  "visa_type": "work_permit",
+  "processing_time": "30 days",
+  "notes": "Work permit and residence visa processing"
+}

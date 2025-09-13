@@ -1,0 +1,11 @@
+{
+  "skills": ["security", "surveillance", "english communication"],
+  "education_requirements": ["Class 10", "SLC/SEE"],
+  "experience_requirements": {
+    "min_years": 1,
+    "preferred_years": 2,
+    "domains": ["security", "guard duty", "surveillance"]
+  },
+  "canonical_title_ids": [1, 5, 8],
+  "canonical_title_names": ["Security Guard", "Security Officer", "Watchman"]
+}

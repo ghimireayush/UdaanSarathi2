@@ -1,0 +1,801 @@
+[
+  {
+    "id": "job_001",
+    "title": "Cook",
+    "company": "Al Manara Restaurant",
+    "country": "UAE",
+    "city": "Dubai",
+    "status": "published",
+    "created_at": "2025-08-23T10:30:00.000Z",
+    "published_at": "2025-08-25T10:30:00.000Z",
+    "salary": "1200 AED",
+    "currency": "AED",
+    "salary_amount": 1200,
+    "requirements": [
+      "Experience: 2+ years",
+      "Language: Basic English", 
+      "Age: 25-45"
+    ],
+    "description": "Looking for experienced cook for busy restaurant in Dubai",
+    "tags": ["Cooking", "Restaurant", "Arabic Cuisine", "Food Preparation", "Kitchen Management"],
+    "applications_count": 45,
+    "shortlisted_count": 12,
+    "interviews_today": 2,
+    "total_interviews": 8,
+    "view_count": 234,
+    "category": "Cook",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years"
+  },
+  {
+    "id": "job_002",
+    "title": "Driver",
+    "company": "Emirates Logistics",
+    "country": "UAE", 
+    "city": "Abu Dhabi",
+    "status": "published",
+    "created_at": "2025-08-16T10:30:00.000Z",
+    "published_at": "2025-08-18T10:30:00.000Z",
+    "salary": "1500 AED",
+    "currency": "AED",
+    "salary_amount": 1500,
+    "requirements": [
+      "Valid driving license",
+      "Experience: 3+ years",
+      "Language: English"
+    ],
+    "description": "Professional driver needed for logistics company",
+    "tags": ["Driving", "Logistics", "Heavy Vehicle", "Transportation", "English"],
+    "applications_count": 67,
+    "shortlisted_count": 18,
+    "interviews_today": 1,
+    "total_interviews": 15,
+    "view_count": 456,
+    "category": "Driver",
+    "employment_type": "Full-time",
+    "working_hours": "10 hours/day",
+    "accommodation": "Provided",
+    "food": "Allowance given",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years"
+  },
+  {
+    "id": "job_003",
+    "title": "Cleaner",
+    "company": "Clean Pro Services",
+    "country": "Qatar",
+    "city": "Doha",
+    "status": "published",
+    "created_at": "2025-08-20T10:30:00.000Z",
+    "published_at": "2025-08-22T10:30:00.000Z",
+    "salary": "900 QAR",
+    "currency": "QAR",
+    "salary_amount": 900,
+    "requirements": [
+      "No experience required",
+      "Language: Basic Arabic",
+      "Age: 21-50"
+    ],
+    "description": "Cleaning staff required for office buildings",
+    "tags": ["Cleaning", "Office Management", "Housekeeping", "Arabic"],
+    "applications_count": 89,
+    "shortlisted_count": 25,
+    "interviews_today": 3,
+    "total_interviews": 20,
+    "view_count": 567,
+    "category": "Cleaner",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Not provided",
+    "food": "Not provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "1 year"
+  },
+  {
+    "id": "job_004",
+    "title": "Security Guard Position",
+    "company": "Al Maktoum Security Services",
+    "country": "UAE",
+    "city": "Dubai",
+    "status": "draft",
+    "created_at": "2025-09-10T10:30:00.000Z",
+    "published_at": null,
+    "salary": "1200 AED",
+    "currency": "AED",
+    "salary_amount": 1200,
+    "requirements": [
+      "Experience: 1+ years in security",
+      "Height: 5.5ft+",
+      "Language: Basic English"
+    ],
+    "description": "Security guard position available for commercial complex in Dubai. Looking for experienced candidates with security background and basic English communication skills.",
+    "tags": ["Security", "Physical Fitness", "English Communication", "Surveillance"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Security Guard",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Inspire International Employment Pvt. Ltd",
+    "employer": "Al Maktoum Security Services",
+    "lt_number": "LT-2025-SEC-001",
+    "chalani_number": "CH-SEC-2025-089",
+    "approval_date_ad": "2025-09-08",
+    "posting_date_ad": "2025-09-10",
+    "announcement_type": "newspaper",
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "paid",
+    "weekly_off_days": 1,
+    "annual_leave_days": 21,
+    "positions": [
+      {
+        "title": "Security Guard",
+        "vacancies_male": 10,
+        "vacancies_female": 0,
+        "monthly_salary": 1200,
+        "currency": "AED"
+      }
+    ],
+    "skills": ["security", "surveillance", "english communication"],
+    "education_requirements": ["Class 10", "SLC/SEE"],
+    "experience_requirements": {
+      "min_years": 1,
+      "preferred_years": 2,
+      "domains": ["security", "guard duty", "surveillance"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Pre-employment medical checkup"
+      },
+      {
+        "type": "visa",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Work visa processing"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": true,
+      "file_name": "security_guard_job_cutout.jpg",
+      "file_url": "https://picsum.photos/400/300?random=1",
+      "file_size": "245 KB",
+      "file_type": "image/jpeg",
+      "uploaded_at": "2025-09-10T12:15:00.000Z",
+      "status": "approved",
+      "notes": "Job posting cutout with company logo and job details"
+    },
+    "interview": {
+      "date_ad": "2025-09-20",
+      "time": "10:00 AM",
+      "location": "Dubai Main Office",
+      "contact_person": "Ahmed Hassan",
+      "required_documents": ["passport", "experience_certificate", "educational_certificate"]
+    }
+  },
+  {
+    "id": "job_005",
+    "title": "Waiter",
+    "company": "Royal Hotel",
+    "country": "UAE",
+    "city": "Sharjah",
+    "status": "published",
+    "created_at": "2025-08-15T10:30:00.000Z",
+    "published_at": "2025-08-17T10:30:00.000Z",
+    "salary": "1100 AED",
+    "currency": "AED",
+    "salary_amount": 1100,
+    "requirements": [
+      "Experience: 1+ years",
+      "Language: English & Arabic",
+      "Age: 20-35"
+    ],
+    "description": "Waiter position available in luxury hotel restaurant",
+    "tags": ["Service", "Hotel", "Fine Dining", "English", "Arabic"],
+    "applications_count": 34,
+    "shortlisted_count": 8,
+    "interviews_today": 1,
+    "total_interviews": 5,
+    "view_count": 189,
+    "category": "Waiter",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years"
+  },
+  {
+    "id": "job_006",
+    "title": "Construction Worker",
+    "company": "BuildTech UAE",
+    "country": "UAE",
+    "city": "Dubai",
+    "status": "published",
+    "created_at": "2025-08-10T10:30:00.000Z",
+    "published_at": "2025-08-12T10:30:00.000Z",
+    "salary": "1800 AED",
+    "currency": "AED",
+    "salary_amount": 1800,
+    "requirements": [
+      "Experience: 2+ years",
+      "Physical fitness required",
+      "Language: Basic English"
+    ],
+    "description": "Construction workers needed for residential project",
+    "tags": ["Construction", "Building", "Manual Labor"],
+    "applications_count": 156,
+    "shortlisted_count": 45,
+    "interviews_today": 5,
+    "total_interviews": 32,
+    "view_count": 823,
+    "category": "Construction Worker",
+    "employment_type": "Full-time",
+    "working_hours": "10 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years"
+  },
+  {
+    "id": "job_007",
+    "title": "Middle Eastern Chef Assistant",
+    "company": "Golden Palace Restaurant",
+    "country": "Qatar",
+    "city": "Doha",
+    "status": "draft",
+    "created_at": "2025-09-08T14:20:00.000Z",
+    "published_at": null,
+    "salary": "1400 QAR",
+    "currency": "QAR",
+    "salary_amount": 1400,
+    "requirements": [
+      "Experience: 2+ years in Middle Eastern cuisine",
+      "Language: Basic English and Arabic",
+      "Age: 22-40"
+    ],
+    "description": "Assistant chef needed for fine dining restaurant specializing in Middle Eastern cuisine. Candidate should have experience in traditional cooking methods and spice preparation. Training provided for specialized dishes.",
+    "tags": ["Chef", "Restaurant", "Middle Eastern Cuisine", "Cooking", "Fine Dining"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Chef",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Gulf Recruitment Services",
+    "employer": "Golden Palace Restaurant",
+    "lt_number": "LT-2025-CHEF-003",
+    "chalani_number": "CH-CHEF-2025-156",
+    "approval_date_ad": "2025-09-05",
+    "posting_date_ad": "2025-09-08",
+    "announcement_type": "online",
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "as_per_company_policy",
+    "weekly_off_days": 1,
+    "annual_leave_days": 30,
+    "positions": [
+      {
+        "title": "Chef Assistant",
+        "vacancies_male": 3,
+        "vacancies_female": 2,
+        "monthly_salary": 1400,
+        "currency": "QAR"
+      }
+    ],
+    "skills": ["cooking", "middle eastern cuisine", "food preparation", "english communication"],
+    "education_requirements": ["Class 12", "Culinary certificate preferred"],
+    "experience_requirements": {
+      "min_years": 2,
+      "preferred_years": 3,
+      "domains": ["cooking", "restaurant", "middle eastern cuisine"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Health checkup required"
+      },
+      {
+        "type": "training",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Specialized cuisine training"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": true,
+      "file_name": "chef_position_ad.jpg",
+      "file_url": "https://picsum.photos/400/300?random=2",
+      "file_size": "312 KB",
+      "file_type": "image/jpeg",
+      "uploaded_at": "2025-09-08T15:30:00.000Z",
+      "status": "pending_review",
+      "notes": "Restaurant job advertisement with chef requirements and benefits"
+    },
+    "interview": {
+      "date_ad": "2025-09-15",
+      "time": "2:00 PM",
+      "location": "Restaurant Main Branch, Doha",
+      "contact_person": "Omar Al-Rashid",
+      "required_documents": ["passport", "experience_certificate", "culinary_certificate"],
+      "notes": "Practical cooking test will be conducted"
+    }
+  },
+  {
+    "id": "job_008",
+    "title": "Express Delivery Driver",
+    "company": "FastTrack Delivery Services",
+    "country": "UAE",
+    "city": "Dubai",
+    "status": "draft",
+    "created_at": "2025-09-09T09:15:00.000Z",
+    "published_at": null,
+    "salary": "1600 AED",
+    "currency": "AED",
+    "salary_amount": 1600,
+    "requirements": [
+      "Valid UAE driving license",
+      "Experience: 2+ years in delivery",
+      "Language: English and Arabic preferred"
+    ],
+    "description": "Express delivery driver needed for fast-growing logistics company. Must have excellent knowledge of Dubai routes and customer service skills.",
+    "tags": ["Driver", "Delivery", "Logistics", "Customer Service"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Driver",
+    "employment_type": "Full-time",
+    "working_hours": "10 hours/day",
+    "accommodation": "Allowance given",
+    "food": "Allowance given",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Metro Recruitment Agency",
+    "employer": "FastTrack Delivery Services",
+    "lt_number": "LT-2025-DRV-012",
+    "chalani_number": "CH-DRV-2025-234",
+    "approval_date_ad": "2025-09-07",
+    "posting_date_ad": "2025-09-09",
+    "announcement_type": "online",
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 10,
+    "days_per_week": 6,
+    "overtime_policy": "paid",
+    "weekly_off_days": 1,
+    "annual_leave_days": 21,
+    "positions": [
+      {
+        "title": "Delivery Driver",
+        "vacancies_male": 5,
+        "vacancies_female": 0,
+        "monthly_salary": 1600,
+        "currency": "AED"
+      }
+    ],
+    "skills": ["driving", "navigation", "customer service", "english communication"],
+    "education_requirements": ["Class 10", "Valid driving license"],
+    "experience_requirements": {
+      "min_years": 2,
+      "preferred_years": 3,
+      "domains": ["delivery", "logistics", "driving"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Medical fitness test"
+      },
+      {
+        "type": "visa",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Work visa processing"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": false,
+      "file_name": "delivery_driver_job_post.png",
+      "file_size": "180 KB",
+      "file_type": "image/png",
+      "status": "draft",
+      "notes": "Job posting design ready, pending upload approval"
+    }
+  },
+  {
+    "id": "job_009",
+    "title": "Luxury Hotel Housekeeping Staff",
+    "company": "Luxury Suites Hotel",
+    "country": "Kuwait",
+    "city": "Kuwait City",
+    "status": "draft",
+    "created_at": "2025-09-07T16:45:00.000Z",
+    "published_at": null,
+    "salary": "320 KWD",
+    "currency": "KWD",
+    "salary_amount": 320,
+    "requirements": [
+      "Experience: 1+ years in hotel housekeeping",
+      "Language: Basic English",
+      "Age: 20-45"
+    ],
+    "description": "Housekeeping staff required for 5-star luxury hotel. Comprehensive training will be provided for the right candidates. Must maintain high standards of cleanliness and guest service.",
+    "tags": ["Housekeeping", "Hotel", "Cleaning", "Guest Service", "Luxury"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Cleaner",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Kuwait Hospitality Recruitment",
+    "employer": "Luxury Suites Hotel",
+    "lt_number": "LT-2025-HSK-007",
+    "chalani_number": "CH-HSK-2025-098",
+    "approval_date_ad": "2025-09-05",
+    "posting_date_ad": "2025-09-07",
+    "announcement_type": "agency_board",
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "as_per_company_policy",
+    "weekly_off_days": 1,
+    "annual_leave_days": 30,
+    "positions": [
+      {
+        "title": "Housekeeping Staff",
+        "vacancies_male": 2,
+        "vacancies_female": 8,
+        "monthly_salary": 320,
+        "currency": "KWD"
+      }
+    ],
+    "skills": ["housekeeping", "cleaning", "guest service", "attention to detail"],
+    "education_requirements": ["Class 8", "Basic literacy required"],
+    "experience_requirements": {
+      "min_years": 1,
+      "preferred_years": 2,
+      "domains": ["housekeeping", "hotel", "cleaning"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Health checkup and vaccinations"
+      },
+      {
+        "type": "training",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Housekeeping and guest service training"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": true,
+      "file_name": "housekeeping_recruitment_ad.png"
+    },
+    "interview": {
+      "date_ad": "2025-09-18",
+      "time": "11:00 AM",
+      "location": "Hotel HR Office, Kuwait City",
+      "contact_person": "Fatima Al-Zahra",
+      "required_documents": ["passport", "experience_certificate", "character_certificate"]
+    }
+  },
+  {
+    "id": "job_010",
+    "title": "Commercial Electrician",
+    "company": "Power Solutions LLC",
+    "country": "UAE",
+    "city": "Abu Dhabi",
+    "status": "draft",
+    "created_at": "2025-09-05T11:30:00.000Z",
+    "published_at": null,
+    "salary": "2500 AED",
+    "currency": "AED",
+    "salary_amount": 2500,
+    "requirements": [
+      "Experience: 5+ years in electrical work",
+      "Valid electrical license required",
+      "Language: English and basic Arabic"
+    ],
+    "description": "Experienced electrician needed for commercial and residential electrical projects. Must have valid electrical license and extensive experience in installation, maintenance, and troubleshooting.",
+    "tags": ["Electrician", "Technical", "Commercial", "Installation", "Maintenance"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Electrician",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Allowance given",
+    "food": "Allowance given",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Technical Skills Recruitment",
+    "employer": "Power Solutions LLC",
+    "lt_number": "LT-2025-ELC-025",
+    "chalani_number": "CH-ELC-2025-445",
+    "approval_date_ad": "2025-09-03",
+    "posting_date_ad": "2025-09-05",
+    "announcement_type": "online",
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "paid",
+    "weekly_off_days": 1,
+    "annual_leave_days": 21,
+    "positions": [
+      {
+        "title": "Senior Electrician",
+        "vacancies_male": 4,
+        "vacancies_female": 0,
+        "monthly_salary": 2500,
+        "currency": "AED"
+      },
+      {
+        "title": "Junior Electrician",
+        "vacancies_male": 2,
+        "vacancies_female": 0,
+        "monthly_salary": 1800,
+        "currency": "AED"
+      }
+    ],
+    "skills": ["electrical installation", "troubleshooting", "maintenance", "safety protocols"],
+    "education_requirements": ["ITI/Diploma in Electrical", "Valid electrical license"],
+    "experience_requirements": {
+      "min_years": 5,
+      "preferred_years": 7,
+      "domains": ["electrical work", "commercial projects", "maintenance"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Comprehensive health checkup"
+      },
+      {
+        "type": "visa",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Work permit and visa processing"
+      },
+      {
+        "type": "training",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Safety and compliance training"
+      }
+    ],
+    "cutout": {
+      "has_file": false,
+      "is_uploaded": false
+    },
+    "interview": {
+      "date_ad": "2025-09-22",
+      "time": "9:00 AM",
+      "location": "Head Office, Abu Dhabi",
+      "contact_person": "Eng. Khalid Al-Mansouri",
+      "required_documents": ["passport", "electrical_license", "experience_certificate", "educational_certificate"],
+      "notes": "Technical assessment will be conducted"
+    }
+  },
+  {
+    "id": "job_011",
+    "title": "Restaurant Waiter/Waitress",
+    "company": "Elegant Dining Restaurant",
+    "country": "Saudi Arabia",
+    "city": "Jeddah",
+    "status": "draft",
+    "created_at": "2025-09-11T08:30:00.000Z",
+    "published_at": null,
+    "salary": "1800 SAR",
+    "currency": "SAR",
+    "salary_amount": 1800,
+    "requirements": [
+      "Experience: 1+ years in restaurant service",
+      "Language: English and Arabic",
+      "Age: 21-35"
+    ],
+    "description": "Professional waiter/waitress needed for upscale restaurant. Must have excellent customer service skills and experience in fine dining service.",
+    "tags": ["Waiter", "Restaurant", "Customer Service", "Fine Dining"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Waiter",
+    "employment_type": "Full-time",
+    "working_hours": "8 hours/day",
+    "accommodation": "Provided",
+    "food": "Provided",
+    "visa_status": "Company will provide",
+    "contract_duration": "2 years",
+    "posting_agency": "Saudi Hospitality Recruitment",
+    "employer": "Elegant Dining Restaurant",
+    "lt_number": "LT-2025-WAI-018",
+    "chalani_number": "CH-WAI-2025-567",
+    "approval_date_ad": "2025-09-09",
+    "posting_date_ad": "2025-09-11",
+    "announcement_type": "newspaper",
+    "period_years": 2,
+    "renewable": false,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "unpaid",
+    "weekly_off_days": 1,
+    "annual_leave_days": 21,
+    "positions": [
+      {
+        "title": "Senior Waiter",
+        "vacancies_male": 2,
+        "vacancies_female": 3,
+        "monthly_salary": 1800,
+        "currency": "SAR"
+      }
+    ],
+    "skills": ["customer service", "communication", "food service", "multitasking"],
+    "education_requirements": ["Class 12", "Hospitality certificate preferred"],
+    "experience_requirements": {
+      "min_years": 1,
+      "preferred_years": 2,
+      "domains": ["restaurant service", "customer service", "hospitality"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Health screening required"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": true,
+      "file_name": "waiter_restaurant_ad.jpg",
+      "file_url": "https://picsum.photos/400/300?random=3",
+      "file_size": "187 KB",
+      "file_type": "image/jpeg",
+      "uploaded_at": "2025-09-11T09:45:00.000Z",
+      "status": "approved",
+      "notes": "Restaurant job advertisement with elegant dining theme"
+    }
+  },
+  {
+    "id": "job_012",
+    "title": "Construction Project Manager",
+    "company": "BuildMax Construction",
+    "country": "Oman",
+    "city": "Muscat",
+    "status": "draft",
+    "created_at": "2025-09-12T10:15:00.000Z",
+    "published_at": null,
+    "salary": "1200 OMR",
+    "currency": "OMR",
+    "salary_amount": 1200,
+    "requirements": [
+      "Experience: 8+ years in construction management",
+      "Engineering degree required",
+      "Language: English and Arabic"
+    ],
+    "description": "Senior construction project manager needed for large-scale residential and commercial projects. Must have extensive experience in project planning, execution, and team management.",
+    "tags": ["Construction", "Project Management", "Engineering", "Leadership"],
+    "applications_count": 0,
+    "shortlisted_count": 0,
+    "interviews_today": 0,
+    "total_interviews": 0,
+    "view_count": 0,
+    "category": "Project Manager",
+    "employment_type": "Full-time",
+    "working_hours": "9 hours/day",
+    "accommodation": "Allowance given",
+    "food": "Allowance given",
+    "visa_status": "Company will provide",
+    "contract_duration": "3 years",
+    "posting_agency": "Oman Engineering Recruitment",
+    "employer": "BuildMax Construction",
+    "lt_number": "LT-2025-PM-045",
+    "chalani_number": "CH-PM-2025-789",
+    "approval_date_ad": "2025-09-10",
+    "posting_date_ad": "2025-09-12",
+    "announcement_type": "online",
+    "period_years": 3,
+    "renewable": true,
+    "hours_per_day": 9,
+    "days_per_week": 5,
+    "overtime_policy": "paid",
+    "weekly_off_days": 2,
+    "annual_leave_days": 30,
+    "positions": [
+      {
+        "title": "Senior Project Manager",
+        "vacancies_male": 1,
+        "vacancies_female": 0,
+        "monthly_salary": 1200,
+        "currency": "OMR"
+      }
+    ],
+    "skills": ["project management", "construction planning", "team leadership", "quality control"],
+    "education_requirements": ["Bachelor's in Civil Engineering", "PMP certification preferred"],
+    "experience_requirements": {
+      "min_years": 8,
+      "preferred_years": 10,
+      "domains": ["construction management", "project planning", "team leadership"]
+    },
+    "expenses": [
+      {
+        "type": "medical",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Executive health checkup"
+      },
+      {
+        "type": "visa",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Senior level work permit"
+      },
+      {
+        "type": "travel",
+        "who_pays": "employer",
+        "is_free": true,
+        "notes": "Flight tickets for relocation"
+      }
+    ],
+    "cutout": {
+      "has_file": true,
+      "is_uploaded": true,
+      "file_name": "construction_manager_ad.jpg"
+    },
+    "interview": {
+      "date_ad": "2025-09-25",
+      "time": "10:00 AM",
+      "location": "Head Office, Muscat",
+      "contact_person": "Ahmed Al-Balushi",
+      "required_documents": ["passport", "engineering_degree", "experience_certificate", "project_portfolio"],
+      "notes": "Technical interview and project presentation required"
+    }
+  }
+]

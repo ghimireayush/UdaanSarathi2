@@ -1,0 +1,22 @@
+{
+  "posting_title": "Security Guard Position",
+  "country": "UAE",
+  "posting_agency": "Inspire International Employment Pvt. Ltd",
+  "employer": "Al Maktoum Security Services",
+  "contract": {
+    "period_years": 2
+  },
+  "positions": [
+    {
+      "title": "Security Guard",
+      "vacancies": {
+        "male": 10,
+        "female": 0
+      },
+      "salary": {
+        "monthly_amount": 1200,
+        "currency": "AED"
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "type": "welfare",
+  "who_pays": "company",
+  "is_free": true,
+  "services": ["recreation_facilities", "prayer_room", "common_areas"],
+  "notes": "Welfare facilities and service charges covered by employer"
+}

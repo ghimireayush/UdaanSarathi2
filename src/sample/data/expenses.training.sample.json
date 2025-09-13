@@ -1,0 +1,8 @@
+{
+  "type": "training",
+  "who_pays": "company",
+  "is_free": true,
+  "training_type": "job_orientation",
+  "duration": "1 week",
+  "notes": "Job orientation and safety training provided by employer"
+}

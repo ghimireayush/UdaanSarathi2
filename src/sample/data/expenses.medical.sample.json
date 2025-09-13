@@ -1,0 +1,11 @@
+{
+  "type": "medical",
+  "who_pays": "company",
+  "is_free": true,
+  "coverage": {
+    "health_checkup": true,
+    "emergency_treatment": true,
+    "hospitalization": true
+  },
+  "notes": "Complete medical coverage provided by employer"
+}

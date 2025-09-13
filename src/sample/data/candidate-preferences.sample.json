@@ -1,0 +1,9 @@
+[
+  { "name": "Class 10", "level": "secondary" },
+  { "name": "SLC/SEE", "level": "secondary" },
+  { "name": "+2/Intermediate", "level": "higher_secondary" },
+  { "name": "Bachelor's Degree", "level": "undergraduate" },
+  { "name": "Master's Degree", "level": "postgraduate" },
+  { "name": "Technical Certificate", "level": "vocational" },
+  { "name": "Diploma", "level": "diploma" }
+]

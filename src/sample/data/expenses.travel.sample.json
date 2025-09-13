@@ -1,0 +1,9 @@
+{
+  "type": "travel",
+  "who_pays": "company",
+  "is_free": false,
+  "amount": 800,
+  "currency": "USD",
+  "ticket_type": "round_trip",
+  "notes": "Round trip ticket provided, return ticket valid for 2 years"
+}

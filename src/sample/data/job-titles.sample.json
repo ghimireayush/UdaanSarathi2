@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "Security Guard", "category": "Security" },
+  { "id": 2, "name": "Cook", "category": "Food Service" },
+  { "id": 3, "name": "Driver", "category": "Transportation" },
+  { "id": 4, "name": "Cleaner", "category": "Housekeeping" },
+  { "id": 5, "name": "Security Officer", "category": "Security" },
+  { "id": 6, "name": "Waiter", "category": "Food Service" },
+  { "id": 7, "name": "Construction Worker", "category": "Construction" },
+  { "id": 8, "name": "Watchman", "category": "Security" },
+  { "id": 9, "name": "Electrician", "category": "Maintenance" },
+  { "id": 10, "name": "Plumber", "category": "Maintenance" }
+]
