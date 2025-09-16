@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   BarChart3, 
   Briefcase, 
-  Users, 
+  Users,
+  UsersRound,
   Calendar, 
   GitBranch, 
   FileEdit, 
@@ -68,6 +69,12 @@ const Layout = ({ children }) => {
       label: 'Workflow', 
       icon: GitBranch,
       show: hasPermission(PERMISSIONS.VIEW_WORKFLOW)
+    },
+    {
+      path: '/teammembers',
+      label: 'Team Members',
+      icon: UsersRound,
+      show: hasPermission(PERMISSIONS.MANAGE_MEMBERS)
     },
     { 
       path: '/auditlog', 

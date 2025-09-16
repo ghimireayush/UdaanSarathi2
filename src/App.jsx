@@ -5,6 +5,9 @@ import Dashboard from './pages/Dashboard'
 import Jobs from './pages/Jobs'
 import JobDetails from './pages/JobDetails'
 import JobShortlist from './pages/JobShortlist'
+import Register from './pages/Register'
+import CompanySetup from './pages/CompanySetup'
+import MemberManagement from './pages/MemberManagement'
 
 import Applications from './pages/Applications'
 import Interviews from './pages/Interviews'
@@ -13,6 +16,8 @@ import Drafts from './pages/Drafts'
 import AgencySettings from './pages/AgencySettings'
 import Login from './pages/Login'
 import AuditLogPage from './pages/AuditLog'
+import Members from './pages/Members'
+import MemberLogin from './pages/MemberLogin'
 
 import MVPTestingDashboard from './components/MVPTestingDashboard.jsx'
 import PrivateRoute from './components/PrivateRoute'
@@ -44,6 +49,9 @@ function App() {
             <ConfirmProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/login/member" element={<MemberLogin />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/setup-company" element={<CompanySetup />} />
             <Route path="*" element={
               <Layout>
                 <Routes>
@@ -58,7 +66,7 @@ function App() {
                   <Route path="/drafts" element={<PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><Drafts /></PrivateRoute>} />
                   <Route path="/settings" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><AgencySettings /></PrivateRoute>} />
                   <Route path="/auditlog" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_AUDIT_LOGS}><AuditLogPage /></PrivateRoute>} />
-
+                  <Route path="/teammembers" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_USERS}><Members /></PrivateRoute>} />
                   <Route path="/mvp-testing" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><MVPTestingDashboard /></PrivateRoute>} />
                 </Routes>
               </Layout>

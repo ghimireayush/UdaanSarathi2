@@ -76,7 +76,7 @@ const MiniBarChart = ({ passed = 0, failed = 0, pending = 0 }) => {
 const Dashboard = () => {
 
   const navigate = useNavigate()
-  const { user, isAdmin, isRecruiter, isCoordinator } = useAuth()
+  const { user, isAdmin, isRecipient, isCoordinator } = useAuth()
   const { success } = useNotificationContext()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showNotifMenu, setShowNotifMenu] = useState(false)
@@ -343,7 +343,7 @@ const Dashboard = () => {
                 </h1>
                 <p className="text-gray-600 mb-4 text-lg">
                   {isAdmin() && "Full system access - Manage all recruitment operations"}
-                  {isRecruiter() && "Manage jobs, applications, interviews, and workflow"}
+                  {isRecipient() && "Manage jobs, applications, interviews, and workflow"}
                   {isCoordinator() && "Handle scheduling, notifications, and document management"}
                 </p>
               </div>

@@ -57,6 +57,24 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const memberLogin = async (username, password, invitationToken = null) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.memberLogin(username, password, invitationToken)
+      
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      
+      return result
+    } catch (error) {
+      console.error('Member login error:', error)
+      return { success: false, error: error.message || 'Login failed' }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const logout = () => {
     authService.logout()
     setUser(null)
@@ -84,8 +102,8 @@ export const AuthProvider = ({ children }) => {
     return authService.isAdmin()
   }
 
-  const isRecruiter = () => {
-    return authService.isRecruiter()
+  const isRecipient = () => {
+    return authService.isRecipient()
   }
 
   const isCoordinator = () => {
@@ -107,6 +125,7 @@ export const AuthProvider = ({ children }) => {
     
     // Actions
     login,
+    memberLogin,
     logout,
     updateUser,
     
@@ -116,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     hasAllPermissions,
     hasRole,
     isAdmin,
-    isRecruiter,
+    isRecipient,
     isCoordinator,
     
     // Constants

@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { User, Lock, Eye, EyeOff, UserCheck } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import logo from '../assets/logo.svg'
 
-const Login = () => {
+const MemberLogin = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   
-  const { login, isAuthenticated } = useAuth()
+  const { memberLogin, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  
+  // Get invitation token from URL if present
+  const invitationToken = searchParams.get('token')
+  const memberName = searchParams.get('name')
   
   // Redirect if already authenticated
   useEffect(() => {
@@ -30,18 +35,21 @@ const Login = () => {
     setError('')
     
     try {
-      const result = await login(username, password)
+      const result = await memberLogin(username, password, invitationToken)
       if (result.success) {
-        const from = location.state?.from?.pathname || '/dashboard'
-        navigate(from, { replace: true })
+        // Redirect to agency management dashboard
+        navigate('/dashboard', { replace: true })
       } else {
-        setError(result.error)
+        const msg = result.error || 'Login failed. Please check your credentials.'
+        if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
+          window.alert('This portal is for team members only (Recipients & Interview Coordinators). Administrators must use the /login page.')
+        }
+        setError(msg)
       }
     } catch (err) {
       const msg = err?.message || 'An unexpected error occurred. Please try again.'
-      // If a non-admin tries to log in on /login, show a popup
-      if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {
-        window.alert('This portal is for administrators only. Please use the member login if you are a Recipient or Interview Coordinator.')
+      if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
+        window.alert('This portal is for team members only (Recipients & Interview Coordinators). Administrators must use the /login page.')
       }
       setError(msg)
     } finally {
@@ -57,15 +65,32 @@ const Login = () => {
             <img 
               src={logo} 
               alt="Udaan Sarathi Logo" 
-              className="w-40 h-40 object-contain mb-2 drop-shadow-lg"
+              className="w-32 h-32 object-contain mb-2 drop-shadow-lg"
             />
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">Udaan Sarathi</h1>
+            <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
+              Member Portal
+            </h1>
+            {memberName ? (
+              <div className="flex items-center gap-2 text-brand-navy">
+                <UserCheck className="w-5 h-5" />
+                <p className="text-sm">Welcome, {memberName}!</p>
+              </div>
+            ) : (
+              <p className="text-gray-600">Recipients & Interview Coordinators</p>
+            )}
           </div>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-xl">Admin Login</CardTitle>
+            <CardTitle className="text-center text-xl">
+              {invitationToken ? 'Complete Your Setup' : 'Sign in to continue'}
+            </CardTitle>
+            {invitationToken && (
+              <p className="text-sm text-gray-600 text-center">
+                You've been invited to join the team. Please sign in to access your dashboard.
+              </p>
+            )}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,7 +102,7 @@ const Login = () => {
               
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                  Username
+                  Username or Phone Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -91,7 +116,7 @@ const Login = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 transition-all"
-                    placeholder="Enter your username"
+                    placeholder="Enter your username or phone"
                   />
                 </div>
               </div>
@@ -132,7 +157,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright disabled:opacity-50"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright disabled:opacity-50 transition-colors"
                 >
                   {loading ? (
                     <span className="flex items-center">
@@ -143,30 +168,28 @@ const Login = () => {
                       Signing in...
                     </span>
                   ) : (
-                    'Sign In'
+                    invitationToken ? 'Access Dashboard' : 'Sign In'
                   )}
                 </button>
               </div>
-                
+
+              {invitationToken && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
+                  <p className="font-medium">Invitation Details:</p>
+                  <p>You've been invited as a team member. After signing in, you'll have access to the agency management dashboard.</p>
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>
         
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>
-            Don't have an account?
-            <button
-              onClick={() => navigate('/register')}
-              className="text-brand-blue-bright hover:text-brand-navy font-medium ml-1"
-            >
-              Sign up here
-            </button>
-          </p>
-          <p className="mt-2"> {new Date().getFullYear()} Udaan Sarathi. All rights reserved.</p>
+          <p>Need help? Contact your agency administrator</p>
+          <p className="mt-2">© {new Date().getFullYear()} Udaan Sarathi. All rights reserved.</p>
         </div>
       </div>
     </div>
   )
 }
 
-export default Login
+export default MemberLogin

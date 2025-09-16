@@ -85,7 +85,7 @@ export const usePermissions = () => {
     hasAllPermissions: (permissions) => authService.hasAllPermissions(permissions),
     hasRole: (role) => authService.hasRole(role),
     isAdmin: () => authService.isAdmin(),
-    isRecruiter: () => authService.isRecruiter(),
+    isRecipient: () => authService.isRecipient(),
     isCoordinator: () => authService.isCoordinator()
   }
 }

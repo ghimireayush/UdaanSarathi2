@@ -5,8 +5,10 @@ import auditService from './auditService.js'
 // Role definitions with permissions
 export const ROLES = {
   ADMIN: 'admin',
-  RECRUITER: 'recruiter',
-  COORDINATOR: 'coordinator'
+  RECIPIENT: 'recipient',
+  COORDINATOR: 'interview-coordinator',
+  AGENCY_OWNER: 'agency_owner',
+  AGENCY_MEMBER: 'agency_member'
 }
 
 export const PERMISSIONS = {
@@ -39,6 +41,7 @@ export const PERMISSIONS = {
   MANAGE_SETTINGS: 'manage_settings',
   VIEW_AUDIT_LOGS: 'view_audit_logs',
   MANAGE_AGENCIES: 'manage_agencies',
+  MANAGE_MEMBERS: 'manage_members',
   
   // Notifications and Scheduling
   SEND_NOTIFICATIONS: 'send_notifications',
@@ -61,7 +64,34 @@ const ROLE_PERMISSIONS = {
     ...Object.values(PERMISSIONS)
   ],
   
-  [ROLES.RECRUITER]: [
+  [ROLES.AGENCY_OWNER]: [
+    // Agency management
+    PERMISSIONS.MANAGE_MEMBERS,
+    PERMISSIONS.MANAGE_SETTINGS,
+    PERMISSIONS.VIEW_AUDIT_LOGS,
+    // Job management
+    PERMISSIONS.CREATE_JOB,
+    PERMISSIONS.EDIT_JOB,
+    PERMISSIONS.DELETE_JOB,
+    PERMISSIONS.PUBLISH_JOB,
+    PERMISSIONS.VIEW_JOBS,
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    PERMISSIONS.SHORTLIST_CANDIDATE,
+    PERMISSIONS.REJECT_APPLICATION,
+    // Interview management
+    PERMISSIONS.SCHEDULE_INTERVIEW,
+    PERMISSIONS.CONDUCT_INTERVIEW,
+    PERMISSIONS.EDIT_INTERVIEW,
+    PERMISSIONS.VIEW_INTERVIEWS,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    PERMISSIONS.MANAGE_DOCUMENTS
+  ],
+  
+  [ROLES.RECIPIENT]: [
     // Jobs
     PERMISSIONS.CREATE_JOB,
     PERMISSIONS.EDIT_JOB,
@@ -117,6 +147,7 @@ const MOCK_USERS = [
     id: 'user_1',
     username: 'admin@udaan.com',
     email: 'admin@udaan.com',
+    password: 'admin123',
     name: 'System Administrator',
     role: ROLES.ADMIN,
     avatar: '/avatars/admin.jpg',
@@ -126,11 +157,12 @@ const MOCK_USERS = [
   },
   {
     id: 'user_2',
-    username: 'recruiter@udaan.com',
-    email: 'recruiter@udaan.com',
-    name: 'Senior Recruiter',
-    role: ROLES.RECRUITER,
-    avatar: '/avatars/recruiter.jpg',
+    username: 'recipient@udaan.com',
+    email: 'recipient@udaan.com',
+    password: 'recruit123',
+    name: 'Recipient',
+    role: ROLES.RECIPIENT,
+    avatar: '/avatars/recipient.jpg',
     isActive: true,
     lastLogin: '2025-01-15T09:15:00Z',
     createdAt: '2024-02-01T00:00:00Z'
@@ -139,6 +171,7 @@ const MOCK_USERS = [
     id: 'user_3',
     username: 'coordinator@udaan.com',
     email: 'coordinator@udaan.com',
+    password: 'coord123',
     name: 'Interview Coordinator',
     role: ROLES.COORDINATOR,
     avatar: '/avatars/coordinator.jpg',
@@ -152,6 +185,7 @@ class AuthService {
   constructor() {
     this.currentUser = null
     this.isAuthenticated = false
+    this.logout() // Clear any existing state
     this.initializeAuth()
   }
 
@@ -179,61 +213,206 @@ class AuthService {
    * @param {string} password - Password
    * @returns {Promise<Object>} Login result
    */
-  async login(username, password) {
+  async register(userData) {
     await delay(1000) // Simulate API call
     
-    // Find user by username or email
+    // Check if phone already exists
+    if (MOCK_USERS.some(u => u.phone === userData.phone)) {
+      throw new Error('Phone number already registered')
+    }
+
+    // Create new user
+    const newUser = {
+      id: `user_${Date.now()}`,
+      username: userData.phone,
+      phone: userData.phone,
+      name: userData.fullName,
+      role: ROLES.AGENCY_OWNER,
+      phone: userData.phone,
+      avatar: '/avatars/default.jpg',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      lastLogin: null
+    }
+
+    MOCK_USERS.push(newUser)
+
+    // Generate token
+    const token = `token_${newUser.id}_${Date.now()}`
+    
+    // Store auth state
+    localStorage.setItem('udaan_user', JSON.stringify(newUser))
+    localStorage.setItem('udaan_token', token)
+    
+    this.currentUser = newUser
+    this.isAuthenticated = true
+
+    return {
+      user: newUser,
+      token,
+      permissions: this.getUserPermissions(newUser.role)
+    }
+  }
+
+  async createCompany(companyData) {
+    await delay(1000) // Simulate API call
+    
+    if (!this.currentUser) {
+      throw new Error('Not authenticated')
+    }
+
+    // Create company
+    const company = {
+      id: `company_${Date.now()}`,
+      ...companyData,
+      ownerId: this.currentUser.id,
+      createdAt: new Date().toISOString(),
+      status: 'active'
+    }
+
+    // In a real app, store this in your backend
+    localStorage.setItem('company_data', JSON.stringify(company))
+
+    // Update user with company reference
+    const updatedUser = {
+      ...this.currentUser,
+      companyId: company.id
+    }
+
+    const userIndex = MOCK_USERS.findIndex(u => u.id === this.currentUser.id)
+    if (userIndex !== -1) {
+      MOCK_USERS[userIndex] = updatedUser
+    }
+
+    localStorage.setItem('udaan_user', JSON.stringify(updatedUser))
+    this.currentUser = updatedUser
+
+    return company
+  }
+
+  // Simulate login API call
+  async login(username, password) {
+    await delay(1000) // Simulate network delay
+    
+    // Find user in mock data
     const user = MOCK_USERS.find(u => 
-      u.username === username || u.email === username
+      (u.email === username || u.username === username) && u.password === password
     )
     
     if (!user) {
-      throw new Error('User not found')
+      throw new Error('Invalid credentials')
+    }
+
+    // Only allow admin login
+    if (user.role !== ROLES.ADMIN) {
+      throw new Error('Access Denied: Only administrators can access this portal')
     }
     
     if (!user.isActive) {
       throw new Error('Account is deactivated')
     }
     
-    // In a real app, you would verify the password hash
-    // For demo purposes, accept any password (password parameter is intentionally unused)
-    console.log('Login attempt for:', username, 'with password length:', password?.length || 0)
+    // Store authentication data
+    const authData = {
+      token: `token_${Date.now()}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        permissions: this.getUserPermissions(user.role),
+        isActive: user.isActive
+      },
+      permissions: this.getUserPermissions(user.role),
+      expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    }
     
-    // Generate mock token
-    const token = `token_${user.id}_${Date.now()}`
+    localStorage.setItem('udaan_token', authData.token)
+    localStorage.setItem('udaan_user', JSON.stringify(authData.user))
+    localStorage.setItem('udaan_permissions', JSON.stringify(authData.permissions))
     
-    // Update last login
-    user.lastLogin = new Date().toISOString()
-    
-    // Store in localStorage
-    localStorage.setItem('udaan_user', JSON.stringify(user))
-    localStorage.setItem('udaan_token', token)
-    
-    this.currentUser = user
+    this.currentUser = authData.user
     this.isAuthenticated = true
-
-    // Audit: login event (track all users including admin)
+    
+    // Log successful login
     try {
-      await auditService.logEvent({
-        user_id: user.id,
-        user_name: user.name,
-        action: 'LOGIN',
-        resource_type: 'AUTH',
-        resource_id: user.id,
-        metadata: {
-          role: user.role
+      await auditService.logAction({
+        action: 'USER_LOGIN',
+        userId: user.id,
+        details: {
+          username: user.username,
+          role: user.role,
+          loginTime: new Date().toISOString()
         }
       })
     } catch (e) {
-      // Non-blocking audit; ignore logging failures
       console.warn('Audit logging (LOGIN) failed:', e)
     }
+    
+    return authData
+  }
 
-    return {
-      user,
-      token,
-      permissions: this.getUserPermissions(user.role)
+  // Member login for Recipients and Coordinators
+  async memberLogin(username, password, invitationToken = null) {
+    await delay(1000) // Simulate network delay
+    
+    // Find user in mock data - only allow recipients and coordinators
+    const user = MOCK_USERS.find(u => 
+      (u.email === username || u.username === username) && 
+      u.password === password &&
+      (u.role === ROLES.RECIPIENT || u.role === ROLES.COORDINATOR)
+    )
+    
+    if (!user) {
+      throw new Error('Invalid credentials or unauthorized role')
     }
+    
+    if (!user.isActive) {
+      throw new Error('Account is deactivated')
+    }
+    
+    // Store authentication data
+    const authData = {
+      token: `member_token_${Date.now()}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.name,
+        role: user.role,
+        permissions: this.getUserPermissions(user.role),
+        isActive: user.isActive,
+        invitationToken: invitationToken
+      },
+      permissions: this.getUserPermissions(user.role),
+      expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    }
+    
+    localStorage.setItem('udaan_token', authData.token)
+    localStorage.setItem('udaan_user', JSON.stringify(authData.user))
+    localStorage.setItem('udaan_permissions', JSON.stringify(authData.permissions))
+    
+    this.currentUser = authData.user
+    this.isAuthenticated = true
+    
+    // Log successful member login
+    try {
+      await auditService.logAction({
+        action: 'MEMBER_LOGIN',
+        userId: user.id,
+        details: {
+          username: user.username,
+          role: user.role,
+          loginTime: new Date().toISOString(),
+          invitationToken: invitationToken
+        }
+      })
+    } catch (e) {
+      console.warn('Audit logging (MEMBER_LOGIN) failed:', e)
+    }
+    
+    return { success: true, ...authData }
   }
 
   /**
@@ -346,11 +525,11 @@ class AuthService {
   }
 
   /**
-   * Check if user is recruiter
-   * @returns {boolean} True if user is recruiter
+   * Check if user is recipient
+   * @returns {boolean} True if user is recipient
    */
-  isRecruiter() {
-    return this.hasRole(ROLES.RECRUITER)
+  isRecipient() {
+    return this.hasRole(ROLES.RECIPIENT)
   }
 
   /**
@@ -507,8 +686,8 @@ class AuthService {
   getRoleDisplayName(role) {
     const roleNames = {
       [ROLES.ADMIN]: 'Administrator',
-      [ROLES.RECRUITER]: 'Recruiter',
-      [ROLES.COORDINATOR]: 'Coordinator'
+      [ROLES.RECIPIENT]: 'Recipient',
+      [ROLES.COORDINATOR]: 'Interview Coordinator'
     }
     return roleNames[role] || role
   }
