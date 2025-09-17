@@ -1,24 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Phone, Lock, Eye, EyeOff, ArrowLeft, Shield } from 'lucide-react'
+import { User, Phone, ArrowLeft, Shield } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
+import apiService from '../services/apiService'
 import logo from '../assets/logo.svg'
 
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
-    phone: '',
-    password: '',
-    confirmPassword: ''
+    phone: ''
   })
-  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showOtpField, setShowOtpField] = useState(false)
   const [otp, setOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [registrationData, setRegistrationData] = useState(null)
+  const [devOtp, setDevOtp] = useState('')
   
   const navigate = useNavigate()
   const { register } = useAuth()
@@ -36,42 +35,32 @@ const Register = () => {
     setError('')
     
     // Validate form
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long')
-      return
-    }
-
     if (!/^\d{10}$/.test(formData.phone)) {
       setError('Please enter a valid 10-digit phone number')
+      return
+    }
+
+    if (!formData.fullName.trim()) {
+      setError('Please enter your full name')
       return
     }
 
     setLoading(true)
     
     try {
-      // Simulate sending OTP to phone number
-      // In real implementation, this would call an API to send OTP
-      console.log(`Sending OTP to ${formData.phone}`)
+      // Call the real API to register owner
+      const response = await apiService.registerOwner(formData)
       
-      // Store registration data for later use
+      // Store registration data and dev OTP from response
       setRegistrationData(formData)
+      setDevOtp(response.dev_otp)
       
       // Show OTP field
       setShowOtpField(true)
       setError('')
       
-      // Simulate OTP sent success message
-      setTimeout(() => {
-        setError('')
-      }, 100)
-      
     } catch (err) {
-      setError(err.message || 'Failed to send OTP')
+      setError(err.message || 'Failed to register. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -89,9 +78,8 @@ const Register = () => {
     setOtpLoading(true)
     
     try {
-      // Simulate OTP verification
-      // In real implementation, this would verify OTP with backend
-      if (otp === '123456') { // Mock OTP for demo
+      // Verify OTP against the dev_otp received from API
+      if (otp === devOtp) {
         const result = await register(registrationData)
         // After successful OTP verification, redirect to company setup
         navigate('/setup-company', { 
@@ -107,11 +95,20 @@ const Register = () => {
     }
   }
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setError('')
-    console.log(`Resending OTP to ${registrationData.phone}`)
-    // In real implementation, this would call API to resend OTP
-    setError('')
+    setLoading(true)
+    
+    try {
+      // Call API again to resend OTP
+      const response = await apiService.registerOwner(registrationData)
+      setDevOtp(response.dev_otp)
+      setError('')
+    } catch (err) {
+      setError(err.message || 'Failed to resend OTP')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -194,59 +191,6 @@ const Register = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
-                      placeholder="Create a password"
-                      minLength={8}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand-navy"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
-                      placeholder="Confirm your password"
-                    />
-                  </div>
-                </div>
 
                 <div>
                   <button

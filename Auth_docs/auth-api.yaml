@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: Kaha Agency API
+  version: 1.0.0
+  description: Minimal spec for registering an agency owner (returns dev OTP)
+servers:
+  - url: https://dev.kaha.com.np
+paths:
+  /agency/register-owner:
+    post:
+      summary: Register an agency owner (dev OTP response)
+      operationId: registerOwner
+      tags:
+        - Agency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterOwnerRequest'
+            example:
+              phone: "9841234567"
+              full_name: "Ram Sharma"
+      responses:
+        '200':
+          description: Dev OTP returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterOwnerResponse'
+              example:
+                dev_otp: "123456"
+        '400':
+          description: Invalid input
+components:
+  schemas:
+    RegisterOwnerRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: Phone number of the owner (include country code if required)
+        full_name:
+          type: string
+          description: Full name of the owner
+      required:
+        - phone
+        - full_name
+    RegisterOwnerResponse:
+      type: object
+      properties:
+        dev_otp:
+          type: string
+          description: Development OTP returned for verification
+      required:
+        - dev_otp
