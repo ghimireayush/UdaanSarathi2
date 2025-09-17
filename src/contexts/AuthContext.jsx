@@ -75,6 +75,42 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const register = async (userData) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.register(userData)
+      
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      
+      return result
+    } catch (error) {
+      console.error('Registration error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const createCompany = async (companyData) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.createCompany(companyData)
+      
+      // Update user with company information
+      const updatedUser = authService.getCurrentUser()
+      setUser(updatedUser)
+      
+      return result
+    } catch (error) {
+      console.error('Company creation error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const logout = () => {
     authService.logout()
     setUser(null)
@@ -126,6 +162,8 @@ export const AuthProvider = ({ children }) => {
     // Actions
     login,
     memberLogin,
+    register,
+    createCompany,
     logout,
     updateUser,
     

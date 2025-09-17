@@ -3,3 +3,4 @@ Admin: admin@udaan.com / admin123
 Recipient: recipient@udaan.com / recruit123
 Interview Coordinator: coordinator@udaan.com / coord123
 
+For demo purposes, use OTP: 123456
