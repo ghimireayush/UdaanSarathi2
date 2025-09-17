@@ -1,8 +1,0 @@
-{
-  "type": "Welfare/Service",
-  "who_pays": "agency",
-  "is_free": false,
-  "amount": 500,
-  "currency": "AED",
-  "notes": "Agency service fee for job placement and documentation assistance"
-}
