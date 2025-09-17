@@ -1,6 +1,10 @@
 import { handleServiceError } from '../utils/errorHandler';
 import auditService from './auditService';
 
+// API Configuration
+const API_BASE_URL = 'https://dev.kaha.com.np';
+const MEMBERS_INVITE_ENDPOINT = '/job-portal/agencies/owner/members/invite';
+
 // Mock data for development
 const mockMembers = [
   {
@@ -103,52 +107,135 @@ const mockMembers = [
 
 export const inviteMember = async (memberData) => {
   return handleServiceError(async () => {
-    if (!memberData.name || !memberData.role || !memberData.mobileNumber) {
-      throw new Error('Invalid member data - all fields are required');
+    // Validate required fields according to API spec
+    if (!memberData.full_name || !memberData.role || !memberData.phone) {
+      throw new Error('Invalid member data - full_name, phone, and role are required');
     }
 
-    // Check if mobile number already exists
-    const existingMobile = mockMembers.find(m => m.mobileNumber === memberData.mobileNumber);
-    if (existingMobile) {
-      throw new Error('A member with this mobile number already exists');
+    // Validate role according to API spec
+    const validRoles = ['staff', 'admin', 'manager'];
+    if (!validRoles.includes(memberData.role)) {
+      throw new Error('Invalid role. Must be one of: staff, admin, manager');
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Check if phone number already exists
+    const existingPhone = mockMembers.find(m => m.phone === memberData.phone);
+    if (existingPhone) {
+      throw new Error('A member with this phone number already exists');
+    }
 
-    const newMember = {
-      id: `member_${Date.now()}`,
-      ...memberData,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    };
-
-    // In a real app, this would be an API call
-    mockMembers.push(newMember);
-
-    // Audit: member invitation
     try {
-      await auditService.logEvent({
-        user_id: 'current_user', // In real app, get from auth context
-        user_name: 'Current User',
-        action: 'INVITE',
-        resource_type: 'MEMBER',
-        resource_id: newMember.id,
-        metadata: {
-          member_name: newMember.name,
-          member_role: newMember.role,
-          member_mobile: newMember.mobileNumber
-        }
+      // Real API call implementation
+      const response = await fetch(`${API_BASE_URL}${MEMBERS_INVITE_ENDPOINT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // Add authorization header when auth is implemented
+          // 'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify({
+          full_name: memberData.full_name,
+          phone: memberData.phone,
+          role: memberData.role
+        })
       });
-    } catch (e) {
-      console.warn('Audit logging (INVITE MEMBER) failed:', e);
-    }
 
-    return {
-      success: true,
-      message: `Invitation sent to ${memberData.name}`,
-      data: newMember
-    };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const apiResult = await response.json();
+      
+      // Transform API response to match internal format
+      const newMember = {
+        id: apiResult.id,
+        name: memberData.full_name, // Keep internal name field for compatibility
+        full_name: memberData.full_name,
+        phone: apiResult.phone,
+        mobileNumber: apiResult.phone, // Keep internal mobileNumber for compatibility
+        role: apiResult.role,
+        status: 'pending',
+        dev_password: apiResult.dev_password,
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to mock data for development
+      mockMembers.push(newMember);
+
+      // Audit: member invitation
+      try {
+        await auditService.logEvent({
+          user_id: 'current_user', // In real app, get from auth context
+          user_name: 'Current User',
+          action: 'INVITE',
+          resource_type: 'MEMBER',
+          resource_id: newMember.id,
+          metadata: {
+            member_name: newMember.full_name,
+            member_role: newMember.role,
+            member_phone: newMember.phone,
+            dev_password_provided: !!apiResult.dev_password
+          }
+        });
+      } catch (e) {
+        console.warn('Audit logging (INVITE MEMBER) failed:', e);
+      }
+
+      return {
+        success: true,
+        message: `Invitation sent to ${memberData.full_name}`,
+        data: newMember
+      };
+
+    } catch (error) {
+      // Fallback to mock implementation for development
+      console.warn('API call failed, using mock implementation:', error.message);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const newMember = {
+        id: `member_${Date.now()}`,
+        name: memberData.full_name,
+        full_name: memberData.full_name,
+        phone: memberData.phone,
+        mobileNumber: memberData.phone,
+        role: memberData.role,
+        status: 'pending',
+        dev_password: `temp_${Math.random().toString(36).substring(2, 8)}`,
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to mock data
+      mockMembers.push(newMember);
+
+      // Audit: member invitation (mock)
+      try {
+        await auditService.logEvent({
+          user_id: 'current_user',
+          user_name: 'Current User',
+          action: 'INVITE',
+          resource_type: 'MEMBER',
+          resource_id: newMember.id,
+          metadata: {
+            member_name: newMember.full_name,
+            member_role: newMember.role,
+            member_phone: newMember.phone,
+            mock_implementation: true
+          }
+        });
+      } catch (e) {
+        console.warn('Audit logging (INVITE MEMBER) failed:', e);
+      }
+
+      return {
+        success: true,
+        message: `Invitation sent to ${memberData.full_name} (Mock)`,
+        data: newMember
+      };
+    }
   });
 };
 

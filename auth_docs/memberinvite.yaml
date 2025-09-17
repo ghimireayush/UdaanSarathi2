@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: Job Portal Agency Members API
+  version: 1.0.0
+paths:
+  /job-portal/agencies/owner/members/invite:
+    post:
+      summary: Invite a new agency member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                  example: "string"
+                phone:
+                  type: string
+                  example: "string"
+                role:
+                
+                  type: string
+                  enum: [staff, admin, manager]
+                  example: "staff"
+              required:
+                - full_name
+                - phone
+                - role
+      responses:
+        '200':
+          description: Member successfully invited
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                  phone:
+                    type: string
+                    example: "string"
+                  role:
+                    type: string
+                    example: "staff"
+                  dev_password:
+                    type: string
+                    example: "string"

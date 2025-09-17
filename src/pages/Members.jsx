@@ -7,9 +7,9 @@ import Pagination from '../components/ui/Pagination';
 
 const Members = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    role: 'interview-coordinator',
-    mobileNumber: ''
+    full_name: '',
+    role: 'staff',
+    phone: ''
   });
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
@@ -63,7 +63,7 @@ const Members = () => {
     
     const confirmed = await confirm({
       title: 'Confirm Invitation',
-      message: `Are you sure you want to invite ${formData.name} as ${getRoleDisplayName(formData.role)}?`,
+      message: `Are you sure you want to invite ${formData.full_name} as ${getRoleDisplayName(formData.role)}?`,
       confirmText: 'Yes, Invite',
       cancelText: 'Cancel'
     });
@@ -75,9 +75,9 @@ const Members = () => {
       await inviteMember(formData);
       await loadMembers();
       setFormData({
-        name: '',
-        role: 'interview-coordinator',
-        mobileNumber: ''
+        full_name: '',
+        role: 'staff',
+        phone: ''
       });
     } catch (error) {
       console.error('Error inviting member:', error);
@@ -116,7 +116,10 @@ const Members = () => {
 
   const getRoleDisplayName = (role) => {
     const roleNames = {
+      'staff': 'Staff Member',
       'admin': 'Administrator',
+      'manager': 'Manager',
+      // Legacy roles for backward compatibility
       'recruiter': 'Recruiter',
       'coordinator': 'Coordinator',
       'interview-coordinator': 'Interview Coordinator',
@@ -142,8 +145,10 @@ const Members = () => {
 
   // Filter and search logic
   const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.mobileNumber.includes(searchTerm);
+    const memberName = member.name || member.full_name || '';
+    const memberPhone = member.mobileNumber || member.phone || '';
+    const matchesSearch = memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         memberPhone.includes(searchTerm);
     const matchesRole = roleFilter === 'all' || member.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
     
@@ -186,14 +191,14 @@ const Members = () => {
         <div className="p-6">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name *
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="full_name"
+                name="full_name"
+                value={formData.full_name}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
@@ -213,25 +218,26 @@ const Members = () => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
               >
-                <option value="interview-coordinator">Interview Coordinator</option>
-                <option value="recipient">Recipient</option>
+                <option value="staff">Staff Member</option>
+                <option value="admin">Administrator</option>
+                <option value="manager">Manager</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                Mobile Number *
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number *
               </label>
               <input
                 type="tel"
-                id="mobileNumber"
-                name="mobileNumber"
-                value={formData.mobileNumber}
+                id="phone"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 required
                 pattern="[0-9]{10}"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
-                placeholder="10-digit mobile number"
+                placeholder="10-digit phone number"
               />
             </div>
 
@@ -283,7 +289,10 @@ const Members = () => {
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
               >
                 <option value="all">All Roles</option>
+                <option value="staff">Staff Member</option>
                 <option value="admin">Administrator</option>
+                <option value="manager">Manager</option>
+                {/* Legacy roles for backward compatibility */}
                 <option value="recruiter">Recruiter</option>
                 <option value="coordinator">Coordinator</option>
                 <option value="interview-coordinator">Interview Coordinator</option>
@@ -355,12 +364,15 @@ const Members = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-brand-blue-bright text-white flex items-center justify-center font-medium">
-                            {member.name.charAt(0).toUpperCase()}
+                            {(member.name || member.full_name || '?').charAt(0).toUpperCase()}
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{member.name}</div>
+                          <div className="text-sm font-medium text-gray-900">{member.name || member.full_name}</div>
                           <div className="text-sm text-gray-500">ID: {member.id}</div>
+                          {member.dev_password && (
+                            <div className="text-xs text-blue-600">Temp Password: {member.dev_password}</div>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -372,7 +384,7 @@ const Members = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <Phone className="w-4 h-4" />
-                        {member.mobileNumber}
+                        {member.mobileNumber || member.phone}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
