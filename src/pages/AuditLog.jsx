@@ -19,8 +19,7 @@ import {
 import { format } from 'date-fns'
 import { auditService } from '../services/index.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
-import Loading from '../components/Loading.jsx'
-import { InteractivePagination, PaginationInfo, ItemsPerPageSelector } from '../components/InteractiveUI'
+import { InteractivePagination, PaginationInfo, ItemsPerPageSelector, InteractiveButton, InteractiveCard, InteractiveLoader } from '../components/InteractiveUI'
 
 const AuditLogPage = () => {
   const { user } = useAuth()
@@ -160,14 +159,14 @@ const AuditLogPage = () => {
   // Get color for action type
   const getActionColor = (action) => {
     const colors = {
-      'UPDATE': 'text-blue-600 bg-blue-100',
-      'CREATE': 'text-green-600 bg-green-100',
-      'DELETE': 'text-red-600 bg-red-100',
-      'FILE_UPLOAD': 'text-purple-600 bg-purple-100',
-      'LOGIN': 'text-gray-600 bg-gray-100',
-      'LOGOUT': 'text-gray-600 bg-gray-100'
+      'UPDATE': 'chip-blue',
+      'CREATE': 'chip-green',
+      'DELETE': 'chip-red',
+      'FILE_UPLOAD': 'chip-purple',
+      'LOGIN': 'chip-gray',
+      'LOGOUT': 'chip-gray'
     }
-    return colors[action] || 'text-gray-600 bg-gray-100'
+    return colors[action] || 'chip-gray'
   }
 
   // Format changes for display
@@ -220,50 +219,79 @@ const AuditLogPage = () => {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Audit Log</h1>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+              <History className="w-6 h-6 mr-2" />
+              Audit Log
+            </h1>
+            <p className="mt-1 text-sm text-gray-600">
+              Track and monitor all system activities and changes
+            </p>
+          </div>
         </div>
-        <Loading />
+        <InteractiveLoader type="spinner" size="lg" text="Loading audit logs..." />
       </div>
     )
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-          <History className="w-6 h-6 mr-2" />
-          Audit Log
-        </h1>
-        <div className="flex items-center gap-2">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+            <History className="w-6 h-6 mr-2" />
+            Audit Log
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Track and monitor all system activities and changes
+          </p>
+        </div>
+        <div className="mt-4 sm:mt-0 flex items-center gap-2">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search logs (user, action, resource)"
-            className="input w-64"
+            placeholder="Search logs..."
+            className="form-input w-64"
+            aria-label="Search audit logs"
           />
-          <button 
+          <InteractiveButton 
             onClick={refreshLogs}
-            className="btn-secondary flex items-center"
+            variant="secondary"
           >
             <RefreshCw className="w-4 h-4 mr-1" />
             Refresh
+          </InteractiveButton>
+          <button 
+            onClick={exportCSV}
+            className="btn-secondary"
+            aria-label="Export audit logs as CSV"
+          >
+            Export CSV
           </button>
-          <button className="btn-outline" onClick={exportCSV}>Export CSV</button>
-          <button className="btn-outline" onClick={exportPDF}>Download PDF</button>
+          <button 
+            onClick={exportPDF}
+            className="btn-secondary"
+            aria-label="Download audit logs as PDF"
+          >
+            Download PDF
+          </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="card p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <InteractiveCard className="p-6 mb-6">
+        <div className="grid-responsive-3 lg:grid-cols-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
             <select
               value={filters.user_id}
               onChange={(e) => handleFilterChange('user_id', e.target.value)}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="form-select"
+              aria-label="Filter by user"
             >
               <option value="">All Users</option>
               <option value="user_1">System Administrator</option>
@@ -277,7 +305,8 @@ const AuditLogPage = () => {
             <select
               value={filters.resource_type}
               onChange={(e) => handleFilterChange('resource_type', e.target.value)}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="form-select"
+              aria-label="Filter by resource type"
             >
               <option value="">All Types</option>
               <option value="AGENCY_PROFILE">Agency Profile</option>
@@ -295,7 +324,8 @@ const AuditLogPage = () => {
             <select
               value={filters.action}
               onChange={(e) => handleFilterChange('action', e.target.value)}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="form-select"
+              aria-label="Filter by action type"
             >
               <option value="">All Actions</option>
               <option value="UPDATE">Update</option>
@@ -311,29 +341,30 @@ const AuditLogPage = () => {
             <button 
               onClick={resetFilters}
               className="btn-secondary w-full"
+              aria-label="Reset all filters"
             >
               Reset
             </button>
           </div>
         </div>
-      </div>
+      </InteractiveCard>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+        <InteractiveCard variant="danger" className="p-4 mb-6">
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
             <p className="text-red-800">{error}</p>
           </div>
-        </div>
+        </InteractiveCard>
       )}
 
       {/* Audit Logs */}
-      <div className="card p-6" ref={logsContainerRef}>
+      <InteractiveCard className="p-6" ref={logsContainerRef}>
         {filteredLogs.length === 0 ? (
-          <div className="text-center py-8">
-            <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <div className="text-center py-12">
+            <History className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No audit logs found</h3>
-            <p className="text-gray-600">Changes will appear here once they are made.</p>
+            <p className="text-gray-500 max-w-sm mx-auto">Activity logs will appear here when changes are made to the system.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -343,10 +374,20 @@ const AuditLogPage = () => {
               const changes = formatChanges(log.changes)
               
               return (
-                <div key={log.id} className="border border-gray-200 rounded-lg">
+                <InteractiveCard key={log.id} clickable hoverable>
                   <div 
-                    className="p-4 cursor-pointer hover:bg-gray-50"
+                    className="p-4 cursor-pointer"
                     onClick={() => toggleExpanded(log.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isExpanded}
+                    aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${auditService.getActionLabel(log.action)} by ${log.user_name}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        toggleExpanded(log.id)
+                      }
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
@@ -367,10 +408,10 @@ const AuditLogPage = () => {
                             )}
                           </div>
                           
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
                             <div className="flex items-center">
                               <Clock className="w-3 h-3 mr-1" />
-                              {format(new Date(log.timestamp), 'PPp')}
+                              <span className="text-gray-600">{format(new Date(log.timestamp), 'PPp')}</span>
                             </div>
                             
                             {changes.length > 0 && (
@@ -380,7 +421,7 @@ const AuditLogPage = () => {
                             )}
                             
                             {log.resource_type && (
-                              <div className="chip chip-blue text-xs">
+                              <div className="chip-blue">
                                 {auditService.getResourceLabel(log.resource_type)}
                               </div>
                             )}
@@ -466,12 +507,12 @@ const AuditLogPage = () => {
                       )}
                     </div>
                   )}
-                </div>
+                </InteractiveCard>
               )
             })}
           </div>
         )}
-      </div>
+      </InteractiveCard>
 
       {/* Footer controls: Pagination */}
       <div className="mt-4 flex items-center justify-between">

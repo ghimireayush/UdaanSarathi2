@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   Plus, 
   Search, 
@@ -38,6 +39,7 @@ import JobDraftWizard from '../components/JobDraftWizard'
 import { InteractiveFilter, InteractiveButton, InteractiveCard, InteractivePagination, PaginationInfo } from '../components/InteractiveUI'
 
 const Drafts = () => {
+  const navigate = useNavigate()
   const [viewMode, setViewMode] = useState('list')
   const [filters, setFilters] = useState({
     search: '',
@@ -56,7 +58,7 @@ const Drafts = () => {
   const [drafts, setDrafts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [publishingDrafts, setPublishingDrafts] = useState(new Set()) // Track individual publishing states
+
   const [deletingDrafts, setDeletingDrafts] = useState(new Set()) // Track individual deleting states
   const [editingDraft, setEditingDraft] = useState(null) // Track draft being edited
   const [editingStep, setEditingStep] = useState(0) // Track which step to open in wizard
@@ -68,15 +70,11 @@ const Drafts = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [confirmAction, setConfirmAction] = useState(null)
   const [confirmData, setConfirmData] = useState(null)
-  const [showForcePublishModal, setShowForcePublishModal] = useState(false)
-  const [forcePublishDraft, setForcePublishDraft] = useState(null)
+
 
 
   
-  // Mock mutation object for compatibility
-  const publishMutation = {
-    isLoading: publishingDrafts.size > 0
-  }
+
 
   // Debounced search to reduce API calls
   const debouncedSearch = useMemo(
@@ -155,146 +153,70 @@ const Drafts = () => {
       setShowPreviewModal(false)
       setPreviewDraft(null)
       
-      // Prepare the bulk draft data for the wizard
-      const wizardData = {
-        // Basic information from bulk draft
-        title: bulkDraft.title || '',
-        company: bulkDraft.company || '',
-        employer: bulkDraft.employer || '',
-        posting_agency: bulkDraft.posting_agency || '',
-        description: bulkDraft.description || '',
+      // Convert the bulk draft to a regular individual draft by updating its status
+      // Take the first bulk entry as the primary job details
+      const firstEntry = bulkDraft.bulk_entries && bulkDraft.bulk_entries.length > 0 
+        ? bulkDraft.bulk_entries[0] 
+        : {}
+      
+      const convertedDraft = {
+        ...bulkDraft,
+        // Update basic information using first bulk entry
+        title: firstEntry.position || bulkDraft.title || '',
+        country: firstEntry.country || bulkDraft.country || '',
+        salary: firstEntry.salary || bulkDraft.salary || '',
+        currency: firstEntry.currency || bulkDraft.currency || 'AED',
         
-        // Contract details if available
-        period_years: bulkDraft.period_years || '',
-        employment_type: bulkDraft.employment_type || 'Full-time',
-        renewable: bulkDraft.renewable || false,
+        // Convert bulk_entries to positions array for individual draft
+        positions: bulkDraft.bulk_entries ? bulkDraft.bulk_entries.map(entry => ({
+          position: entry.position || '',
+          job_count: entry.job_count || 1,
+          country: entry.country || bulkDraft.country || '',
+          salary: entry.salary || bulkDraft.salary || '',
+          currency: entry.currency || bulkDraft.currency || 'AED'
+        })) : [],
         
-        // Working conditions if available
-        hours_per_day: bulkDraft.hours_per_day || '',
-        days_per_week: bulkDraft.days_per_week || '',
-        overtime_policy: bulkDraft.overtime_policy || '',
-        weekly_off_days: bulkDraft.weekly_off_days || '',
-        annual_leave_days: bulkDraft.annual_leave_days || '',
-        food: bulkDraft.food || '',
-        accommodation: bulkDraft.accommodation || '',
-        transport: bulkDraft.transport || '',
+        // Remove bulk draft specific properties
+        is_bulk_draft: false,
+        bulk_entries: undefined,
+        total_jobs: undefined,
         
-        // Bulk entries data for reference
-        bulk_entries: bulkDraft.bulk_entries || [],
-        
-        // Mark as expansion from bulk draft
-        is_expanding_bulk: true,
-        original_bulk_id: bulkDraft.id
+        // Mark as converted from bulk for tracking
+        converted_from_bulk: true,
+        updated_at: new Date().toISOString()
       }
       
-      // Set the editing draft with pre-filled data
-      setEditingDraft(wizardData)
+      // Update the existing bulk draft to convert it to individual draft
+      await jobService.updateJob(bulkDraft.id, convertedDraft)
       
-      // Open the wizard
-      setShowWizard(true)
-      
-      showToast('ℹ️ Opening draft creation wizard with bulk draft details pre-filled.', 'info')
-      
-    } catch (error) {
-      console.error('Error preparing bulk expansion:', error)
-      showToast('❌ Failed to prepare bulk expansion. Please try again.', 'error')
-    }
-  }
-
-  // Force publish bulk draft with N/A values for missing fields
-  const handleForcePublishBulkDraft = async (bulkDraft) => {
-    try {
-      if (!bulkDraft.bulk_entries || bulkDraft.bulk_entries.length === 0) {
-        showToast('⚠️ No entries found in bulk draft to publish.', 'error')
-        return
-      }
-
-      // Create published jobs for each bulk entry with N/A values
-      const publishPromises = []
-      
-      for (const entry of bulkDraft.bulk_entries) {
-        const jobCount = parseInt(entry.job_count || 1)
-        
-        // Create multiple published jobs based on job count for this entry
-        for (let i = 0; i < jobCount; i++) {
-          const publishedJob = {
-            // Required fields from bulk draft or default N/A values
-            title: entry.position || 'General Worker',
-            company: bulkDraft.company || 'N/A',
-            country: entry.country || 'N/A',
-            city: 'N/A',
-            published_at: new Date().toISOString(),
-            
-            // Default N/A values for missing fields
-            salary: 'N/A',
-            currency: 'AED',
-            salary_amount: 0,
-            requirements: ['Requirements not specified'],
-            description: `Position: ${entry.position || 'General Worker'} in ${entry.country || 'Location TBD'}. Additional details not provided (Force Published from Bulk Draft).`,
-            tags: ['Bulk Published', 'Details TBD'],
-            category: entry.position || 'General Worker',
-            employment_type: 'Full-time',
-            working_hours: 'N/A',
-            accommodation: 'N/A',
-            food: 'N/A',
-            visa_status: 'N/A',
-            contract_duration: 'N/A',
-            contact_person: 'N/A',
-            contact_phone: 'N/A',
-            contact_email: 'N/A',
-            expenses: [],
-            notes: `Force published from bulk draft: ${bulkDraft.title}. Job ${i + 1}/${jobCount} for ${entry.country}.`,
-            
-            // Metadata
-            created_at: new Date().toISOString(),
-            is_force_published: true,
-            original_bulk_id: bulkDraft.id,
-            bulk_entry_index: bulkDraft.bulk_entries.indexOf(entry),
-            job_sequence: i + 1,
-            status: 'published'
-          }
-          
-          publishPromises.push(jobService.publishJob(publishedJob))
-        }
-      }
-      
-      // Execute all job publications
-      await Promise.all(publishPromises)
-      
-      // Delete the original bulk draft
-      await jobService.deleteJob(bulkDraft.id)
-      
-      // Refresh drafts data
+      // Refresh the drafts list to show the updated draft
       const updatedDrafts = await jobService.getDraftJobs()
       setDrafts(updatedDrafts)
       
-      // Close modals
-      setShowPreviewModal(false)
-      setPreviewDraft(null)
-      setShowForcePublishModal(false)
-      setForcePublishDraft(null)
-      
-      // Show success message
-      const totalPublished = publishPromises.length
-      showToast(`✅ Successfully force published ${totalPublished} jobs from bulk draft! Missing details marked as N/A.`, 'success')
-      
-      // Reset pagination
+      // Update pagination
       setPagination(prev => ({
         ...prev,
         total: updatedDrafts.length
       }))
       
+      // Set the converted draft for editing
+      setEditingDraft(convertedDraft)
+      
+      // Start from step 0 (Posting Details) with all data pre-filled
+      setEditingStep(0)
+      
+      // Open the wizard
+      setShowWizard(true)
+      
+      showToast('✅ Bulk draft converted to individual draft! All your data has been pre-filled. Complete the remaining steps.', 'success')
+      
     } catch (error) {
-      console.error('Failed to force publish bulk draft:', error)
-      showToast('❌ Failed to force publish bulk draft. Please try again.', 'error')
+      console.error('Error converting bulk draft:', error)
+      showToast('❌ Failed to convert bulk draft. Please try again.', 'error')
     }
   }
 
-  // Show force publish confirmation modal
-  const showForcePublishConfirmation = (bulkDraft) => {
-    setForcePublishDraft(bulkDraft)
-    setShowForcePublishModal(true)
-  }
+
 
   const handleWizardSave = async (draftData) => {
     try {
@@ -489,10 +411,137 @@ const Drafts = () => {
     setSelectedDrafts(newSelected)
   }
 
-  const handlePublish = async (draftId) => {
-    setConfirmAction('publish')
-    setConfirmData({ id: draftId, title: drafts.find(d => d.id === draftId)?.title })
-    setShowConfirmModal(true)
+
+
+  // Function to calculate draft step progress
+  const getDraftStepProgress = (draft) => {
+    if (draft.is_bulk_draft) {
+      return { currentStep: 1, totalSteps: 8, completedSteps: 1 }
+    }
+    
+    // Check completion status of each step to match the preview modal structure exactly
+    const stepCompletionStatus = [
+      // Step 1: Posting Details - Required fields
+      !!(draft.city && draft.lt_number && draft.chalani_number && draft.country && 
+         draft.announcement_type && 
+         ((draft.approval_date_ad && draft.posting_date_ad) || (draft.approval_date_bs && draft.posting_date_bs))),
+      
+      // Step 2: Contract - Required fields
+      !!(draft.period_years && draft.period_years >= 1 && 
+         draft.renewable !== undefined && 
+         draft.hours_per_day && draft.hours_per_day >= 1 && draft.hours_per_day <= 16 &&
+         draft.days_per_week && draft.days_per_week >= 1 && draft.days_per_week <= 7 &&
+         draft.overtime_policy && draft.food && draft.accommodation && draft.transport &&
+         draft.annual_leave_days !== undefined && draft.annual_leave_days >= 0),
+      
+      // Step 3: Positions - At least one position with required fields
+      !!(draft.positions && draft.positions.length > 0 && 
+         draft.positions.every(pos => 
+           pos.position_title && 
+           ((pos.vacancies_male && pos.vacancies_male > 0) || (pos.vacancies_female && pos.vacancies_female > 0)) &&
+           pos.monthly_salary && pos.monthly_salary > 0 && 
+           pos.currency
+         )),
+      
+      // Step 4: Tags & Canonical Titles - Required fields (be more lenient)
+      !!(draft.skills && draft.skills.length > 0) ||
+      !!(draft.tags && draft.tags.length > 0) ||
+      !!(draft.requirements && draft.requirements.length > 0),
+      
+      // Step 5: Expenses - Complete if expenses exist (matches preview modal logic exactly)
+      !!(draft.expenses && draft.expenses.length > 0),
+      
+      // Step 6: Cutout - Complete if cutout file is provided (matches preview modal logic exactly)
+      !!(draft.cutout && 
+         (draft.cutout.has_file === true || 
+          draft.cutout.is_uploaded === true || 
+          (draft.cutout.file_name && draft.cutout.file_name.trim() !== '') ||
+          (draft.cutout.file_url && draft.cutout.file_url.trim() !== ''))),
+      
+      // Step 7: Review - Complete when review is marked complete (matches preview modal logic)
+      !!(draft.review && draft.review.is_complete),
+      
+      // Step 8: Submit - Complete when submission is marked complete (matches preview modal logic)
+      !!(draft.submit && draft.submit.is_complete) || 
+      !!(draft.is_complete || draft.ready_to_publish || draft.status === 'ready_to_publish')
+    ]
+    
+    const completedSteps = stepCompletionStatus.filter(Boolean).length
+    
+    // Current step is the first incomplete step, or step 8 if all steps are complete
+    let currentStep = stepCompletionStatus.findIndex(step => !step) + 1
+    if (currentStep === 0) currentStep = 8 // All steps complete
+    
+    // Don't use last_completed_step as it might be inconsistent with actual data
+    // Always use the calculated current step based on actual completion status
+    
+    return {
+      currentStep,
+      totalSteps: 8,
+      completedSteps,
+      progressPercentage: Math.round((completedSteps / 8) * 100)
+    }
+  }
+
+  // Function to check if a draft is complete and ready for publishing
+  const isDraftComplete = (draft) => {
+    if (draft.is_bulk_draft) {
+      // For bulk drafts, check if basic info is complete
+      return draft.title && draft.company && draft.bulk_entries && draft.bulk_entries.length > 0
+    }
+    
+    // Be very conservative - only show "Draft" status for truly complete drafts
+    // Most drafts should show "Partial" status until they are 100% ready for publishing
+    
+    // Check if draft is explicitly published or marked as complete
+    if (draft.status === 'published' || draft.status === 'ready_to_publish') {
+      return true
+    }
+    
+    // For now, be very strict - most drafts should show as "Partial"
+    // Only consider complete if explicitly marked or if it has gone through full review process
+    return draft.is_complete === true || 
+           draft.ready_to_publish === true ||
+           (draft.last_completed_step === 7 && draft.reviewed === true)
+  }
+
+  const handlePublish = async (draft) => {
+    try {
+      // Check if draft is complete
+      if (!isDraftComplete(draft)) {
+        showToast('❌ Please complete all required sections before publishing the draft.', 'error')
+        return
+      }
+
+      // Publish the draft
+      await jobService.publishJob(draft.id)
+      
+      // Show success message
+      showToast('✅ Draft published successfully! Redirecting to Jobs page...', 'success')
+      
+      // Close preview modal if open
+      setShowPreviewModal(false)
+      setPreviewDraft(null)
+      
+      // Navigate to jobs page after a short delay to show the toast
+      setTimeout(() => {
+        navigate('/jobs')
+      }, 1500)
+      
+      // Refresh drafts data to remove the published draft
+      const updatedDrafts = await jobService.getDraftJobs()
+      setDrafts(updatedDrafts)
+      
+      // Reset pagination if needed
+      setPagination(prev => ({
+        ...prev,
+        total: updatedDrafts.length
+      }))
+      
+    } catch (error) {
+      console.error('Failed to publish draft:', error)
+      showToast('❌ Failed to publish draft. Please try again.', 'error')
+    }
   }
 
   const handleDelete = async (draftId) => {
@@ -517,9 +566,10 @@ const Drafts = () => {
       return
     }
     
-    // For partial drafts, open at the last completed step + 1 (next incomplete step)
-    const editStep = draft.is_partial && draft.last_completed_step !== undefined 
-      ? Math.min(draft.last_completed_step + 1, 7) // Max step is 7 (0-indexed)
+    // For partial drafts, open at the current step (next incomplete step)
+    const progress = getDraftStepProgress(draft)
+    const editStep = !isDraftComplete(draft) && draft.last_completed_step !== undefined 
+      ? Math.min(progress.currentStep - 1, 7) // Convert to 0-indexed for wizard
       : targetStep
     
     // Check if there are unsaved changes (this would be enhanced with actual change detection)
@@ -536,17 +586,16 @@ const Drafts = () => {
       setShowWizard(true)
       
       // Show helpful toast for partial drafts
-      if (draft.is_partial) {
-        showToast(`📄 Continuing from step ${editStep + 1}. Your previous progress has been saved.`, 'info')
+      if (!isDraftComplete(draft)) {
+        const progress = getDraftStepProgress(draft)
+        showToast(`📄 Continuing from step ${progress.currentStep}. Your previous progress has been saved.`, 'info')
       }
     }
   }
 
   const confirmActionHandler = async () => {
     try {
-      if (confirmAction === 'publish') {
-        await executePublish(confirmData.id)
-      } else if (confirmAction === 'delete') {
+      if (confirmAction === 'delete') {
         await executeDelete(confirmData.id)
       } else if (confirmAction === 'edit') {
         setEditingDraft(confirmData.draft)
@@ -562,49 +611,7 @@ const Drafts = () => {
     }
   }
 
-  const executePublish = async (draftId) => {
-    try {
-      // Find the draft to check if it's partial
-      const draft = drafts.find(d => d.id === draftId)
-      
-      // Check if draft is partial/incomplete
-      if (draft && draft.is_partial) {
-        showToast('⚠️ Cannot publish incomplete draft. Please complete all required fields first.', 'error')
-        return
-      }
-      
-      // Additional validation for incomplete data
-      if (draft && (!draft.title || !draft.country || !draft.company)) {
-        showToast('⚠️ Cannot publish incomplete draft. Please fill in all required information.', 'error')
-        return
-      }
-      
-      setPublishingDrafts(prev => new Set([...prev, draftId]))
-      await jobService.publishJob(draftId)
-      
-      // Show success toast
-      showToast('✅ Draft published successfully! Job is now live.', 'success')
-      
-      // Refresh drafts data
-      const updatedDrafts = await jobService.getDraftJobs()
-      setDrafts(updatedDrafts)
-      
-      // Reset pagination if needed
-      setPagination(prev => ({
-        ...prev,
-        total: updatedDrafts.length
-      }))
-    } catch (error) {
-      console.error('Failed to publish draft:', error)
-      showToast('❌ Failed to publish draft. Please try again.', 'error')
-    } finally {
-      setPublishingDrafts(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(draftId)
-        return newSet
-      })
-    }
-  }
+
 
   const executeDelete = async (draftId) => {
     try {
@@ -801,23 +808,23 @@ const Drafts = () => {
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                   draft.is_bulk_draft 
                     ? 'bg-purple-100 text-purple-800'
-                    : draft.is_partial 
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-orange-100 text-orange-800'
+                    : isDraftComplete(draft)
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-yellow-100 text-yellow-800'
                 }`}>
                   <div className={`w-2 h-2 rounded-full mr-1.5 ${
-                    draft.is_bulk_draft ? 'bg-purple-400' : draft.is_partial ? 'bg-yellow-400' : 'bg-orange-400'
+                    draft.is_bulk_draft ? 'bg-purple-400' : isDraftComplete(draft) ? 'bg-green-400' : 'bg-yellow-400'
                   }`}></div>
-                  {draft.is_bulk_draft ? 'Bulk Draft' : draft.is_partial ? 'Partial' : 'Draft'}
+                  {draft.is_bulk_draft ? 'Bulk Draft' : isDraftComplete(draft) ? 'Draft' : 'Partial'}
                 </span>
                 {draft.is_bulk_draft && (
                   <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded font-medium">
                     {draft.total_jobs} Jobs
                   </span>
                 )}
-                {draft.is_partial && (
+                {!isDraftComplete(draft) && !draft.is_bulk_draft && (
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    Step {(draft.last_completed_step || 0) + 1}/8
+                    Step {getDraftStepProgress(draft).currentStep}/8
                   </span>
                 )}
               </div>
@@ -954,20 +961,10 @@ const Drafts = () => {
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
                 </InteractiveButton>
+
               </div>
               <div className="flex space-x-3">
-                <InteractiveButton
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    handlePublish(draft.id)
-                  }}
-                  disabled={publishingDrafts.has(draft.id)}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-                >
-                  <Check className="w-4 h-4 mr-2" />
-                  Publish
-                </InteractiveButton>
+
                 <InteractiveButton
                   onClick={(e) => {
                     e.preventDefault()
@@ -1008,8 +1005,8 @@ const Drafts = () => {
 
   // Render list view
   const renderListView = () => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-visible">
-      <table className="w-full table-fixed divide-y divide-gray-200">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+      <table className="w-full table-auto divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             <th scope="col" className="w-12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1021,25 +1018,25 @@ const Drafts = () => {
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
             </th>
-            <th scope="col" className="w-[26%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Job Title
             </th>
-            <th scope="col" className="w-[14%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[150px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Company
             </th>
-            <th scope="col" className="w-[10%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Location
             </th>
-            <th scope="col" className="w-[8%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Salary
             </th>
-            <th scope="col" className="w-[8%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Created
             </th>
-            <th scope="col" className="w-[8%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
-            <th scope="col" className="w-[24%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -1056,7 +1053,7 @@ const Drafts = () => {
                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
                       <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
@@ -1069,8 +1066,8 @@ const Drafts = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
+                    <div className="ml-4 min-w-0 flex-1">
+                      <div className="text-sm font-medium text-gray-900 break-words">
                         {draft.title || 'Untitled Draft'}
                         {draft.is_bulk_draft && (
                           <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
@@ -1079,7 +1076,7 @@ const Drafts = () => {
                         )}
                       </div>
                       {draft.is_bulk_draft ? (
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 break-words">
                           {draft.bulk_entries?.length || 0} entries · {(() => {
                             const countries = [...new Set(draft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
                             const countryText = countries.length === 1 ? 'country' : 'countries'
@@ -1090,7 +1087,7 @@ const Drafts = () => {
                         </div>
                       ) : (
                         draft.tags && draft.tags.length > 0 && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 break-words">
                             {draft.tags.slice(0, 2).join(', ')}
                             {draft.tags.length > 2 && ` +${draft.tags.length - 2} more`}
                           </div>
@@ -1099,16 +1096,16 @@ const Drafts = () => {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 break-words">
                     {draft.is_bulk_draft 
                       ? `${draft.bulk_entries?.length || 0} Companies` 
                       : (draft.company || 'No Company')
                     }
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 break-words">
                     {draft.is_bulk_draft 
                       ? (() => {
                           const countries = [...new Set(draft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
@@ -1139,18 +1136,18 @@ const Drafts = () => {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       draft.is_bulk_draft 
                         ? 'bg-purple-100 text-purple-800'
-                        : draft.is_partial 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-orange-100 text-orange-800'
+                        : isDraftComplete(draft)
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
                     }`}>
                       <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                        draft.is_bulk_draft ? 'bg-purple-400' : draft.is_partial ? 'bg-yellow-400' : 'bg-orange-400'
+                        draft.is_bulk_draft ? 'bg-purple-400' : isDraftComplete(draft) ? 'bg-green-400' : 'bg-yellow-400'
                       }`}></div>
-                      {draft.is_bulk_draft ? 'Bulk Draft' : draft.is_partial ? 'Partial' : 'Draft'}
+                      {draft.is_bulk_draft ? 'Bulk Draft' : isDraftComplete(draft) ? 'Draft' : 'Partial'}
                     </span>
-                    {draft.is_partial && (
+                    {!isDraftComplete(draft) && !draft.is_bulk_draft && (
                       <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        Step {(draft.last_completed_step || 0) + 1}/8
+                        Step {getDraftStepProgress(draft).currentStep}/8
                       </span>
                     )}
                   </div>
@@ -1184,44 +1181,7 @@ const Drafts = () => {
                     >
                       Edit
                     </InteractiveButton>
-                    <InteractiveButton
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (draft.is_bulk_draft) {
-                          showForcePublishConfirmation(draft)
-                          return
-                        }
-                        if (draft.is_partial) {
-                          showToast('⚠️ Cannot publish incomplete draft. Please complete all steps first.', 'error')
-                          return
-                        }
-                        handlePublish(draft.id)
-                      }}
-                      variant={draft.is_partial ? "outline" : "primary"}
-                      size="sm"
-                      disabled={publishingDrafts.has(draft.id) || draft.is_partial}
-                      loading={publishingDrafts.has(draft.id)}
-                      icon={Check}
-                      className={`shadow-sm hover:shadow-md transition-shadow duration-200 ${
-                        draft.is_partial ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                      title={
-                        draft.is_bulk_draft 
-                          ? 'Bulk publish with options for completing details or force publishing'
-                          : draft.is_partial 
-                          ? 'Complete the draft before publishing' 
-                          : 'Publish this draft'
-                      }
-                    >
-                      {publishingDrafts.has(draft.id) 
-                        ? 'Publishing...' 
-                        : draft.is_bulk_draft 
-                        ? 'Bulk Publish' 
-                        : draft.is_partial 
-                        ? 'Incomplete' 
-                        : 'Publish'
-                      }
-                    </InteractiveButton>
+
                     <InteractiveButton
                       onClick={(e) => {
                         e.stopPropagation()
@@ -1279,20 +1239,7 @@ const Drafts = () => {
           
           {selectedDrafts.size > 0 && (
             <>
-              <InteractiveButton
-                onClick={(e) => {
-                  e.preventDefault()
-                  selectedDrafts.forEach(draftId => handlePublish(draftId))
-                  setSelectedDrafts(new Set())
-                }}
-                variant="primary"
-                size="sm"
-                disabled={publishingDrafts.size > 0}
-                loading={publishingDrafts.size > 0}
-                icon={Check}
-              >
-                Publish ({selectedDrafts.size})
-              </InteractiveButton>
+
               <InteractiveButton
                 onClick={async (e) => {
                   e.preventDefault()
@@ -1476,13 +1423,13 @@ const Drafts = () => {
                 <h2 className="text-xl font-semibold text-gray-900">Draft Preview</h2>
                 <p className="text-sm text-gray-600 mt-1">Review your draft completion status and details</p>
                 {/* Progress indicator for partial drafts */}
-                {previewDraft.is_partial && (
+                {!isDraftComplete(previewDraft) && !previewDraft.is_bulk_draft && (
                   <div className="mt-2 flex items-center space-x-2">
                     <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
                       📝 Partial Draft
                     </span>
                     <span className="text-xs text-gray-600">
-                      Last saved at step {(previewDraft.last_completed_step || 0) + 1} of 8
+                      Currently at step {getDraftStepProgress(previewDraft).currentStep} of 8
                     </span>
                   </div>
                 )}
@@ -1534,29 +1481,18 @@ const Drafts = () => {
                 ) : (
                   /* Completion Progress Bar for regular drafts */
                   (() => {
-                    const completedSteps = [
-                      previewDraft.title && previewDraft.company && previewDraft.country, // Step 1
-                      previewDraft.period_years && previewDraft.employment_type, // Step 2
-                      previewDraft.positions && previewDraft.positions.length > 0, // Step 3
-                      (previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0), // Step 4
-                      previewDraft.expenses && previewDraft.expenses.length > 0, // Step 5
-                      previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded || previewDraft.cutout.file_name || previewDraft.cutout.file_url), // Step 6
-                      previewDraft.interview && previewDraft.interview.date_ad, // Step 7
-                      true // Step 8 (Review) - always available
-                    ].filter(Boolean).length
-                    
-                    const progressPercentage = (completedSteps / 8) * 100
+                    const progress = getDraftStepProgress(previewDraft)
                     
                     return (
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-sm text-blue-700 mb-1">
                           <span>Completion Progress</span>
-                          <span>{completedSteps}/8 steps ({Math.round(progressPercentage)}%)</span>
+                          <span>{progress.completedSteps}/8 steps ({progress.progressPercentage}%)</span>
                         </div>
                         <div className="w-full bg-blue-200 rounded-full h-2">
                           <div 
                             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${progressPercentage}%` }}
+                            style={{ width: `${progress.progressPercentage}%` }}
                           ></div>
                         </div>
                       </div>
@@ -1638,40 +1574,51 @@ const Drafts = () => {
                             Choose how you want to handle this bulk draft with {previewDraft.total_jobs} jobs.
                           </p>
                           
-                          <div className="space-y-3">
-                            {/* Recommended Option */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                              <h6 className="text-sm font-medium text-blue-900 mb-1 flex items-center">
-                                <User className="w-4 h-4 mr-2" />
-                                ⭐ Recommended: Complete Individual Details
+                          <div className="space-y-4">
+                            {/* Expand Button Explanation */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                              <h6 className="font-medium text-blue-800 mb-2 flex items-center">
+                                <Edit className="w-4 h-4 mr-2" />
+                                How the Expand Button Works
                               </h6>
-                              <p className="text-xs text-blue-700 mb-2">
-                                Expand into individual drafts where you can fill in all job details properly.
-                              </p>
-                              <button
-                                onClick={() => handleExpandBulkDraft(previewDraft)}
-                                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-md shadow-sm hover:shadow-md transition-all duration-200"
-                              >
-                                <Edit className="w-3 h-3 mr-1.5" />
-                                Expand & Complete
-                              </button>
+                              <div className="text-sm text-blue-700 space-y-2">
+                                <p>
+                                  • <strong>Pre-filled Data:</strong> All information you entered while creating this bulk draft will be automatically pre-filled in the job creation wizard
+                                </p>
+                                <p>
+                                  • <strong>Individual Job Creation:</strong> You'll be taken to the standard job creation process where you can add detailed information for each position
+                                </p>
+                                <p>
+                                  • <strong>No Going Back:</strong> Once you expand, this bulk draft will be treated as a normal draft creation - you cannot return to bulk mode
+                                </p>
+                                <p>
+                                  • <strong>Complete All Steps:</strong> You'll need to complete all 8 steps of the job creation process to publish individual jobs
+                                </p>
+                              </div>
                             </div>
                             
-                            {/* Quick Option */}
-                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                              <h6 className="text-sm font-medium text-orange-900 mb-1 flex items-center">
-                                <Check className="w-4 h-4 mr-2" />
-                                ⚡ Quick Publish with Basic Details
-                              </h6>
-                              <p className="text-xs text-orange-700 mb-2">
-                                Publish immediately with available details. Missing fields will be marked as "N/A".
-                              </p>
+                            {/* Action Buttons */}
+                            <div className="flex flex-col sm:flex-row gap-3">
                               <button
-                                onClick={() => showForcePublishConfirmation(previewDraft)}
-                                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-md shadow-sm hover:shadow-md transition-all duration-200"
+                                onClick={() => handleExpandBulkDraft(previewDraft)}
+                                className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                                title="Expand this bulk draft into individual job creation with pre-filled data"
                               >
-                                <AlertCircle className="w-3 h-3 mr-1.5" />
-                                Force Publish
+                                <Edit className="w-4 h-4 mr-2" />
+                                Expand & Complete Individual Jobs
+                              </button>
+                              
+                              <button
+                                onClick={() => {
+                                  setShowPreviewModal(false)
+                                  setPreviewDraft(null)
+                                  handleEdit(previewDraft, 0)
+                                }}
+                                className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                                title="Continue editing this bulk draft"
+                              >
+                                <Settings className="w-4 h-4 mr-2" />
+                                Edit Bulk Draft Settings
                               </button>
                             </div>
                           </div>
@@ -2333,100 +2280,38 @@ const Drafts = () => {
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Back to Selection
                 </button>
-                <button
-                  onClick={() => {
-                    setShowPreviewModal(false)
-                    setPreviewDraft(null)
-                    handleEdit(previewDraft, previewDraft.is_bulk_draft ? 0 : 3) // Start from beginning for bulk drafts, step 3 for regular drafts
-                  }}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-md hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 shadow-sm hover:shadow-md"
-                  title={previewDraft.is_bulk_draft ? 'Edit bulk draft settings and entries' : 'Continue editing this draft'}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  {previewDraft.is_bulk_draft ? 'Edit Bulk Draft' : 'Continue Editing'}
-                </button>
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    // Check if draft is bulk - show force publish option
-                    if (previewDraft.is_bulk_draft) {
-                      showForcePublishConfirmation(previewDraft)
-                      return
-                    }
-                    // Check if draft is partial
-                    if (previewDraft.is_partial) {
-                      showToast('⚠️ Cannot publish incomplete draft. Please complete all required fields first.', 'error')
-                      return
-                    }
-                    await handlePublish(previewDraft.id)
-                    setShowPreviewModal(false)
-                    setPreviewDraft(null)
-                    showToast('🚀 Job published successfully from preview!', 'success')
-                  } catch (error) {
-                    showToast('❌ Failed to publish job. Please try again.', 'error')
-                  }
-                }}
-                className={`inline-flex items-center px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md ${
-                  previewDraft.is_partial
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : previewDraft.is_bulk_draft
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500'
-                    : [
-                        previewDraft.title && previewDraft.company && previewDraft.country,
-                        previewDraft.period_years && previewDraft.employment_type,
-                        previewDraft.positions && previewDraft.positions.length > 0,
-                        (previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0),
-                        previewDraft.expenses && previewDraft.expenses.length > 0,
-                        previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded),
-                        previewDraft.interview && previewDraft.interview.date_ad
-                      ].filter(Boolean).length >= 5 
-                        ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
-                        : 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
-                }`}
-                disabled={publishingDrafts.has(previewDraft.id) || previewDraft.is_partial}
-                title={
-                  previewDraft.is_bulk_draft 
-                    ? 'Publish bulk draft with current details (missing fields will be marked N/A)'
-                    : previewDraft.is_partial 
-                    ? 'Complete the draft before publishing' 
-                    : 'Publish this job'
-                }
-              >
-                {publishingDrafts.has(previewDraft.id) ? (
+
+              <div className="flex space-x-3">
+                {/* For bulk drafts, actions are now in the bulk draft publishing options section above */}
+                {!previewDraft.is_bulk_draft && (
                   <>
-                    <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    {previewDraft.is_bulk_draft ? (
-                      <>
+                    <button
+                      onClick={() => {
+                        setShowPreviewModal(false)
+                        setPreviewDraft(null)
+                        handleEdit(previewDraft, 3) // Continue from step 3 for regular drafts
+                      }}
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-md hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                      title="Continue editing this draft"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Continue Editing
+                    </button>
+                    
+                    {isDraftComplete(previewDraft) && (
+                      <button
+                        onClick={() => handlePublish(previewDraft)}
+                        className="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                        title="Publish this completed draft"
+                      >
                         <Check className="w-4 h-4 mr-2" />
-                        Publish Options
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-4 h-4 mr-2" />
-                        {previewDraft.is_partial 
-                          ? 'Complete Draft First' 
-                          : [
-                              previewDraft.title && previewDraft.company && previewDraft.country,
-                              previewDraft.period_years && previewDraft.employment_type,
-                              previewDraft.positions && previewDraft.positions.length > 0,
-                              (previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0),
-                              previewDraft.expenses && previewDraft.expenses.length > 0,
-                              previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded),
-                              previewDraft.interview && previewDraft.interview.date_ad
-                            ].filter(Boolean).length >= 5 
-                            ? 'Publish Now' 
-                            : 'Publish (Incomplete)'
-                        }
-                      </>
+                        Publish Draft
+                      </button>
                     )}
                   </>
                 )}
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2446,12 +2331,12 @@ const Drafts = () => {
                     : 'bg-blue-100'
                 }`}>
                   {confirmAction === 'delete' && <Trash2 className="w-5 h-5 text-red-600" />}
-                  {confirmAction === 'publish' && <Check className="w-5 h-5 text-green-600" />}
+
                   {confirmAction === 'edit' && <Edit className="w-5 h-5 text-blue-600" />}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
                   {confirmAction === 'delete' && 'Delete Draft'}
-                  {confirmAction === 'publish' && 'Publish Draft'}
+
                   {confirmAction === 'edit' && 'Edit Draft'}
                 </h3>
               </div>
@@ -2468,16 +2353,7 @@ const Drafts = () => {
                   </div>
                 )}
                 
-                {confirmAction === 'publish' && (
-                  <div>
-                    <p className="text-gray-700 mb-2">
-                      Are you sure you want to publish <strong>"{confirmData?.title}"</strong>?
-                    </p>
-                    <p className="text-green-600 text-sm font-medium">
-                      ✅ This will make the job posting live and visible to candidates.
-                    </p>
-                  </div>
-                )}
+
 
                 {confirmAction === 'edit' && confirmData?.hasChanges && (
                   <div>
@@ -2507,13 +2383,12 @@ const Drafts = () => {
                   className={`flex-1 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
                     confirmAction === 'delete'
                       ? 'bg-red-600 hover:bg-red-700'
-                      : confirmAction === 'publish'
-                      ? 'bg-green-600 hover:bg-green-700'
+
                       : 'bg-blue-600 hover:bg-blue-700'
                   }`}
                 >
                   {confirmAction === 'delete' && 'Delete Draft'}
-                  {confirmAction === 'publish' && 'Publish Now'}
+
                   {confirmAction === 'edit' && 'Continue Editing'}
                 </button>
               </div>
@@ -2522,91 +2397,7 @@ const Drafts = () => {
         </div>
       )}
 
-      {/* Force Publish Confirmation Modal */}
-      {showForcePublishModal && forcePublishDraft && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3 bg-orange-100">
-                  <AlertCircle className="w-5 h-5 text-orange-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Publish Bulk Draft
-                </h3>
-              </div>
-              
-              <div className="mb-6">
-                <div className="mb-4">
-                  <p className="text-gray-700 mb-3">
-                    You're about to publish <strong>{forcePublishDraft.total_jobs} jobs</strong> from this bulk draft.
-                  </p>
-                  
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <h4 className="font-medium text-blue-900 mb-2 flex items-center">
-                      <User className="w-4 h-4 mr-2" />
-                      ℹ️ We Recommend: Complete Individual Details
-                    </h4>
-                    <p className="text-sm text-blue-700 mb-3">
-                      For best results, expand this bulk draft into individual drafts where you can fill in all job details properly.
-                    </p>
-                    <button
-                      onClick={async () => {
-                        setShowForcePublishModal(false)
-                        await handleExpandBulkDraft(forcePublishDraft)
-                      }}
-                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Expand & Complete Details
-                    </button>
-                  </div>
-                  
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <h4 className="font-medium text-amber-900 mb-2 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-2" />
-                      ⚠️ Force Publish Option
-                    </h4>
-                    <p className="text-sm text-amber-700 mb-3">
-                      If you proceed with force publish, missing job details will be marked as <strong>"N/A"</strong>. This includes:
-                    </p>
-                    <ul className="text-sm text-amber-700 list-disc list-inside mb-3 space-y-1">
-                      <li>Salary information</li>
-                      <li>Detailed job requirements</li>
-                      <li>Contact information</li>
-                      <li>Accommodation & benefits details</li>
-                      <li>Contract specifics</li>
-                    </ul>
-                    <p className="text-sm text-amber-700">
-                      Only basic information from your bulk draft (Position, Country, Job Count) will be used.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => {
-                    setShowForcePublishModal(false)
-                    setForcePublishDraft(null)
-                  }}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    await handleForcePublishBulkDraft(forcePublishDraft)
-                  }}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-md transition-colors"
-                >
-                  ⚡ Force Publish with N/A
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Success Toast Notification */}
       {showSuccessToast && (

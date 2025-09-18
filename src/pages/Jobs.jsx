@@ -239,11 +239,12 @@ const Jobs = () => {
             .map(([country, count]) => (
               <button 
                 key={country} 
-                className="flex flex-col items-center justify-center p-1 text-center hover:bg-gray-50 border border-gray-200 rounded-sm transition-colors"
+                className="flex items-center justify-center p-2 text-center hover:bg-gray-50 border border-gray-200 rounded-sm transition-colors"
                 onClick={() => handleFilterChange('country', country)}
               >
-                <span className="text-[10px] text-gray-600">{country}</span>
-                <span className="text-sm font-semibold text-primary-600 leading-tight">{count}</span>
+                <span className="text-sm text-gray-700 font-medium">
+                  {country} ({count})
+                </span>
               </button>
             ))}
         </div>

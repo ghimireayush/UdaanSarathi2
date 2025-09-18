@@ -1123,7 +1123,6 @@ const Applications = () => {
                   <option value={applicationStages.SHORTLISTED}>Shortlisted</option>
                   <option value={applicationStages.SCHEDULED}>Scheduled</option>
                   <option value={applicationStages.INTERVIEWED}>Interviewed</option>
-                  <option value={applicationStages.SELECTED}>Selected</option>
                 </select>
               </div>
 

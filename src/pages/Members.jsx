@@ -181,8 +181,7 @@ const Members = () => {
       {/* Invite Team Member Section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-brand-blue-bright" />
+          <h2 className="text-xl font-semibold text-gray-900">
             Invite Team Member
           </h2>
           <p className="text-sm text-gray-600 mt-1">Add new members to your recruitment team</p>
@@ -254,7 +253,6 @@ const Members = () => {
                   </>
                 ) : (
                   <>
-                    <Mail className="w-4 h-4" />
                     Send Invitation
                   </>
                 )}

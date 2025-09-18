@@ -358,7 +358,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           annual_leave_days: editingDraft.annual_leave_days || 21,
           
           // Positions
-          positions: editingDraft.positions && editingDraft.positions.length > 0 
+          positions: editingDraft.positions && Array.isArray(editingDraft.positions) && editingDraft.positions.length > 0 
             ? editingDraft.positions.map((pos, index) => ({
                 id: index + 1,
                 position_title: pos.title || '',
@@ -404,7 +404,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           canonical_title_names: editingDraft.canonical_title_names || [],
           
           // Expenses
-          expenses: editingDraft.expenses && editingDraft.expenses.length > 0
+          expenses: editingDraft.expenses && Array.isArray(editingDraft.expenses) && editingDraft.expenses.length > 0
             ? editingDraft.expenses.map((exp, index) => ({
                 id: index + 1,
                 type: exp.type || '',

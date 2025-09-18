@@ -22,6 +22,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import { PERMISSIONS } from '../services/authService.js'
 import PermissionGuard from '../components/PermissionGuard.jsx'
 import { InteractiveCard, InteractiveButton, InteractiveDropdown, InteractiveLoader } from '../components/InteractiveUI'
+import DateRangePicker from '../components/DateRangePicker.jsx'
 
 import { useNotificationContext } from '../contexts/NotificationContext'
 
@@ -86,8 +87,11 @@ const Dashboard = () => {
   const [filters, setFilters] = useState({
     timeWindow: 'Week',
     job: 'All Jobs',
-    country: 'All Countries'
+    country: 'All Countries',
+    customStartDate: '',
+    customEndDate: ''
   })
+  const [showDateRangePicker, setShowDateRangePicker] = useState(false)
   const [analytics, setAnalytics] = useState({})
   const [countries, setCountries] = useState([])
   const [jobs, setJobs] = useState([])
@@ -106,10 +110,19 @@ const Dashboard = () => {
       }
       setError(null)
       
+      // Prepare filter options for services
+      const filterOptions = {
+        timeWindow: filters.timeWindow,
+        customStartDate: filters.customStartDate,
+        customEndDate: filters.customEndDate,
+        job: filters.job !== 'All Jobs' ? filters.job : null,
+        country: filters.country !== 'All Countries' ? filters.country : null
+      }
+
       // Fetch real data from services
       const [applicationsData, jobsData, countriesData] = await Promise.all([
-        applicationService.getApplicationStatistics(),
-        jobService.getJobStatistics(),
+        applicationService.getApplicationStatistics(filterOptions),
+        jobService.getJobStatistics(filterOptions),
         constantsService.getCountries()
       ])
       
@@ -262,7 +275,7 @@ const Dashboard = () => {
             }`}>
               {metric.value}
             </div>
-            <div className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            <div className="text-sm font-normal text-gray-600">
               {metric.label}
             </div>
           </div>
@@ -311,8 +324,8 @@ const Dashboard = () => {
 
   const interviewMetrics = [
     {
-      label: 'Weekly (Nepali Week)',
-      value: `${analytics.interviews?.weeklyPending || 0} of ${analytics.interviews?.weeklyTotal || 0} Pending`,
+      label: 'Pending interviews this week',
+      value: `${analytics.interviews?.weeklyPending || 0}/${analytics.interviews?.weeklyTotal || 0}`,
       highlight: true
     },
     {
@@ -396,6 +409,14 @@ const Dashboard = () => {
                     Updated: {lastUpdated.toLocaleTimeString()}
                   </span>
                 </div>
+                {filters.customStartDate && filters.customEndDate && (
+                  <div className="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm text-blue-700 font-medium">
+                      Custom Range: {new Date(filters.customStartDate).toLocaleDateString()} - {new Date(filters.customEndDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex flex-col sm:flex-row gap-3 flex-1">
@@ -404,10 +425,23 @@ const Dashboard = () => {
                         { value: 'Today', label: 'Today' },
                         { value: 'Week', label: 'This Week' },
                         { value: 'Month', label: 'This Month' },
-                        { value: 'Custom', label: 'Custom Range' }
+                        { value: 'Custom', label: filters.customStartDate && filters.customEndDate ? 
+                          `${new Date(filters.customStartDate).toLocaleDateString()} - ${new Date(filters.customEndDate).toLocaleDateString()}` : 
+                          'Custom Range' }
                       ]}
                       value={filters.timeWindow}
-                      onChange={(value) => setFilters(prev => ({ ...prev, timeWindow: value }))}
+                      onChange={(value) => {
+                        if (value === 'Custom') {
+                          setShowDateRangePicker(true)
+                        } else {
+                          setFilters(prev => ({ 
+                            ...prev, 
+                            timeWindow: value,
+                            customStartDate: '',
+                            customEndDate: ''
+                          }))
+                        }
+                      }}
                       placeholder="Time Window"
                       size="md"
                       className="w-full min-w-[150px]"
@@ -595,6 +629,22 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Date Range Picker Modal */}
+      <DateRangePicker
+        startDate={filters.customStartDate}
+        endDate={filters.customEndDate}
+        isOpen={showDateRangePicker}
+        onDateRangeChange={(startDate, endDate) => {
+          setFilters(prev => ({
+            ...prev,
+            timeWindow: 'Custom',
+            customStartDate: startDate,
+            customEndDate: endDate
+          }))
+        }}
+        onClose={() => setShowDateRangePicker(false)}
+      />
     </div>
   )
 }
