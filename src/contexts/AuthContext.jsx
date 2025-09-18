@@ -21,15 +21,36 @@ export const AuthProvider = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     try {
-      const currentUser = authService.getCurrentUser()
-      const isAuth = authService.isUserAuthenticated()
+      // Check for stored authentication data
+      const storedUser = localStorage.getItem('udaan_user')
+      const storedToken = localStorage.getItem('udaan_token')
       
-      if (currentUser && isAuth) {
-        setUser(currentUser)
-        setIsAuthenticated(true)
-        setPermissions(authService.getUserPermissions(currentUser.role))
+      if (storedUser && storedToken) {
+        const userData = JSON.parse(storedUser)
+        
+        // Validate that user data is complete
+        if (userData && userData.id && userData.role) {
+          // Validate token expiration if it exists
+          const storedPermissions = localStorage.getItem('udaan_permissions')
+          const permissions = storedPermissions ? JSON.parse(storedPermissions) : authService.getUserPermissions(userData.role)
+          
+          // Set authentication state
+          setUser(userData)
+          setIsAuthenticated(true)
+          setPermissions(permissions)
+          
+          // Update authService state to match
+          authService.currentUser = userData
+          authService.isAuthenticated = true
+        } else {
+          // Invalid user data found, clear auth
+          logout()
+        }
+      } else {
+        // No stored auth data, ensure clean state
+        logout()
       }
     } catch (error) {
       console.error('Error initializing auth:', error)

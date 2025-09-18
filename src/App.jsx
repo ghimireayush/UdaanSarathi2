@@ -47,31 +47,25 @@ function App() {
         <AgencyProvider>
           <ToastProvider>
             <ConfirmProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/login/member" element={<MemberLogin />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/setup-company" element={<CompanySetup />} />
-            <Route path="*" element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                  <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                  <Route path="/jobs" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_JOBS}><Jobs /></PrivateRoute>} />
-                  <Route path="/jobs/:id" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_JOBS}><JobDetails /></PrivateRoute>} />
-                  <Route path="/jobs/:jobId/shortlist" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_APPLICATIONS}><JobShortlist /></PrivateRoute>} />
-                  <Route path="/applications" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_APPLICATIONS}><Applications /></PrivateRoute>} />
-                  <Route path="/interviews" element={<PrivateRoute requiredPermissions={[PERMISSIONS.VIEW_INTERVIEWS, PERMISSIONS.SCHEDULE_INTERVIEW]}><Interviews /></PrivateRoute>} />
-                  <Route path="/workflow" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_WORKFLOW}><Workflow /></PrivateRoute>} />
-                  <Route path="/drafts" element={<PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><Drafts /></PrivateRoute>} />
-                  <Route path="/settings" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><AgencySettings /></PrivateRoute>} />
-                  <Route path="/auditlog" element={<PrivateRoute requiredPermission={PERMISSIONS.VIEW_AUDIT_LOGS}><AuditLogPage /></PrivateRoute>} />
-                  <Route path="/teammembers" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_USERS}><Members /></PrivateRoute>} />
-                  <Route path="/mvp-testing" element={<PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><MVPTestingDashboard /></PrivateRoute>} />
-                </Routes>
-              </Layout>
-            } />
-          </Routes>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/login/member" element={<MemberLogin />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/setup-company" element={<CompanySetup />} />
+                <Route path="/" element={<Layout><PrivateRoute><Dashboard /></PrivateRoute></Layout>} />
+                <Route path="/dashboard" element={<Layout><PrivateRoute><Dashboard /></PrivateRoute></Layout>} />
+                <Route path="/jobs" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_JOBS}><Jobs /></PrivateRoute></Layout>} />
+                <Route path="/jobs/:id" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_JOBS}><JobDetails /></PrivateRoute></Layout>} />
+                <Route path="/jobs/:jobId/shortlist" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_APPLICATIONS}><JobShortlist /></PrivateRoute></Layout>} />
+                <Route path="/applications" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_APPLICATIONS}><Applications /></PrivateRoute></Layout>} />
+                <Route path="/interviews" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.VIEW_INTERVIEWS, PERMISSIONS.SCHEDULE_INTERVIEW]}><Interviews /></PrivateRoute></Layout>} />
+                <Route path="/workflow" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_WORKFLOW}><Workflow /></PrivateRoute></Layout>} />
+                <Route path="/drafts" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><Drafts /></PrivateRoute></Layout>} />
+                <Route path="/settings" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><AgencySettings /></PrivateRoute></Layout>} />
+                <Route path="/auditlog" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_AUDIT_LOGS}><AuditLogPage /></PrivateRoute></Layout>} />
+                <Route path="/teammembers" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_USERS}><Members /></PrivateRoute></Layout>} />
+                <Route path="/mvp-testing" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><MVPTestingDashboard /></PrivateRoute></Layout>} />
+              </Routes>
             </ConfirmProvider>
           </ToastProvider>
         </AgencyProvider>

@@ -185,7 +185,6 @@ class AuthService {
   constructor() {
     this.currentUser = null
     this.isAuthenticated = false
-    this.logout() // Clear any existing state
     this.initializeAuth()
   }
 
@@ -198,12 +197,23 @@ class AuthService {
       const storedToken = localStorage.getItem('udaan_token')
       
       if (storedUser && storedToken) {
-        this.currentUser = JSON.parse(storedUser)
-        this.isAuthenticated = true
+        const userData = JSON.parse(storedUser)
+        
+        // Validate that the user data is complete
+        if (userData && userData.id && userData.role) {
+          this.currentUser = userData
+          this.isAuthenticated = true
+          return true
+        }
       }
+      
+      // If we reach here, authentication data is invalid or missing
+      this.logout()
+      return false
     } catch (error) {
       console.error('Error initializing auth:', error)
       this.logout()
+      return false
     }
   }
 

@@ -9,30 +9,36 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
   const location = useLocation()
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    // Only perform redirects after loading is complete
+    if (isLoading) {
+      return
+    }
+    
+    if (!isAuthenticated) {
       // Redirect to login if not authenticated
       navigate('/login', { 
         state: { from: location.pathname }, 
         replace: true 
       })
-    } else if (!isLoading && isAuthenticated) {
-      // Check role-based access
-      if (requiredRole && !hasRole(requiredRole)) {
-        navigate('/dashboard', { replace: true })
-        return
-      }
-      
-      // Check permission-based access
-      if (requiredPermission && !hasPermission(requiredPermission)) {
-        navigate('/dashboard', { replace: true })
-        return
-      }
-      
-      // Check multiple permissions (user needs at least one)
-      if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) {
-        navigate('/dashboard', { replace: true })
-        return
-      }
+      return
+    }
+    
+    // Check role-based access
+    if (requiredRole && !hasRole(requiredRole)) {
+      navigate('/dashboard', { replace: true })
+      return
+    }
+    
+    // Check permission-based access
+    if (requiredPermission && !hasPermission(requiredPermission)) {
+      navigate('/dashboard', { replace: true })
+      return
+    }
+    
+    // Check multiple permissions (user needs at least one)
+    if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) {
+      navigate('/dashboard', { replace: true })
+      return
     }
   }, [isAuthenticated, hasRole, hasPermission, hasAnyPermission, requiredRole, requiredPermission, requiredPermissions, isLoading, navigate, location])
 

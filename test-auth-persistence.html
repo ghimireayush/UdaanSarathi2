@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Persistence Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-danger { background-color: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Persistence Test</h1>
+    <p>This test verifies that authentication state persists across page refreshes (Ctrl+R).</p>
+
+    <div class="test-section info">
+        <h3>Test Instructions:</h3>
+        <ol>
+            <li>Click "Simulate Login" to set authentication data</li>
+            <li>Verify the authentication status shows as "Authenticated"</li>
+            <li>Press Ctrl+R to refresh the page</li>
+            <li>Check if authentication status is still "Authenticated" after refresh</li>
+            <li>Click "Clear Auth" to clean up</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Authentication Status:</h3>
+        <div id="authStatus">Not checked</div>
+        <button class="btn-primary" onclick="checkAuthStatus()">Check Status</button>
+        <button class="btn-success" onclick="simulateLogin()">Simulate Login</button>
+        <button class="btn-warning" onclick="simulateRefresh()">Simulate Page Refresh</button>
+        <button class="btn-danger" onclick="clearAuth()">Clear Auth</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Local Storage Contents:</h3>
+        <div id="storageContents">Not checked</div>
+        <button class="btn-primary" onclick="showStorageContents()">Show Storage</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Results:</h3>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        // Mock authentication data
+        const mockUser = {
+            id: 'user_1',
+            username: 'admin@udaan.com',
+            email: 'admin@udaan.com',
+            name: 'System Administrator',
+            role: 'admin',
+            isActive: true
+        };
+
+        const mockToken = 'token_test_' + Date.now();
+
+        function simulateLogin() {
+            try {
+                localStorage.setItem('udaan_user', JSON.stringify(mockUser));
+                localStorage.setItem('udaan_token', mockToken);
+                localStorage.setItem('udaan_permissions', JSON.stringify(['view_audit_logs', 'manage_users']));
+                
+                updateStatus('Login simulated successfully!', 'success');
+                checkAuthStatus();
+                showStorageContents();
+            } catch (error) {
+                updateStatus('Error simulating login: ' + error.message, 'error');
+            }
+        }
+
+        function checkAuthStatus() {
+            try {
+                const storedUser = localStorage.getItem('udaan_user');
+                const storedToken = localStorage.getItem('udaan_token');
+                
+                if (storedUser && storedToken) {
+                    const userData = JSON.parse(storedUser);
+                    document.getElementById('authStatus').innerHTML = `
+                        <div class="success">
+                            <strong>Authenticated</strong><br>
+                            User: ${userData.name} (${userData.username})<br>
+                            Role: ${userData.role}<br>
+                            Token: ${storedToken.substring(0, 20)}...
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('authStatus').innerHTML = `
+                        <div class="error">
+                            <strong>Not Authenticated</strong><br>
+                            No valid authentication data found
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('authStatus').innerHTML = `
+                    <div class="error">
+                        <strong>Error checking auth:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function simulateRefresh() {
+            // This simulates what happens during a page refresh
+            updateStatus('Simulating page refresh...', 'info');
+            
+            setTimeout(() => {
+                checkAuthStatus();
+                showStorageContents();
+                updateStatus('Page refresh simulation complete. Check if auth data persisted.', 'info');
+            }, 500);
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('udaan_user');
+            localStorage.removeItem('udaan_token');
+            localStorage.removeItem('udaan_permissions');
+            
+            updateStatus('Authentication data cleared', 'info');
+            checkAuthStatus();
+            showStorageContents();
+        }
+
+        function showStorageContents() {
+            const user = localStorage.getItem('udaan_user');
+            const token = localStorage.getItem('udaan_token');
+            const permissions = localStorage.getItem('udaan_permissions');
+            
+            document.getElementById('storageContents').innerHTML = `
+                <div>
+                    <strong>udaan_user:</strong> ${user ? 'Present (' + user.length + ' chars)' : 'Not found'}<br>
+                    <strong>udaan_token:</strong> ${token ? 'Present (' + token.length + ' chars)' : 'Not found'}<br>
+                    <strong>udaan_permissions:</strong> ${permissions ? 'Present (' + permissions.length + ' chars)' : 'Not found'}
+                </div>
+            `;
+        }
+
+        function updateStatus(message, type) {
+            const resultsDiv = document.getElementById('testResults');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `
+                <div class="${type}">
+                    <strong>[${timestamp}]</strong> ${message}
+                </div>
+            ` + resultsDiv.innerHTML;
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            checkAuthStatus();
+            showStorageContents();
+            updateStatus('Test page loaded. Ready to test authentication persistence.', 'info');
+        };
+
+        // Listen for storage changes (useful for testing)
+        window.addEventListener('storage', function(e) {
+            if (e.key && e.key.startsWith('udaan_')) {
+                updateStatus(`Storage changed: ${e.key}`, 'info');
+                checkAuthStatus();
+                showStorageContents();
+            }
+        });
+    </script>
+</body>
+</html>
