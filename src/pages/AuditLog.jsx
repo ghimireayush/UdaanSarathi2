@@ -1,11 +1,7 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { 
   History, 
   User, 
-  Calendar, 
-  Filter, 
-  Search, 
-  Eye, 
   ChevronDown, 
   ChevronRight, 
   Clock, 
@@ -18,11 +14,9 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { auditService } from '../services/index.js'
-import { useAuth } from '../contexts/AuthContext.jsx'
 import { InteractivePagination, PaginationInfo, ItemsPerPageSelector, InteractiveButton, InteractiveCard, InteractiveLoader } from '../components/InteractiveUI'
 
 const AuditLogPage = () => {
-  const { user } = useAuth()
   const [auditLogs, setAuditLogs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -36,16 +30,57 @@ const AuditLogPage = () => {
     limit: 20
   })
   const [expandedLogs, setExpandedLogs] = useState(new Set())
-  const [users, setUsers] = useState([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [search, setSearch] = useState('')
+  const [filterChangeCount, setFilterChangeCount] = useState(0)
 
   // Fetch audit logs
   useEffect(() => {
     const fetchAuditLogs = async () => {
       try {
         setIsLoading(true)
+        
+        // Add some sample data if no logs exist
+        const existingLogs = await auditService.getAuditLogs({ page: 1, limit: 1 })
+        if (existingLogs.total === 0) {
+          // Create sample audit logs
+          await auditService.logEvent({
+            user_id: 'user_1',
+            user_name: 'System Administrator',
+            action: 'UPDATE',
+            resource_type: 'AGENCY_PROFILE',
+            resource_id: 'agency_001',
+            changes: {
+              name: { from: 'Old Agency Name', to: 'New Agency Name' },
+              email: { from: 'old@agency.com', to: 'new@agency.com' }
+            },
+            metadata: { section: 'basic', browser: 'Chrome' }
+          })
+          
+          await auditService.logEvent({
+            user_id: 'user_2',
+            user_name: 'Senior Recruiter',
+            action: 'CREATE',
+            resource_type: 'JOB_POSTING',
+            resource_id: 'job_001',
+            changes: {},
+            metadata: { title: 'Software Engineer', location: 'Dubai' }
+          })
+          
+          await auditService.logEvent({
+            user_id: 'user_3',
+            user_name: 'Interview Coordinator',
+            action: 'FILE_UPLOAD',
+            resource_type: 'AGENCY_MEDIA',
+            resource_id: 'agency_001',
+            changes: {
+              logo_url: { from: null, to: '/uploads/logo.png' }
+            },
+            metadata: { file_name: 'logo.png', file_size: 15420 }
+          })
+        }
+        
         const logsResponse = await auditService.getAuditLogs(filters)
         setAuditLogs(logsResponse.logs)
         setTotal(logsResponse.total)
@@ -137,8 +172,11 @@ const AuditLogPage = () => {
         log.user_name?.toLowerCase().includes(q) ||
         log.action?.toLowerCase().includes(q) ||
         log.resource_type?.toLowerCase().includes(q) ||
+        log.resource_id?.toLowerCase().includes(q) ||
         auditService.getActionLabel(log.action)?.toLowerCase().includes(q) ||
-        auditService.getResourceLabel(log.resource_type)?.toLowerCase().includes(q)
+        auditService.getResourceLabel(log.resource_type)?.toLowerCase().includes(q) ||
+        log.ip_address?.toLowerCase().includes(q) ||
+        log.session_id?.toLowerCase().includes(q)
       )
     })
   }, [auditLogs, search])
@@ -191,6 +229,8 @@ const AuditLogPage = () => {
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {
+    console.log('Filter changed:', key, value) // Debug log
+    setFilterChangeCount(prev => prev + 1) // Track filter changes
     setFilters(prev => ({
       ...prev,
       [key]: value,
@@ -209,11 +249,12 @@ const AuditLogPage = () => {
       page: 1,
       limit: 20
     })
+    setSearch('')
   }
 
   // Refresh logs
   const refreshLogs = () => {
-    setFilters(prev => ({ ...prev }))
+    setFilters(prev => ({ ...prev, _refresh: Date.now() }))
   }
 
   if (isLoading) {
@@ -283,14 +324,34 @@ const AuditLogPage = () => {
       </div>
 
       {/* Filters */}
-      <InteractiveCard className="p-6 mb-6">
-        <div className="grid-responsive-3 lg:grid-cols-4">
+      <InteractiveCard className="p-6 mb-6" style={{ pointerEvents: 'auto' }}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+          <div className="flex items-center space-x-2">
+            {filterChangeCount > 0 && (
+              <span className="chip chip-green text-xs">
+                {filterChangeCount} changes
+              </span>
+            )}
+            {(filters.user_id || filters.resource_type || filters.action || filters.date_from || filters.date_to) && (
+              <span className="chip chip-blue">
+                {[filters.user_id, filters.resource_type, filters.action, filters.date_from, filters.date_to].filter(Boolean).length} active
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
             <select
               value={filters.user_id}
-              onChange={(e) => handleFilterChange('user_id', e.target.value)}
-              className="form-select"
+              onChange={(e) => {
+                console.log('User filter clicked:', e.target.value)
+                handleFilterChange('user_id', e.target.value)
+              }}
+              className={`form-select ${filters.user_id ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
+              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by user"
             >
               <option value="">All Users</option>
@@ -304,8 +365,12 @@ const AuditLogPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Resource Type</label>
             <select
               value={filters.resource_type}
-              onChange={(e) => handleFilterChange('resource_type', e.target.value)}
-              className="form-select"
+              onChange={(e) => {
+                console.log('Resource type filter clicked:', e.target.value)
+                handleFilterChange('resource_type', e.target.value)
+              }}
+              className={`form-select ${filters.resource_type ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
+              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by resource type"
             >
               <option value="">All Types</option>
@@ -323,8 +388,12 @@ const AuditLogPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
             <select
               value={filters.action}
-              onChange={(e) => handleFilterChange('action', e.target.value)}
-              className="form-select"
+              onChange={(e) => {
+                console.log('Action filter clicked:', e.target.value)
+                handleFilterChange('action', e.target.value)
+              }}
+              className={`form-select ${filters.action ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
+              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by action type"
             >
               <option value="">All Actions</option>
@@ -337,15 +406,111 @@ const AuditLogPage = () => {
             </select>
           </div>
           
-          <div className="flex items-end space-x-2">
-            <button 
-              onClick={resetFilters}
-              className="btn-secondary w-full"
-              aria-label="Reset all filters"
-            >
-              Reset
-            </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+            <input
+              type="date"
+              value={filters.date_from}
+              onChange={(e) => {
+                console.log('Date from filter clicked:', e.target.value)
+                handleFilterChange('date_from', e.target.value)
+              }}
+              className={`form-input ${filters.date_from ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
+              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
+              aria-label="Filter from date"
+            />
           </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+            <input
+              type="date"
+              value={filters.date_to}
+              onChange={(e) => {
+                console.log('Date to filter clicked:', e.target.value)
+                handleFilterChange('date_to', e.target.value)
+              }}
+              className={`form-input ${filters.date_to ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
+              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
+              aria-label="Filter to date"
+            />
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center space-x-2">
+            {filters.user_id && (
+              <span className="chip chip-blue">
+                User: {filters.user_id === 'user_1' ? 'System Administrator' : 
+                       filters.user_id === 'user_2' ? 'Senior Recruiter' : 
+                       'Interview Coordinator'}
+                <button 
+                  onClick={() => handleFilterChange('user_id', '')}
+                  className="ml-1 text-blue-600 hover:text-blue-800"
+                  aria-label="Remove user filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {filters.resource_type && (
+              <span className="chip chip-green">
+                Type: {auditService.getResourceLabel(filters.resource_type)}
+                <button 
+                  onClick={() => handleFilterChange('resource_type', '')}
+                  className="ml-1 text-green-600 hover:text-green-800"
+                  aria-label="Remove resource type filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {filters.action && (
+              <span className="chip chip-purple">
+                Action: {auditService.getActionLabel(filters.action)}
+                <button 
+                  onClick={() => handleFilterChange('action', '')}
+                  className="ml-1 text-purple-600 hover:text-purple-800"
+                  aria-label="Remove action filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {filters.date_from && (
+              <span className="chip chip-yellow">
+                From: {filters.date_from}
+                <button 
+                  onClick={() => handleFilterChange('date_from', '')}
+                  className="ml-1 text-yellow-600 hover:text-yellow-800"
+                  aria-label="Remove date from filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {filters.date_to && (
+              <span className="chip chip-orange">
+                To: {filters.date_to}
+                <button 
+                  onClick={() => handleFilterChange('date_to', '')}
+                  className="ml-1 text-orange-600 hover:text-orange-800"
+                  aria-label="Remove date to filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+          </div>
+          
+          <InteractiveButton 
+            onClick={resetFilters}
+            variant="secondary"
+            className="flex items-center"
+          >
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Reset All
+          </InteractiveButton>
         </div>
       </InteractiveCard>
 

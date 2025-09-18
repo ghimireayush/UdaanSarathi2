@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import { useState, forwardRef } from 'react'
 
-const InteractiveCard = ({ 
-  children, 
-  onClick,
-  hoverable = true,
-  clickable = false,
-  className = '',
-  variant = 'default',
-  ...props 
-}) => {
+const InteractiveCard = forwardRef((props, ref) => {
+  const { 
+    children, 
+    onClick,
+    hoverable = true,
+    clickable = false,
+    className = '',
+    variant = 'default',
+    ...otherProps 
+  } = props
   const [isHovered, setIsHovered] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
@@ -35,8 +36,19 @@ const InteractiveCard = ({
   const handleMouseDown = () => clickable && setIsPressed(true)
   const handleMouseUp = () => setIsPressed(false)
 
+  const handleClick = (e) => {
+    // Don't trigger card click if clicking on form elements
+    if (e.target.matches('select, input, button, textarea, [role="button"]')) {
+      return
+    }
+    if (onClick) {
+      onClick(e)
+    }
+  }
+
   return (
     <div
+      ref={ref}
       className={`
         relative
         ${baseClasses}
@@ -46,21 +58,23 @@ const InteractiveCard = ({
         ${isPressed ? 'scale-98' : 'scale-100'}
         ${className}
       `}
-      onClick={onClick}
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      {...props}
+      {...otherProps}
     >
       {/* Animated border on hover */}
       {isHovered && hoverable && (
-        <div className="absolute inset-0 rounded-lg border-2 border-primary-300 opacity-50" />
+        <div className="absolute inset-0 rounded-lg border-2 border-primary-300 opacity-50 pointer-events-none" />
       )}
       
       {children}
     </div>
   )
-}
+})
+
+InteractiveCard.displayName = 'InteractiveCard'
 
 export default InteractiveCard
