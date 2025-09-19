@@ -988,19 +988,11 @@ const Applications = () => {
         </div>
       </div>
 
-      {/* Performance Indicator */}
-      <div className="mb-4 text-sm text-gray-500 flex items-center justify-between">
+      {/* Results Info */}
+      <div className="mb-4 text-sm text-gray-500">
         <span>
           Showing {applications.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
         </span>
-        {loadTime && (
-          <span>
-            Loaded in {Math.round(loadTime)}ms
-            {loadTime > 1500 && (
-              <span className="ml-2 text-yellow-600">⚠️ Slow load</span>
-            )}
-          </span>
-        )}
       </div>
 
       {/* Applications View */}

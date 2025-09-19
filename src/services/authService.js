@@ -347,10 +347,13 @@ class AuthService {
     
     // Log successful login
     try {
-      await auditService.logAction({
+      await auditService.logEvent({
         action: 'USER_LOGIN',
-        userId: user.id,
-        details: {
+        user_id: user.id,
+        user_name: user.name,
+        resource_type: 'AUTH',
+        resource_id: user.id,
+        metadata: {
           username: user.username,
           role: user.role,
           loginTime: new Date().toISOString()
@@ -408,10 +411,13 @@ class AuthService {
     
     // Log successful member login
     try {
-      await auditService.logAction({
+      await auditService.logEvent({
         action: 'MEMBER_LOGIN',
-        userId: user.id,
-        details: {
+        user_id: user.id,
+        user_name: user.name,
+        resource_type: 'AUTH',
+        resource_id: user.id,
+        metadata: {
           username: user.username,
           role: user.role,
           loginTime: new Date().toISOString(),

@@ -38,6 +38,47 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
   const [interviews, setInterviews] = useState([])
   const [gracePeriod] = useState(30) // 30 minutes grace period
 
+  // Check if an interview is unattended (past scheduled time + grace period)
+  const isUnattended = (interview) => {
+    if (!interview || interview.status !== 'scheduled') return false
+    const interviewEnd = addMinutes(parseISO(interview.scheduled_at), (interview.duration || 60) + gracePeriod)
+    return isPast(interviewEnd)
+  }
+
+  // Calculate counts for each subtab
+  const getSubtabCounts = () => {
+    const counts = {
+      today: 0,
+      tomorrow: 0,
+      unattended: 0,
+      all: interviews.length
+    }
+
+    interviews.forEach(candidate => {
+      if (!candidate.interview) return
+
+      const interviewDate = parseISO(candidate.interview.scheduled_at)
+      
+      if (isToday(interviewDate) && !isUnattended(candidate.interview)) {
+        counts.today++
+      }
+      if (isTomorrow(interviewDate)) {
+        counts.tomorrow++
+      }
+      if (isUnattended(candidate.interview)) {
+        counts.unattended++
+      }
+    })
+
+    return counts
+  }
+
+  // Handle candidate click to open sidebar
+  const handleCandidateClick = (candidate) => {
+    setSelectedCandidate(candidate)
+    setIsSidebarOpen(true)
+  }
+
   useEffect(() => {
     if (propInterviews) {
       // Use interviews passed as props (from calendar view)

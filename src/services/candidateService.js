@@ -6,8 +6,8 @@ import { handleServiceError } from '../utils/errorHandler.js'
 // Utility function to simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Error simulation (1% chance)
-const shouldSimulateError = () => Math.random() < 0.01
+// Error simulation (disabled for stability)
+const shouldSimulateError = () => false
 
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
