@@ -77,12 +77,12 @@ const Jobs = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
           <div className="card p-6 mb-6">
             <div className="h-6 bg-gray-200 rounded mb-4"></div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-6">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
               ))}
             </div>
           </div>
@@ -90,9 +90,9 @@ const Jobs = () => {
             <div className="h-6 bg-gray-200 rounded mb-4"></div>
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="flex justify-between py-4 border-b">
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/6"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
               </div>
             ))}
           </div>
@@ -107,8 +107,8 @@ const Jobs = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load jobs</h2>
-          <p className="text-gray-600 mb-4">{error.message}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Failed to load jobs</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error.message}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <button 
               onClick={() => window.location.reload()} 
@@ -159,8 +159,8 @@ const Jobs = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Jobs</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Jobs</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Manage job postings, applications, and candidate pipeline
           </p>
         </div>
@@ -188,7 +188,7 @@ const Jobs = () => {
               placeholder="Search by reference ID, title, company..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
           
@@ -197,7 +197,7 @@ const Jobs = () => {
             <select 
               value={filters.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value={jobStatuses.PUBLISHED}>Published</option>
               <option value={jobStatuses.DRAFT}>Draft</option>
@@ -208,7 +208,7 @@ const Jobs = () => {
             <select 
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option>All Countries</option>
               {Object.keys(countryDistribution).map(country => (
@@ -219,7 +219,7 @@ const Jobs = () => {
             <select 
               value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="published_date">Published Date</option>
               <option value="applications">Candidate Count</option>
@@ -232,17 +232,17 @@ const Jobs = () => {
 
       {/* Country Distribution */}
       <div className="card p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Open job distribution by country</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Open job distribution by country</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-1">
           {Object.entries(countryDistribution)
             .filter(([country, count]) => count > 0)
             .map(([country, count]) => (
               <button 
                 key={country} 
-                className="flex items-center justify-center p-2 text-center hover:bg-gray-50 border border-gray-200 rounded-sm transition-colors"
+                className="flex items-center justify-center p-2 text-center hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-sm transition-colors"
                 onClick={() => handleFilterChange('country', country)}
               >
-                <span className="text-sm text-gray-700 font-medium">
+                <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                   {country} ({count})
                 </span>
               </button>
@@ -252,41 +252,41 @@ const Jobs = () => {
 
       {/* Jobs Table */}
           <div className="card overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Job Listings</h2>
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Job Listings</h2>
             </div>
             
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       JOB DETAILS
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       APPLICATION STATUS
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       POSTED
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       ACTIONS
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {jobs.map(job => {
                     const publishedDate = job.published_at || job.created_at
                     const relativeDate = formatDistanceToNow(new Date(publishedDate), { addSuffix: true })
                     const absoluteDate = format(new Date(publishedDate), 'MMM d, yyyy HH:mm')
                     
                     return (
-                      <tr key={job.id} className="hover:bg-gray-50">
+                      <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td className="px-6 py-4">
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{job.title}</div>
-                            <div className="text-sm text-gray-500 font-mono">Ref: {job.id}</div>
-                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{job.title}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">Ref: {job.id}</div>
+                            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
                               <MapPin className="w-4 h-4 mr-1" />
                               <span>{job.country}</span>
                             </div>
@@ -294,11 +294,11 @@ const Jobs = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm">
-                            <div className="flex items-center text-gray-900 mb-1">
+                            <div className="flex items-center text-gray-900 dark:text-gray-100 mb-1">
                               <Users className="w-4 h-4 mr-1" />
                               <span className="font-medium">Applicants ({job.applications_count || 0})</span>
                             </div>
-                            <div className="flex items-center text-gray-600 mb-1">
+                            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1">
                               <UserCheck className="w-4 h-4 mr-1" />
                               <span>Shortlisted: {job.shortlisted_count || 0}</span>
                             </div>
@@ -308,10 +308,10 @@ const Jobs = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                           <div title={absoluteDate}>
                             <div className="font-medium">{relativeDate.replace(' ago', 'd ago').replace('about ', '')}</div>
-                            <div className="text-xs text-gray-400">{format(new Date(publishedDate), 'MMM d, yyyy')}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">{format(new Date(publishedDate), 'MMM d, yyyy')}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm">
@@ -319,7 +319,7 @@ const Jobs = () => {
                             <PermissionGuard permission={PERMISSIONS.VIEW_JOBS}>
                               <Link 
                                 to={`/jobs/${job.id}`}
-                                className="text-primary-600 hover:text-primary-800 flex items-center"
+                                className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center"
                               >
                                 <Eye className="w-4 h-4 mr-1" />
                                 View Details
@@ -328,7 +328,7 @@ const Jobs = () => {
                             <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
                               <Link 
                                 to={`/jobs/${job.id}/shortlist`}
-                                className="text-blue-600 hover:text-blue-800 flex items-center"
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center"
                               >
                                 <UserCheck className="w-4 h-4 mr-1" />
                                 View Shortlist
@@ -337,7 +337,7 @@ const Jobs = () => {
                             <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
                               <Link 
                                 to={`/jobs/${job.id}?tab=applied`}
-                                className="text-gray-600 hover:text-gray-800 flex items-center"
+                                className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
                               >
                                 <Users className="w-4 h-4 mr-1" />
                                 Manage Candidates
@@ -346,7 +346,7 @@ const Jobs = () => {
                             <PermissionGuard permission={PERMISSIONS.SCHEDULE_INTERVIEW}>
                               <Link 
                                 to={`/jobs/${job.id}?tab=shortlisted`}
-                                className="text-gray-600 hover:text-gray-800 flex items-center"
+                                className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
                               >
                                 <Calendar className="w-4 h-4 mr-1" />
                                 Schedule
@@ -363,22 +363,22 @@ const Jobs = () => {
             
             {/* Pagination */}
             {jobs.length > 0 && Math.ceil(jobs.length / pagination.limit) > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-500">
+              <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, jobs.length)} of {jobs.length} jobs
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page >= Math.ceil(jobs.length / pagination.limit)}
-                    className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

@@ -319,13 +319,13 @@ Description: ${draft.description || 'Not specified'}
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="card p-6">
-                <div className="h-6 bg-gray-200 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
               </div>
             ))}
           </div>
@@ -339,8 +339,8 @@ Description: ${draft.description || 'Not specified'}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Draft Jobs</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Draft Jobs</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Manage your draft job postings before publishing
           </p>
         </div>
@@ -381,7 +381,7 @@ Description: ${draft.description || 'Not specified'}
               placeholder="Search by name, title, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
 
@@ -390,7 +390,7 @@ Description: ${draft.description || 'Not specified'}
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="created_date">Created Date</option>
               <option value="title">Job Title</option>
@@ -398,16 +398,16 @@ Description: ${draft.description || 'Not specified'}
             </select>
 
             {/* View Toggle */}
-            <div className="flex border border-gray-300 rounded-md">
+            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-2 ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
               >
                 <Grid3X3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-2 ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -418,8 +418,8 @@ Description: ${draft.description || 'Not specified'}
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-          <p className="text-red-800">{error}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
+          <p className="text-red-800 dark:text-red-300">{error}</p>
         </div>
       )}
 
@@ -429,16 +429,16 @@ Description: ${draft.description || 'Not specified'}
           <div className="text-gray-400 mb-4">
             <Grid3X3 className="w-12 h-12 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No drafts found</h3>
-          <p className="text-gray-600">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No drafts found</h3>
+          <p className="text-gray-600 dark:text-gray-400">
             {searchTerm ? 'Try adjusting your search terms' : 'Create your first draft job posting'}
           </p>
         </div>
       ) : (
         <>
           {viewMode === 'list' && (
-            <div className="card overflow-hidden mb-4">
-              <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden mb-4">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
                 <button
                   onClick={handleSelectAll}
                   className="mr-4"
@@ -449,7 +449,7 @@ Description: ${draft.description || 'Not specified'}
                     <Square className="w-5 h-5 text-gray-400" />
                   )}
                 </button>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                   Draft Jobs ({filteredDrafts.length})
                 </h2>
               </div>
@@ -480,10 +480,10 @@ Description: ${draft.description || 'Not specified'}
               ))}
             </div>
           ) : (
-            <div className="card overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <th className="px-6 py-3 text-left">
                         <button
@@ -497,18 +497,18 @@ Description: ${draft.description || 'Not specified'}
                           )}
                         </button>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Job Details
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Created
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredDrafts.map(draft => (
                       <DraftRow 
                         key={draft.id}
@@ -533,38 +533,38 @@ Description: ${draft.description || 'Not specified'}
 
       {/* Validation Modal */}
       {showValidationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-700 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Validation Required
                 </h3>
               </div>
               <button
                 onClick={() => setShowValidationModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 The following fields are required before publishing:
               </p>
-              <ul className="list-disc list-inside space-y-1 text-sm text-red-600">
+              <ul className="list-disc list-inside space-y-1 text-sm text-red-600 dark:text-red-400">
                 {validationErrors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
             </div>
-            
+
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowValidationModal(false)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
               >
                 Cancel
               </button>
@@ -594,40 +594,40 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
   
   if (isEditing) {
     return (
-      <div className="card p-6 relative draft-card bg-blue-50 border-blue-200">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 relative draft-card bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Job</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Job</h3>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Job Title *</label>
               <input
                 type="text"
                 value={editFormData.title}
                 onChange={(e) => onFormChange('title', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 placeholder="Enter job title"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company *</label>
               <input
                 type="text"
                 value={editFormData.company}
                 onChange={(e) => onFormChange('company', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 placeholder="Enter company name"
               />
             </div>
             
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country *</label>
                 <select
                   value={editFormData.country}
                   onChange={(e) => onFormChange('country', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Select Country</option>
                   <option value="UAE">UAE</option>
@@ -640,11 +640,11 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
                 <select
                   value={editFormData.category}
                   onChange={(e) => onFormChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Select Category</option>
                   <option value="Cook">Cook</option>
@@ -660,22 +660,22 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
             
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Salary Amount *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Salary Amount *</label>
                 <input
                   type="number"
                   value={editFormData.salary_amount}
                   onChange={(e) => onFormChange('salary_amount', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder="0"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency *</label>
                 <select
                   value={editFormData.salary_currency}
                   onChange={(e) => onFormChange('salary_currency', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Select Currency</option>
                   <option value="AED">AED</option>
@@ -689,12 +689,12 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description *</label>
               <textarea
                 value={editFormData.description}
                 onChange={(e) => onFormChange('description', e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-vertical"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 resize-vertical bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 placeholder="Enter job description (minimum 50 characters)"
               />
             </div>
@@ -703,7 +703,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
           <div className="flex justify-end space-x-2 mt-6">
             <button
               onClick={onCancelEdit}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
             >
               Cancel
             </button>
@@ -728,7 +728,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
   }
   
   return (
-    <div className={`card p-6 relative draft-card ${isSelected ? 'selected' : ''}`}>
+    <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 relative draft-card ${isSelected ? 'selected' : ''}`}>
       {/* Selection Checkbox */}
       <button
         onClick={onSelect}
@@ -737,7 +737,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
         {isSelected ? (
           <CheckSquare className="w-5 h-5 text-primary-600" />
         ) : (
-          <Square className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+          <Square className="w-5 h-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
         )}
       </button>
 
@@ -745,19 +745,19 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
       <div className="absolute top-4 right-4">
         <button
           onClick={() => setShowMenu(!showMenu)}
-          className="p-1 text-gray-400 hover:text-gray-600"
+          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
         >
           <MoreVertical className="w-4 h-4" />
         </button>
         {showMenu && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
             <div className="py-1">
               <button
                 onClick={() => {
                   onPreview(draft)
                   setShowMenu(false)
                 }}
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
               >
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
@@ -767,7 +767,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
                   onEdit(draft)
                   setShowMenu(false)
                 }}
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
@@ -777,7 +777,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
                   onDelete()
                   setShowMenu(false)
                 }}
-                className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                className="flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
@@ -789,28 +789,28 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
 
       {/* Content */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{draft.title || 'Untitled Job'}</h3>
-        <p className="text-sm text-gray-600 mb-1">{draft.company || 'No company specified'}</p>
-        <p className="text-sm text-gray-500 mb-4">{draft.country || 'No country specified'}</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{draft.title || 'Untitled Job'}</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{draft.company || 'No company specified'}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{draft.country || 'No country specified'}</p>
         
-        <div className="flex items-center text-xs text-gray-500 mb-2">
+        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
           <User className="w-3 h-3 mr-1" />
           <span>Created by {getUserName()}</span>
         </div>
         
-        <div className="flex items-center text-xs text-gray-500 mb-2">
+        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
           <Calendar className="w-3 h-3 mr-1" />
           <span>{formatDistanceToNow(new Date(draft.created_at), { addSuffix: true })}</span>
           <button 
             onClick={() => showDateInfo(draft)}
-            className="ml-2 text-gray-400 hover:text-gray-600"
+            className="ml-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             title="Show detailed date information"
           >
             <Info className="w-3 h-3" />
           </button>
         </div>
         
-        <div className="text-xs text-gray-400 mb-4">
+        <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
           {getNepaliDate(draft.created_at)}
         </div>
 
@@ -845,41 +845,41 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
 // Draft Row Component for List View
 const DraftRow = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, getUserName, getNepaliDate, showDateInfo }) => {
   return (
-    <tr className={`draft-row ${isSelected ? 'selected' : ''}`}>
+    <tr className={`draft-row hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'selected bg-blue-50 dark:bg-blue-900/20' : ''}`}>
       <td className="px-6 py-4">
         <button onClick={onSelect}>
           {isSelected ? (
             <CheckSquare className="w-5 h-5 text-primary-600" />
           ) : (
-            <Square className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+            <Square className="w-5 h-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
           )}
         </button>
       </td>
       <td className="px-6 py-4">
         <div>
-          <div className="text-sm font-medium text-gray-900">{draft.title || 'Untitled Job'}</div>
-          <div className="text-sm text-gray-500">{draft.company || 'No company'} • {draft.country || 'No country'}</div>
-          <div className="text-xs text-gray-400 font-mono">ID: {draft.id}</div>
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{draft.title || 'Untitled Job'}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{draft.company || 'No company'} • {draft.country || 'No country'}</div>
+          <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">ID: {draft.id}</div>
         </div>
       </td>
       <td className="px-6 py-4">
-        <div className="text-sm text-gray-900">
+        <div className="text-sm text-gray-900 dark:text-gray-100">
           <div className="flex items-center mb-1">
             <User className="w-3 h-3 mr-1" />
             <span>Created by {getUserName()}</span>
           </div>
-          <div className="flex items-center text-gray-500">
+          <div className="flex items-center text-gray-500 dark:text-gray-400">
             <Calendar className="w-3 h-3 mr-1" />
             <span>{formatDistanceToNow(new Date(draft.created_at), { addSuffix: true })}</span>
             <button 
               onClick={() => showDateInfo(draft)}
-              className="ml-2 text-gray-400 hover:text-gray-600"
+              className="ml-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               title="Show detailed date information"
             >
               <Info className="w-3 h-3" />
             </button>
           </div>
-          <div className="text-xs text-gray-400 mt-1">
+          <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             {getNepaliDate(draft.created_at)}
           </div>
         </div>

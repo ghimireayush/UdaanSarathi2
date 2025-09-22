@@ -24,7 +24,8 @@ import {
   AlertCircle,
   Eye,
   Save,
-  Send
+  Send,
+  Edit
 } from 'lucide-react'
 
 /*
@@ -197,7 +198,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
   useEffect(() => {
     if (editingDraft && isOpen) {
       // Check if this is expanding from a bulk draft
-      if (editingDraft.is_expanding_bulk && editingDraft.bulk_entries) {
+      if (editingDraft.is_expanding_bulk && editingDraft.bulk_entries && Array.isArray(editingDraft.bulk_entries)) {
         // Handle bulk draft expansion - switch to SINGLE flow with pre-filled data from bulk draft
         setCurrentFlow('single')
         setCurrentStep(0)
@@ -299,7 +300,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           // Store original bulk draft ID for reference
           original_bulk_id: editingDraft.original_bulk_id
         }))
-      } else if (editingDraft.is_bulk_draft && editingDraft.bulk_entries) {
+      } else if (editingDraft.is_bulk_draft && editingDraft.bulk_entries && Array.isArray(editingDraft.bulk_entries)) {
         // Handle bulk draft editing - switch to BULK flow to edit the bulk entries
         setCurrentFlow('bulk')
         setCurrentStep(0)
@@ -1618,11 +1619,11 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
   const renderFlowSelection = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-3">
           <FileText className="w-6 h-6 text-blue-600" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Job Draft</h2>
-        <p className="text-gray-600 max-w-md mx-auto">Choose how you'd like to create your job posting</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Create Job Draft</h2>
+        <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">Choose how you'd like to create your job posting</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1631,8 +1632,8 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           onClick={() => handleFlowSelection('single')}
           className={`group relative p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
             currentFlow === 'single' 
-              ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md' 
-              : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 shadow-sm'
+              ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 shadow-md' 
+              : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-800/20 shadow-sm'
           }`}
         >
           <div className="space-y-4">
@@ -1654,20 +1655,20 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             </div>
             
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Draft Creation</h3>
-              <p className="text-gray-600 mb-3 text-sm leading-relaxed">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Draft Creation</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm leading-relaxed">
                 Create a single job posting with detailed information through our 7-step process
               </p>
             </div>
             
-            <div className="bg-white/70 rounded-lg p-3 border border-blue-200">
-              <div className="text-xs text-gray-600 space-y-1">
+            <div className="bg-white/70 dark:bg-gray-700/70 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
+              <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                 <div className="flex items-center">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></div>
+                  <div className="w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full mr-2"></div>
                   <span><strong>Process:</strong> Single detailed job → Complete steps → Publish</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></div>
+                  <div className="w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full mr-2"></div>
                   <span><strong>Best for:</strong> Detailed job specifications</span>
                 </div>
               </div>
@@ -1690,8 +1691,8 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           onClick={() => handleFlowSelection('bulk')}
           className={`group relative p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
             currentFlow === 'bulk' 
-              ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-md' 
-              : 'border-gray-200 bg-white hover:border-green-300 hover:bg-gradient-to-br hover:from-green-50 hover:to-green-100 shadow-sm'
+              ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 shadow-md' 
+              : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-green-300 dark:hover:border-green-600 hover:bg-gradient-to-br hover:from-green-50 hover:to-green-100 dark:hover:from-green-900/20 dark:hover:to-green-800/20 shadow-sm'
           }`}
         >
           <div className="space-y-4">
@@ -1699,34 +1700,34 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               <div className={`p-2 rounded-lg transition-colors ${
                 currentFlow === 'bulk' 
                   ? 'bg-green-500 text-white' 
-                  : 'bg-green-100 text-green-600 group-hover:bg-green-500 group-hover:text-white'
+                  : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 group-hover:bg-green-500 group-hover:text-white'
               }`}>
                 <Users className="w-6 h-6" />
               </div>
               <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                 currentFlow === 'bulk' 
                   ? 'bg-green-500 text-white' 
-                  : 'bg-green-100 text-green-700'
+                  : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
               }`}>
                 Quick Setup
               </div>
             </div>
             
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Bulk Create Drafts</h3>
-              <p className="text-gray-600 mb-3 text-sm leading-relaxed">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Bulk Create Drafts</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm leading-relaxed">
                 Create multiple job drafts quickly by specifying countries and quantities
               </p>
             </div>
             
-            <div className="bg-white/70 rounded-lg p-3 border border-green-200">
-              <div className="text-xs text-gray-600 space-y-1">
+            <div className="bg-white/70 dark:bg-gray-700/70 rounded-lg p-3 border border-green-200 dark:border-green-700">
+              <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                 <div className="flex items-center">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></div>
+                  <div className="w-1.5 h-1.5 bg-green-500 dark:bg-green-400 rounded-full mr-2"></div>
                   <span><strong>Example:</strong> \"12 from UAE, 3 from Malaysia\"</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></div>
+                  <div className="w-1.5 h-1.5 bg-green-500 dark:bg-green-400 rounded-full mr-2"></div>
                   <span><strong>Best for:</strong> Multiple similar positions</span>
                 </div>
               </div>
@@ -1746,12 +1747,12 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
       </div>
 
       {currentFlow && (
-        <div className="mt-6 pt-6 border-t border-gray-200">
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="text-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               🤖 AI Insights
             </h3>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {currentFlow === 'single' 
                 ? 'Comprehensive 8-step process for detailed job postings with high conversion rates'
                 : 'Efficient batch creation strategy for scaling recruitment across multiple locations'
@@ -1768,16 +1769,16 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                   return (
                     <div key={step.id} className="flex items-center">
                       <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-blue-300 flex items-center justify-center">
-                          <StepIcon className="w-5 h-5 text-blue-600" />
+                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-300 dark:border-blue-600 flex items-center justify-center">
+                          <StepIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div className="mt-2 text-center">
-                          <p className="text-xs font-medium text-gray-900">{step.title}</p>
-                          <p className="text-xs text-gray-500 mt-1">{step.description}</p>
+                          <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{step.title}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{step.description}</p>
                         </div>
                       </div>
                       {index < singleDraftSteps.length - 1 && (
-                        <div className="w-16 h-0.5 bg-blue-200 mx-4 mt-[-20px]" />
+                        <div className="w-16 h-0.5 bg-blue-200 dark:bg-blue-700 mx-4 mt-[-20px]" />
                       )}
                     </div>
                   )
@@ -1787,44 +1788,44 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           )}
           
           {currentFlow === 'bulk' && (
-            <div className="bg-green-50 rounded-lg p-6 border border-green-200">
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border border-green-200 dark:border-green-700">
               <div className="space-y-4">
                 <div className="flex items-center justify-center space-x-8">
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                       <span className="text-white text-sm font-bold">1</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Create Bulk Drafts</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Create Bulk Drafts</span>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-green-600" />
+                  <ArrowRight className="w-4 h-4 text-green-600 dark:text-green-400" />
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                       <span className="text-white text-sm font-bold">2</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Fill Details Individually</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fill Details Individually</span>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-green-600" />
+                  <ArrowRight className="w-4 h-4 text-green-600 dark:text-green-400" />
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                       <span className="text-white text-sm font-bold">3</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Publish from Draft List</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Publish from Draft List</span>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 border border-green-300">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-300 dark:border-green-600">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div className="text-center">
-                      <div className="font-medium text-green-700 mb-1">⚡ Speed</div>
-                      <div className="text-gray-600">Create 10+ drafts in under 2 minutes</div>
+                      <div className="font-medium text-green-700 dark:text-green-400 mb-1">⚡ Speed</div>
+                      <div className="text-gray-600 dark:text-gray-400">Create 10+ drafts in under 2 minutes</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-medium text-green-700 mb-1">🎯 Efficiency</div>
-                      <div className="text-gray-600">Perfect for multi-location hiring</div>
+                      <div className="font-medium text-green-700 dark:text-green-400 mb-1">🎯 Efficiency</div>
+                      <div className="text-gray-600 dark:text-gray-400">Perfect for multi-location hiring</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-medium text-green-700 mb-1">📊 Scale</div>
-                      <div className="text-gray-600">Ideal for 5+ similar positions</div>
+                      <div className="font-medium text-green-700 dark:text-green-400 mb-1">📊 Scale</div>
+                      <div className="text-gray-600 dark:text-gray-400">Ideal for 5+ similar positions</div>
                     </div>
                   </div>
                 </div>
@@ -1840,31 +1841,31 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Bulk Create Drafts</h2>
-          <p className="text-gray-600">Create multiple job drafts quickly and efficiently</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Bulk Create Drafts</h2>
+          <p className="text-gray-600 dark:text-gray-400">Create multiple job drafts quickly and efficiently</p>
         </div>
         <button
           onClick={() => setCurrentFlow('selection')}
-          className="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 rounded-md transition-colors shadow-sm"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-md transition-colors shadow-sm"
         >
           Back to Selection
         </button>
       </div>
 
       {/* Bulk Creation Form */}
-      <div className="border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Create Bulk Drafts</h3>
-        <p className="text-sm text-gray-600 mb-6">Specify the country, number of jobs, and position type to create multiple drafts</p>
+      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Create Bulk Drafts</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Specify the country, number of jobs, and position type to create multiple drafts</p>
         
         <div className="space-y-4">
           {formData.bulk_entries.map((entry, index) => (
-            <div key={entry.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50">
+            <div key={entry.id} className="border border-gray-100 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-700">Bulk Entry #{index + 1}</h4>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Bulk Entry #{index + 1}</h4>
                 {formData.bulk_entries.length > 1 && (
                   <button
                     onClick={() => removeBulkEntry(entry.id)}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                   >
                     Remove
                   </button>
@@ -1874,13 +1875,13 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Country Field */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Country <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={entry.country}
                     onChange={(e) => updateBulkEntry(entry.id, 'country', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select country</option>
                     {countries.map(country => (
@@ -1891,7 +1892,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                 {/* Number of Jobs Field */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     No of Jobs <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1900,20 +1901,20 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     max="50"
                     value={entry.job_count}
                     onChange={(e) => updateBulkEntry(entry.id, 'job_count', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="e.g., 12"
                   />
                 </div>
 
                 {/* Position Field (Optional) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Position <span className="text-gray-500">(Optional)</span>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Position <span className="text-gray-500 dark:text-gray-400">(Optional)</span>
                   </label>
                   <select
                     value={entry.position}
                     onChange={(e) => updateBulkEntry(entry.id, 'position', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select position</option>
                     <option value="Security Guard">Security Guard</option>
@@ -1940,7 +1941,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
       <div className="flex items-center justify-between pt-4">
         <button
           onClick={() => setCurrentFlow('selection')}
-          className="flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          className="flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Go Back to Selection
@@ -1954,14 +1955,14 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           return (
             <div className="flex items-center space-x-4">
               {hasValidEntries && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Total: {totalJobs} job{totalJobs !== 1 ? 's' : ''} from {validEntries.length} entr{validEntries.length !== 1 ? 'ies' : 'y'}
                 </div>
               )}
               <button
                 onClick={handleContinue}
                 disabled={!hasValidEntries}
-                className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex items-center px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-colors disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
                 Generate {totalJobs} Job Draft{totalJobs !== 1 ? 's' : ''}
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -1977,21 +1978,21 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Create Job Draft</h2>
-          <p className="text-gray-600">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create Job Draft</h2>
+          <p className="text-gray-600 dark:text-gray-400">
             Step {currentStep + 1} of {singleDraftSteps.length}: {singleDraftSteps[currentStep]?.description}
           </p>
         </div>
         <button
           onClick={() => setCurrentFlow('selection')}
-          className="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 rounded-md transition-colors shadow-sm"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-md transition-colors shadow-sm"
         >
           Back to Selection
         </button>
       </div>
 
       {/* Progress Steps */}
-      <div className="border-b border-gray-200 pb-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
         <div className="flex items-center justify-between">
           {singleDraftSteps.map((step, index) => {
             const StepIcon = step.icon
@@ -2031,22 +2032,22 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           // Posting Details Form
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Administrative Details</h3>
-              <p className="text-sm text-gray-600 mb-6">Enrich the draft posting with administrative details via a partial update (PATCH) to the posting.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Administrative Details</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Enrich the draft posting with administrative details via a partial update (PATCH) to the posting.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  City <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Select the city where the job will be located" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  City <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Select the city where the job will be located" />
                 </label>
                 <select
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.city ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   <option value="">Select a city</option>
@@ -2054,74 +2055,74 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
-                {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-                <p className="text-xs text-gray-500 mt-1">e.g., Dubai</p>
+                {errors.city && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.city}</p>}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., Dubai</p>
               </div>
 
               {/* LT Number */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LT Number <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Labor Token Number issued by the government" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  LT Number <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Labor Token Number issued by the government" />
                 </label>
                 <input
                   type="text"
                   value={formData.lt_number}
                   onChange={(e) => handleInputChange('lt_number', e.target.value)}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.lt_number ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.lt_number ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder="Enter LT Number"
                 />
-                {errors.lt_number && <p className="text-red-500 text-xs mt-1">{errors.lt_number}</p>}
-                <p className="text-xs text-gray-500 mt-1">e.g., LT-2024-001</p>
+                {errors.lt_number && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.lt_number}</p>}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., LT-2024-001</p>
               </div>
 
               {/* Chalani Number */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Chalani Number <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Government chalani/reference number" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Chalani Number <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Government chalani/reference number" />
                 </label>
                 <input
                   type="text"
                   value={formData.chalani_number}
                   onChange={(e) => handleInputChange('chalani_number', e.target.value)}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.chalani_number ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.chalani_number ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder="Enter Chalani Number"
                 />
-                {errors.chalani_number && <p className="text-red-500 text-xs mt-1">{errors.chalani_number}</p>}
-                <p className="text-xs text-gray-500 mt-1">e.g., CH-2024-001</p>
+                {errors.chalani_number && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.chalani_number}</p>}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., CH-2024-001</p>
               </div>
 
               {/* Date Format Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date Format <span className="text-sm text-gray-500 font-normal">(Optional)</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Choose between Gregorian (AD) or Bikram Sambat (BS) calendar" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Date Format <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">(Optional)</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Choose between Gregorian (AD) or Bikram Sambat (BS) calendar" />
                 </label>
                 <div className="flex space-x-4">
-                  <label className="flex items-center">
+                  <label className="flex items-center text-gray-700 dark:text-gray-300">
                     <input
                       type="radio"
                       name="date_format"
                       value="AD"
                       checked={formData.date_format === 'AD'}
                       onChange={(e) => handleInputChange('date_format', e.target.value)}
-                      className="mr-2"
+                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                     AD (Gregorian)
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center text-gray-700 dark:text-gray-300">
                     <input
                       type="radio"
                       name="date_format"
                       value="BS"
                       checked={formData.date_format === 'BS'}
                       onChange={(e) => handleInputChange('date_format', e.target.value)}
-                      className="mr-2"
+                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                     BS (Bikram Sambat)
                   </label>
@@ -2132,9 +2133,9 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Approval Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Approval Date ({formData.date_format}) <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Date when the job posting was approved by authorities" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Approval Date ({formData.date_format}) <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Date when the job posting was approved by authorities" />
                 </label>
                 <input
                   type="date"
@@ -2143,23 +2144,23 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     formData.date_format === 'AD' ? 'approval_date_ad' : 'approval_date_bs', 
                     e.target.value
                   )}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.approval_date_ad || errors.approval_date_bs ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.approval_date_ad || errors.approval_date_bs ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 />
                 {(errors.approval_date_ad || errors.approval_date_bs) && 
-                  <p className="text-red-500 text-xs mt-1">{errors.approval_date_ad || errors.approval_date_bs}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.approval_date_ad || errors.approval_date_bs}</p>
                 }
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   e.g., {formData.date_format === 'AD' ? '2025-09-12' : '2082-05-28'}
                 </p>
               </div>
 
               {/* Posting Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Posting Date ({formData.date_format}) <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Date when the job will be posted/published" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Posting Date ({formData.date_format}) <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Date when the job will be posted/published" />
                 </label>
                 <input
                   type="date"
@@ -2168,14 +2169,14 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     formData.date_format === 'AD' ? 'posting_date_ad' : 'posting_date_bs', 
                     e.target.value
                   )}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.posting_date_ad || errors.posting_date_bs ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.posting_date_ad || errors.posting_date_bs ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 />
                 {(errors.posting_date_ad || errors.posting_date_bs) && 
-                  <p className="text-red-500 text-xs mt-1">{errors.posting_date_ad || errors.posting_date_bs}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.posting_date_ad || errors.posting_date_bs}</p>
                 }
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   e.g., {formData.date_format === 'AD' ? '2025-09-12' : '2082-05-28'}
                 </p>
               </div>
@@ -2183,13 +2184,13 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
             {/* Announcement Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Announcement Type <span className="text-red-500">*</span>
-                <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Medium through which the job will be announced" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Announcement Type <span className="text-red-500 dark:text-red-400">*</span>
+                <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Medium through which the job will be announced" />
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {announcementTypes.map(type => (
-                  <label key={type.value} className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label key={type.value} className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
                     <input
                       type="radio"
                       name="announcement_type"
@@ -2198,28 +2199,28 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       onChange={(e) => handleInputChange('announcement_type', e.target.value)}
                       className="mr-3"
                     />
-                    <span className="text-sm">{type.label}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{type.label}</span>
                   </label>
                 ))}
               </div>
-              {errors.announcement_type && <p className="text-red-500 text-xs mt-1">{errors.announcement_type}</p>}
-              <p className="text-xs text-gray-500 mt-1">e.g., Newspaper, Online, Agency Board</p>
+              {errors.announcement_type && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.announcement_type}</p>}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., Newspaper, Online, Agency Board</p>
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Notes <span className="text-sm text-gray-500 font-normal">(Optional)</span>
-                <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Additional administrative remarks or special instructions" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Notes <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">(Optional)</span>
+                <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Additional administrative remarks or special instructions" />
               </label>
               <textarea
                 rows={4}
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 placeholder="Additional administrative remarks..."
               />
-              <p className="text-xs text-gray-500 mt-1">e.g., Additional administrative remarks</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., Additional administrative remarks</p>
             </div>
           </div>
         )}
@@ -2496,84 +2497,84 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                   {/* Vacancies Male */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Vacancies (Male) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       value={position.vacancies_male}
                       onChange={(e) => updatePosition(position.id, 'vacancies_male', parseInt(e.target.value) || 0)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`positions_${position.id}_vacancies_male`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`positions_${position.id}_vacancies_male`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                       }`}
                       placeholder="5"
                       min="0"
                     />
                     {errors[`positions_${position.id}_vacancies_male`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_vacancies_male`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_vacancies_male`]}</p>
                     )}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 5</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 5</p>
                   </div>
 
                   {/* Vacancies Female */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Vacancies (Female) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       value={position.vacancies_female}
                       onChange={(e) => updatePosition(position.id, 'vacancies_female', parseInt(e.target.value) || 0)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`positions_${position.id}_vacancies_female`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`positions_${position.id}_vacancies_female`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                       }`}
                       placeholder="3"
                       min="0"
                     />
                     {errors[`positions_${position.id}_vacancies_female`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_vacancies_female`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_vacancies_female`]}</p>
                     )}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 3</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 3</p>
                   </div>
 
                   {/* Total Vacancies Error */}
                   {errors[`positions_${position.id}_vacancies_total`] && (
                     <div className="md:col-span-2">
-                      <p className="text-red-500 text-xs">{errors[`positions_${position.id}_vacancies_total`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs">{errors[`positions_${position.id}_vacancies_total`]}</p>
                     </div>
                   )}
 
                   {/* Monthly Salary */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Monthly Salary <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       value={position.monthly_salary}
                       onChange={(e) => updatePosition(position.id, 'monthly_salary', parseInt(e.target.value) || 0)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`positions_${position.id}_monthly_salary`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`positions_${position.id}_monthly_salary`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                       }`}
                       placeholder="1800"
                       min="1"
                     />
                     {errors[`positions_${position.id}_monthly_salary`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_monthly_salary`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_monthly_salary`]}</p>
                     )}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 1800</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 1800</p>
                   </div>
 
                   {/* Currency */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Currency <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={position.currency}
                       onChange={(e) => updatePosition(position.id, 'currency', e.target.value)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`positions_${position.id}_currency`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`positions_${position.id}_currency`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
                       {currencies.map(curr => (
@@ -2581,70 +2582,70 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       ))}
                     </select>
                     {errors[`positions_${position.id}_currency`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_currency`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_currency`]}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Contract Overrides Section */}
-                <div className="border-t border-gray-200 pt-6">
-                  <h5 className="text-sm font-medium text-gray-700 mb-4">Contract Term Overrides (Optional)</h5>
-                  <p className="text-xs text-gray-500 mb-4">Override default contract terms for this specific position. Leave blank to use defaults from Contract step.</p>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Contract Term Overrides (Optional)</h5>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Override default contract terms for this specific position. Leave blank to use defaults from Contract step.</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Hours Per Day Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Hours Per Day Override
                       </label>
                       <input
                         type="number"
                         value={position.hours_per_day_override}
                         onChange={(e) => updatePosition(position.id, 'hours_per_day_override', e.target.value ? parseInt(e.target.value) : '')}
-                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors[`positions_${position.id}_hours_per_day_override`] ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                          errors[`positions_${position.id}_hours_per_day_override`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
                         placeholder={`Default: ${formData.hours_per_day}`}
                         min="1"
                         max="16"
                       />
                       {errors[`positions_${position.id}_hours_per_day_override`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_hours_per_day_override`]}</p>
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_hours_per_day_override`]}</p>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">e.g., 9</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 9</p>
                     </div>
 
                     {/* Days Per Week Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Days Per Week Override
                       </label>
                       <input
                         type="number"
                         value={position.days_per_week_override}
                         onChange={(e) => updatePosition(position.id, 'days_per_week_override', e.target.value ? parseInt(e.target.value) : '')}
-                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors[`positions_${position.id}_days_per_week_override`] ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                          errors[`positions_${position.id}_days_per_week_override`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
                         placeholder={`Default: ${formData.days_per_week}`}
                         min="1"
                         max="7"
                       />
                       {errors[`positions_${position.id}_days_per_week_override`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_days_per_week_override`]}</p>
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_days_per_week_override`]}</p>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">e.g., 5</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 5</p>
                     </div>
 
                     {/* Overtime Policy Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Overtime Policy Override
                       </label>
                       <select
                         value={position.overtime_policy_override}
                         onChange={(e) => updatePosition(position.id, 'overtime_policy_override', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="">Use default ({overtimePolicyOptions.find(opt => opt.value === formData.overtime_policy)?.label})</option>
                         {overtimePolicyOptions.map(option => (
@@ -2655,35 +2656,35 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                     {/* Weekly Off Days Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Weekly Off Days Override
                       </label>
                       <input
                         type="number"
                         value={position.weekly_off_days_override}
                         onChange={(e) => updatePosition(position.id, 'weekly_off_days_override', e.target.value ? parseInt(e.target.value) : '')}
-                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors[`positions_${position.id}_weekly_off_days_override`] ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                          errors[`positions_${position.id}_weekly_off_days_override`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
                         placeholder={`Default: ${formData.weekly_off_days}`}
                         min="0"
                         max="7"
                       />
                       {errors[`positions_${position.id}_weekly_off_days_override`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors[`positions_${position.id}_weekly_off_days_override`]}</p>
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`positions_${position.id}_weekly_off_days_override`]}</p>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">e.g., 2</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 2</p>
                     </div>
 
                     {/* Food Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Food Override
                       </label>
                       <select
                         value={position.food_override}
                         onChange={(e) => updatePosition(position.id, 'food_override', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         <option value="">Use default ({provisionOptions.find(opt => opt.value === formData.food)?.label})</option>
                         {provisionOptions.map(option => (
@@ -2694,7 +2695,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                     {/* Accommodation Override */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Accommodation Override
                       </label>
                       <select
@@ -2756,10 +2757,10 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               </button>
             </div>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="flex items-start">
-                <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
+                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="text-sm text-blue-800 dark:text-blue-300">
                   <p className="font-medium mb-1">💡 Pro Tip</p>
                   <p>You can override contract terms for individual positions. If left blank, the general contract terms will apply.</p>
                 </div>
@@ -2767,32 +2768,32 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             </div>
           </div>
         )}
-        
+
         {currentStep === 3 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tags & Canonical Titles</h3>
-              <p className="text-sm text-gray-600 mb-6">Add skills, education, experience requirements, and canonical job titles.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tags & Canonical Titles</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Add skills, education, experience requirements, and canonical job titles.</p>
             </div>
 
             <div className="space-y-8">
               {/* Skills Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Skills <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Required skills and competencies for this job" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Skills <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Required skills and competencies for this job" />
                 </label>
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
                     {formData.skills.map((skill, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
                       >
                         {skill}
                         <button
                           onClick={() => removeTag('skills', skill)}
-                          className="ml-2 text-blue-600 hover:text-blue-800"
+                          className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
                         >
                           ×
                         </button>
@@ -2806,35 +2807,35 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                         e.target.value = ''
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select a skill to add...</option>
                     {predefinedSkills.filter(skill => !formData.skills.includes(skill)).map(skill => (
                       <option key={skill} value={skill}>{skill}</option>
                     ))}
                   </select>
-                  {errors.skills && <p className="text-red-500 text-xs mt-1">{errors.skills}</p>}
-                  <p className="text-xs text-gray-500">e.g., Cooking, Customer Service</p>
+                  {errors.skills && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.skills}</p>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400">e.g., Cooking, Customer Service</p>
                 </div>
               </div>
 
               {/* Education Requirements Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Education Requirements <span className="text-red-500">*</span>
-                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 cursor-help" title="Minimum educational qualifications required" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Education Requirements <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help" title="Minimum educational qualifications required" />
                 </label>
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
                     {formData.education_requirements.map((edu, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
                       >
                         {edu}
                         <button
                           onClick={() => removeTag('education_requirements', edu)}
-                          className="ml-2 text-green-600 hover:text-green-800"
+                          className="ml-2 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
                         >
                           ×
                         </button>
@@ -2848,27 +2849,27 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                         e.target.value = ''
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select an education requirement to add...</option>
                     {educationRequirements.filter(edu => !formData.education_requirements.includes(edu)).map(edu => (
                       <option key={edu} value={edu}>{edu}</option>
                     ))}
                   </select>
-                  {errors.education_requirements && <p className="text-red-500 text-xs mt-1">{errors.education_requirements}</p>}
-                  <p className="text-xs text-gray-500">e.g., High School, Vocational Training</p>
+                  {errors.education_requirements && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.education_requirements}</p>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400">e.g., High School, Vocational Training</p>
                 </div>
               </div>
 
               {/* Experience Requirements Section */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h4 className="text-md font-medium text-gray-800 mb-4">Experience Requirements</h4>
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+                <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-4">Experience Requirements</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Minimum Years */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Minimum Years <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Minimum Years <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <input
                       type="number"
@@ -2886,19 +2887,19 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                           setErrors(prev => ({ ...prev, experience_min_years: null }))
                         }
                       }}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.experience_min_years ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors.experience_min_years ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                       }`}
                       placeholder="2"
                       min="0"
                     />
-                    {errors.experience_min_years && <p className="text-red-500 text-xs mt-1">{errors.experience_min_years}</p>}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 2</p>
+                    {errors.experience_min_years && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.experience_min_years}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 2</p>
                   </div>
 
                   {/* Preferred Years */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Preferred Years (Optional)
                     </label>
                     <input
@@ -2911,33 +2912,33 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                           preferred_years: e.target.value ? parseInt(e.target.value) : ''
                         }
                       }))}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.experience_preferred_years ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors.experience_preferred_years ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                       }`}
                       placeholder="5"
                       min={formData.experience_requirements.min_years}
                     />
-                    {errors.experience_preferred_years && <p className="text-red-500 text-xs mt-1">{errors.experience_preferred_years}</p>}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 5</p>
+                    {errors.experience_preferred_years && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.experience_preferred_years}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 5</p>
                   </div>
                 </div>
 
                 {/* Experience Domains */}
                 <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Domains <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Domains <span className="text-red-500 dark:text-red-400">*</span>
                   </label>
                   <div className="space-y-3">
                     <div className="flex flex-wrap gap-2">
                       {formData.experience_requirements.domains.map((domain, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300"
                         >
                           {domain}
                           <button
                             onClick={() => removeExperienceDomain(domain)}
-                            className="ml-2 text-purple-600 hover:text-purple-800"
+                            className="ml-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200"
                           >
                             ×
                           </button>
@@ -2951,23 +2952,23 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                           e.target.value = ''
                         }
                       }}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     >
                       <option value="">Select a domain to add...</option>
                       {experienceDomains.filter(domain => !formData.experience_requirements.domains.includes(domain)).map(domain => (
                         <option key={domain} value={domain}>{domain}</option>
                       ))}
                     </select>
-                    {errors.experience_domains && <p className="text-red-500 text-xs mt-1">{errors.experience_domains}</p>}
-                    <p className="text-xs text-gray-500">e.g., Hospitality, Culinary</p>
+                    {errors.experience_domains && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.experience_domains}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">e.g., Hospitality, Culinary</p>
                   </div>
                 </div>
               </div>
 
               {/* Canonical Job Titles Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Canonical Job Titles <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Canonical Job Titles <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
@@ -2977,12 +2978,12 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       return (
                         <span
                           key={titleId}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300"
                         >
-                          {titleName} {title && <span className="ml-1 text-indigo-600">({title.category})</span>}
+                          {titleName} {title && <span className="ml-1 text-indigo-600 dark:text-indigo-400">({title.category})</span>}
                           <button
                             onClick={() => removeCanonicalTitle(titleId)}
-                            className="ml-2 text-indigo-600 hover:text-indigo-800"
+                            className="ml-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200"
                           >
                             ×
                           </button>
@@ -3000,7 +3001,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                         }
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select a canonical job title to add...</option>
                     {jobTitles.filter(title => !formData.canonical_title_ids.includes(title.id)).map(title => (
@@ -3009,8 +3010,8 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       </option>
                     ))}
                   </select>
-                  {errors.canonical_titles && <p className="text-red-500 text-xs mt-1">{errors.canonical_titles}</p>}
-                  <p className="text-xs text-gray-500">e.g., Professional Cook, Security Guard</p>
+                  {errors.canonical_titles && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.canonical_titles}</p>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400">e.g., Professional Cook, Security Guard</p>
                 </div>
               </div>
             </div>
@@ -3020,24 +3021,24 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
         {currentStep === 7 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Review and Publish</h3>
-              <p className="text-sm text-gray-600 mb-6">Review all entered information and publish your job posting when ready.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Review and Publish</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Review all entered information and publish your job posting when ready.</p>
             </div>
 
             <div className="space-y-6">
               {/* Basic Job Information */}
-              <div className="border border-gray-200 rounded-lg p-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-md font-medium text-gray-800">Basic Job Information</h4>
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Basic Job Information</h4>
                   <button
                     onClick={() => setCurrentStep(0)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                    className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
                   <div><span className="font-medium">Posting Title:</span> <span className="ml-2">{formData.posting_title || 'Not specified'}</span></div>
                   <div><span className="font-medium">Country:</span> <span className="ml-2">{formData.country || 'Not specified'}</span></div>
                   <div><span className="font-medium">Employer:</span> <span className="ml-2">{formData.employer || 'Not specified'}</span></div>
@@ -3052,18 +3053,18 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               </div>
 
               {/* Posting Details */}
-              <div className="border border-gray-200 rounded-lg p-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-md font-medium text-gray-800">Posting Details</h4>
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Posting Details</h4>
                   <button
                     onClick={() => setCurrentStep(0)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                    className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
                   <div><span className="font-medium">City:</span> <span className="ml-2">{formData.city || 'Not specified'}</span></div>
                   <div><span className="font-medium">LT Number:</span> <span className="ml-2">{formData.lt_number || 'Not specified'}</span></div>
                   <div><span className="font-medium">Chalani Number:</span> <span className="ml-2">{formData.chalani_number || 'Not specified'}</span></div>
@@ -3083,18 +3084,18 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               </div>
 
               {/* Contract */}
-              <div className="border border-gray-200 rounded-lg p-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-md font-medium text-gray-800">Contract Terms</h4>
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Contract Terms</h4>
                   <button
                     onClick={() => setCurrentStep(1)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                    className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700 dark:text-gray-300">
                   <div><span className="font-medium">Period Years:</span> <span className="ml-2">{formData.period_years}</span></div>
                   <div><span className="font-medium">Renewable:</span> <span className="ml-2">{formData.renewable === 'yes' ? 'Yes' : 'No'}</span></div>
                   <div><span className="font-medium">Hours Per Day:</span> <span className="ml-2">{formData.hours_per_day}</span></div>
@@ -3109,12 +3110,12 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               </div>
 
               {/* Positions */}
-              <div className="border border-gray-200 rounded-lg p-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-md font-medium text-gray-800">Job Positions ({formData.positions.length})</h4>
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Job Positions ({formData.positions.length})</h4>
                   <button
                     onClick={() => setCurrentStep(2)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                    className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
@@ -3122,8 +3123,8 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                 </div>
                 <div className="space-y-4">
                   {formData.positions.map((position, index) => (
-                    <div key={position.id} className="bg-gray-50 rounded-lg p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div key={position.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700 dark:text-gray-300">
                         <div><span className="font-medium">Title:</span> <span className="ml-2">{position.position_title || 'Not specified'}</span></div>
                         <div><span className="font-medium">Salary:</span> <span className="ml-2">{position.monthly_salary} {position.currency}</span></div>
                         <div><span className="font-medium">Vacancies (M/F):</span> <span className="ml-2">{position.vacancies_male}/{position.vacancies_female}</span></div>
@@ -3155,32 +3156,32 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               </div>
 
               {/* Tags & Canonical Titles */}
-              <div className="border border-gray-200 rounded-lg p-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-md font-medium text-gray-800">Tags & Canonical Titles</h4>
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Tags & Canonical Titles</h4>
                   <button
                     onClick={() => setCurrentStep(3)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                    className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </button>
                 </div>
-                <div className="space-y-3 text-sm">
+                <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                   <div>
                     <span className="font-medium">Skills:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {formData.skills.length > 0 ? formData.skills.map(skill => (
-                        <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{skill}</span>
-                      )) : <span className="text-gray-500">No skills specified</span>}
+                        <span key={skill} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-xs">{skill}</span>
+                      )) : <span className="text-gray-500 dark:text-gray-400">No skills specified</span>}
                     </div>
                   </div>
                   <div>
                     <span className="font-medium">Education Requirements:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {formData.education_requirements.length > 0 ? formData.education_requirements.map(edu => (
-                        <span key={edu} className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">{edu}</span>
-                      )) : <span className="text-gray-500">No education requirements specified</span>}
+                        <span key={edu} className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-xs">{edu}</span>
+                      )) : <span className="text-gray-500 dark:text-gray-400">No education requirements specified</span>}
                     </div>
                   </div>
                   <div>
@@ -3191,8 +3192,8 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     </span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {formData.experience_requirements.domains.length > 0 ? formData.experience_requirements.domains.map(domain => (
-                        <span key={domain} className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">{domain}</span>
-                      )) : <span className="text-gray-500">No domains specified</span>}
+                        <span key={domain} className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-xs">{domain}</span>
+                      )) : <span className="text-gray-500 dark:text-gray-400">No domains specified</span>}
                     </div>
                   </div>
                   <div>
@@ -3370,26 +3371,26 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
         {currentStep === 4 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Expenses</h3>
-              <p className="text-sm text-gray-600 mb-6">Attach cost-related details (e.g., medical, insurance, travel) to the posting.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Expenses</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Attach cost-related details (e.g., medical, insurance, travel) to the posting.</p>
             </div>
 
             {errors.expenses_general && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-red-600 text-sm">{errors.expenses_general}</p>
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3">
+                <p className="text-red-600 dark:text-red-400 text-sm">{errors.expenses_general}</p>
               </div>
             )}
 
             {formData.expenses.map((expense, index) => (
-              <div key={expense.id} className="border border-gray-200 rounded-lg p-6 space-y-6">
+              <div key={expense.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 space-y-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-md font-medium text-gray-800">
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">
                     Expense {index + 1}
                   </h4>
                   {formData.expenses.length > 1 && (
                     <button
                       onClick={() => removeExpense(expense.id)}
-                      className="text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded-md hover:bg-red-50"
+                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm px-3 py-1 border border-red-300 dark:border-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
                       Remove Expense
                     </button>
@@ -3399,14 +3400,14 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Expense Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Expense Type <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Expense Type <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <select
                       value={expense.type}
                       onChange={(e) => updateExpense(expense.id, 'type', e.target.value)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`expenses_${expense.id}_type`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`expenses_${expense.id}_type`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
                       <option value="">Select expense type</option>
@@ -3415,20 +3416,20 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       ))}
                     </select>
                     {errors[`expenses_${expense.id}_type`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`expenses_${expense.id}_type`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`expenses_${expense.id}_type`]}</p>
                     )}
                   </div>
 
                   {/* Who Pays */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Who Pays <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Who Pays <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <select
                       value={expense.who_pays}
                       onChange={(e) => updateExpense(expense.id, 'who_pays', e.target.value)}
-                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors[`expenses_${expense.id}_who_pays`] ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                        errors[`expenses_${expense.id}_who_pays`] ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
                       <option value="">Select who pays</option>
@@ -3437,35 +3438,35 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                       ))}
                     </select>
                     {errors[`expenses_${expense.id}_who_pays`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`expenses_${expense.id}_who_pays`]}</p>
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`expenses_${expense.id}_who_pays`]}</p>
                     )}
                   </div>
 
                   {/* Is Free */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Is Free <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Is Free <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <div className="flex space-x-4">
-                      <label className="flex items-center">
+                      <label className="flex items-center text-gray-700 dark:text-gray-300">
                         <input
                           type="radio"
                           name={`is_free_${expense.id}`}
                           value="true"
                           checked={expense.is_free === true}
                           onChange={(e) => updateExpense(expense.id, 'is_free', true)}
-                          className="mr-2 text-blue-600"
+                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
                         Yes
                       </label>
-                      <label className="flex items-center">
+                      <label className="flex items-center text-gray-700 dark:text-gray-300">
                         <input
                           type="radio"
                           name={`is_free_${expense.id}`}
                           value="false"
                           checked={expense.is_free === false}
                           onChange={(e) => updateExpense(expense.id, 'is_free', false)}
-                          className="mr-2 text-blue-600"
+                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
                         No
                       </label>
@@ -3476,35 +3477,35 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                   {expense.is_free === false && (
                     <>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Amount <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Amount <span className="text-red-500 dark:text-red-400">*</span>
                         </label>
                         <input
                           type="number"
                           value={expense.amount}
                           onChange={(e) => updateExpense(expense.id, 'amount', parseFloat(e.target.value) || '')}
-                          className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors[`expenses_${expense.id}_amount`] ? 'border-red-500' : 'border-gray-300'
+                          className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                            errors[`expenses_${expense.id}_amount`] ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                           }`}
                           placeholder="500"
                           min="0"
                           step="0.01"
                         />
                         {errors[`expenses_${expense.id}_amount`] && (
-                          <p className="text-red-500 text-xs mt-1">{errors[`expenses_${expense.id}_amount`]}</p>
+                          <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`expenses_${expense.id}_amount`]}</p>
                         )}
-                        <p className="text-xs text-gray-500 mt-1">e.g., 500</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 500</p>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Currency <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Currency <span className="text-red-500 dark:text-red-400">*</span>
                         </label>
                         <select
                           value={expense.currency}
                           onChange={(e) => updateExpense(expense.id, 'currency', e.target.value)}
-                          className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors[`expenses_${expense.id}_currency`] ? 'border-red-500' : 'border-gray-300'
+                          className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                            errors[`expenses_${expense.id}_currency`] ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                           }`}
                         >
                           {currencies.map(curr => (
@@ -3512,7 +3513,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                           ))}
                         </select>
                         {errors[`expenses_${expense.id}_currency`] && (
-                          <p className="text-red-500 text-xs mt-1">{errors[`expenses_${expense.id}_currency`]}</p>
+                          <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors[`expenses_${expense.id}_currency`]}</p>
                         )}
                       </div>
                     </>
@@ -3520,17 +3521,17 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                   {/* Notes */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Notes (Optional)
                     </label>
                     <textarea
                       rows={3}
                       value={expense.notes}
                       onChange={(e) => updateExpense(expense.id, 'notes', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none"
                       placeholder="e.g., Covers annual medical checkup"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Additional details about this expense</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Additional details about this expense</p>
                   </div>
                 </div>
               </div>
@@ -3540,17 +3541,17 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             <div className="flex justify-center">
               <button
                 onClick={addExpense}
-                className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                className="flex items-center px-6 py-3 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-800 transition-colors shadow-sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Another Expense
               </button>
             </div>
             
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
               <div className="flex items-start">
-                <Info className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">
+                <Info className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="text-sm text-yellow-800 dark:text-yellow-300">
                   <p className="font-medium mb-1">💰 Cost Management</p>
                   <p>This step is optional. Add expenses only if they are specific costs that candidates or the company needs to cover.</p>
                 </div>
@@ -3711,42 +3712,42 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
         {currentStep === 6 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Interview Process</h3>
-              <p className="text-sm text-gray-600 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Interview Process</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                 Provide details for the interview process. 
-                <span className="text-sm text-gray-500 font-normal">All fields in this section are optional.</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">All fields in this section are optional.</span>
               </p>
             </div>
 
             <div className="space-y-8">
               {/* Interview Date and Time */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h4 className="text-md font-medium text-gray-800 mb-4">Date & Time</h4>
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+                <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-4">Date & Time</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Date Format Selection */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Format</label>
                     <div className="flex space-x-4">
-                      <label className="flex items-center">
+                      <label className="flex items-center text-gray-700 dark:text-gray-300">
                         <input
                           type="radio"
                           name="interview_date_format"
                           value="AD"
                           checked={formData.interview.date_format === 'AD'}
                           onChange={(e) => updateInterviewField('date_format', 'AD')}
-                          className="mr-2 text-blue-600"
+                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
                         AD (Gregorian)
                       </label>
-                      <label className="flex items-center">
+                      <label className="flex items-center text-gray-700 dark:text-gray-300">
                         <input
                           type="radio"
                           name="interview_date_format"
                           value="BS"
                           checked={formData.interview.date_format === 'BS'}
                           onChange={(e) => updateInterviewField('date_format', 'BS')}
-                          className="mr-2 text-blue-600"
+                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
                         BS (Bikram Sambat)
                       </label>
@@ -3755,11 +3756,11 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
                   {/* Interview Date */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Interview Date ({formData.interview.date_format})
                     </label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <input
                         type="date"
                         value={formData.interview.date_format === 'AD' ? formData.interview.date_ad : formData.interview.date_bs}
@@ -3767,36 +3768,36 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                           formData.interview.date_format === 'AD' ? 'date_ad' : 'date_bs', 
                           e.target.value
                         )}
-                        className={`w-full pl-10 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.interview_date ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full pl-10 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                          errors.interview_date ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
                       />
                     </div>
-                    {errors.interview_date && <p className="text-red-500 text-xs mt-1">{errors.interview_date}</p>}
-                    <p className="text-xs text-gray-500 mt-1">
+                    {errors.interview_date && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.interview_date}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       e.g., {formData.interview.date_format === 'AD' ? '2025-09-20' : '2082-06-05'}
                     </p>
                   </div>
 
                   {/* Interview Time */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Interview Time
                     </label>
                     <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <input
                         type="text"
                         value={formData.interview.time}
                         onChange={(e) => updateInterviewField('time', e.target.value)}
-                        className={`w-full pl-10 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.interview_time ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full pl-10 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                          errors.interview_time ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
                         placeholder="10:00 AM"
                       />
                     </div>
-                    {errors.interview_time && <p className="text-red-500 text-xs mt-1">{errors.interview_time}</p>}
-                    <p className="text-xs text-gray-500 mt-1">e.g., 10:00 AM or 14:30</p>
+                    {errors.interview_time && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.interview_time}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">e.g., 10:00 AM or 14:30</p>
                   </div>
                 </div>
               </div>
@@ -3805,38 +3806,38 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Location */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Location
                   </label>
                   <input
                     type="text"
                     value={formData.interview.location}
                     onChange={(e) => updateInterviewField('location', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="e.g., Agency Office, Dubai"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Interview venue or location</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Interview venue or location</p>
                 </div>
 
                 {/* Contact Person */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Contact Person
                   </label>
                   <input
                     type="text"
                     value={formData.interview.contact_person}
                     onChange={(e) => updateInterviewField('contact_person', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="e.g., John Doe"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Person to contact for interview</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Person to contact for interview</p>
                 </div>
               </div>
 
               {/* Required Documents */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Required Documents
                 </label>
                 <div className="space-y-3">
@@ -3844,12 +3845,12 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                     {formData.interview.required_documents.map((document, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300"
                       >
                         {document}
                         <button
                           onClick={() => removeInterviewDocument(document)}
-                          className="ml-2 text-orange-600 hover:text-orange-800"
+                          className="ml-2 text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-200"
                         >
                           ×
                         </button>
@@ -3863,30 +3864,30 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                         e.target.value = ''
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select a document to add...</option>
                     {requiredDocuments.filter(doc => !formData.interview.required_documents.includes(doc)).map(doc => (
                       <option key={doc} value={doc}>{doc}</option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500">e.g., Passport, Resume, Certificates</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">e.g., Passport, Resume, Certificates</p>
                 </div>
               </div>
 
               {/* Interview Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Notes
                 </label>
                 <textarea
                   rows={4}
                   value={formData.interview.notes}
                   onChange={(e) => updateInterviewField('notes', e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none"
                   placeholder="e.g., Bring original documents for verification"
                 />
-                <p className="text-xs text-gray-500 mt-1">Additional instructions for candidates</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Additional instructions for candidates</p>
               </div>
 
               {/* Interview Expenses */}
@@ -4030,21 +4031,21 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
 
       {/* AI Insights Section */}
       {currentFlow === 'single' && (
-        <div className="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+        <div className="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 font-bold text-sm">AI</span>
+              <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 dark:text-purple-400 font-bold text-sm">AI</span>
               </div>
             </div>
             <div className="flex-1">
-              <h4 className="text-sm font-semibold text-purple-900 mb-2">
+              <h4 className="text-sm font-semibold text-purple-900 dark:text-purple-200 mb-2">
                 {getAIInsights(currentStep).title}
               </h4>
-              <ul className="text-xs text-purple-800 space-y-1">
+              <ul className="text-xs text-purple-800 dark:text-purple-300 space-y-1">
                 {getAIInsights(currentStep).tips.map((tip, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="text-purple-400 mr-2 mt-0.5">•</span>
+                    <span className="text-purple-400 dark:text-purple-500 mr-2 mt-0.5">•</span>
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -4055,17 +4056,17 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+      <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleBack}
-          className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+          className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {currentStep === 0 ? 'Back to Selection' : 'Previous'}
         </button>
 
         <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Step {currentStep + 1} of {singleDraftSteps.length}
           </div>
           
@@ -4074,7 +4075,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             const currentStepErrors = validateStep(currentStep)
             const currentStepErrorCount = Object.keys(currentStepErrors).length
             return currentStepErrorCount > 0 && (
-              <div className="flex items-center text-sm text-red-600">
+              <div className="flex items-center text-sm text-red-600 dark:text-red-400">
                 <Info className="w-4 h-4 mr-1" />
                 {currentStepErrorCount} error{currentStepErrorCount > 1 ? 's' : ''} found
               </div>
@@ -4087,7 +4088,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
           {currentStep < singleDraftSteps.length - 1 && (
             <button
               onClick={handleSaveAndExit}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
             >
               <Save className="w-4 h-4 mr-2" />
               Save & Exit
@@ -4103,14 +4104,14 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
                   onSave({ type: 'single_draft', data: formData })
                   onClose()
                 }}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                className="flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save as Draft
               </button>
               <button
                 onClick={handlePublish}
-                className="flex items-center px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="flex items-center px-6 py-2 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors"
               >
                 <Send className="w-4 h-4 mr-2" />
                 Publish Job
@@ -4120,7 +4121,7 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
             // Regular next button
             <button
               onClick={handleContinue}
-              className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center px-6 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
             >
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -4134,23 +4135,23 @@ const JobDraftWizard = ({ isOpen, onClose, onSave, editingDraft, initialStep = 0
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end z-50">
-      <div className="bg-white h-full w-full max-w-6xl overflow-y-auto animate-slide-in-right">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-end z-50">
+      <div className="bg-white dark:bg-gray-800 h-full w-full max-w-6xl overflow-y-auto animate-slide-in-right">
         <div className="p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                 <FileText className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Job Creation</h1>
-                <p className="text-sm text-gray-500">Create and manage job postings</p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Job Creation</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Create and manage job postings</p>
               </div>
             </div>
             <button 
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-3 rounded-full hover:bg-gray-100 transition-colors"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>

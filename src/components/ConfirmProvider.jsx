@@ -52,20 +52,20 @@ const ConfirmDialog = ({
     const configs = {
       warning: {
         icon: AlertTriangle,
-        iconBg: 'bg-yellow-100',
-        iconColor: 'text-yellow-600',
+        iconBg: 'bg-yellow-100 dark:bg-yellow-900',
+        iconColor: 'text-yellow-600 dark:text-yellow-400',
         confirmBtn: 'btn-primary'
       },
       danger: {
         icon: AlertTriangle,
-        iconBg: 'bg-red-100',
-        iconColor: 'text-red-600',
+        iconBg: 'bg-red-100 dark:bg-red-900',
+        iconColor: 'text-red-600 dark:text-red-400',
         confirmBtn: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200'
       },
       info: {
         icon: Check,
-        iconBg: 'bg-blue-100',
-        iconColor: 'text-blue-600',
+        iconBg: 'bg-blue-100 dark:bg-blue-900',
+        iconColor: 'text-blue-600 dark:text-blue-400',
         confirmBtn: 'btn-primary'
       }
     }
@@ -76,9 +76,9 @@ const ConfirmDialog = ({
   const Icon = config.icon
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div 
-        className="bg-white rounded-lg shadow-xl max-w-md w-full"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dialog-title"
@@ -90,17 +90,17 @@ const ConfirmDialog = ({
               <Icon className={`w-5 h-5 ${config.iconColor}`} aria-hidden="true" />
             </div>
             <div className="ml-4 flex-1">
-              <h3 id="dialog-title" className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 id="dialog-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {title}
               </h3>
-              <p id="dialog-description" className="text-sm text-gray-600">
+              <p id="dialog-description" className="text-sm text-gray-600 dark:text-gray-400">
                 {message}
               </p>
             </div>
           </div>
         </div>
         
-        <div className="bg-gray-50 px-6 py-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+        <div className="bg-gray-50 dark:bg-gray-700 px-6 py-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <button
             onClick={onCancel}
             className="btn-secondary btn-mobile"

@@ -266,16 +266,16 @@ const AgencySettings = () => {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <div className="card p-6">
-                <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
                 <div className="space-y-4">
                   {[1, 2, 3, 4].map(i => (
                     <div key={i}>
-                      <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-                      <div className="h-10 bg-gray-200 rounded"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
+                      <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
                     </div>
                   ))}
                 </div>
@@ -283,8 +283,8 @@ const AgencySettings = () => {
             </div>
             <div>
               <div className="card p-6">
-                <div className="h-32 bg-gray-200 rounded mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </div>
           </div>
@@ -307,34 +307,34 @@ const AgencySettings = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Agency Settings</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agency Settings</h1>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Manage your agency profile, contact information, and preferences
         </p>
       </div>
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
+        <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4">
           <div className="flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-            <p className="text-green-800">{success}</p>
+            <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400 mr-2" />
+            <p className="text-green-800 dark:text-green-200">{success}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
           <div className="flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-            <p className="text-red-800">{error}</p>
+            <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 mr-2" />
+            <p className="text-red-800 dark:text-red-200">{error}</p>
           </div>
         </div>
       )}
 
       {/* Tabs */}
       <div className="mb-8">
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="-mb-px flex space-x-8 overflow-x-auto">
             {tabs.map(tab => {
               const Icon = tab.icon
@@ -344,8 +344,8 @@ const AgencySettings = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
@@ -481,11 +481,11 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Edit Basic Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Basic Information</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
               Cancel
@@ -503,7 +503,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Agency Name *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Agency Name *</label>
             <input
               type="text"
               value={formData.name || ''}
@@ -517,13 +517,13 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
               className="form-input"
               placeholder="Enter agency name"
             />
-            <p className="text-xs text-blue-600 mt-1">
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               💡 This will update the agency name in the navigation menu
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea
               value={formData.description || ''}
               onChange={(e) => onFormChange('description', e.target.value)}
@@ -535,7 +535,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Established Year</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Established Year</label>
               <input
                 type="number"
                 value={formData.established_year || ''}
@@ -548,7 +548,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">License Number *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License Number *</label>
               <input
                 type="text"
                 value={formData.license_number || ''}
@@ -566,7 +566,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
@@ -578,24 +578,24 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Agency Name</label>
-          <p className="text-sm text-gray-900">{data.name}</p>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Agency Name</label>
+          <p className="text-sm text-gray-900 dark:text-gray-100">{data.name}</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <p className="text-sm text-gray-900">{data.description}</p>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+          <p className="text-sm text-gray-900 dark:text-gray-100">{data.description}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Established</label>
-            <p className="text-sm text-gray-900">{data.established_year}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Established</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.established_year}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">License Number</label>
-            <p className="text-sm text-gray-900">{data.license_number}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License Number</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.license_number}</p>
           </div>
         </div>
       </div>
@@ -609,11 +609,11 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Edit Contact Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Contact Information</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
               Cancel
@@ -632,7 +632,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone *</label>
               <input
                 type="tel"
                 value={formData.phone || ''}
@@ -643,7 +643,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mobile *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile *</label>
               <input
                 type="tel"
                 value={formData.mobile || ''}
@@ -655,7 +655,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
             <input
               type="email"
               value={formData.email || ''}
@@ -666,7 +666,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
             <input
               type="url"
               value={formData.website || ''}
@@ -683,7 +683,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Contact Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Contact Information</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
@@ -696,35 +696,35 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
             <div className="flex items-center">
-              <Phone className="w-4 h-4 text-gray-400 mr-2" />
-              <p className="text-sm text-gray-900">{data.phone}</p>
+              <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">{data.phone}</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mobile</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile</label>
             <div className="flex items-center">
-              <Phone className="w-4 h-4 text-gray-400 mr-2" />
-              <p className="text-sm text-gray-900">{data.mobile}</p>
+              <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">{data.mobile}</p>
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
           <div className="flex items-center">
-            <Mail className="w-4 h-4 text-gray-400 mr-2" />
-            <p className="text-sm text-gray-900">{data.email}</p>
+            <Mail className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.email}</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
           <div className="flex items-center">
-            <Globe className="w-4 h-4 text-gray-400 mr-2" />
-            <a href={`https://${data.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800">
+            <Globe className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+            <a href={`https://${data.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
               {data.website}
             </a>
           </div>
@@ -760,11 +760,11 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
       <>
         <div className="card p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Edit Location</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Location</h2>
             <div className="flex items-center space-x-2">
               <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 disabled={isSaving}
               >
                 Cancel
@@ -782,7 +782,7 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address *</label>
               <div className="space-y-2">
                 <textarea
                   value={formData.address || ''}
@@ -802,16 +802,16 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                 </button>
               </div>
               {selectedLocation && (
-                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
-                  <p className="text-xs text-green-700">
+                <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                  <p className="text-xs text-green-700 dark:text-green-300">
                     📍 Location selected: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-md">
-              <p className="text-sm text-gray-600">
+            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 <strong>Tip:</strong> Use "Choose on Map" for precise location selection, or manually enter the address with landmarks and detailed directions.
               </p>
             </div>
@@ -834,7 +834,7 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Location</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Location</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
@@ -846,21 +846,21 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
           <div className="flex items-start">
-            <MapPin className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
-            <p className="text-sm text-gray-900">{data.address}</p>
+            <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2 mt-0.5" />
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.address}</p>
           </div>
           {data.latitude && data.longitude && (
-            <div className="mt-2 flex items-center text-xs text-gray-500">
+            <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
               <MapPin className="w-3 h-3 mr-1" />
               <span>Coordinates: {data.latitude.toFixed(6)}, {data.longitude.toFixed(6)}</span>
             </div>
           )}
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-600">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             This address will be displayed on your public profile and used for candidate visits.
           </p>
         </div>
@@ -1007,11 +1007,11 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
     <div className="space-y-6">
       {/* Logo Section */}
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Agency Logo</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Agency Logo</h2>
         
         <div className="flex items-center space-x-6">
           <div className="flex-shrink-0">
-            <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
+            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden relative">
               {isLogoProcessing && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -1024,13 +1024,13 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Building2 className="w-8 h-8 text-gray-400" />
+                <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               )}
             </div>
           </div>
           
           <div className="flex-1">
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               Upload your agency logo. This will be displayed on your profile and job postings.
             </p>
             <div className="flex items-center space-x-3">
@@ -1052,16 +1052,16 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
                 disabled={isLogoProcessing}
                 id="logo-upload-input"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Max 5MB, JPEG/PNG/GIF
               </p>
             </div>
-            <p className="text-xs text-blue-600 mt-2">
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
               💡 Changes will appear instantly in the navigation menu
             </p>
             {isLogoProcessing && (
-              <div className="mt-2 flex items-center text-xs text-blue-600">
-                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 mr-2"></div>
+              <div className="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400">
+                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 dark:border-blue-400 mr-2"></div>
                 Processing logo upload...
               </div>
             )}
@@ -1071,10 +1071,10 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
 
       {/* Banner Section */}
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Agency Banner</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Agency Banner</h2>
         
         <div className="space-y-4">
-          <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
+          <div className="w-full h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden relative">
             {isBannerProcessing && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -1087,12 +1087,12 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <Camera className="w-8 h-8 text-gray-400" />
+              <Camera className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             )}
           </div>
           
           <div>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               Upload a banner image for your agency profile. Recommended size: 1200x300 pixels.
             </p>
             <div className="flex items-center space-x-3">
@@ -1114,13 +1114,13 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
                 disabled={isBannerProcessing}
                 id="banner-upload-input"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Max 5MB, JPEG/PNG/GIF
               </p>
             </div>
             {isBannerProcessing && (
-              <div className="mt-2 flex items-center text-xs text-blue-600">
-                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 mr-2"></div>
+              <div className="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400">
+                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 dark:border-blue-400 mr-2"></div>
                 Processing banner upload...
               </div>
             )}
@@ -1144,11 +1144,11 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Edit Social Media</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Social Media</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
               Cancel
@@ -1167,7 +1167,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
         <div className="space-y-4">
           {socialPlatforms.map(platform => (
             <div key={platform.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {platform.label}
               </label>
               <input
@@ -1187,7 +1187,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Social Media</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Social Media</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
@@ -1200,7 +1200,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
       <div className="space-y-4">
         {socialPlatforms.map(platform => (
           <div key={platform.key}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {platform.label}
             </label>
             {data.social_media?.[platform.key] ? (
@@ -1208,12 +1208,12 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
                 href={data.social_media[platform.key]}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary-600 hover:text-primary-800 break-all"
+                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 break-all"
               >
                 {data.social_media[platform.key]}
               </a>
             ) : (
-              <p className="text-sm text-gray-500">Not set</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Not set</p>
             )}
           </div>
         ))}
@@ -1240,11 +1240,11 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Edit Services & Specializations</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Services & Specializations</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
               Cancel
@@ -1263,14 +1263,14 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
         <div className="space-y-6">
           {/* Services */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Services Offered</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Services Offered</label>
             <div className="space-y-2">
               {(formData.services || []).map((service, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md">
-                  <span className="text-sm">{service}</span>
+                <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                  <span className="text-sm text-gray-900 dark:text-gray-100">{service}</span>
                   <button
                     onClick={() => removeItem('services', index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1304,14 +1304,14 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           {/* Specializations */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Specializations</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Specializations</label>
             <div className="space-y-2">
               {(formData.specializations || []).map((spec, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md">
-                  <span className="text-sm">{spec}</span>
+                <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                  <span className="text-sm text-gray-900 dark:text-gray-100">{spec}</span>
                   <button
                     onClick={() => removeItem('specializations', index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1345,14 +1345,14 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           {/* Target Countries */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Target Countries</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Countries</label>
             <div className="space-y-2">
               {(formData.countries || []).map((country, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md">
-                  <span className="text-sm">{country}</span>
+                <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                  <span className="text-sm text-gray-900 dark:text-gray-100">{country}</span>
                   <button
                     onClick={() => removeItem('countries', index)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1390,7 +1390,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     <div className="space-y-6">
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Services & Specializations</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Services & Specializations</h2>
           <button
             onClick={onStartEdit}
             className="btn-secondary text-sm flex items-center"
@@ -1402,7 +1402,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Services Offered</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Services Offered</h3>
             <div className="flex flex-wrap gap-2">
               {data.services?.map((service, index) => (
                 <span key={index} className="chip chip-blue">
@@ -1413,7 +1413,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Specializations</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Specializations</h3>
             <div className="flex flex-wrap gap-2">
               {data.specializations?.map((spec, index) => (
                 <span key={index} className="chip chip-green">
@@ -1424,7 +1424,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Target Countries</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Countries</h3>
             <div className="flex flex-wrap gap-2">
               {data.target_countries?.map((country, index) => (
                 <span key={index} className="chip chip-yellow">
@@ -1445,11 +1445,11 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Edit Settings</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Settings</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
               Cancel
@@ -1468,7 +1468,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
               <select
                 value={formData.currency || ''}
                 onChange={(e) => onFormChange('currency', e.target.value)}
@@ -1483,7 +1483,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
               <select
                 value={formData.timezone || ''}
                 onChange={(e) => onFormChange('timezone', e.target.value)}
@@ -1499,7 +1499,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
               <select
                 value={formData.language || ''}
                 onChange={(e) => onFormChange('language', e.target.value)}
@@ -1512,7 +1512,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date Format</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
               <select
                 value={formData.date_format || ''}
                 onChange={(e) => onFormChange('date_format', e.target.value)}
@@ -1526,7 +1526,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Notifications</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Notifications</label>
             <div className="space-y-2">
               <label className="flex items-center">
                 <input
@@ -1536,9 +1536,9 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                     ...formData.notifications,
                     email_enabled: e.target.checked
                   })}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
                 />
-                <span className="ml-2 text-sm text-gray-700">Email notifications</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Email notifications</span>
               </label>
 
               <label className="flex items-center">
@@ -1549,9 +1549,9 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                     ...formData.notifications,
                     sms_enabled: e.target.checked
                   })}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
                 />
-                <span className="ml-2 text-sm text-gray-700">SMS notifications</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">SMS notifications</span>
               </label>
 
               <label className="flex items-center">
@@ -1562,9 +1562,9 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                     ...formData.notifications,
                     push_enabled: e.target.checked
                   })}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
                 />
-                <span className="ml-2 text-sm text-gray-700">Push notifications</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Push notifications</span>
               </label>
             </div>
           </div>
@@ -1576,7 +1576,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Settings</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Settings</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
@@ -1589,42 +1589,42 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-            <p className="text-sm text-gray-900">{data.settings?.currency || 'NPR'}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.currency || 'NPR'}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-            <p className="text-sm text-gray-900">{data.settings?.timezone || 'Asia/Kathmandu'}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.timezone || 'Asia/Kathmandu'}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-            <p className="text-sm text-gray-900">{data.settings?.language === 'en' ? 'English' : data.settings?.language}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.language === 'en' ? 'English' : data.settings?.language}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date Format</label>
-            <p className="text-sm text-gray-900">{data.settings?.date_format || 'DD/MM/YYYY'}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.date_format || 'DD/MM/YYYY'}</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Notifications</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notifications</label>
           <div className="space-y-1">
             <div className="flex items-center">
-              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.email_enabled ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-              <span className="text-sm text-gray-700">Email notifications</span>
+              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.email_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Email notifications</span>
             </div>
             <div className="flex items-center">
-              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.sms_enabled ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-              <span className="text-sm text-gray-700">SMS notifications</span>
+              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.sms_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">SMS notifications</span>
             </div>
             <div className="flex items-center">
-              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.push_enabled ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-              <span className="text-sm text-gray-700">Push notifications</span>
+              <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.push_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Push notifications</span>
             </div>
           </div>
         </div>
@@ -1637,10 +1637,10 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 const AgencyPreview = ({ data }) => {
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Agency Preview</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Agency Preview</h3>
       
       <div className="text-center mb-4">
-        <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto mb-3 flex items-center justify-center overflow-hidden">
+        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg mx-auto mb-3 flex items-center justify-center overflow-hidden">
           {data.logo_url ? (
             <img
               src={data.logo_url}
@@ -1648,25 +1648,25 @@ const AgencyPreview = ({ data }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <Building2 className="w-6 h-6 text-gray-400" />
+            <Building2 className="w-6 h-6 text-gray-400 dark:text-gray-500" />
           )}
         </div>
-        <h4 className="font-semibold text-gray-900">{data.name}</h4>
-        <p className="text-sm text-gray-600">{data.address}</p>
+        <h4 className="font-semibold text-gray-900 dark:text-gray-100">{data.name}</h4>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{data.address}</p>
       </div>
 
       <div className="space-y-2 text-sm">
         <div className="flex items-center">
-          <Phone className="w-4 h-4 text-gray-400 mr-2" />
-          <span>{data.phone}</span>
+          <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+          <span className="text-gray-900 dark:text-gray-100">{data.phone}</span>
         </div>
         <div className="flex items-center">
-          <Mail className="w-4 h-4 text-gray-400 mr-2" />
-          <span>{data.email}</span>
+          <Mail className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+          <span className="text-gray-900 dark:text-gray-100">{data.email}</span>
         </div>
         <div className="flex items-center">
-          <Globe className="w-4 h-4 text-gray-400 mr-2" />
-          <span>{data.website}</span>
+          <Globe className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
+          <span className="text-gray-900 dark:text-gray-100">{data.website}</span>
         </div>
       </div>
     </div>
@@ -1729,12 +1729,12 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Select Location</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Location</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X className="w-5 h-5" />
           </button>
@@ -1742,9 +1742,9 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
 
         <div className="space-y-4">
           {/* Google Maps Option */}
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Option 1: Use Google Maps</h4>
-            <p className="text-sm text-gray-600 mb-3">
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Option 1: Use Google Maps</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               Click below to open Google Maps. Find your location, right-click on the exact spot, 
               and copy the coordinates that appear.
             </p>
@@ -1758,11 +1758,11 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
           </div>
 
           {/* Manual Input Option */}
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Option 2: Enter Manually</h4>
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Option 2: Enter Manually</h4>
             <form onSubmit={handleManualSubmit} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
                 <textarea
                   name="address"
                   rows={2}
@@ -1774,7 +1774,7 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Latitude</label>
                   <input
                     type="number"
                     name="latitude"
@@ -1785,7 +1785,7 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Longitude</label>
                   <input
                     type="number"
                     name="longitude"
@@ -1803,9 +1803,9 @@ const MapSelectionModal = ({ isOpen, onClose, onLocationSelect, initialAddress }
           </div>
 
           {/* Instructions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h5 className="text-sm font-medium text-blue-900 mb-1">How to get coordinates from Google Maps:</h5>
-            <ol className="text-xs text-blue-800 list-decimal list-inside space-y-1">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <h5 className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">How to get coordinates from Google Maps:</h5>
+            <ol className="text-xs text-blue-800 dark:text-blue-300 list-decimal list-inside space-y-1">
               <li>Click "Open Google Maps" above</li>
               <li>Search for your location or navigate to it</li>
               <li>Right-click on the exact spot</li>

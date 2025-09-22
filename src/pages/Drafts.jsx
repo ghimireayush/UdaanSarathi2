@@ -662,80 +662,80 @@ const Drafts = () => {
           {/* Header Skeleton */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <div className="h-8 bg-gray-200 rounded w-32 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-64"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
             </div>
             <div className="flex space-x-3">
-              <div className="h-10 bg-gray-200 rounded w-28"></div>
-              <div className="h-10 bg-gray-200 rounded w-32"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
             </div>
           </div>
 
           {/* Search and Controls Skeleton */}
           <div className="flex justify-between items-center mb-6">
-            <div className="h-10 bg-gray-200 rounded w-80"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-80"></div>
             <div className="flex space-x-2">
-              <div className="h-10 w-10 bg-gray-200 rounded"></div>
-              <div className="h-10 w-10 bg-gray-200 rounded"></div>
+              <div className="h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
             </div>
           </div>
 
           {/* Cards Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 {/* Status bar */}
-                <div className="h-1 bg-gray-200"></div>
+                <div className="h-1 bg-gray-200 dark:bg-gray-700"></div>
                 
                 <div className="p-6 pt-12">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                       <div className="flex items-center mb-2">
-                        <div className="w-8 h-8 bg-gray-200 rounded-lg mr-3"></div>
-                        <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mr-3"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
                       </div>
                     </div>
-                    <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
                   </div>
 
                   {/* Details */}
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded mr-2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded mr-2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
-                      <div className="h-4 bg-gray-200 rounded w-28"></div>
+                      <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded mr-2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
                     </div>
                   </div>
 
                   {/* Tags */}
                   <div className="flex space-x-2 mb-4">
-                    <div className="h-6 bg-gray-200 rounded-md w-16"></div>
-                    <div className="h-6 bg-gray-200 rounded-md w-20"></div>
-                    <div className="h-6 bg-gray-200 rounded-md w-12"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md w-16"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md w-20"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md w-12"></div>
                   </div>
 
                   {/* Description */}
                   <div className="space-y-2 mb-4">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                  <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
                     <div className="flex space-x-2">
-                      <div className="h-7 bg-gray-200 rounded w-16"></div>
-                      <div className="h-7 bg-gray-200 rounded w-12"></div>
+                      <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                      <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
                     </div>
-                    <div className="h-8 bg-gray-200 rounded w-20"></div>
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                   </div>
                 </div>
               </div>
@@ -752,11 +752,11 @@ const Drafts = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center py-16">
           <div className="max-w-md mx-auto">
-            <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
             </div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-3">Failed to load drafts</h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-3">Failed to load drafts</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
               We encountered an issue while loading your drafts. Please try again or contact support if the problem persists.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -771,15 +771,15 @@ const Drafts = () => {
                   setEditingDraft(null)
                   setShowWizard(true)
                 }}
-                className="inline-flex items-center px-6 py-3 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create New Draft
               </button>
             </div>
             {error.message && (
-              <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700 font-mono">{error.message}</p>
+              <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-700 dark:text-red-300 font-mono">{error.message}</p>
               </div>
             )}
           </div>
@@ -807,10 +807,10 @@ const Drafts = () => {
               <div className="flex items-center space-x-2">
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                   draft.is_bulk_draft 
-                    ? 'bg-purple-100 text-purple-800'
+                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
                     : isDraftComplete(draft)
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
+                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                    : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                 }`}>
                   <div className={`w-2 h-2 rounded-full mr-1.5 ${
                     draft.is_bulk_draft ? 'bg-purple-400' : isDraftComplete(draft) ? 'bg-green-400' : 'bg-yellow-400'
@@ -818,12 +818,12 @@ const Drafts = () => {
                   {draft.is_bulk_draft ? 'Bulk Draft' : isDraftComplete(draft) ? 'Draft' : 'Partial'}
                 </span>
                 {draft.is_bulk_draft && (
-                  <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded font-medium">
+                  <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded font-medium">
                     {draft.total_jobs} Jobs
                   </span>
                 )}
                 {!isDraftComplete(draft) && !draft.is_bulk_draft && (
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                     Step {getDraftStepProgress(draft).currentStep}/8
                   </span>
                 )}
@@ -845,10 +845,10 @@ const Drafts = () => {
               </div>
 
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                   {draft.title || 'Untitled Draft'}
                 </h3>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                   {draft.is_bulk_draft 
                     ? (() => {
                         const countries = [...new Set(draft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
@@ -874,7 +874,7 @@ const Drafts = () => {
                 </p>
 
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <MapPin className="w-4 h-4 mr-1.5 text-primary-400" />
                     <span>
                       {draft.is_bulk_draft 
@@ -890,19 +890,19 @@ const Drafts = () => {
                     </span>
                   </div>
                   {draft.is_bulk_draft ? (
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <User className="w-4 h-4 mr-1.5 text-primary-400" />
                       <span>{draft.total_jobs} Total Jobs</span>
                     </div>
                   ) : (
                     draft.salary && (
-                      <div className="flex items-center text-sm text-gray-600">
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <DollarSign className="w-4 h-4 mr-1.5 text-primary-400" />
                         <span>{draft.salary} {draft.currency || 'AED'}</span>
                       </div>
                     )
                   )}
-                  <div className="flex items-center text-base text-gray-600">
+                  <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
                     <Calendar className="w-5 h-5 mr-2 text-primary-400" />
                     <span>Created {draft.created_at ? format(new Date(draft.created_at), 'MMM dd, yyyy') : 'Recently'}</span>
                   </div>
@@ -915,7 +915,7 @@ const Drafts = () => {
               <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                   {draft.tags.slice(0, 3).map(tag => (
-                    <span key={tag} className="text-sm bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200">
+                    <span key={tag} className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-600">
                       {tag}
                     </span>
                   ))}
@@ -929,14 +929,14 @@ const Drafts = () => {
             {/* Description Preview */}
             {draft.description && (
               <div className="mb-4">
-                <p className="text-base text-gray-600 line-clamp-2">
+                <p className="text-base text-gray-600 dark:text-gray-400 line-clamp-2">
                   {draft.description}
                 </p>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex justify-between items-center space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-between items-center space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
               <div className="flex space-x-3">
                 <InteractiveButton
                   onClick={(e) => {
@@ -945,7 +945,7 @@ const Drafts = () => {
                     setPreviewDraft(draft)
                     setShowPreviewModal(true)
                   }}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Preview
@@ -956,7 +956,7 @@ const Drafts = () => {
                     e.stopPropagation()
                     handleEdit(draft)
                   }}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
@@ -972,7 +972,7 @@ const Drafts = () => {
                     handleDelete(draft.id)
                   }}
                   disabled={deletingDrafts.has(draft.id)}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
@@ -983,9 +983,9 @@ const Drafts = () => {
         ))
       ) : (
         <div className="col-span-3 text-center py-12">
-          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No drafts found</h3>
-          <p className="text-gray-600 mb-4">
+          <FileText className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No drafts found</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {Object.values(filters).some(v => v) ? 'No drafts match your current filters.' : 'Create your first draft to get started.'}
           </p>
           <InteractiveButton
@@ -1005,11 +1005,11 @@ const Drafts = () => {
 
   // Render list view
   const renderListView = () => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
-      <table className="w-full table-auto divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-x-auto">
+      <table className="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th scope="col" className="w-12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="w-12 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               <input
                 ref={headerCheckboxRef}
                 type="checkbox"
@@ -1018,33 +1018,33 @@ const Drafts = () => {
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
             </th>
-            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Job Title
             </th>
-            <th scope="col" className="min-w-[150px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[150px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Company
             </th>
-            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Location
             </th>
-            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Salary
             </th>
-            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[100px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Created
             </th>
-            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[120px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Status
             </th>
-            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="min-w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           {drafts.length > 0 ? (
             drafts.map(draft => (
-              <tr key={draft.id} className="hover:bg-gray-50">
+              <tr key={draft.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="checkbox"
@@ -1067,16 +1067,16 @@ const Drafts = () => {
                       </div>
                     </div>
                     <div className="ml-4 min-w-0 flex-1">
-                      <div className="text-sm font-medium text-gray-900 break-words">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
                         {draft.title || 'Untitled Draft'}
                         {draft.is_bulk_draft && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
                             {draft.total_jobs} Jobs
                           </span>
                         )}
                       </div>
                       {draft.is_bulk_draft ? (
-                        <div className="text-sm text-gray-500 break-words">
+                        <div className="text-sm text-gray-500 dark:text-gray-400 break-words">
                           {draft.bulk_entries?.length || 0} entries · {(() => {
                             const countries = [...new Set(draft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
                             const countryText = countries.length === 1 ? 'country' : 'countries'
@@ -1087,7 +1087,7 @@ const Drafts = () => {
                         </div>
                       ) : (
                         draft.tags && draft.tags.length > 0 && (
-                          <div className="text-sm text-gray-500 break-words">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 break-words">
                             {draft.tags.slice(0, 2).join(', ')}
                             {draft.tags.length > 2 && ` +${draft.tags.length - 2} more`}
                           </div>
@@ -1097,7 +1097,7 @@ const Drafts = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 break-words">
+                  <div className="text-sm text-gray-900 dark:text-gray-100 break-words">
                     {draft.is_bulk_draft 
                       ? `${draft.bulk_entries?.length || 0} Companies` 
                       : (draft.company || 'No Company')
@@ -1105,7 +1105,7 @@ const Drafts = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 break-words">
+                  <div className="text-sm text-gray-900 dark:text-gray-100 break-words">
                     {draft.is_bulk_draft 
                       ? (() => {
                           const countries = [...new Set(draft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
@@ -1119,7 +1119,7 @@ const Drafts = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                  <div className="text-sm text-gray-900 dark:text-gray-100">
                     {draft.is_bulk_draft 
                       ? 'Varies by entry' 
                       : draft.salary 
@@ -1128,17 +1128,17 @@ const Drafts = () => {
                     }
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {draft.created_at ? format(new Date(draft.created_at), 'MMM dd, yyyy') : 'Recently'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-2">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       draft.is_bulk_draft 
-                        ? 'bg-purple-100 text-purple-800'
+                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
                         : isDraftComplete(draft)
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                     }`}>
                       <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                         draft.is_bulk_draft ? 'bg-purple-400' : isDraftComplete(draft) ? 'bg-green-400' : 'bg-yellow-400'
@@ -1146,7 +1146,7 @@ const Drafts = () => {
                       {draft.is_bulk_draft ? 'Bulk Draft' : isDraftComplete(draft) ? 'Draft' : 'Partial'}
                     </span>
                     {!isDraftComplete(draft) && !draft.is_bulk_draft && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                         Step {getDraftStepProgress(draft).currentStep}/8
                       </span>
                     )}
@@ -1203,14 +1203,17 @@ const Drafts = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="px-6 py-12 text-center text-sm text-gray-500">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No drafts found</h3>
-                <p className="text-gray-600 mb-4">
+              <td colSpan="8" className="px-6 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
+                <FileText className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No drafts found</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   {Object.values(filters).some(v => v) ? 'No drafts match your current filters.' : 'Create your first draft to get started.'}
                 </p>
                 <InteractiveButton
-                  onClick={() => setShowCreateModal(true)}
+                  onClick={() => {
+                    setEditingDraft(null)
+                    setShowWizard(true)
+                  }}
                   variant="primary"
                   icon={Plus}
                 >
@@ -1229,8 +1232,8 @@ const Drafts = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Drafts</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Drafts</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Create and manage job draft postings before publishing
           </p>
         </div>
@@ -1307,17 +1310,17 @@ const Drafts = () => {
       </div>
 
       {/* Minimal Filters (like Jobs page) */}
-      <div className="card p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
             <input
               type="text"
               placeholder="Search drafts by title, company..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
             />
           </div>
 
@@ -1326,7 +1329,7 @@ const Drafts = () => {
             <select
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
               <option value="">All Countries</option>
               {countries.map(country => (
@@ -1337,7 +1340,7 @@ const Drafts = () => {
             <select
               value={filters.company}
               onChange={(e) => handleFilterChange('company', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
               <option value="">All Companies</option>
               {companyOptions.map(company => (
@@ -1348,7 +1351,7 @@ const Drafts = () => {
             <select
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
               <option value="">All Categories</option>
               {categories.map(category => (
@@ -1359,7 +1362,7 @@ const Drafts = () => {
             <select
               value={filters.sortBy || 'created_date'}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
               <option value="created_date">Sort by Created Date</option>
               <option value="title">Sort by Title</option>
@@ -1371,7 +1374,7 @@ const Drafts = () => {
       </div>
 
       {/* Results Info */}
-      <div className="mb-4 text-sm text-gray-500 flex items-center justify-between">
+      <div className="mb-4 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-between">
         <span>
           Showing {drafts.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
         </span>
@@ -1384,7 +1387,7 @@ const Drafts = () => {
 
       {/* Interactive Pagination */}
       {drafts.length > 0 && pagination.totalPages > 1 && (
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg border border-gray-200">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
           <PaginationInfo
             currentPage={pagination.page}
             totalPages={Math.max(1, pagination.totalPages)}
@@ -1416,19 +1419,19 @@ const Drafts = () => {
 
       {/* Enhanced Preview Modal with Draft Flow */}
       {showPreviewModal && previewDraft && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Draft Preview</h2>
-                <p className="text-sm text-gray-600 mt-1">Review your draft completion status and details</p>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Draft Preview</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Review your draft completion status and details</p>
                 {/* Progress indicator for partial drafts */}
                 {!isDraftComplete(previewDraft) && !previewDraft.is_bulk_draft && (
                   <div className="mt-2 flex items-center space-x-2">
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-700">
                       📝 Partial Draft
                     </span>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
                       Currently at step {getDraftStepProgress(previewDraft).currentStep} of 8
                     </span>
                   </div>
@@ -1439,7 +1442,7 @@ const Drafts = () => {
                   setShowPreviewModal(false)
                   setPreviewDraft(null)
                 }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -1447,12 +1450,12 @@ const Drafts = () => {
 
             <div className="p-6">
               {/* Draft Type Section */}
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2 flex items-center">
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2 flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
                   Draft Type: {previewDraft.is_bulk_draft ? 'Bulk Draft Creation' : 'Single Draft Creation'}
                 </h3>
-                <p className="text-blue-700 text-sm">
+                <p className="text-blue-700 dark:text-blue-300 text-sm">
                   {previewDraft.is_bulk_draft 
                     ? `This bulk draft contains ${previewDraft.total_jobs} jobs across ${previewDraft.bulk_entries?.length || 0} entries and ${new Set(previewDraft.bulk_entries?.map(e => e.country)).size || 0} countries.` 
                     : 'This is a single job draft following the standard 8-step creation process.'}
@@ -1461,7 +1464,7 @@ const Drafts = () => {
                 {/* Progress indicator for bulk drafts vs single drafts */}
                 {previewDraft.is_bulk_draft ? (
                   <div className="mt-3">
-                    <div className="flex items-center justify-between text-sm text-blue-700 mb-1">
+                    <div className="flex items-center justify-between text-sm text-blue-700 dark:text-blue-300 mb-1">
                       <span>Bulk Draft Summary</span>
                       <span>{previewDraft.total_jobs} jobs · {(() => {
                         const countries = [...new Set(previewDraft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
@@ -1471,7 +1474,7 @@ const Drafts = () => {
                           : `${new Set(previewDraft.bulk_entries?.map(e => e.country)).size || 0} countries`
                       })()}</span>
                     </div>
-                    <div className="w-full bg-purple-200 rounded-full h-2">
+                    <div className="w-full bg-purple-200 dark:bg-purple-800 rounded-full h-2">
                       <div 
                         className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: '100%' }}
@@ -1503,7 +1506,7 @@ const Drafts = () => {
 
               {/* Draft Details List */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   {previewDraft.is_bulk_draft ? 'Bulk Draft Details' : 'Draft Details'}
                 </h3>
                 
@@ -1511,22 +1514,22 @@ const Drafts = () => {
                 {previewDraft.is_bulk_draft ? (
                   <div className="space-y-4">
                     {/* Summary Card */}
-                    <div className="border border-purple-200 rounded-lg overflow-hidden bg-purple-50">
+                    <div className="border border-purple-200 dark:border-purple-700 rounded-lg overflow-hidden bg-purple-50 dark:bg-purple-900/20">
                       <div className="p-4 border-l-4 border-purple-500">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-purple-900 flex items-center">
-                            <Check className="w-5 h-5 text-purple-600 mr-2" />
+                          <h4 className="font-semibold text-purple-900 dark:text-purple-300 flex items-center">
+                            <Check className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2" />
                             Bulk Draft Summary
                           </h4>
-                          <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
+                          <span className="text-xs px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
                             {previewDraft.bulk_entries?.length || 0} Entries
                           </span>
                         </div>
                         <div className="text-sm space-y-2">
-                          <div className="text-purple-800">
+                          <div className="text-purple-800 dark:text-purple-300">
                             <strong>Total Jobs:</strong> {previewDraft.total_jobs}
                           </div>
-                          <div className="text-purple-800">
+                          <div className="text-purple-800 dark:text-purple-300">
                             <strong>Countries:</strong> {(() => {
                               const countries = [...new Set(previewDraft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
                               return countries.length > 0 
@@ -1534,7 +1537,7 @@ const Drafts = () => {
                                 : '0 (Not specified)'
                             })()}
                           </div>
-                          <div className="text-purple-800">
+                          <div className="text-purple-800 dark:text-purple-300">
                             <strong>Positions:</strong> {(() => {
                               const positions = [...new Set(previewDraft.bulk_entries?.map(e => e.position).filter(Boolean))] || []
                               return positions.length > 0 
@@ -1542,7 +1545,7 @@ const Drafts = () => {
                                 : '0 types (Not specified)'
                             })()}
                           </div>
-                          <div className="text-purple-800">
+                          <div className="text-purple-800 dark:text-purple-300">
                             <strong>Description:</strong> {(() => {
                               const countries = [...new Set(previewDraft.bulk_entries?.map(e => e.country).filter(Boolean))] || []
                               const positions = [...new Set(previewDraft.bulk_entries?.map(e => e.position).filter(Boolean))] || []
@@ -1565,23 +1568,23 @@ const Drafts = () => {
                     </div>
 
                     {/* Bulk Draft Actions Note */}
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
                       <div className="flex items-start">
-                        <AlertCircle className="w-5 h-5 text-amber-500 mr-3 mt-0.5" />
+                        <AlertCircle className="w-5 h-5 text-amber-500 dark:text-amber-400 mr-3 mt-0.5" />
                         <div className="flex-1">
-                          <h5 className="font-medium text-amber-800 mb-1">Bulk Draft Publishing Options</h5>
-                          <p className="text-sm text-amber-700 mb-4">
+                          <h5 className="font-medium text-amber-800 dark:text-amber-300 mb-1">Bulk Draft Publishing Options</h5>
+                          <p className="text-sm text-amber-700 dark:text-amber-300 mb-4">
                             Choose how you want to handle this bulk draft with {previewDraft.total_jobs} jobs.
                           </p>
                           
                           <div className="space-y-4">
                             {/* Expand Button Explanation */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                              <h6 className="font-medium text-blue-800 mb-2 flex items-center">
+                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                              <h6 className="font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center">
                                 <Edit className="w-4 h-4 mr-2" />
                                 How the Expand Button Works
                               </h6>
-                              <div className="text-sm text-blue-700 space-y-2">
+                              <div className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
                                 <p>
                                   • <strong>Pre-filled Data:</strong> All information you entered while creating this bulk draft will be automatically pre-filled in the job creation wizard
                                 </p>
@@ -1614,7 +1617,7 @@ const Drafts = () => {
                                   setPreviewDraft(null)
                                   handleEdit(previewDraft, 0)
                                 }}
-                                className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                                className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm hover:shadow-md"
                                 title="Continue editing this bulk draft"
                               >
                                 <Settings className="w-4 h-4 mr-2" />
@@ -1631,17 +1634,17 @@ const Drafts = () => {
                   <div className="space-y-4">
                 
                 {/* 1. Posting Details */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.title && previewDraft.company && previewDraft.country 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.title && previewDraft.company && previewDraft.country 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         1. Posting Details
                       </h4>
@@ -1652,15 +1655,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 0) // Go to Posting Details step (step 0)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Posting Details"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.title && previewDraft.company && previewDraft.country 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.title && previewDraft.company && previewDraft.country ? 'Completed' : 'Incomplete'}
                         </span>
@@ -1668,65 +1671,65 @@ const Drafts = () => {
                     </div>
                     <div className="text-sm space-y-1">
                       {previewDraft.title ? (
-                        <div className="text-gray-700"><strong>Job Title:</strong> {previewDraft.title}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Job Title:</strong> {previewDraft.title}</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                           ⚠️ <strong>Missing:</strong> Job Title - Please add a clear job title
                         </div>
                       )}
                       {previewDraft.company ? (
-                        <div className="text-gray-700"><strong>Company:</strong> {previewDraft.company}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Company:</strong> {previewDraft.company}</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400">
                           ⚠️ <strong>Missing:</strong> Company Name - Please specify the hiring company
                         </div>
                       )}
                       {previewDraft.employer && previewDraft.employer !== previewDraft.company && (
-                        <div className="text-gray-700"><strong>Employer:</strong> {previewDraft.employer}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Employer:</strong> {previewDraft.employer}</div>
                       )}
                       {previewDraft.country ? (
-                        <div className="text-gray-700"><strong>Country:</strong> {previewDraft.country}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Country:</strong> {previewDraft.country}</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400">
                           ⚠️ <strong>Missing:</strong> Country - Please select the job location country
                         </div>
                       )}
                       {previewDraft.city && (
-                        <div className="text-gray-700"><strong>City:</strong> {previewDraft.city}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>City:</strong> {previewDraft.city}</div>
                       )}
                       {previewDraft.posting_agency && (
-                        <div className="text-gray-700"><strong>Posting Agency:</strong> {previewDraft.posting_agency}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Posting Agency:</strong> {previewDraft.posting_agency}</div>
                       )}
                       {previewDraft.lt_number ? (
-                        <div className="text-gray-700"><strong>LT Number:</strong> {previewDraft.lt_number}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>LT Number:</strong> {previewDraft.lt_number}</div>
                       ) : (
-                        <div className="text-gray-500 text-xs italic">LT Number: Not provided (will be added later)</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs italic">LT Number: Not provided (will be added later)</div>
                       )}
                       {previewDraft.chalani_number ? (
-                        <div className="text-gray-700"><strong>Chalani Number:</strong> {previewDraft.chalani_number}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Chalani Number:</strong> {previewDraft.chalani_number}</div>
                       ) : (
-                        <div className="text-gray-500 text-xs italic">Chalani Number: Not provided (will be added later)</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs italic">Chalani Number: Not provided (will be added later)</div>
                       )}
                       {previewDraft.approval_date_ad && (
-                        <div className="text-gray-700"><strong>Approval Date:</strong> {previewDraft.approval_date_ad}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Approval Date:</strong> {previewDraft.approval_date_ad}</div>
                       )}
                       {previewDraft.posting_date_ad && (
-                        <div className="text-gray-700"><strong>Posting Date:</strong> {previewDraft.posting_date_ad}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Posting Date:</strong> {previewDraft.posting_date_ad}</div>
                       )}
                       {previewDraft.announcement_type && (
-                        <div className="text-gray-700"><strong>Announcement Type:</strong> {previewDraft.announcement_type}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Announcement Type:</strong> {previewDraft.announcement_type}</div>
                       )}
                       {previewDraft.description && (
-                        <div className="text-gray-700"><strong>Description:</strong> {previewDraft.description.length > 100 ? previewDraft.description.substring(0, 100) + '...' : previewDraft.description}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Description:</strong> {previewDraft.description.length > 100 ? previewDraft.description.substring(0, 100) + '...' : previewDraft.description}</div>
                       )}
                       
                       {/* Show completion message for this section */}
                       {!previewDraft.title || !previewDraft.company || !previewDraft.country ? (
-                        <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                           📝 <strong>To complete this section:</strong> Fill in the missing required fields above and continue to save your progress.
                         </div>
                       ) : (
-                        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                           ✅ <strong>Section Complete:</strong> All required posting details have been filled.
                         </div>
                       )}
@@ -1735,17 +1738,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 2. Contract */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.period_years && previewDraft.employment_type 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.period_years && previewDraft.employment_type 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         2. Contract
                       </h4>
@@ -1756,15 +1759,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 1) // Go to Contract step (step 1)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Contract Details"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.period_years && previewDraft.employment_type 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.period_years && previewDraft.employment_type ? 'Completed' : 'Incomplete'}
                         </span>
@@ -1772,54 +1775,54 @@ const Drafts = () => {
                     </div>
                     <div className="text-sm space-y-1">
                       {previewDraft.period_years ? (
-                        <div className="text-gray-700"><strong>Contract Duration:</strong> {previewDraft.period_years} year(s)</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Contract Duration:</strong> {previewDraft.period_years} year(s)</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                           ⚠️ <strong>Missing:</strong> Contract Duration - Please specify contract period in years
                         </div>
                       )}
                       {previewDraft.employment_type ? (
-                        <div className="text-gray-700"><strong>Employment Type:</strong> {previewDraft.employment_type}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Employment Type:</strong> {previewDraft.employment_type}</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                           ⚠️ <strong>Missing:</strong> Employment Type - Please specify if Full-time, Part-time, etc.
                         </div>
                       )}
                       {previewDraft.renewable !== undefined && (
-                        <div className="text-gray-700"><strong>Renewable:</strong> {previewDraft.renewable ? 'Yes' : 'No'}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Renewable:</strong> {previewDraft.renewable ? 'Yes' : 'No'}</div>
                       )}
                       {previewDraft.hours_per_day && (
-                        <div className="text-gray-700"><strong>Working Hours:</strong> {previewDraft.hours_per_day} hours/day</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Working Hours:</strong> {previewDraft.hours_per_day} hours/day</div>
                       )}
                       {previewDraft.days_per_week && (
-                        <div className="text-gray-700"><strong>Working Days:</strong> {previewDraft.days_per_week} days/week</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Working Days:</strong> {previewDraft.days_per_week} days/week</div>
                       )}
                       {previewDraft.overtime_policy && (
-                        <div className="text-gray-700"><strong>Overtime Policy:</strong> {previewDraft.overtime_policy.replace('_', ' ')}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Overtime Policy:</strong> {previewDraft.overtime_policy.replace('_', ' ')}</div>
                       )}
                       {previewDraft.weekly_off_days !== undefined && (
-                        <div className="text-gray-700"><strong>Weekly Off Days:</strong> {previewDraft.weekly_off_days}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Weekly Off Days:</strong> {previewDraft.weekly_off_days}</div>
                       )}
                       {previewDraft.annual_leave_days && (
-                        <div className="text-gray-700"><strong>Annual Leave:</strong> {previewDraft.annual_leave_days} days</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Annual Leave:</strong> {previewDraft.annual_leave_days} days</div>
                       )}
                       {previewDraft.food && (
-                        <div className="text-gray-700"><strong>Food:</strong> {previewDraft.food}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Food:</strong> {previewDraft.food}</div>
                       )}
                       {previewDraft.accommodation && (
-                        <div className="text-gray-700"><strong>Accommodation:</strong> {previewDraft.accommodation}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Accommodation:</strong> {previewDraft.accommodation}</div>
                       )}
                       {previewDraft.transport && (
-                        <div className="text-gray-700"><strong>Transport:</strong> {previewDraft.transport}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Transport:</strong> {previewDraft.transport}</div>
                       )}
                       
                       {/* Show completion message for this section */}
                       {!previewDraft.period_years || !previewDraft.employment_type ? (
-                        <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                           📝 <strong>To complete this section:</strong> Add contract duration and employment type to define the employment terms.
                         </div>
                       ) : (
-                        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                           ✅ <strong>Section Complete:</strong> Employment contract terms are defined.
                         </div>
                       )}
@@ -1828,17 +1831,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 3. Positions */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.positions && previewDraft.positions.length > 0 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.positions && previewDraft.positions.length > 0 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         3. Positions
                       </h4>
@@ -1849,15 +1852,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 2) // Go to Positions step (step 2)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Positions"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.positions && previewDraft.positions.length > 0 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.positions && previewDraft.positions.length > 0 ? 'Completed' : 'Incomplete'}
                         </span>
@@ -1867,7 +1870,7 @@ const Drafts = () => {
                       {previewDraft.positions && previewDraft.positions.length > 0 ? (
                         <div>
                           {previewDraft.positions.map((pos, idx) => (
-                            <div key={idx} className="text-gray-700 border-b border-gray-200 pb-2 last:border-b-0 mb-2">
+                            <div key={idx} className="text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2 last:border-b-0 mb-2">
                               <div><strong>Position {idx + 1}:</strong> {pos.title}</div>
                               <div className="ml-4 text-xs space-y-1">
                                 <div>Male Vacancies: {pos.vacancies_male || 0}</div>
@@ -1879,16 +1882,16 @@ const Drafts = () => {
                               </div>
                             </div>
                           ))}
-                          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                             ✅ <strong>Section Complete:</strong> {previewDraft.positions.length} position(s) defined with salary details.
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                          <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                             ⚠️ <strong>Missing:</strong> No positions defined
                           </div>
-                          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                             📝 <strong>To complete this section:</strong> Add at least one job position with title, vacancy count, and salary information.
                           </div>
                         </div>
@@ -1898,17 +1901,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 4. Tags & Canonical Titles */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     (previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0) 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {(previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0) 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         4. Tags & Canonical Titles
                       </h4>
@@ -1919,15 +1922,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 3) // Go to Tags & Canonical Titles step (step 3)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Tags & Canonical Titles"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           (previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0) 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {(previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0) ? 'Completed' : 'Incomplete'}
                         </span>
@@ -1935,42 +1938,42 @@ const Drafts = () => {
                     </div>
                     <div className="text-sm space-y-1">
                       {previewDraft.skills && previewDraft.skills.length > 0 ? (
-                        <div className="text-gray-700"><strong>Skills:</strong> {previewDraft.skills.join(', ')}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Skills:</strong> {previewDraft.skills.join(', ')}</div>
                       ) : (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                           ⚠️ <strong>Missing:</strong> Skills - Please add required job skills
                         </div>
                       )}
                       {previewDraft.tags && previewDraft.tags.length > 0 ? (
-                        <div className="text-gray-700"><strong>Tags:</strong> {previewDraft.tags.join(', ')}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Tags:</strong> {previewDraft.tags.join(', ')}</div>
                       ) : previewDraft.skills && previewDraft.skills.length === 0 ? (
-                        <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                        <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                           ⚠️ <strong>Missing:</strong> Tags - Please add relevant job tags
                         </div>
                       ) : null}
                       {previewDraft.education_requirements && previewDraft.education_requirements.length > 0 ? (
-                        <div className="text-gray-700"><strong>Education:</strong> {previewDraft.education_requirements.join(', ')}</div>
+                        <div className="text-gray-700 dark:text-gray-300"><strong>Education:</strong> {previewDraft.education_requirements.join(', ')}</div>
                       ) : (
-                        <div className="text-gray-500 text-xs italic">Education Requirements: Not specified (optional)</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs italic">Education Requirements: Not specified (optional)</div>
                       )}
                       {previewDraft.experience_requirements ? (
-                        <div className="text-gray-700">
+                        <div className="text-gray-700 dark:text-gray-300">
                           <strong>Experience:</strong> {previewDraft.experience_requirements.min_years} years minimum
                           {previewDraft.experience_requirements.domains && (
                             <span> in {previewDraft.experience_requirements.domains.join(', ')}</span>
                           )}
                         </div>
                       ) : (
-                        <div className="text-gray-500 text-xs italic">Experience Requirements: Not specified (optional)</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs italic">Experience Requirements: Not specified (optional)</div>
                       )}
                       
                       {/* Show completion message for this section */}
                       {!((previewDraft.skills && previewDraft.skills.length > 0) || (previewDraft.tags && previewDraft.tags.length > 0)) ? (
-                        <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                           📝 <strong>To complete this section:</strong> Add skills or tags to help candidates understand job requirements.
                         </div>
                       ) : (
-                        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                           ✅ <strong>Section Complete:</strong> Job requirements and skills are defined.
                         </div>
                       )}
@@ -1979,17 +1982,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 5. Expenses */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.expenses && previewDraft.expenses.length > 0 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.expenses && previewDraft.expenses.length > 0 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         5. Expenses
                       </h4>
@@ -2000,15 +2003,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 4) // Go to Expenses step (step 4)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Expenses"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.expenses && previewDraft.expenses.length > 0 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.expenses && previewDraft.expenses.length > 0 ? 'Completed' : 'Incomplete'}
                         </span>
@@ -2018,22 +2021,22 @@ const Drafts = () => {
                       {previewDraft.expenses && previewDraft.expenses.length > 0 ? (
                         <div>
                           {previewDraft.expenses.map((expense, idx) => (
-                            <div key={idx} className="text-gray-700 border-b border-gray-200 pb-2 last:border-b-0">
+                            <div key={idx} className="text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2 last:border-b-0">
                               <div><strong>{expense.type}:</strong> {expense.who_pays} pays 
                               {expense.is_free ? ' (Free)' : expense.amount ? ` ${expense.amount} ${expense.currency} (Paid)` : ' (Paid)'}</div>
-                              {expense.notes && <div className="text-gray-500 text-xs ml-2">Note: {expense.notes}</div>}
+                              {expense.notes && <div className="text-gray-500 dark:text-gray-400 text-xs ml-2">Note: {expense.notes}</div>}
                             </div>
                           ))}
-                          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                             ✅ <strong>Section Complete:</strong> {previewDraft.expenses.length} expense item(s) detailed.
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                          <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                             ⚠️ <strong>Missing:</strong> No expense details provided
                           </div>
-                          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                             📝 <strong>To complete this section:</strong> Add expense details (medical, visa, travel, etc.) to clarify cost responsibilities.
                           </div>
                         </div>
@@ -2043,17 +2046,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 6. Cutout */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded || previewDraft.cutout.file_name || previewDraft.cutout.file_url) 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded || previewDraft.cutout.file_name || previewDraft.cutout.file_url) 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         6. Cutout
                       </h4>
@@ -2064,15 +2067,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 5) // Go to Cutout step (step 5)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Cutout"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded || previewDraft.cutout.file_name || previewDraft.cutout.file_url) 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.cutout && (previewDraft.cutout.has_file || previewDraft.cutout.is_uploaded || previewDraft.cutout.file_name || previewDraft.cutout.file_url) ? 'Completed' : 'Incomplete'}
                         </span>
@@ -2082,8 +2085,8 @@ const Drafts = () => {
                       {previewDraft.cutout && (previewDraft.cutout.file_url || previewDraft.cutout.preview_url) ? (
                         <div className="space-y-3">
                           {/* Image Preview - Enhanced */}
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
-                            <div className="text-blue-800 text-sm font-semibold mb-3 flex items-center">
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                            <div className="text-blue-800 dark:text-blue-300 text-sm font-semibold mb-3 flex items-center">
                               <Camera className="w-4 h-4 mr-2" />
                               Job Advertisement Cutout:
                             </div>
@@ -2122,23 +2125,23 @@ const Drafts = () => {
                                   fullscreenDiv.onclick = () => document.body.removeChild(fullscreenDiv)
                                   document.body.appendChild(fullscreenDiv)
                                 }}
-                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-sm font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors shadow-sm"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Full Screen
                               </button>
                             </div>
                           </div>
-                          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                             ✅ <strong>Section Complete:</strong> Job advertisement image uploaded successfully.
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                          <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                             ⚠️ <strong>Missing:</strong> No job advertisement image provided
                           </div>
-                          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                             📝 <strong>To complete this section:</strong> Upload a job advertisement image (cutout) for better visibility and engagement.
                           </div>
                         </div>
@@ -2148,17 +2151,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 7. Review */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.review && previewDraft.review.is_complete 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.review && previewDraft.review.is_complete 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         7. Review
                       </h4>
@@ -2169,15 +2172,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 6) // Go to Review step (step 6)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Review"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.review && previewDraft.review.is_complete 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.review && previewDraft.review.is_complete ? 'Completed' : 'Incomplete'}
                         </span>
@@ -2186,16 +2189,16 @@ const Drafts = () => {
                     <div className="text-sm space-y-3">
                       {previewDraft.review && previewDraft.review.is_complete ? (
                         <div className="space-y-3">
-                          <div className="bg-green-50 border border-green-200 rounded p-2">
+                          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded p-2 text-green-800 dark:text-green-300">
                             ✅ <strong>Section Complete:</strong> Review completed.
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                          <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                             ⚠️ <strong>Missing:</strong> No review provided
                           </div>
-                          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                             📝 <strong>To complete this section:</strong> Review the draft and confirm all details are correct.
                           </div>
                         </div>
@@ -2205,17 +2208,17 @@ const Drafts = () => {
                 </div>
 
                 {/* 8. Submit */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <div className={`p-4 border-l-4 ${
                     previewDraft.submit && previewDraft.submit.is_complete 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-orange-400 bg-orange-50'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : 'border-orange-400 bg-orange-50 dark:bg-orange-900/20'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 flex items-center">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         {previewDraft.submit && previewDraft.submit.is_complete 
-                          ? <Check className="w-5 h-5 text-green-600 mr-2" /> 
-                          : <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                          ? <Check className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" /> 
+                          : <Clock className="w-5 h-5 text-orange-500 dark:text-orange-400 mr-2" />
                         }
                         8. Submit
                       </h4>
@@ -2226,15 +2229,15 @@ const Drafts = () => {
                             setPreviewDraft(null)
                             handleEdit(previewDraft, 7) // Go to Submit step (step 7)
                           }}
-                          className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                           title="Edit Submit"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           previewDraft.submit && previewDraft.submit.is_complete 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-orange-100 text-orange-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                         }`}>
                           {previewDraft.submit && previewDraft.submit.is_complete ? 'Completed' : 'Incomplete'}
                         </span>
@@ -2243,16 +2246,16 @@ const Drafts = () => {
                     <div className="text-sm space-y-3">
                       {previewDraft.submit && previewDraft.submit.is_complete ? (
                         <div className="space-y-3">
-                          <div className="bg-green-50 border border-green-200 rounded p-2">
+                          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded p-2 text-green-800 dark:text-green-300">
                             ✅ <strong>Section Complete:</strong> Submission completed.
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-orange-600 bg-orange-50 px-2 py-1 rounded border-l-2 border-orange-400">
+                          <div className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border-l-2 border-orange-400 dark:border-orange-500">
                             ⚠️ <strong>Missing:</strong> No submission provided
                           </div>
-                          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
                             📝 <strong>To complete this section:</strong> Submit the draft for final approval.
                           </div>
                         </div>
@@ -2268,14 +2271,14 @@ const Drafts = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex justify-between items-center space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
               <div className="flex space-x-3">
                 <button
                   onClick={() => {
                     setShowPreviewModal(false)
                     setPreviewDraft(null)
                   }}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Back to Selection
@@ -2292,7 +2295,7 @@ const Drafts = () => {
                         setPreviewDraft(null)
                         handleEdit(previewDraft, 3) // Continue from step 3 for regular drafts
                       }}
-                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-md hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 rounded-md hover:bg-primary-100 dark:hover:bg-primary-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Continue editing this draft"
                     >
                       <Edit className="w-4 h-4 mr-2" />
@@ -2302,7 +2305,7 @@ const Drafts = () => {
                     {isDraftComplete(previewDraft) && (
                       <button
                         onClick={() => handlePublish(previewDraft)}
-                        className="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-green-400 transition-all duration-200 shadow-sm hover:shadow-md"
                         title="Publish this completed draft"
                       >
                         <Check className="w-4 h-4 mr-2" />
@@ -2319,22 +2322,22 @@ const Drafts = () => {
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-200 dark:border-gray-700">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
                   confirmAction === 'delete' 
-                    ? 'bg-red-100' 
+                    ? 'bg-red-100 dark:bg-red-900/30' 
                     : confirmAction === 'publish'
-                    ? 'bg-green-100'
-                    : 'bg-blue-100'
+                    ? 'bg-green-100 dark:bg-green-900/30'
+                    : 'bg-blue-100 dark:bg-blue-900/30'
                 }`}>
-                  {confirmAction === 'delete' && <Trash2 className="w-5 h-5 text-red-600" />}
+                  {confirmAction === 'delete' && <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />}
 
-                  {confirmAction === 'edit' && <Edit className="w-5 h-5 text-blue-600" />}
+                  {confirmAction === 'edit' && <Edit className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {confirmAction === 'delete' && 'Delete Draft'}
 
                   {confirmAction === 'edit' && 'Edit Draft'}
@@ -2344,10 +2347,10 @@ const Drafts = () => {
               <div className="mb-6">
                 {confirmAction === 'delete' && (
                   <div>
-                    <p className="text-gray-700 mb-2">
+                    <p className="text-gray-700 dark:text-gray-300 mb-2">
                       Are you sure you want to delete <strong>"{confirmData?.title}"</strong>?
                     </p>
-                    <p className="text-red-600 text-sm font-medium">
+                    <p className="text-red-600 dark:text-red-400 text-sm font-medium">
                       ⚠️ This action cannot be undone. All draft data will be permanently lost.
                     </p>
                   </div>
@@ -2357,10 +2360,10 @@ const Drafts = () => {
 
                 {confirmAction === 'edit' && confirmData?.hasChanges && (
                   <div>
-                    <p className="text-gray-700 mb-2">
+                    <p className="text-gray-700 dark:text-gray-300 mb-2">
                       You have unsaved changes in the current draft.
                     </p>
-                    <p className="text-orange-600 text-sm font-medium">
+                    <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">
                       ⚠️ Opening the editor will discard any unsaved changes.
                     </p>
                   </div>
@@ -2374,7 +2377,7 @@ const Drafts = () => {
                     setConfirmAction(null)
                     setConfirmData(null)
                   }}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
@@ -2382,9 +2385,8 @@ const Drafts = () => {
                   onClick={confirmActionHandler}
                   className={`flex-1 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
                     confirmAction === 'delete'
-                      ? 'bg-red-600 hover:bg-red-700'
-
-                      : 'bg-blue-600 hover:bg-blue-700'
+                      ? 'bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700'
+                      : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
                   }`}
                 >
                   {confirmAction === 'delete' && 'Delete Draft'}
@@ -2404,10 +2406,10 @@ const Drafts = () => {
         <div className="fixed top-4 right-4 z-50 transform transition-all duration-300 ease-in-out animate-in slide-in-from-right-full">
           <div className={`flex items-center p-4 rounded-lg shadow-xl border-l-4 min-w-[300px] max-w-[500px] ${
             toastType === 'success' 
-              ? 'bg-green-50 border-green-500 text-green-800' 
+              ? 'bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-300' 
               : toastType === 'error'
-              ? 'bg-red-50 border-red-500 text-red-800'
-              : 'bg-blue-50 border-blue-500 text-blue-800'
+              ? 'bg-red-50 dark:bg-red-900/20 border-red-500 text-red-800 dark:text-red-300'
+              : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-800 dark:text-blue-300'
           }`}>
             <div className="flex items-center">
               {toastType === 'success' && (

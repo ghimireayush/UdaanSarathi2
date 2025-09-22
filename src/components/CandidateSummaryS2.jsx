@@ -38,11 +38,20 @@ const CandidateSummaryS2 = ({
 
   if (!isOpen || !candidate) return null
 
-  const currentStage = workflowStages.find(s => s.id === candidate.application?.stage)
+  const currentStage = mainWorkflowStages.find(s => s.id === candidate.application?.stage) || 
+                     workflowStages.find(s => s.id === candidate.application?.stage)
   const rejectedStage = workflowStages.find(s => s.label === 'Rejected')
   // Check for rejected status from either the separate application prop or the candidate.application
   const currentApplication = application || candidate.application
-  const isApplicationRejected = currentApplication?.stage === rejectedStage?.id
+  const isApplicationRejected = currentApplication?.stage === rejectedStage?.id || currentApplication?.stage === 'rejected'
+
+  // Define the 4 main workflow stages
+  const mainWorkflowStages = [
+    { id: 'applied', label: 'Applied' },
+    { id: 'shortlisted', label: 'Shortlisted' },
+    { id: 'interview-scheduled', label: 'Interview Scheduled' },
+    { id: 'interview-passed', label: 'Interview Passed' }
+  ]
 
   // Define strict stage progression rules
   const getNextAllowedStage = (currentStage) => {
@@ -56,7 +65,10 @@ const CandidateSummaryS2 = ({
   }
 
   const validateStageTransition = (currentStage, targetStage) => {
-    // Only allow progression to the immediate next stage
+    // Allow staying in the same stage or moving to the next stage
+    if (currentStage === targetStage) return true
+    
+    // Allow progression to the immediate next stage
     const nextAllowed = getNextAllowedStage(currentStage)
     return targetStage === nextAllowed
   }
@@ -66,11 +78,20 @@ const CandidateSummaryS2 = ({
     try {
       const currentStage = candidate.application?.stage
       
-      // Prevent any backward flow or skipping stages
+      // Allow staying in the same stage
+      if (currentStage === newStage) {
+        setIsUpdating(false)
+        return
+      }
+      
+      // Validate stage transition
       if (!validateStageTransition(currentStage, newStage)) {
+        const currentStageLabel = mainWorkflowStages.find(s => s.id === currentStage)?.label || currentStage
+        const newStageLabel = mainWorkflowStages.find(s => s.id === newStage)?.label || newStage
+        
         await confirm({
           title: 'Invalid Stage Transition',
-          message: `You cannot move directly from "${workflowStages.find(s => s.id === currentStage)?.label}" to "${workflowStages.find(s => s.id === newStage)?.label}". Please follow the proper workflow sequence.`,
+          message: `You cannot move directly from "${currentStageLabel}" to "${newStageLabel}". Please follow the proper workflow sequence.`,
           confirmText: 'Okay',
           type: 'warning'
         })
@@ -78,8 +99,8 @@ const CandidateSummaryS2 = ({
       }
 
       // Show confirmation dialog for valid transitions
-      const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label
-      const newStageLabel = workflowStages.find(s => s.id === newStage)?.label
+      const currentStageLabel = mainWorkflowStages.find(s => s.id === currentStage)?.label || currentStage
+      const newStageLabel = mainWorkflowStages.find(s => s.id === newStage)?.label || newStage
       
       const confirmed = await confirm({
         title: 'Confirm Stage Update',
@@ -90,7 +111,13 @@ const CandidateSummaryS2 = ({
       })
 
       if (confirmed) {
-        await onUpdateStatus(candidate.id, newStage)
+        // Use the application ID from the application prop or candidate.application
+        const applicationId = application?.id || candidate.application?.id
+        if (applicationId) {
+          await onUpdateStatus(applicationId, newStage)
+        } else {
+          throw new Error('No application ID found')
+        }
       }
     } catch (error) {
       console.error('Failed to update status:', error)
@@ -155,17 +182,17 @@ const CandidateSummaryS2 = ({
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
-      <div className="absolute right-0 top-0 h-full bg-white shadow-xl" style={{ width: '60vw' }}>
+      <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Candidate Summary</h2>
-              <p className="text-sm text-gray-600 mt-1">Post-Interview Pipeline Details</p>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Candidate Summary</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Post-Interview Pipeline Details</p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               <X className="w-6 h-6" />
             </button>
@@ -174,15 +201,15 @@ const CandidateSummaryS2 = ({
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
             {/* Profile Section */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-medium text-gray-600">
+                <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                  <span className="text-2xl font-medium text-gray-600 dark:text-gray-300">
                     {candidate.name?.charAt(0)}
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{candidate.name}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{candidate.name}</h3>
                   
                   {/* Current Stage */}
                   {currentStage && (
@@ -190,13 +217,13 @@ const CandidateSummaryS2 = ({
                       <span className="chip chip-blue">
                         {currentStage.label}
                       </span>
-                      <span className="text-sm text-gray-500">Current Stage</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Current Stage</span>
                     </div>
                   )}
                   
                   {/* Job Title */}
                   {candidate.job_title && (
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                       <Briefcase className="w-4 h-4 mr-2" />
                       <span className="font-medium">Applied for:</span>
                       <span className="ml-1">{candidate.job_title}</span>
@@ -205,7 +232,7 @@ const CandidateSummaryS2 = ({
                   
                   {/* Application Date */}
                   {candidate.application?.created_at && (
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <Calendar className="w-4 h-4 mr-2" />
                       <span className="font-medium">Applied:</span>
                       <span className="ml-1">
@@ -219,35 +246,35 @@ const CandidateSummaryS2 = ({
 
             {/* Interview Information */}
             {(candidate.interviewed_at || candidate.interview_remarks) && (
-              <div className="p-6 border-b border-gray-200 bg-blue-50">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                   <MessageSquare className="w-5 h-5 mr-2 text-blue-600" />
                   Interview Details
                 </h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   {candidate.interviewed_at && (
-                    <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                       <div className="flex items-center text-sm mb-2">
                         <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="font-medium text-gray-700">Interview Date & Time</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">Interview Date & Time</span>
                       </div>
-                      <p className="text-gray-900 font-medium">
+                      <p className="text-gray-900 dark:text-gray-100 font-medium">
                         {format(new Date(candidate.interviewed_at), 'EEEE, MMM dd, yyyy')}
                       </p>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
                         {format(new Date(candidate.interviewed_at), 'HH:mm')}
                       </p>
                     </div>
                   )}
                   
                   {candidate.application?.interview_type && (
-                    <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                       <div className="flex items-center text-sm mb-2">
                         <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="font-medium text-gray-700">Interview Type</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">Interview Type</span>
                       </div>
-                      <p className="text-gray-900 font-medium">
+                      <p className="text-gray-900 dark:text-gray-100 font-medium">
                         {candidate.application.interview_type}
                       </p>
                     </div>
@@ -255,13 +282,13 @@ const CandidateSummaryS2 = ({
                 </div>
                 
                 {candidate.interview_remarks && (
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
+                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                       <MessageSquare className="w-4 h-4 mr-2 text-blue-600" />
                       Interview Remarks & Feedback
                     </h5>
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
                         {candidate.interview_remarks}
                       </p>
                     </div>
@@ -271,7 +298,7 @@ const CandidateSummaryS2 = ({
             )}
 
             {/* Contact Information */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <User className="w-5 h-5 mr-2" />
                 Contact Information
@@ -281,16 +308,16 @@ const CandidateSummaryS2 = ({
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Phone</div>
-                    <div className="text-sm text-gray-600">{candidate.phone}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Phone</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.phone}</div>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Email</div>
-                    <div className="text-sm text-gray-600">{candidate.email}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.email}</div>
                   </div>
                 </div>
                 
@@ -298,8 +325,8 @@ const CandidateSummaryS2 = ({
                   <div className="flex items-center space-x-3">
                     <CreditCard className="w-5 h-5 text-gray-400" />
                     <div>
-                      <div className="text-sm font-medium text-gray-900">Passport</div>
-                      <div className="text-sm text-gray-600">{candidate.passport_number}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Passport</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.passport_number}</div>
                     </div>
                   </div>
                 )}
@@ -307,15 +334,15 @@ const CandidateSummaryS2 = ({
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Address</div>
-                    <div className="text-sm text-gray-600">{candidate.address}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Address</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.address}</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Professional Information */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <Briefcase className="w-5 h-5 mr-2" />
                 Professional Details
@@ -323,23 +350,23 @@ const CandidateSummaryS2 = ({
               
               <div className="space-y-4">
                 <div>
-                  <h5 className="text-sm font-medium text-gray-900 mb-2">Experience</h5>
-                  <p className="text-sm text-gray-600">{candidate.experience}</p>
+                  <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Experience</h5>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{candidate.experience}</p>
                 </div>
                 
                 {candidate.education && (
                   <div>
-                    <h5 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                       <GraduationCap className="w-4 h-4 mr-1" />
                       Education
                     </h5>
-                    <p className="text-sm text-gray-600">{candidate.education}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{candidate.education}</p>
                   </div>
                 )}
                 
                 {candidate.skills && candidate.skills.length > 0 && (
                   <div>
-                    <h5 className="text-sm font-medium text-gray-900 mb-2">Skills</h5>
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Skills</h5>
                     <div className="flex flex-wrap gap-2">
                       {candidate.skills.map((skill, index) => (
                         <span key={index} className="chip chip-blue text-xs">
@@ -353,7 +380,7 @@ const CandidateSummaryS2 = ({
             </div>
 
             {/* Documents Section */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <Paperclip className="w-5 h-5 mr-2" />
                 Documents & Attachments
@@ -362,7 +389,7 @@ const CandidateSummaryS2 = ({
               {/* Upload Section */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Upload documents for current stage: {currentStage?.label}
                   </label>
                 </div>
@@ -375,12 +402,12 @@ const CandidateSummaryS2 = ({
                     className="hidden"
                     disabled={isUploading}
                   />
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-400 cursor-pointer transition-colors">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-primary-400 dark:hover:border-primary-500 cursor-pointer transition-colors">
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       {isUploading ? 'Uploading documents...' : 'Click to upload documents'}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Supports PDF, DOC, DOCX, JPG, PNG files
                     </p>
                   </div>
@@ -400,25 +427,25 @@ const CandidateSummaryS2 = ({
                     }, {})
                     
                     return Object.entries(documentsByStage).map(([stage, docs]) => (
-                      <div key={stage} className="border border-gray-200 rounded-lg p-4">
-                        <h5 className="font-medium text-gray-900 mb-3 flex items-center">
+                      <div key={stage} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                           <FileText className="w-4 h-4 mr-2 text-gray-600" />
                           {stage === 'general' ? 'General Documents' : `${stage.charAt(0).toUpperCase() + stage.slice(1)} Stage`}
-                          <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                          <span className="ml-2 text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
                             {docs.length} file{docs.length !== 1 ? 's' : ''}
                           </span>
                         </h5>
                         
                         <div className="space-y-2">
                           {docs.map((doc, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                               <div className="flex items-center space-x-3">
                                 <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
                                   <FileText className="w-4 h-4 text-primary-600" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-gray-900">{doc.name}</p>
-                                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.name}</p>
+                                  <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                                     {doc.size && (
                                       <span>{(doc.size / 1024 / 1024).toFixed(1)} MB</span>
                                     )}
@@ -458,10 +485,10 @@ const CandidateSummaryS2 = ({
                     ))
                   })()
                 ) : (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500 mb-2">No documents uploaded yet</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No documents uploaded yet</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       Upload documents to track candidate progress through each stage
                     </p>
                   </div>
@@ -471,66 +498,38 @@ const CandidateSummaryS2 = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
             <div className="flex items-center justify-between">
               {isApplicationRejected ? (
                 // Show disabled state when application is rejected
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-gray-500">Status Update:</span>
-                  <div className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded border border-gray-200">
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Status Update:</span>
+                  <div className="px-3 py-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 rounded border border-gray-200 dark:border-gray-600">
                     Application Rejected - No updates allowed
                   </div>
                 </div>
               ) : (
                 // Show simplified "Move to Next Stage" button for shortlisting
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-gray-700">Update Status:</span>
-                  {(() => {
-                    // Define strict stage progression - only allow current and next stage
-                    const getAllowedStages = (currentStageId) => {
-                      const nextStage = getNextAllowedStage(currentStageId)
-                      if (nextStage) {
-                        return [currentStageId, nextStage] // Current stage + next stage only
-                      }
-                      return [currentStageId] // Final stage - no further progression
-                    }
-
-                    const allowedStages = getAllowedStages(candidate.application?.stage)
-                    const availableStages = workflowStages.filter(stage => allowedStages.includes(stage.id))
-
-                    if (candidate.application?.stage === 'applied') {
-                      return (
-                        <button
-                          onClick={() => handleStatusUpdate('shortlisted')}
-                          disabled={isUpdating}
-                          className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {isUpdating ? 'Moving...' : 'Move to Next Stage (Shortlist)'}
-                        </button>
-                      )
-                    } else {
-                      return (
-                        <select
-                          value={candidate.application?.stage || ''}
-                          onChange={(e) => handleStatusUpdate(e.target.value)}
-                          disabled={isUpdating}
-                          className="text-sm border border-gray-300 rounded px-3 py-1 bg-white"
-                        >
-                          {availableStages.map((stage) => (
-                            <option key={stage.id} value={stage.id}>
-                              {stage.label}
-                            </option>
-                          ))}
-                        </select>
-                      )
-                    }
-                  })()}
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Update Status:</span>
+                  <select
+                    value={candidate.application?.stage || ''}
+                    onChange={(e) => handleStatusUpdate(e.target.value)}
+                    disabled={isUpdating}
+                    className="text-sm border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 transition-colors"
+                  >
+                    {mainWorkflowStages.map((stage) => (
+                      <option key={stage.id} value={stage.id}>
+                        {stage.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
               
               <div className="flex items-center space-x-2">
                 {isUpdating && (
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
                     Updating...
                   </div>

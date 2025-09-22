@@ -19,7 +19,7 @@ const DateDisplay = ({
   showIcon = true
 }) => {
   if (!date) {
-    return <span className={`text-gray-400 ${className}`}>No date</span>
+    return <span className={`text-gray-400 dark:text-gray-500 ${className}`}>No date</span>
   }
 
   const parsedDate = typeof date === 'string' ? new Date(date) : date
@@ -51,9 +51,9 @@ const DateDisplay = ({
       {showIcon && (
         <div className="flex-shrink-0 mt-0.5">
           {showTime ? (
-            <Clock className={`text-gray-400 ${iconClassName}`} />
+            <Clock className={`text-gray-400 dark:text-gray-500 ${iconClassName}`} />
           ) : (
-            <Calendar className={`text-gray-400 ${iconClassName}`} />
+            <Calendar className={`text-gray-400 dark:text-gray-500 ${iconClassName}`} />
           )}
         </div>
       )}
@@ -61,10 +61,10 @@ const DateDisplay = ({
       <div className="flex-1 min-w-0">
         <div className="flex flex-col space-y-1">
           {/* English Date */}
-          <div className={`text-sm ${isTodayDate ? 'font-medium text-primary-700' : 'text-gray-900'}`}>
+          <div className={`text-sm ${isTodayDate ? 'font-medium text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-gray-100'}`}>
             {englishFormatted}
             {isTodayDate && (
-              <span className="ml-2 text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full">
                 Today
               </span>
             )}
@@ -72,14 +72,14 @@ const DateDisplay = ({
           
           {/* Nepali Date */}
           {showNepali && nepaliFormatted && (
-            <div className="text-xs text-gray-600">
+            <div className="text-xs text-gray-600 dark:text-gray-400">
               {nepaliFormatted}
             </div>
           )}
           
           {/* Relative Time */}
           {showRelative && relativeTime && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               {relativeTime}
             </div>
           )}

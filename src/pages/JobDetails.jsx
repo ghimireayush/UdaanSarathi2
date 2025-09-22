@@ -463,7 +463,7 @@ const JobDetails = () => {
   
   const CandidateCard = ({ candidate, onShortlist, showShortlistButton = false, showSelectCheckbox = false }) => (
     <div 
-      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer bg-white dark:bg-gray-800"
       onClick={() => handleCandidateClick(candidate)}
     >
       <div className="flex items-start justify-between">
@@ -480,33 +480,33 @@ const JobDetails = () => {
             />
           )}
           
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-lg font-medium text-gray-600">
+          <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+            <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
               {candidate.name.charAt(0)}
             </span>
           </div>
           
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">{candidate.name}</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name}</h3>
               {candidate.priority_score && (
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm font-medium text-gray-700">{candidate.priority_score}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{candidate.priority_score}</span>
                 </div>
               )}
             </div>
             
             <div className="mt-2 space-y-1">
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <MapPin className="w-4 h-4 mr-1" />
                 <span>{candidate.address}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <Phone className="w-4 h-4 mr-1" />
                 <span>{candidate.phone}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <FileText className="w-4 h-4 mr-1" />
                 <span>{candidate.experience} experience</span>
               </div>
@@ -519,7 +519,7 @@ const JobDetails = () => {
                 </span>
               ))}
               {candidate.skills.length > 4 && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   +{candidate.skills.length - 4} more
                 </span>
               )}
@@ -528,7 +528,7 @@ const JobDetails = () => {
         </div>
         
         <div className="flex flex-col items-end space-y-2">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             Applied {format(new Date(candidate.applied_at), 'MMM dd')}
           </span>
           
@@ -549,14 +549,14 @@ const JobDetails = () => {
           <div className="flex items-center space-x-1">
             <button 
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-primary-600 hover:text-primary-800"
+              className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
             >
               <Eye className="w-3 h-3 mr-1 inline" />
               View Profile
             </button>
             <button 
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-gray-600 hover:text-gray-800"
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
               <Download className="w-3 h-3 mr-1 inline" />
               CV
@@ -575,17 +575,17 @@ const JobDetails = () => {
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
           
-          <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+          <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
             <div className="sm:flex sm:items-start">
               <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
                 <AlertTriangle className="h-6 w-6 text-yellow-600" />
               </div>
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                   Mark Shortlisting Complete
                 </h3>
                 <div className="mt-2">
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                     This action will finalize the shortlisting process for this job. Here's what will happen:
                   </p>
                   
@@ -621,7 +621,7 @@ const JobDetails = () => {
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={onClose}
                 disabled={isCompletingShortlisting}
               >
@@ -645,10 +645,10 @@ const JobDetails = () => {
           <div className="space-y-6">
             {/* Why I'm here section */}
             {!showShortlistPool && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 className="text-sm font-medium text-blue-800">Why I'm here</h3>
-                <p className="text-sm text-blue-700 mt-1">Verify applicants for this job and shortlist candidates.</p>
-                <div className="mt-2 text-xs text-blue-600">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Why I'm here</h3>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">Verify applicants for this job and shortlist candidates.</p>
+                <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
                   💡 Candidates are automatically ranked by skill/education match. Use filters to refine results.
                 </div>
               </div>
@@ -658,13 +658,13 @@ const JobDetails = () => {
             {!showShortlistPool && (
               <div className="mb-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900">Skill-Based Filtering (priority ranking)</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Skill-Based Filtering (priority ranking)</h3>
                   <div className="flex items-center space-x-4 mt-2 md:mt-0">
-                    <label className="text-sm font-medium text-gray-700">Show top:</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Show top:</label>
                     <select
                       value={topNFilter}
                       onChange={(e) => handleTopNFilterChange(Number(e.target.value))}
-                      className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     >
                       <option value={10}>Top 10</option>
                       <option value={20}>Top 20</option>
@@ -674,22 +674,22 @@ const JobDetails = () => {
                   </div>
                 </div>
                 
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                   Candidates ranked to the top by skill/education match. Select prioritized tags (AND semantics) to refine results:
                 </p>
                 
                 {/* Results summary */}
-                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-700">
+                    <span className="text-gray-700 dark:text-gray-300">
                       Showing {appliedCandidates.length} of {appliedCandidates.length} candidates
                       {selectedTags.length > 0 && (
-                        <span className="text-blue-600 ml-1">
+                        <span className="text-blue-600 dark:text-blue-400 ml-1">
                           (filtered by {selectedTags.length} tag{selectedTags.length !== 1 ? 's' : ''})
                         </span>
                       )}
                       {(searchParams.toString() && searchParams.toString() !== 'tab=applied') && (
-                        <span className="text-green-600 ml-2 text-xs">
+                        <span className="text-green-600 dark:text-green-400 ml-2 text-xs">
                           • Filters preserved in URL
                         </span>
                       )}
@@ -700,7 +700,7 @@ const JobDetails = () => {
                           setSelectedTags([])
                           updateUrlParams({ tags: null })
                         }}
-                        className="text-xs text-blue-600 hover:text-blue-800"
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                       >
                         Clear all filters
                       </button>
@@ -710,23 +710,23 @@ const JobDetails = () => {
 
                 {/* Shortlisting Progress */}
                 {shortlistedCandidates.length > 0 && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
                         <div>
-                          <h4 className="text-sm font-semibold text-green-800">Shortlisting Progress</h4>
-                          <p className="text-sm text-green-700">
+                          <h4 className="text-sm font-semibold text-green-800 dark:text-green-300">Shortlisting Progress</h4>
+                          <p className="text-sm text-green-700 dark:text-green-300">
                             {shortlistedCandidates.length} candidate{shortlistedCandidates.length !== 1 ? 's' : ''} shortlisted, 
                             {' '}{appliedCandidates.length} remaining to review
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-green-800">
+                        <div className="text-lg font-bold text-green-800 dark:text-green-300">
                           {Math.round((shortlistedCandidates.length / (shortlistedCandidates.length + appliedCandidates.length)) * 100)}%
                         </div>
-                        <div className="text-xs text-green-600">Complete</div>
+                        <div className="text-xs text-green-600 dark:text-green-400">Complete</div>
                       </div>
                     </div>
                   </div>
@@ -737,12 +737,12 @@ const JobDetails = () => {
                   {selectedTags.map((tag, index) => (
                     <span 
                       key={index} 
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
                     >
                       AND: {tag}
                       <button 
                         type="button" 
-                        className="flex-shrink-0 ml-1.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-blue-400 hover:bg-blue-200 hover:text-blue-500 focus:outline-none focus:bg-blue-500 focus:text-white"
+                        className="flex-shrink-0 ml-1.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-blue-400 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 hover:text-blue-500 dark:hover:text-blue-200 focus:outline-none focus:bg-blue-500 focus:text-white"
                         onClick={() => removeTag(tag)}
                       >
                         <X className="h-3 w-3" />
@@ -757,14 +757,14 @@ const JobDetails = () => {
                     <button
                       key={index}
                       onClick={() => addTag(tag)}
-                      className={`text-xs px-2 py-1 rounded ${selectedTags.includes(tag) ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                      className={`text-xs px-2 py-1 rounded ${selectedTags.includes(tag) ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                     >
                       {tag}
                     </button>
                   ))}
                 </div>
                 
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   Tag sources: original job tags + prioritized tags selected here (removable).
                 </p>
               </div>
@@ -819,12 +819,12 @@ const JobDetails = () => {
             
             {/* Candidates List Header */}
             {showShortlistPool && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-semibold text-green-900 flex items-center">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 flex items-center">
                   <UserCheck className="w-5 h-5 mr-2" />
                   Shortlisted Candidates ({shortlistedCandidates.length})
                 </h3>
-                <p className="text-sm text-green-700 mt-1">
+                <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                   These candidates have been shortlisted for this position. Click any candidate to view their full profile.
                 </p>
               </div>
@@ -845,10 +845,10 @@ const JobDetails = () => {
               ) : (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                     {showShortlistPool ? 'No shortlisted candidates' : 'No candidates found'}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     {showShortlistPool 
                       ? 'Start by shortlisting candidates from the applied candidates list.'
                       : 'Try adjusting your filters or check back later for new applications.'
@@ -863,18 +863,18 @@ const JobDetails = () => {
               <div className="border-t pt-6">
                 <button
                   onClick={() => handleShowShortlistPoolChange(!showShortlistPool)}
-                  className="flex items-center justify-between w-full p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                  className="flex items-center justify-between w-full p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg hover:bg-green-100 dark:hover:bg-green-800/30 transition-colors"
                 >
                   <div className="flex items-center">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center mr-4">
                       <UserCheck className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="text-left">
-                      <p className="font-semibold text-green-900 text-lg">Shortlist Pool</p>
-                      <p className="text-sm text-green-700">
+                      <p className="font-semibold text-green-900 dark:text-green-100 text-lg">Shortlist Pool</p>
+                      <p className="text-sm text-green-700 dark:text-green-300">
                         {shortlistedCandidates.length} candidate{shortlistedCandidates.length !== 1 ? 's' : ''} shortlisted
                       </p>
-                      <p className="text-xs text-green-600 mt-1">
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                         {showShortlistPool ? 'Click to show applied candidates' : 'Click to view shortlisted candidates'}
                       </p>
                     </div>
@@ -910,8 +910,8 @@ const JobDetails = () => {
             ) : (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No shortlisted candidates</h3>
-                <p className="text-gray-600">Start by shortlisting candidates from the Applied tab.</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No shortlisted candidates</h3>
+                <p className="text-gray-600 dark:text-gray-400">Start by shortlisting candidates from the Applied tab.</p>
               </div>
             )}
           </div>
@@ -928,8 +928,8 @@ const JobDetails = () => {
             ) : (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No scheduled interviews</h3>
-                <p className="text-gray-600">Schedule interviews from the Shortlisted tab to see them here.</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No scheduled interviews</h3>
+                <p className="text-gray-600 dark:text-gray-400">Schedule interviews from the Shortlisted tab to see them here.</p>
               </div>
             )}
           </div>
@@ -962,12 +962,12 @@ const JobDetails = () => {
       />
 
       {/* Breadcrumb */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+      <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
         <Link to="/jobs" className="hover:text-primary-600 transition-colors">
           Jobs
         </Link>
         <span>/</span>
-        <span className="text-gray-900">{job.title}</span>
+        <span className="text-gray-900 dark:text-gray-100">{job.title}</span>
       </div>
       
       {/* Job Header */}
@@ -976,9 +976,9 @@ const JobDetails = () => {
           <div className="flex-1">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{job.title}</h1>
-                <p className="text-lg text-gray-600">{job.company}</p>
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{job.title}</h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400">{job.company}</p>
+                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
                     <span>{job.city}, {job.country}</span>
@@ -998,25 +998,25 @@ const JobDetails = () => {
             
             {/* Analytics Section */}
             <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Analytics</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Analytics</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
                   <div className="flex items-center">
                     <Eye className="w-5 h-5 text-purple-600 mr-2" />
                     <div>
-                      <p className="text-sm text-purple-600 font-medium">View Count</p>
-                      <p className="text-2xl font-bold text-purple-900">{analytics?.view_count || job.view_count || 0}</p>
-                      <p className="text-xs text-purple-700">Individual job views</p>
+                      <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">View Count</p>
+                      <p className="text-2xl font-bold text-purple-900 dark:text-purple-200">{analytics?.view_count || job.view_count || 0}</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-300">Individual job views</p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-blue-600 mr-2" />
                     <div>
-                      <p className="text-sm text-blue-600 font-medium">Applicant Count</p>
-                      <div className="text-lg font-semibold text-blue-900">
+                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Applicant Count</p>
+                      <div className="text-lg font-semibold text-blue-900 dark:text-blue-200">
                         <div>Total: {analytics?.total_applicants || job.applications_count || 0}</div>
                         <div>Shortlisted: {analytics?.shortlisted_count || job.shortlisted_count || 0}</div>
                         <div>Passed: {analytics?.passed_count || 0}</div>
@@ -1032,10 +1032,10 @@ const JobDetails = () => {
       
       {/* Candidates by Phase */}
       <div className="card mt-6">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Candidates by phase</h2>
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Candidates by phase</h2>
         </div>
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
@@ -1044,15 +1044,15 @@ const JobDetails = () => {
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab.id
                     ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
                 {tab.label}
                 {tab.count > 0 && (
                   <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
                     activeTab === tab.id
-                      ? 'bg-primary-100 text-primary-600'
-                      : 'bg-gray-100 text-gray-600'
+                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                   }`}>
                     {tab.count}
                   </span>

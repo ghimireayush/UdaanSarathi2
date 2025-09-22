@@ -310,28 +310,72 @@
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .interactive-card {
-    background-color: #1f2937;
-    border-color: #374151;
-    color: #f9fafb;
-  }
-  
-  .interactive-modal-content {
-    background-color: #1f2937;
-    color: #f9fafb;
-  }
-  
-  .interactive-dropdown-menu {
-    background-color: #1f2937;
-    border-color: #374151;
-    color: #f9fafb;
-  }
-  
-  .interactive-notification {
-    background-color: #1f2937;
-    color: #f9fafb;
-  }
+.dark .interactive-card {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .interactive-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark .interactive-modal-content {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.dark .interactive-dropdown-menu {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark .interactive-dropdown-option:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark .interactive-notification {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+.dark .interactive-search-input {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .interactive-search-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .interactive-search-suggestions {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark .loading-shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+
+.dark .interactive-dropdown-menu::-webkit-scrollbar-track,
+.dark .interactive-search-suggestions::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.dark .interactive-dropdown-menu::-webkit-scrollbar-thumb,
+.dark .interactive-search-suggestions::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+.dark .interactive-dropdown-menu::-webkit-scrollbar-thumb:hover,
+.dark .interactive-search-suggestions::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
 /* Accessibility Enhancements */

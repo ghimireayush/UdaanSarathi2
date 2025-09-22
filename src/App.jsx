@@ -26,6 +26,7 @@ import ToastProvider from './components/ToastProvider'
 import ConfirmProvider from './components/ConfirmProvider'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { AgencyProvider } from './contexts/AgencyContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { PERMISSIONS } from './services/authService.js'
 import i18nService from './services/i18nService'
 import accessibilityService from './services/accessibilityService'
@@ -43,10 +44,11 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <NotificationProvider>
-        <AgencyProvider>
-          <ToastProvider>
-            <ConfirmProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <AgencyProvider>
+            <ToastProvider>
+              <ConfirmProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/member" element={<MemberLogin />} />
@@ -66,10 +68,11 @@ function App() {
                 <Route path="/teammembers" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_USERS}><Members /></PrivateRoute></Layout>} />
                 <Route path="/mvp-testing" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><MVPTestingDashboard /></PrivateRoute></Layout>} />
               </Routes>
-            </ConfirmProvider>
-          </ToastProvider>
-        </AgencyProvider>
-      </NotificationProvider>
+              </ConfirmProvider>
+            </ToastProvider>
+          </AgencyProvider>
+        </NotificationProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   )
 }

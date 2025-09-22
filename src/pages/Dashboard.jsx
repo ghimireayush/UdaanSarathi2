@@ -242,10 +242,10 @@ const Dashboard = () => {
       clickable={!!onClick}
       onClick={onClick}
       className={`p-5 ${className} transition-all duration-300 hover:scale-105 ${
-        color === 'info' ? 'border-l-4 border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100' :
-        color === 'success' ? 'border-l-4 border-green-500 bg-gradient-to-br from-green-50 to-green-100' :
-        color === 'warning' ? 'border-l-4 border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100' :
-        'border-l-4 border-gray-500 bg-gradient-to-br from-gray-50 to-gray-100'
+        color === 'info' ? 'border-l-4 border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30' :
+        color === 'success' ? 'border-l-4 border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30' :
+        color === 'warning' ? 'border-l-4 border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/30' :
+        'border-l-4 border-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/20 dark:to-gray-600/30'
       }`}
     >
       {/* Header with Icon and Title */}
@@ -259,7 +259,7 @@ const Dashboard = () => {
           }`}>
             <Icon className="w-6 h-6" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h3>
         </div>
       </div>
       
@@ -268,14 +268,14 @@ const Dashboard = () => {
         {metrics.filter(m => m.highlight).map((metric, index) => (
           <div key={index} className="text-center">
             <div className={`text-4xl font-black mb-1 ${
-              color === 'info' ? 'text-blue-700' :
-              color === 'success' ? 'text-green-700' :
-              color === 'warning' ? 'text-yellow-700' :
-              'text-gray-700'
+              color === 'info' ? 'text-blue-700 dark:text-blue-300' :
+              color === 'success' ? 'text-green-700 dark:text-green-300' :
+              color === 'warning' ? 'text-yellow-700 dark:text-yellow-300' :
+              'text-gray-700 dark:text-gray-300'
             }`}>
               {metric.value}
             </div>
-            <div className="text-sm font-normal text-gray-600">
+            <div className="text-sm font-normal text-gray-600 dark:text-gray-400">
               {metric.label}
             </div>
           </div>
@@ -283,11 +283,11 @@ const Dashboard = () => {
       </div>
       
       {/* Secondary Metrics */}
-      <div className="space-y-2 border-t border-gray-200 pt-3">
+      <div className="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
         {metrics.filter(m => !m.highlight).map((metric, index) => (
           <div key={index} className="flex justify-between items-center">
-            <span className="text-sm font-medium text-gray-600">{metric.label}</span>
-            <span className="text-sm font-bold text-gray-900">{metric.value}</span>
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{metric.label}</span>
+            <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{metric.value}</span>
           </div>
         ))}
       </div>
@@ -343,18 +343,18 @@ const Dashboard = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header + Toolbar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
           <div className="flex flex-col gap-4">
             {/* Top row: welcome + right tools */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   Welcome back, {user?.name}
                 </h1>
-                <p className="text-gray-600 mb-4 text-lg">
+                <p className="text-gray-600 dark:text-gray-400 mb-4 text-lg">
                   {isAdmin() && "Full system access - Manage all recruitment operations"}
                   {isRecipient() && "Manage jobs, applications, interviews, and workflow"}
                   {isCoordinator() && "Handle scheduling, notifications, and document management"}
@@ -365,7 +365,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-2">
                 <div className="relative hidden lg:block">
                   <input
-                    className="pl-9 pr-3 py-2 w-72 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="pl-9 pr-3 py-2 w-72 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="Search jobs, candidates..."
                   />
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -373,16 +373,16 @@ const Dashboard = () => {
                 <div className="relative" ref={notifRef}>
                   <button
                     onClick={() => setShowNotifMenu(v => !v)}
-                    className="relative p-2 rounded-md border hover:bg-gray-50"
+                    className="relative p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
                     aria-label="Notifications"
                   >
-                    <Bell className="w-5 h-5 text-gray-600" />
+                    <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     <span className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-white text-[10px] px-1">2</span>
                   </button>
                   {showNotifMenu && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg z-10 p-2 text-sm">
-                      <div className="font-medium text-gray-800 mb-1">Notifications</div>
-                      <div className="text-gray-600">2 new applicants today</div>
+                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 p-2 text-sm">
+                      <div className="font-medium text-gray-800 dark:text-gray-200 mb-1">Notifications</div>
+                      <div className="text-gray-600 dark:text-gray-400">2 new applicants today</div>
                     </div>
                   )}
                 </div>
@@ -396,23 +396,23 @@ const Dashboard = () => {
                   date={new Date()} 
                   showNepali={true} 
                   showTime={true} 
-                  className="text-sm bg-blue-50 px-3 py-2 rounded-lg border border-blue-200" 
+                  className="text-sm bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300" 
                   iconClassName="w-4 h-4"
                 />
-                <div className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
-                  <Shield className="w-4 h-4 text-green-600" />
-                  <span className="text-sm text-green-700 font-medium capitalize">{user?.role} Access</span>
+                <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg border border-green-200 dark:border-green-700">
+                  <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-sm text-green-700 dark:text-green-300 font-medium capitalize">{user?.role} Access</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                  <Activity className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <Activity className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
                     Updated: {lastUpdated.toLocaleTimeString()}
                   </span>
                 </div>
                 {filters.customStartDate && filters.customEndDate && (
-                  <div className="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
-                    <Calendar className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm text-blue-700 font-medium">
+                  <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
                       Custom Range: {new Date(filters.customStartDate).toLocaleDateString()} - {new Date(filters.customEndDate).toLocaleDateString()}
                     </span>
                   </div>
@@ -478,7 +478,7 @@ const Dashboard = () => {
                   
                   <button
                     onClick={handleRefresh}
-                    className={`p-2 border rounded-md hover:bg-gray-50 ${isRefreshing ? 'opacity-60 cursor-wait' : ''}`}
+                    className={`p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${isRefreshing ? 'opacity-60 cursor-wait' : ''}`}
                     aria-label="Refresh"
                     title="Refresh"
                   >
@@ -520,25 +520,25 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <PermissionGuard permission={PERMISSIONS.CREATE_JOB}>
               <InteractiveCard 
                 hoverable 
                 clickable
                 onClick={() => navigate('/drafts')}
-                className="p-4 cursor-pointer group border border-gray-200 hover:border-blue-300 transition-all duration-300"
+                className="p-4 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300"
               >
                 <div className="flex flex-col items-center text-center space-y-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <FileText className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
+                    <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">Create Job</p>
-                    <div className="bg-blue-50 rounded-lg px-2 py-1">
-                      <p className="text-lg font-bold text-blue-600">{analytics.jobs?.drafts || 0}</p>
-                      <p className="text-xs text-blue-500 uppercase tracking-wide">Drafts</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">Create Job</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg px-2 py-1">
+                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analytics.jobs?.drafts || 0}</p>
+                      <p className="text-xs text-blue-500 dark:text-blue-400 uppercase tracking-wide">Drafts</p>
                     </div>
                   </div>
                 </div>
@@ -550,17 +550,17 @@ const Dashboard = () => {
                 hoverable 
                 clickable
                 onClick={() => navigate('/applications')}
-                className="p-4 cursor-pointer group border border-gray-200 hover:border-green-300 transition-all duration-300"
+                className="p-4 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-500 transition-all duration-300"
               >
                 <div className="flex flex-col items-center text-center space-y-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                    <Users className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors">
+                    <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-1">Applications</p>
-                    <div className="bg-green-50 rounded-lg px-2 py-1">
-                      <p className="text-lg font-bold text-green-600">{analytics.applications?.applicants || 0}</p>
-                      <p className="text-xs text-green-500 uppercase tracking-wide">Applicants</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors mb-1">Applications</p>
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg px-2 py-1">
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">{analytics.applications?.applicants || 0}</p>
+                      <p className="text-xs text-green-500 dark:text-green-400 uppercase tracking-wide">Applicants</p>
                     </div>
                   </div>
                 </div>
@@ -572,17 +572,17 @@ const Dashboard = () => {
                 hoverable 
                 clickable
                 onClick={() => navigate('/interviews')}
-                className="p-4 cursor-pointer group border border-gray-200 hover:border-purple-300 transition-all duration-300"
+                className="p-4 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-300"
               >
                 <div className="flex flex-col items-center text-center space-y-3">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                    <Calendar className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors">
+                    <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-1">Interviews</p>
-                    <div className="bg-purple-50 rounded-lg px-2 py-1">
-                      <p className="text-lg font-bold text-purple-600">{analytics.interviews?.weeklyPending || 0}</p>
-                      <p className="text-xs text-purple-500 uppercase tracking-wide">Pending</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors mb-1">Interviews</p>
+                    <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg px-2 py-1">
+                      <p className="text-lg font-bold text-purple-600 dark:text-purple-400">{analytics.interviews?.weeklyPending || 0}</p>
+                      <p className="text-xs text-purple-500 dark:text-purple-400 uppercase tracking-wide">Pending</p>
                     </div>
                   </div>
                 </div>
@@ -594,17 +594,17 @@ const Dashboard = () => {
                 hoverable 
                 clickable
                 onClick={() => navigate('/workflow')}
-                className="p-4 cursor-pointer group border border-gray-200 hover:border-orange-300 transition-all duration-300"
+                className="p-4 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-500 transition-all duration-300"
               >
                 <div className="flex flex-col items-center text-center space-y-3">
-                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                    <BarChart3 className="w-6 h-6 text-orange-600" />
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors">
+                    <BarChart3 className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-orange-600 transition-colors mb-1">Workflow</p>
-                    <div className="bg-orange-50 rounded-lg px-2 py-1">
-                      <p className="text-lg font-bold text-orange-600">{analytics.applications?.selected || 0}</p>
-                      <p className="text-xs text-orange-500 uppercase tracking-wide">In Process</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors mb-1">Workflow</p>
+                    <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg px-2 py-1">
+                      <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{analytics.applications?.selected || 0}</p>
+                      <p className="text-xs text-orange-500 dark:text-orange-400 uppercase tracking-wide">In Process</p>
                     </div>
                   </div>
                 </div>
@@ -614,16 +614,16 @@ const Dashboard = () => {
         </div>
 
         {/* Sticky Live Status Footer */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky bottom-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sticky bottom-2">
           <div className="flex items-center justify-center">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="font-medium">Live Data</span>
               </div>
-              <span className="text-gray-300">•</span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
               <span>Updates every 5 mins</span>
-              <span className="text-gray-300">•</span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
               <span>Last refresh: {lastUpdated.toLocaleTimeString()}</span>
             </div>
           </div>

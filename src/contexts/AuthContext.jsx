@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import authService, { ROLES, PERMISSIONS } from '../services/authService.js'
+import { auditService } from '../services/index.js'
 
 const AuthContext = createContext(null)
 
@@ -69,6 +70,18 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true)
       setPermissions(result.permissions)
       
+      // Log successful login
+      try {
+        await auditService.logLogin({
+          user: result.user,
+          ip_address: '127.0.0.1', // In production, get real IP
+          user_agent: navigator.userAgent,
+          session_id: `session_${Date.now()}`
+        })
+      } catch (auditError) {
+        console.warn('Failed to log login event:', auditError)
+      }
+      
       return result
     } catch (error) {
       console.error('Login error:', error)
@@ -86,6 +99,20 @@ export const AuthProvider = ({ children }) => {
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
+      
+      // Log successful member login
+      if (result.success) {
+        try {
+          await auditService.logLogin({
+            user: result.user,
+            ip_address: '127.0.0.1', // In production, get real IP
+            user_agent: navigator.userAgent,
+            session_id: `session_${Date.now()}`
+          })
+        } catch (auditError) {
+          console.warn('Failed to log member login event:', auditError)
+        }
+      }
       
       return result
     } catch (error) {
@@ -132,7 +159,21 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    // Log logout before clearing user data
+    if (user) {
+      try {
+        await auditService.logLogout({
+          user: user,
+          ip_address: '127.0.0.1', // In production, get real IP
+          user_agent: navigator.userAgent,
+          session_id: `session_${Date.now()}`
+        })
+      } catch (auditError) {
+        console.warn('Failed to log logout event:', auditError)
+      }
+    }
+    
     authService.logout()
     setUser(null)
     setIsAuthenticated(false)

@@ -135,15 +135,15 @@ const InteractiveDropdown = ({
         onKeyDown={handleKeyDown}
         disabled={disabled}
         className={`
-          w-full flex items-center justify-between bg-white border border-gray-300 rounded-lg
+          w-full flex items-center justify-between bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
           transition-all duration-200
           ${sizes[size]}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 dark:hover:border-gray-500'}
           ${isOpen ? 'border-primary-500 ring-2 ring-primary-200' : ''}
         `}
       >
-        <span className={`truncate ${!value || (Array.isArray(value) && value.length === 0) ? 'text-gray-500' : 'text-gray-900'}`}>
+        <span className={`truncate ${!value || (Array.isArray(value) && value.length === 0) ? 'text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>
           {getDisplayValue()}
         </span>
         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -151,17 +151,17 @@ const InteractiveDropdown = ({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-primary-300 rounded-lg shadow-xl z-50 max-h-60 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border-2 border-primary-300 dark:border-primary-600 rounded-lg shadow-xl z-50 max-h-60 overflow-hidden">
           {/* Search Input */}
           {searchable && (
-            <div className="p-3 border-b border-gray-200 bg-gray-50">
+            <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
               <input
                 ref={searchInputRef}
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search options..."
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
           )}
@@ -169,7 +169,7 @@ const InteractiveDropdown = ({
           {/* Options List */}
           <div className="overflow-y-auto max-h-48">
             {filteredOptions.length === 0 ? (
-              <div className="px-4 py-4 text-sm text-gray-500 text-center bg-gray-50">
+              <div className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 text-center bg-gray-50 dark:bg-gray-700">
                 {searchTerm ? 'No options found' : 'No options available'}
               </div>
             ) : (
@@ -180,9 +180,9 @@ const InteractiveDropdown = ({
                   onClick={() => handleOptionClick(option)}
                   className={`
                     w-full px-4 py-3 text-left text-sm flex items-center justify-between
-                    transition-colors duration-150 border-b border-gray-100 last:border-b-0
-                    ${index === highlightedIndex ? 'bg-primary-100 text-primary-800 font-medium' : 'hover:bg-gray-100'}
-                    ${isSelected(option) ? 'bg-primary-50 text-primary-900 font-semibold' : 'text-gray-900'}
+                    transition-colors duration-150 border-b border-gray-100 dark:border-gray-700 last:border-b-0
+                    ${index === highlightedIndex ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200 font-medium' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}
+                    ${isSelected(option) ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-900 dark:text-primary-100 font-semibold' : 'text-gray-900 dark:text-gray-100'}
                   `}
                 >
                   <span className="truncate">{option.label}</span>

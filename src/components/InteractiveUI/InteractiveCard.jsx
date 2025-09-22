@@ -13,16 +13,16 @@ const InteractiveCard = forwardRef((props, ref) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
-  const baseClasses = 'bg-white rounded-lg border transition-all duration-200'
+  const baseClasses = 'bg-white dark:bg-gray-800 rounded-lg border transition-all duration-200'
   
   const variants = {
-    default: 'border-gray-200 shadow-sm',
-    elevated: 'border-gray-200 shadow-lg',
-    outlined: 'border-2 border-gray-300',
-    primary: 'border-primary-200 bg-primary-50',
-    success: 'border-green-200 bg-green-50',
-    warning: 'border-yellow-200 bg-yellow-50',
-    danger: 'border-red-200 bg-red-50'
+    default: 'border-gray-200 dark:border-gray-700 shadow-sm',
+    elevated: 'border-gray-200 dark:border-gray-700 shadow-lg',
+    outlined: 'border-2 border-gray-300 dark:border-gray-600',
+    primary: 'border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/20',
+    success: 'border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/20',
+    warning: 'border-yellow-200 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20',
+    danger: 'border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/20'
   }
 
   const hoverClasses = hoverable ? 'hover:shadow-lg hover:-translate-y-1' : ''
@@ -67,7 +67,7 @@ const InteractiveCard = forwardRef((props, ref) => {
     >
       {/* Animated border on hover */}
       {isHovered && hoverable && (
-        <div className="absolute inset-0 rounded-lg border-2 border-primary-300 opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 rounded-lg border-2 border-primary-300 dark:border-primary-500 opacity-50 pointer-events-none" />
       )}
       
       {children}

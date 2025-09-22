@@ -68,13 +68,13 @@ const InteractiveModal = ({
       className={`
         fixed inset-0 z-50 flex items-center justify-center p-4
         transition-all duration-200
-        ${isAnimating ? 'bg-black bg-opacity-50' : 'bg-black bg-opacity-0'}
+        ${isAnimating ? 'bg-black bg-opacity-50 dark:bg-opacity-70' : 'bg-black bg-opacity-0'}
       `}
       onClick={handleOverlayClick}
     >
       <div 
         className={`
-          bg-white rounded-lg shadow-2xl w-full ${sizes[size]} max-h-[90vh] overflow-hidden
+          bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full ${sizes[size]} max-h-[90vh] overflow-hidden
           transition-all duration-200 transform
           ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
           ${className}
@@ -82,9 +82,9 @@ const InteractiveModal = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             {title && (
-              <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
             )}
             {showCloseButton && (
               <InteractiveButton

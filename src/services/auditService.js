@@ -168,6 +168,215 @@ class AuditService {
   }
 
   /**
+   * Log user login
+   * @param {Object} params - Login parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logLogin(params) {
+    const { user, ip_address, user_agent, session_id } = params
+    
+    return this.logEvent({
+      user_id: user.id || user.username || 'unknown_user',
+      user_name: user.name || user.username || 'Unknown User',
+      action: 'LOGIN',
+      resource_type: 'AUTH',
+      resource_id: user.id || 'auth_session',
+      changes: {},
+      ip_address: ip_address || '127.0.0.1',
+      user_agent: user_agent || navigator.userAgent || 'Unknown',
+      session_id: session_id || 'unknown_session',
+      metadata: {
+        login_timestamp: new Date().toISOString(),
+        browser: user_agent || navigator.userAgent || 'Unknown',
+        role: user.role || 'Unknown'
+      }
+    })
+  }
+
+  /**
+   * Log user logout
+   * @param {Object} params - Logout parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logLogout(params) {
+    const { user, ip_address, user_agent, session_id } = params
+    
+    return this.logEvent({
+      user_id: user.id || user.username || 'unknown_user',
+      user_name: user.name || user.username || 'Unknown User',
+      action: 'LOGOUT',
+      resource_type: 'AUTH',
+      resource_id: user.id || 'auth_session',
+      changes: {},
+      ip_address: ip_address || '127.0.0.1',
+      user_agent: user_agent || navigator.userAgent || 'Unknown',
+      session_id: session_id || 'unknown_session',
+      metadata: {
+        logout_timestamp: new Date().toISOString(),
+        browser: user_agent || navigator.userAgent || 'Unknown',
+        role: user.role || 'Unknown'
+      }
+    })
+  }
+
+  /**
+   * Log job creation
+   * @param {Object} params - Job creation parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logJobCreation(params) {
+    const { user, jobData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'CREATE',
+      resource_type: 'JOB_POSTING',
+      resource_id: jobData.id || 'new_job',
+      changes: {
+        title: { from: null, to: jobData.title },
+        status: { from: null, to: jobData.status },
+        location: { from: null, to: jobData.location }
+      },
+      new_values: jobData,
+      metadata: {
+        job_title: jobData.title,
+        job_location: jobData.location,
+        job_type: jobData.type,
+        creation_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
+   * Log job update
+   * @param {Object} params - Job update parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logJobUpdate(params) {
+    const { user, oldData, newData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'UPDATE',
+      resource_type: 'JOB_POSTING',
+      resource_id: newData.id || oldData.id,
+      changes: this.calculateJobChanges(oldData, newData),
+      old_values: oldData,
+      new_values: newData,
+      metadata: {
+        job_title: newData.title || oldData.title,
+        update_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
+   * Log job deletion
+   * @param {Object} params - Job deletion parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logJobDeletion(params) {
+    const { user, jobData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'DELETE',
+      resource_type: 'JOB_POSTING',
+      resource_id: jobData.id,
+      changes: {
+        status: { from: jobData.status, to: 'deleted' }
+      },
+      old_values: jobData,
+      metadata: {
+        job_title: jobData.title,
+        deletion_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
+   * Log application creation
+   * @param {Object} params - Application creation parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logApplicationCreation(params) {
+    const { user, applicationData, jobData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'CREATE',
+      resource_type: 'APPLICATION',
+      resource_id: applicationData.id || 'new_application',
+      changes: {
+        status: { from: null, to: applicationData.status },
+        job_id: { from: null, to: applicationData.job_id }
+      },
+      new_values: applicationData,
+      metadata: {
+        job_title: jobData?.title,
+        candidate_name: applicationData.candidate_name,
+        creation_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
+   * Log application status update
+   * @param {Object} params - Application update parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logApplicationUpdate(params) {
+    const { user, oldData, newData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'UPDATE',
+      resource_type: 'APPLICATION',
+      resource_id: newData.id || oldData.id,
+      changes: this.calculateApplicationChanges(oldData, newData),
+      old_values: oldData,
+      new_values: newData,
+      metadata: {
+        candidate_name: newData.candidate_name || oldData.candidate_name,
+        update_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
+   * Log interview scheduling
+   * @param {Object} params - Interview scheduling parameters
+   * @returns {Promise<Object>} Audit log entry
+   */
+  async logInterviewScheduling(params) {
+    const { user, interviewData, applicationData } = params
+    
+    return this.logEvent({
+      user_id: user.id || 'current_user',
+      user_name: user.name || 'Current User',
+      action: 'CREATE',
+      resource_type: 'INTERVIEW',
+      resource_id: interviewData.id || 'new_interview',
+      changes: {
+        status: { from: null, to: interviewData.status },
+        scheduled_date: { from: null, to: interviewData.scheduled_date }
+      },
+      new_values: interviewData,
+      metadata: {
+        candidate_name: applicationData?.candidate_name,
+        interview_type: interviewData.type,
+        scheduled_date: interviewData.scheduled_date,
+        creation_timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  /**
    * Log agency profile update
    * @param {Object} params - Update parameters
    * @returns {Promise<Object>} Audit log entry
@@ -237,6 +446,56 @@ class AuditService {
     relevantFields.forEach(field => {
       const oldValue = this.getNestedValue(oldData, field)
       const newValue = this.getNestedValue(newData, field)
+      
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        changes[field] = {
+          from: oldValue,
+          to: newValue
+        }
+      }
+    })
+    
+    return changes
+  }
+
+  /**
+   * Calculate changes for job data
+   * @param {Object} oldData - Original job data
+   * @param {Object} newData - Updated job data
+   * @returns {Object} Changes object
+   */
+  calculateJobChanges(oldData, newData) {
+    const changes = {}
+    const jobFields = ['title', 'description', 'status', 'location', 'salary_min', 'salary_max', 'requirements', 'benefits']
+    
+    jobFields.forEach(field => {
+      const oldValue = oldData[field]
+      const newValue = newData[field]
+      
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        changes[field] = {
+          from: oldValue,
+          to: newValue
+        }
+      }
+    })
+    
+    return changes
+  }
+
+  /**
+   * Calculate changes for application data
+   * @param {Object} oldData - Original application data
+   * @param {Object} newData - Updated application data
+   * @returns {Object} Changes object
+   */
+  calculateApplicationChanges(oldData, newData) {
+    const changes = {}
+    const applicationFields = ['status', 'stage', 'notes', 'rating', 'feedback']
+    
+    applicationFields.forEach(field => {
+      const oldValue = oldData[field]
+      const newValue = newData[field]
       
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         changes[field] = {
@@ -353,7 +612,10 @@ class AuditService {
       'APPLICATION': 'Application',
       'INTERVIEW': 'Interview',
       'USER': 'User',
-      'AUTH': 'Authentication'
+      'AUTH': 'Authentication',
+      'MEMBER': 'Member',
+      'WORKFLOW': 'Workflow',
+      'SETTINGS': 'Settings'
     }
     return labels[resourceType] || resourceType
   }

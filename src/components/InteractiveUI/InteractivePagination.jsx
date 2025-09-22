@@ -103,7 +103,7 @@ const InteractivePagination = ({
           {visiblePages.map((page, index) => {
             if (page === '...') {
               return (
-                <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500">
+                <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-500 dark:text-gray-400">
                   <MoreHorizontal className="w-4 h-4" />
                 </span>
               )
@@ -169,7 +169,7 @@ export const PaginationInfo = ({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className={`text-sm text-gray-600 ${className}`}>
+    <div className={`text-sm text-gray-600 dark:text-gray-400 ${className}`}>
       Showing {startItem} to {endItem} of {totalItems} results
       {totalPages > 1 && (
         <span className="ml-2">
@@ -189,11 +189,11 @@ export const ItemsPerPageSelector = ({
 }) => {
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <span className="text-sm text-gray-600">Show:</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400">Show:</span>
       <select
         value={value}
         onChange={(e) => onChange?.(parseInt(e.target.value))}
-        className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
       >
         {options.map(option => (
           <option key={option} value={option}>
@@ -201,7 +201,7 @@ export const ItemsPerPageSelector = ({
           </option>
         ))}
       </select>
-      <span className="text-sm text-gray-600">per page</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400">per page</span>
     </div>
   )
 }

@@ -221,25 +221,25 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     const isUnattendedInterview = isUnattended(interview)
 
     if (isUnattendedInterview) {
-      return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Unattended</span>
+      return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Unattended</span>
     }
 
     switch (interview.status) {
       case 'scheduled':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Scheduled</span>
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">Scheduled</span>
       case 'completed':
         if (interview.result === 'pass') {
-          return <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Passed</span>
+          return <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Passed</span>
         } else if (interview.result === 'fail') {
-          return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Failed</span>
+          return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Failed</span>
         }
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Completed</span>
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">Completed</span>
       case 'cancelled':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Cancelled</span>
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Cancelled</span>
       case 'rescheduled':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Rescheduled</span>
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">Rescheduled</span>
       default:
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Scheduled</span>
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">Scheduled</span>
     }
   }
 
@@ -251,7 +251,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
     if (interview.status === 'completed') {
       return (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-gray-400">
           Interview completed - {interview.result || 'No result recorded'}
         </div>
       )
@@ -266,7 +266,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               e.stopPropagation()
               handleAction(candidate, 'send_reminder')
             }}
-            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+            className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
           >
             <Send className="w-3 h-3 mr-1 inline" />
             Send Reminder
@@ -276,7 +276,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               e.stopPropagation()
               handleAction(candidate, 'mark_interviewed')
             }}
-            className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors"
+            className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors"
           >
             <Check className="w-3 h-3 mr-1 inline" />
             Mark Interviewed
@@ -389,12 +389,12 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     return (
       <div className="fixed inset-0 z-50 overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
-        <div className="absolute right-0 top-0 h-full bg-white shadow-xl" style={{ width: '60vw' }}>
+        <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
           <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Applicant Summary</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Applicant Summary</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -404,20 +404,20 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               {/* Profile Section */}
               <div className="mb-8">
                 <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-medium text-gray-600">
+                  <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                    <span className="text-2xl font-medium text-gray-600 dark:text-gray-300">
                       {candidate.name.charAt(0)}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{candidate.name}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{candidate.name}</h3>
                     {candidate.priority_score && (
                       <div className="flex items-center space-x-2 mb-2">
                         <Star className="w-5 h-5 text-yellow-500" />
-                        <span className="text-lg font-medium text-gray-700">Priority Score: {candidate.priority_score}</span>
+                        <span className="text-lg font-medium text-gray-700 dark:text-gray-300">Priority Score: {candidate.priority_score}</span>
                       </div>
                     )}
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       Applied {format(new Date(candidate.applied_at), 'MMM dd, yyyy')}
                     </div>
                   </div>
@@ -428,15 +428,15 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                   <div className="flex items-center space-x-3">
                     <Phone className="w-5 h-5 text-gray-400" />
                     <div>
-                      <div className="text-sm font-medium text-gray-900">Phone</div>
-                      <div className="text-sm text-gray-600">{candidate.phone}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Phone</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.phone}</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-gray-400" />
                     <div>
-                      <div className="text-sm font-medium text-gray-900">Email</div>
-                      <div className="text-sm text-gray-600">{candidate.email}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.email}</div>
                     </div>
                   </div>
                 </div>
@@ -445,29 +445,29 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               {/* Interview Details */}
               {candidate.interview && (
                 <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                     <Calendar className="w-5 h-5 mr-2" />
                     Interview Details
                   </h4>
-                  <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Date & Time</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Date & Time</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                           {format(parseISO(candidate.interview.scheduled_at), 'MMM dd, yyyy h:mm a')}
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Duration</div>
-                        <div className="text-sm text-gray-600">{candidate.interview.duration} minutes</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Duration</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.duration} minutes</div>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Location</div>
-                        <div className="text-sm text-gray-600">{candidate.interview.location}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Location</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.location}</div>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Interviewer</div>
-                        <div className="text-sm text-gray-600">{candidate.interview.interviewer}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Interviewer</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.interviewer}</div>
                       </div>
                     </div>
                   </div>
@@ -476,7 +476,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
               {/* Notes Field */}
               <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                   <MessageSquare className="w-5 h-5 mr-2" />
                   Interview Notes
                 </h4>
@@ -485,7 +485,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add notes about the interview..."
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 <button
                   onClick={() => handleAction(candidate, 'take_notes')}
@@ -500,18 +500,18 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               <div className="space-y-6">
                 {/* Address */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                     <Home className="w-5 h-5 mr-2" />
                     Address
                   </h4>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-700">{candidate.address}</p>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <p className="text-gray-700 dark:text-gray-300">{candidate.address}</p>
                   </div>
                 </div>
 
                 {/* Skills */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                     <Briefcase className="w-5 h-5 mr-2" />
                     Skills
                   </h4>
@@ -526,38 +526,38 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
                 {/* Education */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                     <GraduationCap className="w-5 h-5 mr-2" />
                     Education
                   </h4>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-700">{candidate.education || 'Not specified'}</p>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <p className="text-gray-700 dark:text-gray-300">{candidate.education || 'Not specified'}</p>
                   </div>
                 </div>
 
                 {/* Experience */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                     <FileText className="w-5 h-5 mr-2" />
                     Experience
                   </h4>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-700">{candidate.experience}</p>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <p className="text-gray-700 dark:text-gray-300">{candidate.experience}</p>
                   </div>
                 </div>
 
                 {/* CV Section */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">CV</h4>
-                  <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">CV</h4>
+                  <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <FileText className="w-8 h-8 text-gray-400" />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {candidate.name}_CV.pdf
                           </div>
-                          <div className="text-xs text-gray-500">PDF • 2.3 MB</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">PDF • 2.3 MB</div>
                         </div>
                       </div>
                       <button className="btn-secondary text-sm">
@@ -597,14 +597,14 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
             onClick={() => setActiveSubtab(subtab.id)}
             className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeSubtab === subtab.id
               ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
           >
             {subtab.label}
             {subtab.count > 0 && (
               <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeSubtab === subtab.id
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-600'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                 {subtab.count}
               </span>
@@ -624,24 +624,24 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
             return (
               <div
                 key={candidate.id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer bg-white dark:bg-gray-800"
                 onClick={() => handleCandidateClick(candidate)}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="text-lg font-medium text-gray-600">
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                      <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
                         {candidate.name.charAt(0)}
                       </span>
                     </div>
 
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">{candidate.name}</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name}</h3>
                         {getStatusBadge(interview)}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <div className="flex items-center">
                           <Calendar className="w-4 h-4 mr-2" />
                           <span>{format(interviewDate, 'MMM dd, yyyy')}</span>
@@ -656,7 +656,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                         </div>
                       </div>
 
-                      <div className="flex items-center text-sm text-gray-600 mb-3">
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <User className="w-4 h-4 mr-2" />
                         <span>Interviewer: {interview.interviewer}</span>
                       </div>
@@ -690,7 +690,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                       e.stopPropagation()
                       handleCandidateClick(candidate)
                     }}
-                    className="text-sm text-primary-600 hover:text-primary-800 transition-colors flex items-center"
+                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors flex items-center"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     View Details
@@ -702,8 +702,8 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
         ) : (
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No scheduled interviews</h3>
-            <p className="text-gray-600">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No scheduled interviews</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               {activeSubtab === 'all'
                 ? 'No interviews have been scheduled yet.'
                 : `No interviews match the "${activeSubtab}" filter.`}
@@ -715,15 +715,15 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
       {/* Action Modals */}
       {actionType === 'reject' && selectedCandidate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Reject Candidate</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Reject Candidate</h3>
               <button
                 onClick={() => {
                   setActionType('')
                   setRejectionReason('')
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -731,19 +731,19 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Rejection Reason
                 </label>
                 <textarea
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   rows={3}
                   placeholder="Please provide a reason for rejection..."
                 />
               </div>
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                <p className="text-sm text-yellow-800">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-3">
+                <p className="text-sm text-yellow-800 dark:text-yellow-300">
                   ⚠️ This will remove the candidate from the shortlisted list and cannot be undone.
                 </p>
               </div>
@@ -772,15 +772,15 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
       {actionType === 'reschedule' && selectedCandidate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Reschedule Interview</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Reschedule Interview</h3>
               <button
                 onClick={() => {
                   setActionType('')
                   setRescheduleData({ date: '', time: '' })
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -788,7 +788,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   New Date & Time
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -797,13 +797,13 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                     value={rescheduleData.date}
                     onChange={(e) => setRescheduleData(prev => ({ ...prev, date: e.target.value }))}
                     min={format(new Date(), 'yyyy-MM-dd')}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                   <input
                     type="time"
                     value={rescheduleData.time}
                     onChange={(e) => setRescheduleData(prev => ({ ...prev, time: e.target.value }))}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>

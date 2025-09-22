@@ -435,16 +435,16 @@ const Applications = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="card p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-1"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
                   </div>
                 </div>
               </div>
@@ -461,8 +461,8 @@ const Applications = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load applications</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Failed to load applications</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {!isOnline ? 'You appear to be offline. Please check your internet connection.' : (error.message || 'An unexpected error occurred.')}
           </p>
           <button
@@ -500,33 +500,33 @@ const Applications = () => {
             </div>
 
             <div className="flex items-start space-x-4 mb-4">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                <span className="text-lg font-medium text-primary-600">
+              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
+                <span className="text-lg font-medium text-primary-600 dark:text-primary-400">
                   {application.candidate?.name?.charAt(0) || 'U'}
                 </span>
               </div>
 
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 mb-1">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
                   {application.candidate?.name || 'Unknown Candidate'}
                 </h3>
-                <p className="text-sm text-gray-600 mb-2">
-                  Applied for <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 hover:text-primary-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Applied for <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
                     {application.job?.title || 'Unknown Job'}
                   </Link>
                 </p>
 
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Phone className="w-4 h-4 mr-2 text-primary-400" />
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <Phone className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
                     <span>{application.candidate?.phone || 'N/A'}</span>
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Mail className="w-4 h-4 mr-2 text-primary-400" />
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <Mail className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
                     <span>{application.candidate?.email || 'N/A'}</span>
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="w-4 h-4 mr-2 text-primary-400" />
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <MapPin className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
                     <span>{application.job?.country || 'N/A'}</span>
                   </div>
                 </div>
@@ -534,8 +534,8 @@ const Applications = () => {
             </div>
 
             <div className="text-xs font-medium mb-4 flex items-center">
-              <Calendar className="w-3 h-3 mr-1 text-gray-500" />
-              <span className="text-gray-600">Applied {application.applied_at ? format(new Date(application.applied_at), 'MMM dd, yyyy') : 'Unknown date'}</span>
+              <Calendar className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
+              <span className="text-gray-600 dark:text-gray-400">Applied {application.applied_at ? format(new Date(application.applied_at), 'MMM dd, yyyy') : 'Unknown date'}</span>
             </div>
 
             {/* Skills */}
@@ -543,7 +543,7 @@ const Applications = () => {
               <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                   {application.candidate.skills.slice(0, 3).map(skill => (
-                    <span key={skill} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full border border-gray-200">
+                    <span key={skill} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full border border-gray-200 dark:border-gray-600">
                       {skill}
                     </span>
                   ))}
@@ -559,7 +559,7 @@ const Applications = () => {
               {application.stage === applicationStages.REJECTED ? (
                 // Show disabled state for rejected applications
                 <div className="flex flex-col space-y-2">
-                  <div className="px-3 py-2 text-xs text-gray-500 bg-gray-100 rounded-lg border border-gray-200 text-center font-medium">
+                  <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-center font-medium">
                     Application Rejected
                   </div>
                   <InteractiveButton
@@ -573,84 +573,60 @@ const Applications = () => {
                     variant="ghost"
                     size="sm"
                     icon={Eye}
-                    className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200"
+                    className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-600"
                   >
                     View Summary
                   </InteractiveButton>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {/* Left column */}
-                  <div className="flex flex-col space-y-2">
-                    {/* Shortlist Toggle */}
-                    <InteractiveButton
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleToggleShortlist(application)
-                      }}
-                      variant={application.stage === applicationStages.SHORTLISTED ? 'warning' : 'secondary'}
-                      size="sm"
-                      disabled={shortlistingApps.has(application.id)}
-                      loading={shortlistingApps.has(application.id)}
-                      icon={UserCheck}
-                      className="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
-                    >
-                      {application.stage === applicationStages.SHORTLISTED ? 'Shortlisted' : 'Shortlist'}
-                    </InteractiveButton>
+                <div className="flex flex-col space-y-2">
+                  <InteractiveButton
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setSelectedCandidate(application.candidate)
+                      setSelectedApplication(application)
+                      setShowSummary(true)
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    icon={Eye}
+                    className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-600"
+                  >
+                    Summary
+                  </InteractiveButton>
 
-                    {/* Stage Actions */}
-                    <InteractiveButton
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleOpenStageModal(application, null)
-                      }}
-                      variant="secondary"
-                      size="sm"
-                      disabled={movingStageApps.has(application.id)}
-                      loading={movingStageApps.has(application.id)}
-                      icon={ArrowRight}
-                      className="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
-                    >
-                      Move Stage
-                    </InteractiveButton>
-                  </div>
+                  <InteractiveButton
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleOpenStageModal(application, null)
+                    }}
+                    variant="secondary"
+                    size="sm"
+                    disabled={movingStageApps.has(application.id)}
+                    loading={movingStageApps.has(application.id)}
+                    icon={ArrowRight}
+                    className="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
+                  >
+                    Move Stage
+                  </InteractiveButton>
 
-                  {/* Right column */}
-                  <div className="flex flex-col space-y-2">
-                    <InteractiveButton
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setSelectedCandidate(application.candidate)
-                        setSelectedApplication(application)
-                        setShowSummary(true)
-                      }}
-                      variant="ghost"
-                      size="sm"
-                      icon={Eye}
-                      className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200"
-                    >
-                      Summary
-                    </InteractiveButton>
-
-                    <InteractiveButton
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleOpenStageModal(application, applicationStages.REJECTED)
-                      }}
-                      variant="ghost"
-                      size="sm"
-                      disabled={rejectingApps.has(application.id)}
-                      loading={rejectingApps.has(application.id)}
-                      icon={X}
-                      className="w-full text-red-600 hover:text-red-800 shadow-sm hover:shadow-md transition-shadow duration-200 border border-red-200 hover:border-red-300"
-                    >
-                      Reject
-                    </InteractiveButton>
-                  </div>
+                  <InteractiveButton
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleOpenStageModal(application, applicationStages.REJECTED)
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    disabled={rejectingApps.has(application.id)}
+                    loading={rejectingApps.has(application.id)}
+                    icon={X}
+                    className="w-full text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 shadow-sm hover:shadow-md transition-shadow duration-200 border border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600"
+                  >
+                    Reject
+                  </InteractiveButton>
                 </div>
               )}
             </div>
@@ -658,9 +634,9 @@ const Applications = () => {
         ))
       ) : (
         <div className="col-span-3 text-center py-12">
-          <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
-          <p className="text-gray-600">
+          <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No applications found</h3>
+          <p className="text-gray-600 dark:text-gray-400">
             {Object.values(filters).some(v => v) ? 'No applications match your current filters.' : 'Applications will appear here when candidates apply for jobs.'}
           </p>
         </div>
@@ -672,10 +648,10 @@ const Applications = () => {
   const renderListView = () => (
     <div className="card overflow-visible">
       <div className="overflow-visible">
-        <table className="w-full table-fixed divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th scope="col" className="w-12 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-12 px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 <input
                   ref={headerCheckboxRef}
                   type="checkbox"
@@ -684,30 +660,30 @@ const Applications = () => {
                   className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
               </th>
-              <th scope="col" className="w-[24%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[24%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Candidate
               </th>
-              <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Job
               </th>
-              <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Contact
               </th>
-              <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Date
               </th>
-              <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Stage
               </th>
-              <th scope="col" className="w-[28%] px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="w-[28%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {applications.length > 0 ? (
               applications.map(application => (
-                <tr key={application.id} className="hover:bg-gray-50">
+                <tr key={application.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-2 py-3 text-center">
                     <input
                       type="checkbox"
@@ -724,18 +700,18 @@ const Applications = () => {
                   <td className="px-2 py-3">
                     <div className="flex items-center space-x-2">
                       <div className="flex-shrink-0 h-8 w-8">
-                        <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">
+                        <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                          <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
                             {application.candidate?.name?.charAt(0) || 'U'}
                           </span>
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-gray-900 truncate">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                           {application.candidate?.name || 'Unknown'}
                         </div>
                         {application.candidate?.skills && (
-                          <div className="text-xs text-gray-500 truncate">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {application.candidate.skills.slice(0, 1).join(', ')}
                             {application.candidate.skills.length > 1 && ` +${application.candidate.skills.length - 1}`}
                           </div>
@@ -744,20 +720,20 @@ const Applications = () => {
                     </div>
                   </td>
                   <td className="px-2 py-3">
-                    <div className="text-sm text-gray-900 truncate">
-                      <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 hover:text-primary-800">
+                    <div className="text-sm text-gray-900 dark:text-gray-100 truncate">
+                      <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
                         {application.job?.title || 'Unknown Job'}
                       </Link>
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                       {application.job?.company || 'Unknown Company'}
                     </div>
                   </td>
                   <td className="px-2 py-3">
-                    <div className="text-xs text-gray-900 truncate">{application.candidate?.phone || 'N/A'}</div>
-                    <div className="text-xs text-gray-500 truncate">{application.candidate?.email || 'N/A'}</div>
+                    <div className="text-xs text-gray-900 dark:text-gray-100 truncate">{application.candidate?.phone || 'N/A'}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{application.candidate?.email || 'N/A'}</div>
                   </td>
-                  <td className="px-2 py-3 text-xs text-gray-500">
+                  <td className="px-2 py-3 text-xs text-gray-500 dark:text-gray-400">
                     {application.applied_at ? format(new Date(application.applied_at), 'MMM dd') : 'N/A'}
                   </td>
                   <td className="px-2 py-3">
@@ -768,14 +744,14 @@ const Applications = () => {
                   <td className="px-2 py-3 text-sm font-medium">
                     {application.stage === applicationStages.REJECTED ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded border">Rejected</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">Rejected</span>
                         <button
                           onClick={() => {
                             setSelectedCandidate(application.candidate)
                             setSelectedApplication(application)
                             setShowSummary(true)
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 bg-primary-50 hover:bg-primary-100 rounded border border-primary-200"
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded border border-primary-200 dark:border-primary-700"
                           title="View Summary"
                         >
                           <Eye className="w-3 h-3" /> Summary
@@ -784,25 +760,20 @@ const Applications = () => {
                     ) : (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleToggleShortlist(application)}
-                          className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded border ${application.stage === applicationStages.SHORTLISTED
-                              ? 'text-yellow-700 bg-yellow-50 border-yellow-200'
-                              : 'text-gray-700 bg-white hover:bg-gray-50 border-gray-200'
-                            }`}
-                          disabled={shortlistingApps.has(application.id)}
-                          title={shortlistingApps.has(application.id) ? 'Updating...' : 'Toggle Shortlist'}
+                          onClick={() => {
+                            setSelectedCandidate(application.candidate)
+                            setSelectedApplication(application)
+                            setShowSummary(true)
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"
+                          title="View Summary"
                         >
-                          {shortlistingApps.has(application.id) ? (
-                            <div className="animate-spin w-3 h-3 border border-current border-t-transparent rounded-full" />
-                          ) : (
-                            <UserCheck className="w-3 h-3" />
-                          )}
-                          {application.stage === applicationStages.SHORTLISTED ? 'Shortlisted' : 'Shortlist'}
+                          <Eye className="w-3 h-3" /> Summary
                         </button>
 
                         <button
                           onClick={() => handleOpenStageModal(application, null)}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200"
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-700"
                           disabled={movingStageApps.has(application.id)}
                           title={movingStageApps.has(application.id) ? 'Moving...' : 'Move Stage'}
                         >
@@ -815,20 +786,8 @@ const Applications = () => {
                         </button>
 
                         <button
-                          onClick={() => {
-                            setSelectedCandidate(application.candidate)
-                            setSelectedApplication(application)
-                            setShowSummary(true)
-                          }}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 bg-white hover:bg-gray-50 rounded border border-gray-200"
-                          title="View Summary"
-                        >
-                          <Eye className="w-3 h-3" /> Summary
-                        </button>
-
-                        <button
                           onClick={() => handleOpenStageModal(application, applicationStages.REJECTED)}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 bg-red-50 hover:bg-red-100 rounded border border-red-200"
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded border border-red-200 dark:border-red-700"
                           disabled={rejectingApps.has(application.id)}
                           title={rejectingApps.has(application.id) ? 'Rejecting...' : 'Reject'}
                         >
@@ -846,10 +805,10 @@ const Applications = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
-                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
-                  <p className="text-gray-600">
+                <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                  <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No applications found</h3>
+                  <p className="text-gray-600 dark:text-gray-400">
                     {Object.values(filters).some(v => v) ? 'No applications match your current filters.' : 'Applications will appear here when candidates apply for jobs.'}
                   </p>
                 </td>
@@ -862,12 +821,12 @@ const Applications = () => {
   )
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Applications</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Centralized view of all candidate applications across jobs
           </p>
         </div>
@@ -943,7 +902,7 @@ const Applications = () => {
               placeholder="Search by name, phone, email, or skills..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
 
@@ -952,7 +911,7 @@ const Applications = () => {
             <select
               value={filters.stage}
               onChange={(e) => handleFilterChange('stage', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Stages</option>
               <option value="applied">Applied</option>
@@ -966,7 +925,7 @@ const Applications = () => {
             <select
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Countries</option>
               {countries.map(country => (
@@ -977,7 +936,7 @@ const Applications = () => {
             <select
               value={filters.jobId}
               onChange={(e) => handleFilterChange('jobId', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Jobs</option>
               {jobs.map(job => (
@@ -989,7 +948,7 @@ const Applications = () => {
       </div>
 
       {/* Results Info */}
-      <div className="mb-4 text-sm text-gray-500">
+      <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
         <span>
           Showing {applications.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
         </span>
@@ -1005,7 +964,7 @@ const Applications = () => {
 
       {/* Interactive Pagination */}
       {applications.length > 0 && (
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg border border-gray-200">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
           <PaginationInfo
             currentPage={pagination.page}
             totalPages={Math.max(1, pagination.totalPages)}
@@ -1085,9 +1044,9 @@ const Applications = () => {
       {/* Stage Selection Modal */}
       {showStageModal && selectedApplication && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Update Application Stage</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Update Application Stage</h3>
               <button
                 onClick={() => {
                   setShowStageModal(false)
@@ -1102,19 +1061,19 @@ const Applications = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Select New Stage
                 </label>
                 <select
                   value={newStage}
                   onChange={(e) => setNewStage(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Choose a stage...</option>
-                  <option value={applicationStages.APPLIED}>Applied</option>
-                  <option value={applicationStages.SHORTLISTED}>Shortlisted</option>
-                  <option value={applicationStages.SCHEDULED}>Scheduled</option>
-                  <option value={applicationStages.INTERVIEWED}>Interviewed</option>
+                  <option value="applied">Applied</option>
+                  <option value="shortlisted">Shortlisted</option>
+                  <option value="interview-scheduled">Interview Scheduled</option>
+                  <option value="interview-passed">Interview Passed</option>
                 </select>
               </div>
 
@@ -1125,7 +1084,7 @@ const Applications = () => {
                     setSelectedApplication(null)
                     setNewStage('')
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>
@@ -1149,9 +1108,9 @@ const Applications = () => {
       {/* Reject Modal */}
       {showRejectModal && selectedApplication && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Reject Application</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Reject Application</h3>
               <button
                 onClick={() => {
                   setShowRejectModal(false)
@@ -1166,13 +1125,13 @@ const Applications = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Rejection Reason
                 </label>
                 <textarea
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
                   placeholder="Please provide a reason for rejection..."
                 />
@@ -1185,7 +1144,7 @@ const Applications = () => {
                     setSelectedApplication(null)
                     setRejectionReason('')
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>
@@ -1209,9 +1168,9 @@ const Applications = () => {
       {/* Bulk Reject Modal */}
       {showBulkRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                 Reject {selectedApplications.size} Applications
               </h3>
               <button
@@ -1227,20 +1186,20 @@ const Applications = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Rejection Reason (Required)
                 </label>
                 <textarea
                   value={bulkRejectionReason}
                   onChange={(e) => setBulkRejectionReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
                   placeholder="Please provide a reason for rejecting these applications..."
                 />
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-sm text-yellow-800">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   ⚠️ This action will reject {selectedApplications.size} selected applications. This cannot be undone.
                 </p>
               </div>
@@ -1251,7 +1210,7 @@ const Applications = () => {
                     setShowBulkRejectModal(false)
                     setBulkRejectionReason('')
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>
@@ -1266,6 +1225,27 @@ const Applications = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Candidate Summary Modal */}
+      {showSummary && selectedCandidate && (
+        <CandidateSummaryS2
+          candidate={selectedCandidate}
+          application={selectedApplication}
+          isOpen={showSummary}
+          onClose={() => {
+            setShowSummary(false)
+            setSelectedCandidate(null)
+            setSelectedApplication(null)
+          }}
+          onUpdateStatus={handleUpdateStage}
+          workflowStages={[
+            { id: 'applied', label: 'Applied' },
+            { id: 'shortlisted', label: 'Shortlisted' },
+            { id: 'interview-scheduled', label: 'Interview Scheduled' },
+            { id: 'interview-passed', label: 'Interview Passed' }
+          ]}
+        />
       )}
     </div>
   )

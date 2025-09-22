@@ -39,7 +39,16 @@
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50 text-gray-900 transition-colors duration-200;
+  }
+  
+  /* Dark mode styles */
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+  
+  .dark {
+    color-scheme: dark;
   }
   
   /* Ensure proper focus visibility for accessibility */
@@ -79,11 +88,11 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-lg shadow-md border border-gray-200 transition-all duration-200;
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200;
   }
   
   .card:hover {
-    @apply shadow-lg;
+    @apply shadow-lg dark:shadow-gray-900/20;
   }
   
   /* Responsive card padding */
@@ -92,19 +101,19 @@
   }
   
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 focus:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary-600 hover:bg-primary-700 focus:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:bg-primary-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .btn-outline {
-    @apply border border-gray-300 hover:border-gray-400 focus:border-gray-400 bg-white hover:bg-gray-50 focus:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-gray-400 dark:focus:border-gray-500 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   /* Responsive button sizes */
@@ -126,52 +135,52 @@
   }
   
   .chip-blue {
-    @apply bg-blue-100 text-blue-800;
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200;
   }
   
   .chip-green {
-    @apply bg-green-100 text-green-800;
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200;
   }
   
   .chip-yellow {
-    @apply bg-yellow-100 text-yellow-800;
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200;
   }
   
   .chip-red {
-    @apply bg-red-100 text-red-800;
+    @apply bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200;
   }
   
   .chip-primary {
-    @apply bg-primary-100 text-primary-800;
+    @apply bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200;
   }
   
   .chip-gray {
-    @apply bg-gray-100 text-gray-800;
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200;
   }
   
   .chip-purple {
-    @apply bg-purple-100 text-purple-800;
+    @apply bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200;
   }
   
   .chip-indigo {
-    @apply bg-indigo-100 text-indigo-800;
+    @apply bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200;
   }
   
   .chip-orange {
-    @apply bg-orange-100 text-orange-800;
+    @apply bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200;
   }
   
   /* Responsive form elements */
   .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500;
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400;
   }
   
   .form-select {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white transition-colors;
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors;
   }
   
   .form-textarea {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y min-h-[80px] transition-colors;
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y min-h-[80px] transition-colors;
   }
   
   /* Screen reader only content */
@@ -238,7 +247,7 @@
   
   /* Loading states */
   .loading-skeleton {
-    @apply animate-pulse bg-gray-200 rounded;
+    @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
   }
   
   /* Touch targets for mobile */
@@ -257,14 +266,218 @@
     }
   }
   
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .card {
-      @apply bg-gray-800 border-gray-700 text-white;
-    }
-    
-    body {
-      @apply bg-gray-900 text-gray-100;
-    }
+  /* Additional dark mode utilities */
+  .text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  
+  .bg-surface {
+    @apply bg-white dark:bg-gray-800;
+  }
+  
+  .border-default {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  
+  .hover-bg {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+  
+  /* Enhanced dark mode utilities for better consistency */
+  .text-primary {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  .text-secondary {
+    @apply text-gray-700 dark:text-gray-300;
+  }
+  
+  .bg-card {
+    @apply bg-white dark:bg-gray-800;
+  }
+  
+  .bg-overlay {
+    @apply bg-white dark:bg-gray-800;
+  }
+  
+  .border-card {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  
+  .hover-card {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+  
+  .focus-ring {
+    @apply focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+  }
+  
+  /* Table dark mode improvements */
+  .table-header {
+    @apply bg-gray-50 dark:bg-gray-700;
+  }
+  
+  .table-row {
+    @apply bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+  
+  .table-cell {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  /* Modal and overlay improvements */
+  .modal-overlay {
+    @apply bg-black bg-opacity-50 dark:bg-opacity-70;
+  }
+  
+  .modal-content {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+  }
+  
+  /* Form element improvements */
+  .input-field {
+    @apply bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400;
+  }
+  
+  .select-field {
+    @apply bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100;
+  }
+  
+  /* Button improvements */
+  .btn-ghost {
+    @apply bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600;
+  }
+  
+  /* Notification improvements */
+  .notification-success {
+    @apply bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200;
+  }
+  
+  .notification-error {
+    @apply bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200;
+  }
+  
+  .notification-warning {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200;
+  }
+  
+  .notification-info {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200;
+  }
+  
+  /* Global dark mode overrides for any missed elements */
+  .dark {
+    /* Ensure all text is visible */
+    color-scheme: dark;
+  }
+  
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    @apply text-gray-100;
+  }
+  
+  .dark p, .dark span, .dark div {
+    @apply text-gray-100;
+  }
+  
+  .dark label {
+    @apply text-gray-300;
+  }
+  
+  /* Override any remaining white backgrounds */
+  .dark .bg-white:not(.force-white) {
+    @apply bg-gray-800;
+  }
+  
+  /* Override any remaining gray-900 text */
+  .dark .text-gray-900:not(.force-gray-900) {
+    @apply text-gray-100;
+  }
+  
+  /* Override any remaining gray-700 text */
+  .dark .text-gray-700:not(.force-gray-700) {
+    @apply text-gray-300;
+  }
+  
+  /* Override any remaining gray-600 text */
+  .dark .text-gray-600:not(.force-gray-600) {
+    @apply text-gray-400;
+  }
+  
+  /* Override any remaining borders */
+  .dark .border-gray-200:not(.force-border-gray-200) {
+    @apply border-gray-700;
+  }
+  
+  .dark .border-gray-300:not(.force-border-gray-300) {
+    @apply border-gray-600;
+  }
+  
+  /* Override any remaining hover states */
+  .dark .hover\:bg-gray-50:hover:not(.force-hover-gray-50) {
+    @apply bg-gray-700;
+  }
+  
+  .dark .hover\:bg-gray-100:hover:not(.force-hover-gray-100) {
+    @apply bg-gray-700;
+  }
+  
+  /* Ensure all inputs and selects are properly styled */
+  .dark input:not([type="checkbox"]):not([type="radio"]) {
+    @apply bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400;
+  }
+  
+  .dark select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+  
+  .dark textarea {
+    @apply bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400;
+  }
+  
+  /* Ensure all buttons have proper contrast */
+  .dark button:not(.btn-primary):not(.btn-secondary):not(.btn-outline):not(.btn-danger) {
+    @apply text-gray-100;
+  }
+  
+  /* Ensure all cards and surfaces are dark */
+  .dark .card:not(.force-light) {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  /* Ensure all modals and overlays are dark */
+  .dark .modal-content:not(.force-light),
+  .dark .dropdown-menu:not(.force-light) {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  /* Ensure all tables are dark */
+  .dark table {
+    @apply bg-gray-800;
+  }
+  
+  .dark thead {
+    @apply bg-gray-700;
+  }
+  
+  .dark tbody tr {
+    @apply bg-gray-800 hover:bg-gray-700;
+  }
+  
+  .dark td, .dark th {
+    @apply text-gray-100 border-gray-700;
+  }
+  
+  /* Ensure all loading states are dark */
+  .dark .loading-skeleton {
+    @apply bg-gray-700;
+  }
+  
+  .dark .animate-pulse > * {
+    @apply bg-gray-700;
+  }
+  
+  /* Ensure all chips and badges are properly styled */
+  .dark .chip:not(.chip-blue):not(.chip-green):not(.chip-yellow):not(.chip-red):not(.chip-primary):not(.chip-gray):not(.chip-purple):not(.chip-indigo):not(.chip-orange) {
+    @apply bg-gray-700 text-gray-200;
   }
 }

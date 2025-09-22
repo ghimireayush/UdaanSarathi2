@@ -119,10 +119,10 @@ const JobShortlist = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading job shortlist...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading job shortlist...</p>
         </div>
       </div>
     )
@@ -130,11 +130,11 @@ const JobShortlist = () => {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Job Not Found</h2>
-          <p className="text-gray-600 mb-4">The requested job could not be found.</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Job Not Found</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">The requested job could not be found.</p>
           <button
             onClick={() => navigate('/jobs')}
             className="btn-primary"
@@ -147,7 +147,7 @@ const JobShortlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -156,26 +156,26 @@ const JobShortlist = () => {
             <div className="flex items-center space-x-4 mb-6">
               <button
                 onClick={() => navigate('/jobs')}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Jobs
               </button>
-              <span className="text-gray-300">•</span>
-              <span className="text-gray-600">Shortlist</span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+              <span className="text-gray-600 dark:text-gray-400">Shortlist</span>
             </div>
 
             {/* Job Header */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{job.title}</h1>
                   <span className={`chip chip-${job.status === 'published' ? 'green' : 'yellow'}`}>
                     {job.status}
                   </span>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
+                <div className="flex flex-wrap items-center gap-4 text-gray-600 dark:text-gray-400 mb-4">
                   <div className="flex items-center space-x-1">
                     <Building className="w-4 h-4" />
                     <span>{job.company}</span>
@@ -198,7 +198,7 @@ const JobShortlist = () => {
                 {job.tags && job.tags.length > 0 && (
                   <div className="flex items-center space-x-2 mb-4">
                     <Tag className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Required Skills:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Required Skills:</span>
                     <div className="flex flex-wrap gap-1">
                       {job.tags.map((tag, index) => (
                         <span key={index} className="chip chip-primary text-xs">
@@ -213,20 +213,20 @@ const JobShortlist = () => {
               {/* Quick Stats */}
               <div className="flex items-center space-x-6 ml-8">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{candidates.length}</div>
-                  <div className="text-sm text-gray-600">Total Candidates</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{candidates.length}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Candidates</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
                     {insights?.topCandidates?.length || 0}
                   </div>
-                  <div className="text-sm text-gray-600">Top Candidates</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Top Candidates</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">
                     {insights?.averageScore || 0}%
                   </div>
-                  <div className="text-sm text-gray-600">Avg Score</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Avg Score</div>
                 </div>
               </div>
             </div>
@@ -236,13 +236,13 @@ const JobShortlist = () => {
 
       {/* Insights Panel */}
       {insights && (
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="py-4">
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => setShowInsights(!showInsights)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   <BarChart3 className="w-5 h-5" />
                   <span className="font-medium">Ranking Insights</span>
@@ -253,7 +253,7 @@ const JobShortlist = () => {
                   <div className="flex items-center space-x-2">
                     {insights.recommendations.map((rec, index) => (
                       <div key={index} className={`flex items-center space-x-1 text-sm px-2 py-1 rounded ${
-                        rec.type === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                        rec.type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                       }`}>
                         {rec.type === 'warning' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
                         <span>{rec.message}</span>
@@ -266,65 +266,65 @@ const JobShortlist = () => {
               {showInsights && (
                 <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Score Distribution */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                       <TrendingUp className="w-4 h-4 mr-2" />
                       Score Distribution
                     </h3>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Excellent (90%+)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Excellent (90%+)</span>
                         <span className="font-medium text-green-600">{insights.scoreDistribution.excellent}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Good (80-89%)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Good (80-89%)</span>
                         <span className="font-medium text-blue-600">{insights.scoreDistribution.good}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Average (60-79%)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Average (60-79%)</span>
                         <span className="font-medium text-yellow-600">{insights.scoreDistribution.average}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Below Average (&lt;60%)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Below Average (&lt;60%)</span>
                         <span className="font-medium text-red-600">{insights.scoreDistribution.below}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Candidates */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                       <Award className="w-4 h-4 mr-2" />
                       Top Candidates
                     </h3>
                     <div className="space-y-2">
                       {insights.topCandidates.slice(0, 3).map((candidate, index) => (
                         <div key={candidate.id} className="flex justify-between items-center">
-                          <span className="text-sm text-gray-900 truncate">{candidate.name}</span>
+                          <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{candidate.name}</span>
                           <span className="font-medium text-green-600">{candidate.priority_score}%</span>
                         </div>
                       ))}
                       {insights.topCandidates.length === 0 && (
-                        <p className="text-sm text-gray-500">No candidates scored above 80%</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">No candidates scored above 80%</p>
                       )}
                     </div>
                   </div>
 
                   {/* Skill Gaps */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                       <Users className="w-4 h-4 mr-2" />
                       Skill Coverage
                     </h3>
                     <div className="space-y-2">
                       {insights.skillGaps.slice(0, 3).map((gap, index) => (
                         <div key={index} className="flex justify-between items-center">
-                          <span className="text-sm text-gray-900 truncate">{gap.skill}</span>
+                          <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{gap.skill}</span>
                           <span className="font-medium text-red-600">{gap.coverage}%</span>
                         </div>
                       ))}
                       {insights.skillGaps.length === 0 && (
-                        <p className="text-sm text-gray-500">Good skill coverage across all requirements</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Good skill coverage across all requirements</p>
                       )}
                     </div>
                   </div>
