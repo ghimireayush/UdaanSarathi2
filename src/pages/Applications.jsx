@@ -37,9 +37,12 @@ import { useAccessibility } from '../hooks/useAccessibility'
 import { useI18n } from '../hooks/useI18n'
 import { InteractiveButton, InteractiveCard, InteractivePagination, PaginationInfo } from '../components/InteractiveUI'
 import { useNotificationContext } from '../contexts/NotificationContext'
+import { useConfirm } from '../components/ConfirmProvider.jsx'
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
 
 const Applications = () => {
+  const { confirm } = useConfirm()
+  
   const [filters, setFilters] = useState({
     search: '',
     stage: '',
@@ -53,7 +56,7 @@ const Applications = () => {
     totalPages: 0
   })
   const [selectedApplications, setSelectedApplications] = useState(new Set())
-  const [showSummary, setShowSummary] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [selectedApplication, setSelectedApplication] = useState(null)
   const [showStageModal, setShowStageModal] = useState(false)
@@ -80,6 +83,16 @@ const Applications = () => {
 
   // Toast notification states
   const [showToast, setShowToast] = useState(false)
+
+  // Workflow stages configuration - consistent with Workflow page
+  const workflowStages = [
+    { id: 'applied', label: 'Applied' },
+    { id: 'shortlisted', label: 'Shortlisted' },
+    { id: 'scheduled', label: 'Scheduled' },
+    { id: 'interviewed', label: 'Interviewed' },
+    { id: 'selected', label: 'Selected' },
+    { id: 'rejected', label: 'Rejected' }
+  ]
   const [toastMessage, setToastMessage] = useState('')
   const [toastType, setToastType] = useState('success') // 'success', 'error', 'info'
 
@@ -200,6 +213,18 @@ const Applications = () => {
       window.removeEventListener('offline', handleOffline)
     }
   }, [error, fetchApplicationsData])
+
+  // Handle ESC key to close sidebar
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && isSidebarOpen) {
+        handleCloseSidebar()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isSidebarOpen])
 
   const handleFilterChange = useCallback((key, value) => {
     if (key === 'search') {
@@ -374,6 +399,147 @@ const Applications = () => {
       showToastNotification(' Failed to perform bulk action. Please try again.', 'error')
     } finally {
       setIsUpdating(false)
+    }
+  }
+
+  const handleCandidateClick = (candidate) => {
+    setSelectedCandidate(candidate)
+    setIsSidebarOpen(true)
+  }
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false)
+    setSelectedCandidate(null)
+  }
+
+  // Define strict stage progression rules
+  const getNextAllowedStage = (currentStage) => {
+    const stageOrder = {
+      'applied': 'shortlisted',
+      'shortlisted': 'interview-scheduled', 
+      'interview-scheduled': 'interview-passed',
+      'interview-passed': null // Final stage
+    }
+    return stageOrder[currentStage]
+  }
+
+  const validateStageTransition = (currentStage, targetStage) => {
+    // Only allow progression to the immediate next stage
+    const nextAllowed = getNextAllowedStage(currentStage)
+    return targetStage === nextAllowed
+  }
+
+  const handleUpdateStatus = async (candidateId, newStage) => {
+    try {
+      const candidate = applications.find(app => app.candidate.id === candidateId)?.candidate
+      if (!candidate) return
+
+      const currentStage = candidate.application?.stage
+      
+      // Prevent any backward flow or skipping stages
+      if (!validateStageTransition(currentStage, newStage)) {
+        await confirm({
+          title: 'Invalid Stage Transition',
+          message: `You cannot move directly from "${workflowStages.find(s => s.id === currentStage)?.label}" to "${workflowStages.find(s => s.id === newStage)?.label}". Please follow the proper workflow sequence.`,
+          confirmText: 'Okay',
+          type: 'warning'
+        })
+        return
+      }
+
+      // Show confirmation dialog for valid transitions
+      const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label
+      const newStageLabel = workflowStages.find(s => s.id === newStage)?.label
+      
+      const confirmed = await confirm({
+        title: 'Confirm Stage Update',
+        message: `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"? This action cannot be undone.`,
+        confirmText: 'Yes, Update Stage',
+        cancelText: 'Cancel',
+        type: 'warning'
+      })
+
+      if (confirmed) {
+        await applicationService.updateApplicationStage(candidate.application.id, newStage)
+        await fetchApplicationsData() // Reload data
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to update candidate status. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    }
+  }
+
+  const handleAttachDocument = async (candidateId, document) => {
+    try {
+      const confirmed = await confirm({
+        title: 'Confirm Document Attachment',
+        message: `Are you sure you want to attach the document "${document.name}" to this candidate?`,
+        confirmText: 'Yes, Attach',
+        cancelText: 'Cancel',
+        type: 'info'
+      })
+
+      if (confirmed) {
+        await applicationService.attachDocument(candidateId, document)
+        await fetchApplicationsData() // Reload data
+        
+        // Update the selected candidate to reflect the new document
+        if (selectedCandidate && selectedCandidate.id === candidateId) {
+          // Get the updated application data for this candidate
+          const updatedApplications = await applicationService.getApplicationsByCandidateId(candidateId)
+          if (updatedApplications && updatedApplications.length > 0) {
+            const updatedApplication = updatedApplications[0] // Get the first (and likely only) application
+            setSelectedCandidate({
+              ...selectedCandidate,
+              application: updatedApplication,
+              documents: updatedApplication.documents
+            })
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to attach document:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to attach document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    }
+  }
+
+  const handleRemoveDocument = async (candidateId, docIndex) => {
+    try {
+      // Pass only the candidateId and docIndex (stage parameter is no longer needed)
+      await applicationService.removeDocument(candidateId, docIndex)
+      await fetchApplicationsData() // Reload data
+      
+      // Update the selected candidate to reflect the removed document
+      if (selectedCandidate && selectedCandidate.id === candidateId) {
+        // Get the updated application data for this candidate
+        const updatedApplications = await applicationService.getApplicationsByCandidateId(candidateId)
+        if (updatedApplications && updatedApplications.length > 0) {
+          const updatedApplication = updatedApplications[0] // Get the first (and likely only) application
+          setSelectedCandidate({
+            ...selectedCandidate,
+            application: updatedApplication,
+            documents: updatedApplication.documents
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to remove document:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to remove document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
     }
   }
 
@@ -554,6 +720,16 @@ const Applications = () => {
               </div>
             )}
 
+            {/* Documents */}
+            {application.documents && application.documents.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <FileText className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
+                  <span>{application.documents.length} document{application.documents.length !== 1 ? 's' : ''} attached</span>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="pt-4">
               {application.stage === applicationStages.REJECTED ? (
@@ -568,7 +744,7 @@ const Applications = () => {
                       e.stopPropagation()
                       setSelectedCandidate(application.candidate)
                       setSelectedApplication(application)
-                      setShowSummary(true)
+                      setIsSidebarOpen(true)
                     }}
                     variant="ghost"
                     size="sm"
@@ -586,7 +762,7 @@ const Applications = () => {
                       e.stopPropagation()
                       setSelectedCandidate(application.candidate)
                       setSelectedApplication(application)
-                      setShowSummary(true)
+                      setIsSidebarOpen(true)
                     }}
                     variant="ghost"
                     size="sm"
@@ -710,12 +886,20 @@ const Applications = () => {
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                           {application.candidate?.name || 'Unknown'}
                         </div>
-                        {application.candidate?.skills && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {application.candidate.skills.slice(0, 1).join(', ')}
-                            {application.candidate.skills.length > 1 && ` +${application.candidate.skills.length - 1}`}
-                          </div>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          {application.candidate?.skills && (
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {application.candidate.skills.slice(0, 1).join(', ')}
+                              {application.candidate.skills.length > 1 && ` +${application.candidate.skills.length - 1}`}
+                            </div>
+                          )}
+                          {application.documents && application.documents.length > 0 && (
+                            <div className="flex items-center text-xs text-blue-600 dark:text-blue-400">
+                              <FileText className="w-3 h-3 mr-1" />
+                              <span>{application.documents.length}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -749,7 +933,7 @@ const Applications = () => {
                           onClick={() => {
                             setSelectedCandidate(application.candidate)
                             setSelectedApplication(application)
-                            setShowSummary(true)
+                            setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded border border-primary-200 dark:border-primary-700"
                           title="View Summary"
@@ -763,7 +947,7 @@ const Applications = () => {
                           onClick={() => {
                             setSelectedCandidate(application.candidate)
                             setSelectedApplication(application)
-                            setShowSummary(true)
+                            setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"
                           title="View Summary"
@@ -909,7 +1093,7 @@ const Applications = () => {
           {/* Filters */}
           <div className="flex flex-wrap gap-3">
             <select
-              value={filters.stage}
+              value={filters.stage || ''}
               onChange={(e) => handleFilterChange('stage', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
@@ -923,7 +1107,7 @@ const Applications = () => {
             </select>
 
             <select
-              value={filters.country}
+              value={filters.country || ''}
               onChange={(e) => handleFilterChange('country', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
@@ -934,7 +1118,7 @@ const Applications = () => {
             </select>
 
             <select
-              value={filters.jobId}
+              value={filters.jobId || ''}
               onChange={(e) => handleFilterChange('jobId', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
@@ -1002,44 +1186,16 @@ const Applications = () => {
         </div>
       )}
 
-      {/* Candidate Summary Modal */}
-      {showSummary && selectedCandidate && (
-        <CandidateSummaryS2
-          candidate={selectedCandidate}
-          application={selectedApplication}
-          isOpen={showSummary}
-          onClose={() => {
-            setShowSummary(false)
-            setSelectedCandidate(null)
-            setSelectedApplication(null)
-          }}
-          onUpdateStatus={async (candidateId, newStage) => {
-            try {
-              if (selectedApplication) {
-                await handleUpdateStage(selectedApplication.id, newStage)
-                // Close modal after successful update
-                setShowSummary(false)
-                setSelectedCandidate(null)
-                setSelectedApplication(null)
-              }
-            } catch (error) {
-              console.error('Failed to update status from summary:', error)
-            }
-          }}
-          onAttachDocument={(candidateId, document) => {
-            // Handle document attachment if needed
-            console.log('Document attached:', document)
-          }}
-          workflowStages={[
-            { id: applicationStages.APPLIED, label: 'Applied' },
-            { id: applicationStages.SHORTLISTED, label: 'Shortlisted' },
-            { id: applicationStages.SCHEDULED, label: 'Scheduled' },
-            { id: applicationStages.INTERVIEWED, label: 'Interviewed' },
-            { id: applicationStages.SELECTED, label: 'Selected' },
-            { id: applicationStages.REJECTED, label: 'Rejected' }
-          ]}
-        />
-      )}
+      {/* Candidate Summary Sidebar */}
+      <CandidateSummaryS2
+        candidate={selectedCandidate}
+        isOpen={isSidebarOpen}
+        onClose={handleCloseSidebar}
+        onUpdateStatus={handleUpdateStatus}
+        onAttachDocument={handleAttachDocument}
+        onRemoveDocument={handleRemoveDocument}
+        workflowStages={workflowStages}
+      />
 
       {/* Stage Selection Modal */}
       {showStageModal && selectedApplication && (
@@ -1065,7 +1221,7 @@ const Applications = () => {
                   Select New Stage
                 </label>
                 <select
-                  value={newStage}
+                  value={newStage || ''}
                   onChange={(e) => setNewStage(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
@@ -1129,7 +1285,7 @@ const Applications = () => {
                   Rejection Reason
                 </label>
                 <textarea
-                  value={rejectionReason}
+                  value={rejectionReason || ''}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
@@ -1190,7 +1346,7 @@ const Applications = () => {
                   Rejection Reason (Required)
                 </label>
                 <textarea
-                  value={bulkRejectionReason}
+                  value={bulkRejectionReason || ''}
                   onChange={(e) => setBulkRejectionReason(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
@@ -1227,26 +1383,7 @@ const Applications = () => {
         </div>
       )}
 
-      {/* Candidate Summary Modal */}
-      {showSummary && selectedCandidate && (
-        <CandidateSummaryS2
-          candidate={selectedCandidate}
-          application={selectedApplication}
-          isOpen={showSummary}
-          onClose={() => {
-            setShowSummary(false)
-            setSelectedCandidate(null)
-            setSelectedApplication(null)
-          }}
-          onUpdateStatus={handleUpdateStage}
-          workflowStages={[
-            { id: 'applied', label: 'Applied' },
-            { id: 'shortlisted', label: 'Shortlisted' },
-            { id: 'interview-scheduled', label: 'Interview Scheduled' },
-            { id: 'interview-passed', label: 'Interview Passed' }
-          ]}
-        />
-      )}
+
     </div>
   )
 }

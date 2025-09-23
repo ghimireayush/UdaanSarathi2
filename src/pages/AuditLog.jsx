@@ -35,6 +35,16 @@ const AuditLogPage = () => {
   const [search, setSearch] = useState('')
   const [filterChangeCount, setFilterChangeCount] = useState(0)
 
+  // Clear corrupted audit logs if needed
+  const clearCorruptedLogs = () => {
+    try {
+      localStorage.removeItem('udaan_audit_logs')
+      window.location.reload()
+    } catch (e) {
+      console.error('Failed to clear corrupted logs:', e)
+    }
+  }
+
   // Fetch audit logs
   useEffect(() => {
     const fetchAuditLogs = async () => {
@@ -161,9 +171,45 @@ const AuditLogPage = () => {
         }
         
         const logsResponse = await auditService.getAuditLogs(filters)
-        setAuditLogs(logsResponse.logs)
-        setTotal(logsResponse.total)
-        setTotalPages(logsResponse.total_pages)
+        
+        // Validate and sanitize logs data
+        const sanitizedLogs = (logsResponse.logs || []).map(log => {
+          try {
+            // Ensure log has required fields
+            return {
+              id: log.id || `log_${Date.now()}_${Math.random()}`,
+              timestamp: log.timestamp || new Date().toISOString(),
+              user_id: log.user_id || 'unknown',
+              user_name: log.user_name || 'Unknown User',
+              action: log.action || 'UNKNOWN',
+              resource_type: log.resource_type || 'UNKNOWN',
+              resource_id: log.resource_id || 'unknown',
+              changes: log.changes || {},
+              ip_address: log.ip_address || 'N/A',
+              session_id: log.session_id || 'unknown',
+              metadata: log.metadata || {}
+            }
+          } catch (e) {
+            console.warn('Error sanitizing log:', log, e)
+            return {
+              id: `error_log_${Date.now()}`,
+              timestamp: new Date().toISOString(),
+              user_id: 'system',
+              user_name: 'System',
+              action: 'ERROR',
+              resource_type: 'SYSTEM',
+              resource_id: 'error',
+              changes: {},
+              ip_address: 'N/A',
+              session_id: 'error',
+              metadata: { error: 'Corrupted log data' }
+            }
+          }
+        })
+        
+        setAuditLogs(sanitizedLogs)
+        setTotal(logsResponse.total || 0)
+        setTotalPages(logsResponse.total_pages || 0)
       } catch (err) {
         setError('Failed to load audit logs')
         console.error('Audit log fetch error:', err)
@@ -291,25 +337,40 @@ const AuditLogPage = () => {
     if (!changes || typeof changes !== 'object') {
       return []
     }
-    return Object.entries(changes).map(([field, change]) => {
-      // Handle different change formats
-      let fromValue, toValue
-      
-      if (change && typeof change === 'object' && ('from' in change || 'to' in change)) {
-        fromValue = change.from
-        toValue = change.to
-      } else {
-        // If change is the actual value, treat it as 'to' value
-        fromValue = null
-        toValue = change
-      }
-      
-      return {
-        field,
-        from: fromValue,
-        to: toValue
-      }
-    })
+    
+    try {
+      return Object.entries(changes).map(([field, change]) => {
+        // Handle different change formats
+        let fromValue, toValue
+        
+        try {
+          if (change && typeof change === 'object' && ('from' in change || 'to' in change)) {
+            fromValue = change.from
+            toValue = change.to
+          } else {
+            // If change is the actual value, treat it as 'to' value
+            fromValue = null
+            toValue = change
+          }
+          
+          return {
+            field: String(field),
+            from: fromValue,
+            to: toValue
+          }
+        } catch (e) {
+          console.warn('Error processing change for field:', field, e)
+          return {
+            field: String(field),
+            from: '[Error - Cannot display]',
+            to: '[Error - Cannot display]'
+          }
+        }
+      })
+    } catch (e) {
+      console.warn('Error processing changes:', e)
+      return []
+    }
   }
 
   // Toggle expanded log details
@@ -415,6 +476,14 @@ const AuditLogPage = () => {
             aria-label="Download audit logs as PDF"
           >
             Download PDF
+          </button>
+          <button 
+            onClick={clearCorruptedLogs}
+            className="btn-secondary text-red-600 hover:text-red-800"
+            aria-label="Clear corrupted audit logs"
+            title="Use this if you're experiencing rendering errors"
+          >
+            Clear Data
           </button>
         </div>
       </div>
@@ -644,11 +713,12 @@ const AuditLogPage = () => {
         ) : (
           <div className="space-y-4">
             {filteredLogs.map(log => {
-              const ActionIcon = getActionIcon(log.action)
-              const isExpanded = expandedLogs.has(log.id)
-              const changes = formatChanges(log.changes)
-              
-              return (
+              try {
+                const ActionIcon = getActionIcon(log.action)
+                const isExpanded = expandedLogs.has(log.id)
+                const changes = formatChanges(log.changes)
+                
+                return (
                 <InteractiveCard key={log.id} clickable hoverable>
                   <div 
                     className="p-4 cursor-pointer"
@@ -741,24 +811,46 @@ const AuditLogPage = () => {
                                   <div>
                                     <div className="text-gray-500 dark:text-gray-400 mb-1">From:</div>
                                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded px-2 py-1 text-red-800 dark:text-red-200 max-h-32 overflow-auto font-mono text-xs">
-                                      {change.from === null || change.from === undefined || change.from === '' 
-                                        ? '(Not set)' 
-                                        : typeof change.from === 'object' 
-                                          ? JSON.stringify(change.from, null, 2)
-                                          : change.from.toString()
-                                      }
+                                      {(() => {
+                                        if (change.from === null || change.from === undefined || change.from === '') {
+                                          return '(Not set)'
+                                        }
+                                        if (typeof change.from === 'object') {
+                                          try {
+                                            return JSON.stringify(change.from, null, 2)
+                                          } catch (e) {
+                                            return '[Object - Cannot display]'
+                                          }
+                                        }
+                                        try {
+                                          return String(change.from)
+                                        } catch (e) {
+                                          return '[Value - Cannot display]'
+                                        }
+                                      })()}
                                     </div>
                                   </div>
                                   
                                   <div>
                                     <div className="text-gray-500 dark:text-gray-400 mb-1">To:</div>
                                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded px-2 py-1 text-green-800 dark:text-green-200 max-h-32 overflow-auto font-mono text-xs">
-                                      {change.to === null || change.to === undefined || change.to === '' 
-                                        ? '(Not set)' 
-                                        : typeof change.to === 'object' 
-                                          ? JSON.stringify(change.to, null, 2)
-                                          : change.to.toString()
-                                      }
+                                      {(() => {
+                                        if (change.to === null || change.to === undefined || change.to === '') {
+                                          return '(Not set)'
+                                        }
+                                        if (typeof change.to === 'object') {
+                                          try {
+                                            return JSON.stringify(change.to, null, 2)
+                                          } catch (e) {
+                                            return '[Object - Cannot display]'
+                                          }
+                                        }
+                                        try {
+                                          return String(change.to)
+                                        } catch (e) {
+                                          return '[Value - Cannot display]'
+                                        }
+                                      })()}
                                     </div>
                                   </div>
                                 </div>
@@ -824,6 +916,22 @@ const AuditLogPage = () => {
                   )}
                 </InteractiveCard>
               )
+              } catch (error) {
+                console.error('Error rendering audit log:', log.id, error)
+                return (
+                  <InteractiveCard key={log.id} variant="danger">
+                    <div className="p-4">
+                      <div className="flex items-center">
+                        <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                        <div>
+                          <p className="text-red-800 dark:text-red-200 font-medium">Error displaying audit log</p>
+                          <p className="text-red-600 dark:text-red-400 text-sm">Log ID: {log.id}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </InteractiveCard>
+                )
+              }
             })}
           </div>
         )}

@@ -3,25 +3,24 @@ import {
   Search, 
   Filter, 
   Star, 
-  Clock, 
   MapPin, 
   Phone, 
   Mail, 
   User, 
-  Briefcase,
   Calendar,
-  ChevronDown,
-  ChevronUp,
   Tag,
   TrendingUp,
   Award,
   Eye,
   MessageSquare,
-  CheckCircle,
-  AlertCircle
+  ChevronDown,
+  ChevronUp,
+  FileText
 } from 'lucide-react'
 import { formatInNepalTz, getRelativeTime, isToday } from '../utils/nepaliDate'
+import { useConfirm } from './ConfirmProvider.jsx'
 import CandidateSummaryS2 from './CandidateSummaryS2'
+import { applicationService } from '../services/index.js'
 
 const CandidateShortlist = ({ 
   jobId, 
@@ -29,15 +28,29 @@ const CandidateShortlist = ({
   job = null,
   onUpdateCandidateStatus,
   onScheduleInterview,
+  onRefresh,
   workflowStages = []
 }) => {
+  const { confirm } = useConfirm()
+  
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('priority_score') // priority_score, applied_at, name
   const [sortOrder, setSortOrder] = useState('desc')
   const [filterStage, setFilterStage] = useState('all')
   const [selectedCandidate, setSelectedCandidate] = useState(null)
-  const [showSummary, setShowSummary] = useState(false)
-  const [expandedCards, setExpandedCards] = useState(new Set())
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Handle ESC key to close sidebar
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && isSidebarOpen) {
+        handleCloseSidebar()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isSidebarOpen])
 
   // Filter and sort candidates based on skill matching and priority
   const processedCandidates = useMemo(() => {
@@ -116,15 +129,7 @@ const CandidateShortlist = ({
     return filtered
   }, [candidates, searchTerm, sortBy, sortOrder, filterStage, job])
 
-  const toggleCardExpansion = (candidateId) => {
-    const newExpanded = new Set(expandedCards)
-    if (newExpanded.has(candidateId)) {
-      newExpanded.delete(candidateId)
-    } else {
-      newExpanded.add(candidateId)
-    }
-    setExpandedCards(newExpanded)
-  }
+
 
   const getStageInfo = (stage) => {
     const stageConfig = workflowStages.find(s => s.id === stage) || { label: stage, color: 'gray' }
@@ -147,22 +152,156 @@ const CandidateShortlist = ({
 
   const handleCandidateClick = (candidate) => {
     setSelectedCandidate(candidate)
-    setShowSummary(true)
+    setIsSidebarOpen(true)
   }
 
-  const handleStatusUpdate = async (candidateId, newStage) => {
-    if (onUpdateCandidateStatus) {
-      await onUpdateCandidateStatus(candidateId, newStage)
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false)
+    setSelectedCandidate(null)
+  }
+
+  // Define strict stage progression rules
+  const getNextAllowedStage = (currentStage) => {
+    const stageOrder = {
+      'applied': 'shortlisted',
+      'shortlisted': 'interview-scheduled', 
+      'interview-scheduled': 'interview-passed',
+      'interview-passed': null // Final stage
+    }
+    return stageOrder[currentStage]
+  }
+
+  const validateStageTransition = (currentStage, targetStage) => {
+    // Allow any valid stage transition in shortlist view for flexibility
+    const validStages = ['applied', 'shortlisted', 'interview-scheduled', 'interview-passed']
+    return validStages.includes(targetStage)
+  }
+
+  const handleUpdateStatus = async (candidateId, newStage) => {
+    try {
+      const candidate = candidates.find(c => c.id === candidateId)
+      if (!candidate) return
+
+      const currentStage = candidate.application?.stage
+      
+      // Prevent any backward flow or skipping stages
+      if (!validateStageTransition(currentStage, newStage)) {
+        await confirm({
+          title: 'Invalid Stage Transition',
+          message: `You cannot move directly from "${workflowStages.find(s => s.id === currentStage)?.label}" to "${workflowStages.find(s => s.id === newStage)?.label}". Please follow the proper workflow sequence.`,
+          confirmText: 'Okay',
+          type: 'warning'
+        })
+        return
+      }
+
+      // Show confirmation dialog for valid transitions
+      const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label
+      const newStageLabel = workflowStages.find(s => s.id === newStage)?.label
+      
+      const confirmed = await confirm({
+        title: 'Confirm Stage Update',
+        message: `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"? This action cannot be undone.`,
+        confirmText: 'Yes, Update Stage',
+        cancelText: 'Cancel',
+        type: 'warning'
+      })
+
+      if (confirmed) {
+        await applicationService.updateApplicationStage(candidate.application.id, newStage)
+        if (onRefresh) {
+          await onRefresh() // Reload data
+        }
+        
+        // Update the selected candidate to reflect the new stage
+        if (selectedCandidate && selectedCandidate.id === candidateId) {
+          setSelectedCandidate({
+            ...selectedCandidate,
+            stage: newStage,
+            application: {
+              ...selectedCandidate.application,
+              stage: newStage
+            }
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to update candidate status. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
     }
   }
 
   const handleAttachDocument = async (candidateId, document) => {
-    // This would typically call an API to attach the document
-    console.log('Attaching document:', document, 'to candidate:', candidateId)
+    try {
+      const confirmed = await confirm({
+        title: 'Confirm Document Attachment',
+        message: `Are you sure you want to attach the document "${document.name}" to this candidate?`,
+        confirmText: 'Yes, Attach',
+        cancelText: 'Cancel',
+        type: 'info'
+      })
+
+      if (confirmed) {
+        await applicationService.attachDocument(candidateId, document)
+        if (onRefresh) {
+          await onRefresh() // Reload data
+        }
+        
+        // Update the selected candidate to reflect the new document (mock data approach)
+        if (selectedCandidate && selectedCandidate.id === candidateId) {
+          const updatedDocuments = [...(selectedCandidate.documents || []), document]
+          setSelectedCandidate({
+            ...selectedCandidate,
+            documents: updatedDocuments
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to attach document:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to attach document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    }
+  }
+
+  const handleRemoveDocument = async (candidateId, docIndex) => {
+    try {
+      // Pass only the candidateId and docIndex (stage parameter is no longer needed)
+      await applicationService.removeDocument(candidateId, docIndex)
+      if (onRefresh) {
+        await onRefresh() // Reload data
+      }
+      
+      // Update the selected candidate to reflect the removed document (mock data approach)
+      if (selectedCandidate && selectedCandidate.id === candidateId) {
+        const updatedDocuments = [...(selectedCandidate.documents || [])]
+        updatedDocuments.splice(docIndex, 1)
+        setSelectedCandidate({
+          ...selectedCandidate,
+          documents: updatedDocuments
+        })
+      }
+    } catch (error) {
+      console.error('Failed to remove document:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to remove document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    }
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-8xl mx-auto w-full px-4 sm:px-8 lg:px-12">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -247,10 +386,10 @@ const CandidateShortlist = ({
         </div>
       </div>
 
-      {/* Candidates List */}
-      <div className="space-y-4">
+      {/* Candidates Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {processedCandidates.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="text-center py-12">
             <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No candidates found</h3>
             <p className="text-gray-500 dark:text-gray-400">
@@ -261,62 +400,104 @@ const CandidateShortlist = ({
             </p>
           </div>
         ) : (
-          processedCandidates.map((candidate) => {
-            const isExpanded = expandedCards.has(candidate.id)
-            const stageInfo = getStageInfo(candidate.stage)
-            const appliedToday = isToday(candidate.applied_at)
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1600px] divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Candidate
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Contact & Location
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Skills & Experience
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Scores
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Applied
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-80">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {processedCandidates.map((candidate) => {
+                  const stageInfo = getStageInfo(candidate.stage)
+                  const appliedToday = isToday(candidate.applied_at)
 
-            return (
-              <div key={candidate.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-                {/* Main Card Content */}
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    {/* Left Side - Candidate Info */}
-                    <div className="flex-1">
-                      <div className="flex items-start space-x-4">
-                        {/* Avatar */}
-                        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
-                            {candidate.name?.charAt(0)}
-                          </span>
-                        </div>
-
-                        {/* Basic Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
-                              {candidate.name}
-                            </h3>
-                            {appliedToday && (
-                              <span className="chip chip-green text-xs">New Today</span>
+                  return (
+                    <tr key={candidate.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      {/* Candidate */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                              {candidate.name?.charAt(0)}
+                            </span>
+                          </div>
+                          <div className="ml-4">
+                            <div className="flex items-center space-x-2">
+                              <div className="text-base font-medium text-gray-900 dark:text-gray-100">
+                                {candidate.name}
+                              </div>
+                              {appliedToday && (
+                                <span className="chip chip-green text-xs">New</span>
+                              )}
+                            </div>
+                            {candidate.education && (
+                              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                {candidate.education}
+                              </div>
+                            )}
+                            {candidate.documents && candidate.documents.length > 0 && (
+                              <div className="flex items-center text-xs text-blue-600 dark:text-blue-400 mt-2">
+                                <FileText className="w-3 h-3 mr-1" />
+                                <span>{candidate.documents.length} doc{candidate.documents.length !== 1 ? 's' : ''}</span>
+                              </div>
                             )}
                           </div>
+                        </div>
+                      </td>
 
-                          {/* Contact Info */}
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                            <div className="flex items-center space-x-1">
-                              <Phone className="w-4 h-4" />
-                              <span>{candidate.phone}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Mail className="w-4 h-4" />
-                              <span className="truncate">{candidate.email}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="w-4 h-4" />
-                              <span>{candidate.address}</span>
-                            </div>
+                      {/* Contact & Location */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900 dark:text-gray-100">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <span className="truncate">{candidate.phone}</span>
                           </div>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <span className="truncate max-w-[180px]">{candidate.email}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-500 dark:text-gray-400 truncate">{candidate.address}</span>
+                          </div>
+                        </div>
+                      </td>
 
-                          {/* Skills Preview */}
+                      {/* Skills & Experience */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                            {candidate.experience}
+                          </div>
                           {candidate.skills && candidate.skills.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-3">
+                            <div className="flex flex-wrap gap-2">
                               {candidate.skills.slice(0, 4).map((skill, index) => {
                                 const isMatching = candidate.matchingSkills?.includes(skill)
                                 return (
                                   <span 
                                     key={index} 
-                                    className={`chip text-xs ${
+                                    className={`chip text-sm ${
                                       isMatching ? 'chip-green' : 'chip-gray'
                                     }`}
                                   >
@@ -326,175 +507,87 @@ const CandidateShortlist = ({
                                 )
                               })}
                               {candidate.skills.length > 4 && (
-                                <span className="chip chip-gray text-xs">
-                                  +{candidate.skills.length - 4} more
+                                <span className="chip chip-gray text-sm">
+                                  +{candidate.skills.length - 4}
                                 </span>
                               )}
                             </div>
                           )}
+                        </div>
+                      </td>
 
-                          {/* Application Date */}
-                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <Calendar className="w-4 h-4 mr-1" />
-                            <span>Applied {getRelativeTime(candidate.applied_at)}</span>
-                            <span className="mx-2">•</span>
-                            <span>{formatInNepalTz(candidate.applied_at, 'MMM dd, yyyy')}</span>
+                      {/* Scores */}
+                      <td className="px-6 py-4">
+                        <div className="space-y-2">
+                          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${getPriorityColor(candidate.priority_score)}`}>
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                            {candidate.priority_score || 0}%
+                          </div>
+                          {candidate.skillMatchScore !== undefined && (
+                            <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${getSkillMatchColor(candidate.skillMatchScore)}`}>
+                              <Award className="w-4 h-4 mr-1" />
+                              {Math.round(candidate.skillMatchScore)}%
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`chip chip-${stageInfo.color || 'gray'} text-sm`}>
+                          {stageInfo.label}
+                        </span>
+                      </td>
+
+                      {/* Applied */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center">
+                          <Calendar className="w-5 h-5 mr-2" />
+                          <div>
+                            <div className="font-medium">{getRelativeTime(candidate.applied_at)}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              {formatInNepalTz(candidate.applied_at, 'MMM dd, yyyy')}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Right Side - Scores and Actions */}
-                    <div className="flex flex-col items-end space-y-3 ml-6">
-                      {/* Priority Score */}
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(candidate.priority_score)}`}>
-                        <div className="flex items-center space-x-1">
-                          <TrendingUp className="w-4 h-4" />
-                          <span>{candidate.priority_score || 0}%</span>
-                        </div>
-                      </div>
-
-                      {/* Skill Match Score */}
-                      {candidate.skillMatchScore !== undefined && (
-                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${getSkillMatchColor(candidate.skillMatchScore)}`}>
-                          <div className="flex items-center space-x-1">
-                            <Award className="w-4 h-4" />
-                            <span>{Math.round(candidate.skillMatchScore)}% match</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Current Stage */}
-                      <span className={`chip chip-${stageInfo.color || 'gray'} text-xs`}>
-                        {stageInfo.label}
-                      </span>
+                      </td>
 
                       {/* Actions */}
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleCandidateClick(candidate)}
-                          className="btn-secondary text-sm px-3 py-1"
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          View Details
-                        </button>
-                        <button
-                          onClick={() => toggleCardExpansion(candidate.id)}
-                          className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Expanded Content */}
-                  {isExpanded && (
-                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Professional Details */}
-                        <div>
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                            <Briefcase className="w-4 h-4 mr-2" />
-                            Professional Information
-                          </h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600 dark:text-gray-400">Experience:</span>
-                              <span className="font-medium text-gray-900 dark:text-gray-100">{candidate.experience}</span>
-                            </div>
-                            {candidate.education && (
-                              <div className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400">Education:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{candidate.education}</span>
-                              </div>
-                            )}
-                            {candidate.salary_expectation && (
-                              <div className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400">Expected Salary:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{candidate.salary_expectation}</span>
-                              </div>
-                            )}
-                            {candidate.availability && (
-                              <div className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400">Availability:</span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{candidate.availability}</span>
-                              </div>
-                            )}
-                          </div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm w-80">
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => handleCandidateClick(candidate)}
+                            className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center px-3 py-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                          >
+                            <Eye className="w-5 h-5 mr-1" />
+                            View Details
+                          </button>
+                          <button
+                            onClick={() => onScheduleInterview && onScheduleInterview(candidate.id)}
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                          >
+                            <MessageSquare className="w-5 h-5 mr-1" />
+                            Schedule
+                          </button>
                         </div>
-
-                        {/* All Skills */}
-                        {candidate.skills && candidate.skills.length > 0 && (
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">All Skills</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {candidate.skills.map((skill, index) => {
-                                const isMatching = candidate.matchingSkills?.includes(skill)
-                                return (
-                                  <span 
-                                    key={index} 
-                                    className={`chip text-xs ${
-                                      isMatching ? 'chip-green' : 'chip-gray'
-                                    }`}
-                                  >
-                                    {skill}
-                                    {isMatching && <Star className="w-3 h-3 ml-1" />}
-                                  </span>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Quick Actions */}
-                      <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Actions:</span>
-                            <button
-                              onClick={() => onScheduleInterview && onScheduleInterview(candidate.id)}
-                              className="btn-primary text-sm px-3 py-1"
-                            >
-                              <MessageSquare className="w-4 h-4 mr-1" />
-                              Schedule Interview
-                            </button>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">Update Status:</span>
-                            <select
-                              value={candidate.stage}
-                              onChange={(e) => handleStatusUpdate(candidate.id, e.target.value)}
-                              className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            >
-                              {workflowStages.map(stage => (
-                                <option key={stage.id} value={stage.id}>{stage.label}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          })
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {/* Candidate Summary Modal */}
       <CandidateSummaryS2
         candidate={selectedCandidate}
-        isOpen={showSummary}
-        onClose={() => {
-          setShowSummary(false)
-          setSelectedCandidate(null)
-        }}
-        onUpdateStatus={handleStatusUpdate}
+        isOpen={isSidebarOpen}
+        onClose={handleCloseSidebar}
+        onUpdateStatus={handleUpdateStatus}
         onAttachDocument={handleAttachDocument}
+        onRemoveDocument={handleRemoveDocument}
         workflowStages={workflowStages}
       />
     </div>

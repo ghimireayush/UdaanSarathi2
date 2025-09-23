@@ -231,12 +231,56 @@ const Workflow = () => {
       if (confirmed) {
         await applicationService.attachDocument(candidateId, document)
         loadWorkflowData() // Reload data
+        
+        // Update the selected candidate to reflect the new document
+        if (selectedCandidate && selectedCandidate.id === candidateId) {
+          // Get the updated application data for this candidate
+          const updatedApplications = await applicationService.getApplicationsByCandidateId(candidateId)
+          if (updatedApplications && updatedApplications.length > 0) {
+            const updatedApplication = updatedApplications[0] // Get the first (and likely only) application
+            setSelectedCandidate({
+              ...selectedCandidate,
+              application: updatedApplication,
+              documents: updatedApplication.documents
+            })
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to attach document:', error)
       await confirm({
         title: 'Error',
         message: 'Failed to attach document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    }
+  }
+
+  const handleRemoveDocument = async (candidateId, docIndex) => {
+    try {
+      // Pass only the candidateId and docIndex (stage parameter is no longer needed)
+      await applicationService.removeDocument(candidateId, docIndex)
+      loadWorkflowData() // Reload data
+      
+      // Update the selected candidate to reflect the removed document
+      if (selectedCandidate && selectedCandidate.id === candidateId) {
+        // Get the updated application data for this candidate
+        const updatedApplications = await applicationService.getApplicationsByCandidateId(candidateId)
+        if (updatedApplications && updatedApplications.length > 0) {
+          const updatedApplication = updatedApplications[0] // Get the first (and likely only) application
+          setSelectedCandidate({
+            ...selectedCandidate,
+            application: updatedApplication,
+            documents: updatedApplication.documents
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to remove document:', error)
+      await confirm({
+        title: 'Error',
+        message: 'Failed to remove document. Please try again.',
         confirmText: 'Okay',
         type: 'danger'
       })
@@ -609,6 +653,7 @@ const Workflow = () => {
         onClose={handleCloseSidebar}
         onUpdateStatus={handleUpdateStatus}
         onAttachDocument={handleAttachDocument}
+        onRemoveDocument={handleRemoveDocument}
         workflowStages={workflowStages}
       />
     </div>

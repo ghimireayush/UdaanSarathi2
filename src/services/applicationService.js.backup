@@ -635,7 +635,43 @@ class ApplicationService {
       const job = jobs.find(j => j.id === app.job_id)
       
       // Normalize documents structure
-      const normalizedDocuments = this.normalizeDocuments(app.documents, app.applied_at)
+      let normalizedDocuments = []
+      if (app.documents) {
+        if (Array.isArray(app.documents)) {
+          normalizedDocuments = app.documents
+        } else if (typeof app.documents === 'object') {
+          // Convert old object structure to array format
+          Object.entries(app.documents).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              // Handle arrays like certificates
+              value.forEach((docPath, index) => {
+                normalizedDocuments.push({
+                  id: `doc_legacy_${key}_${index}_${Date.now()}`,
+                  name: docPath.split('/').pop() || `${key}_${index}`,
+                  stage: 'general',
+                  type: 'application/pdf',
+                  size: 0,
+                  uploaded_at: app.applied_at || new Date().toISOString(),
+                  legacy_path: docPath,
+                  legacy_key: key
+                })
+              })
+            } else if (typeof value === 'string') {
+              // Handle single document paths
+              normalizedDocuments.push({
+                id: `doc_legacy_${key}_${Date.now()}`,
+                name: value.split('/').pop() || key,
+                stage: 'general',
+                type: 'application/pdf',
+                size: 0,
+                uploaded_at: app.applied_at || new Date().toISOString(),
+                legacy_path: value,
+                legacy_key: key
+              })
+            }
+          })
+        }
+      }
       
       return {
         ...app,
@@ -684,7 +720,43 @@ class ApplicationService {
       const job = jobs.find(j => j.id === app.job_id)
       
       // Normalize documents structure
-      const normalizedDocuments = this.normalizeDocuments(app.documents, app.applied_at)
+      let normalizedDocuments = []
+      if (app.documents) {
+        if (Array.isArray(app.documents)) {
+          normalizedDocuments = app.documents
+        } else if (typeof app.documents === 'object') {
+          // Convert old object structure to array format
+          Object.entries(app.documents).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              // Handle arrays like certificates
+              value.forEach((docPath, index) => {
+                normalizedDocuments.push({
+                  id: `doc_legacy_${key}_${index}_${Date.now()}`,
+                  name: docPath.split('/').pop() || `${key}_${index}`,
+                  stage: 'general',
+                  type: 'application/pdf',
+                  size: 0,
+                  uploaded_at: app.applied_at || new Date().toISOString(),
+                  legacy_path: docPath,
+                  legacy_key: key
+                })
+              })
+            } else if (typeof value === 'string') {
+              // Handle single document paths
+              normalizedDocuments.push({
+                id: `doc_legacy_${key}_${Date.now()}`,
+                name: value.split('/').pop() || key,
+                stage: 'general',
+                type: 'application/pdf',
+                size: 0,
+                uploaded_at: app.applied_at || new Date().toISOString(),
+                legacy_path: value,
+                legacy_key: key
+              })
+            }
+          })
+        }
+      }
       
       return {
         ...app,
@@ -749,10 +821,11 @@ class ApplicationService {
   /**
    * Remove document from candidate application
    * @param {string} candidateId - Candidate ID
-   * @param {number} docIndex - Document index (global index in the documents array)
+   * @param {number} docIndex - Document index
+   * @param {string} stage - Document stage
    * @returns {Promise<boolean>} Success status
    */
-  async removeDocument(candidateId, docIndex) {
+  async removeDocument(candidateId, docIndex, stage) {
     await delay(40)
     
     const application = applicationsCache.find(app => app.candidate_id === candidateId)
@@ -760,37 +833,42 @@ class ApplicationService {
       return false
     }
 
-    // Ensure documents is an array
-    application.documents = this.normalizeDocuments(application.documents, application.applied_at)
-
-    // Check if the index is valid
-    if (docIndex >= application.documents.length) {
+    // Find documents for the specific stage
+    const stageDocuments = application.documents.filter(doc => (doc.stage || 'general') === stage)
+    if (docIndex >= stageDocuments.length) {
       return false
     }
 
-    // Remove the document at the specified index
-    const removed = application.documents.splice(docIndex, 1)[0]
+    const documentToRemove = stageDocuments[docIndex]
     
-    // Audit: Document removed
-    try {
-      const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
-      await auditService.logEvent({
-        user_id: actor.id,
-        user_name: actor.name,
-        action: 'DELETE',
-        resource_type: 'DOCUMENT',
-        resource_id: removed.id,
-        metadata: { 
-          candidate_id: candidateId,
-          document_name: removed.name,
-          document_stage: removed.stage
-        }
-      })
-    } catch (e) {
-      console.warn('Audit logging (REMOVE DOCUMENT) failed:', e)
+    // Remove the document from the main array
+    const globalIndex = application.documents.findIndex(doc => doc.id === documentToRemove.id)
+    if (globalIndex !== -1) {
+      const removed = application.documents.splice(globalIndex, 1)[0]
+      
+      // Audit: Document removed
+      try {
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
+        await auditService.logEvent({
+          user_id: actor.id,
+          user_name: actor.name,
+          action: 'DELETE',
+          resource_type: 'DOCUMENT',
+          resource_id: removed.id,
+          metadata: { 
+            candidate_id: candidateId,
+            document_name: removed.name,
+            document_stage: removed.stage
+          }
+        })
+      } catch (e) {
+        console.warn('Audit logging (REMOVE DOCUMENT) failed:', e)
+      }
+      
+      return true
     }
     
-    return true
+    return false
   }
 
   /**
@@ -937,7 +1015,43 @@ class ApplicationService {
       const candidate = candidateMap.get(app.candidate_id)
       
       // Normalize documents structure
-      const normalizedDocuments = this.normalizeDocuments(app.documents, app.applied_at)
+      let normalizedDocuments = []
+      if (app.documents) {
+        if (Array.isArray(app.documents)) {
+          normalizedDocuments = app.documents
+        } else if (typeof app.documents === 'object') {
+          // Convert old object structure to array format
+          Object.entries(app.documents).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              // Handle arrays like certificates
+              value.forEach((docPath, index) => {
+                normalizedDocuments.push({
+                  id: `doc_legacy_${key}_${index}_${Date.now()}`,
+                  name: docPath.split('/').pop() || `${key}_${index}`,
+                  stage: 'general',
+                  type: 'application/pdf',
+                  size: 0,
+                  uploaded_at: app.applied_at || new Date().toISOString(),
+                  legacy_path: docPath,
+                  legacy_key: key
+                })
+              })
+            } else if (typeof value === 'string') {
+              // Handle single document paths
+              normalizedDocuments.push({
+                id: `doc_legacy_${key}_${Date.now()}`,
+                name: value.split('/').pop() || key,
+                stage: 'general',
+                type: 'application/pdf',
+                size: 0,
+                uploaded_at: app.applied_at || new Date().toISOString(),
+                legacy_path: value,
+                legacy_key: key
+              })
+            }
+          })
+        }
+      }
       
       return {
         ...app,

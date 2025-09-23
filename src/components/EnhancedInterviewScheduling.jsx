@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { Calendar, Clock, AlertTriangle, CheckCircle, X, Users, Zap, FileText, User, GraduationCap, Camera, Clipboard, Plus } from 'lucide-react'
 import { interviewService, candidateService } from '../services/index.js'
 import { format, addMinutes, isSameMinute, parseISO, addDays, startOfDay } from 'date-fns'
+import { useNavigate } from 'react-router-dom'
 
 const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
+  const navigate = useNavigate()
   const [selectedCandidates, setSelectedCandidates] = useState(new Set())
   const [schedulingMode, setSchedulingMode] = useState('individual') // 'individual', 'batch', 'suggested', 'ai'
   const [schedulingData, setSchedulingData] = useState({
@@ -228,6 +230,9 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       if (onScheduled) {
         onScheduled()
       }
+      
+      // Redirect to the job details page with shortlisted tab
+      navigate(`/jobs/${jobId}?tab=shortlisted`)
 
     } catch (error) {
       console.error('Failed to schedule interviews:', error)
@@ -282,7 +287,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto w-full">
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
         <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Interview Scheduling</h3>
         <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
@@ -354,182 +359,150 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
           >
             <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />
             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Batch</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Schedule N on date1, M on date2</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Schedule multiple</div>
           </button>
           
           <button
             onClick={() => setSchedulingMode('suggested')}
             className={`p-4 rounded-lg border-2 transition-colors ${
               schedulingMode === 'suggested'
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
                 : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
             }`}
           >
-            <Calendar className="w-6 h-6 mx-auto mb-2 text-blue-600" />
+            <Calendar className="w-6 h-6 mx-auto mb-2 text-green-600" />
             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Suggested</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Auto-schedule over 2 weeks/days</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Auto-generated schedule</div>
           </button>
           
           <button
             onClick={() => setSchedulingMode('ai')}
             className={`p-4 rounded-lg border-2 transition-colors ${
               schedulingMode === 'ai'
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
                 : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
             }`}
           >
-            <Zap className="w-6 h-6 mx-auto mb-2 text-blue-600" />
+            <Zap className="w-6 h-6 mx-auto mb-2 text-purple-600" />
             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">AI-Assisted</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Smart scheduling for top 5</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Smart recommendations</div>
           </button>
         </div>
       </div>
 
-      {/* Shortlisted Candidates with Interview Status */}
-      <div>
-        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
-          Shortlisted Candidates ({candidates.length})
-        </h4>
-        <div className="grid grid-cols-1 gap-3">
-          {candidates.map(candidate => (
-            <div
-              key={candidate.id}
-              className={`border rounded-lg p-4 transition-colors ${
-                selectedCandidates.has(candidate.id)
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-              }`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-3 flex-1">
-                  {schedulingMode !== 'suggested' && schedulingMode !== 'ai' && (
-                    <input
-                      type="checkbox"
-                      checked={selectedCandidates.has(candidate.id)}
-                      onChange={() => handleCandidateSelect(candidate.id)}
-                      className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  )}
-                  
-                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                      {candidate.name.charAt(0)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h5 className="font-medium text-gray-900 dark:text-gray-100">{candidate.name}</h5>
-                      {candidate.priority_score && (
-                        <div className="flex items-center space-x-1">
-                          <span className="text-xs text-yellow-600">★</span>
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{candidate.priority_score}%</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <div>{candidate.phone}</div>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {candidate.skills.slice(0, 3).map((skill, index) => (
-                            <span key={index} className="text-xs bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">
-                              {skill}
-                            </span>
-                          ))}
-                          {candidate.skills.length > 3 && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400">+{candidate.skills.length - 3}</span>
-                          )}
+      {/* Individual Scheduling */}
+      {schedulingMode === 'individual' && (
+        <div>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Individual Scheduling</h4>
+          
+          {/* Candidate Selection */}
+          <div className="mb-6">
+            <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Select Candidates</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {candidates.map(candidate => (
+                <div
+                  key={candidate.id}
+                  onClick={() => handleCandidateSelect(candidate.id)}
+                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedCandidates.has(candidate.id)
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                          {candidate.name?.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{candidate.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
                         </div>
                       </div>
-                      
-                      <div className="flex flex-col items-end space-y-1">
-                        {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
-                        {conflicts.some(c => c.candidateId === candidate.id) && (
-                          <AlertTriangle className="w-4 h-4 text-red-500" />
-                        )}
-                      </div>
                     </div>
+                    {selectedCandidates.has(candidate.id) && (
+                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                    )}
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Scheduling Form */}
+          {selectedCandidates.size > 0 && (
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Schedule Details</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                  <input
+                    type="date"
+                    value={schedulingData.date}
+                    onChange={(e) => handleSchedulingDataChange('date', e.target.value)}
+                    min={format(new Date(), 'yyyy-MM-dd')}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                  <input
+                    type="time"
+                    value={schedulingData.time}
+                    onChange={(e) => handleSchedulingDataChange('time', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (minutes)</label>
+                  <select
+                    value={schedulingData.duration}
+                    onChange={(e) => handleSchedulingDataChange('duration', parseInt(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option value={30}>30 minutes</option>
+                    <option value={45}>45 minutes</option>
+                    <option value={60}>60 minutes</option>
+                    <option value={90}>90 minutes</option>
+                    <option value={120}>120 minutes</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Interviewer</label>
+                  <input
+                    type="text"
+                    value={schedulingData.interviewer}
+                    onChange={(e) => handleSchedulingDataChange('interviewer', e.target.value)}
+                    placeholder="Enter interviewer name"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={schedulingData.location}
+                    onChange={(e) => handleSchedulingDataChange('location', e.target.value)}
+                    placeholder="Enter location"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                  <textarea
+                    value={schedulingData.notes}
+                    onChange={(e) => handleSchedulingDataChange('notes', e.target.value)}
+                    placeholder="Add any additional notes for the interview"
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Individual Scheduling Form */}
-      {schedulingMode === 'individual' && selectedCandidates.size > 0 && (
-        <div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Individual Schedule Details</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
-              <input
-                type="date"
-                value={schedulingData.date}
-                onChange={(e) => handleSchedulingDataChange('date', e.target.value)}
-                min={format(new Date(), 'yyyy-MM-dd')}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
-              <input
-                type="time"
-                value={schedulingData.time}
-                onChange={(e) => handleSchedulingDataChange('time', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (minutes)</label>
-              <select
-                value={schedulingData.duration}
-                onChange={(e) => handleSchedulingDataChange('duration', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option value={30}>30 minutes</option>
-                <option value={45}>45 minutes</option>
-                <option value={60}>1 hour</option>
-                <option value={90}>1.5 hours</option>
-                <option value={120}>2 hours</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Interviewer</label>
-              <input
-                type="text"
-                value={schedulingData.interviewer}
-                onChange={(e) => handleSchedulingDataChange('interviewer', e.target.value)}
-                placeholder="Enter interviewer name"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-              <select
-                value={schedulingData.location}
-                onChange={(e) => handleSchedulingDataChange('location', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option value="Office">Office</option>
-                <option value="Video Call">Video Call</option>
-                <option value="Phone">Phone</option>
-                <option value="Client Site">Client Site</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-              <textarea
-                value={schedulingData.notes}
-                onChange={(e) => handleSchedulingDataChange('notes', e.target.value)}
-                placeholder="Additional notes for the interview..."
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -537,70 +510,123 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       {schedulingMode === 'batch' && (
         <div>
           <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Batch Scheduling</h4>
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-4">
-            <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              Create multiple scheduling slots. Example: "Schedule 3 candidates on March 15th, 2 candidates on March 16th"
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            {batchScheduling.map((batch, index) => (
-              <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                <div className="flex items-center justify-between mb-3">
-                  <h5 className="font-medium text-gray-900 dark:text-gray-100">Batch {index + 1}</h5>
-                  <button
-                    onClick={() => setBatchScheduling(prev => prev.filter((_, i) => i !== index))}
-                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <input
-                    type="date"
-                    value={batch.date}
-                    onChange={(e) => {
-                      const newBatches = [...batchScheduling]
-                      newBatches[index].date = e.target.value
-                      setBatchScheduling(newBatches)
-                    }}
-                    min={format(new Date(), 'yyyy-MM-dd')}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
-                  <input
-                    type="time"
-                    value={batch.startTime}
-                    onChange={(e) => {
-                      const newBatches = [...batchScheduling]
-                      newBatches[index].startTime = e.target.value
-                      setBatchScheduling(newBatches)
-                    }}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
-                  <input
-                    type="number"
-                    value={batch.candidateCount}
-                    onChange={(e) => {
-                      const newBatches = [...batchScheduling]
-                      newBatches[index].candidateCount = parseInt(e.target.value)
-                      setBatchScheduling(newBatches)
-                    }}
-                    placeholder="Number of candidates"
-                    min="1"
-                    max={candidates.length}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">Batch Schedule Groups</h5>
+              <button
+                onClick={() => {
+                  const newBatch = {
+                    id: Date.now(),
+                    date: '',
+                    time: '',
+                    duration: 60,
+                    interviewer: '',
+                    location: 'Office',
+                    notes: '',
+                    candidates: []
+                  }
+                  setBatchScheduling(prev => [...prev, newBatch])
+                }}
+                className="btn-primary text-sm flex items-center"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Batch
+              </button>
+            </div>
             
-            <button
-              onClick={() => setBatchScheduling(prev => [...prev, { date: '', startTime: '09:00', candidateCount: 1 }])}
-              className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Batch
-            </button>
+            {batchScheduling.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <Users className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <p>No batch schedules created yet.</p>
+                <p className="text-sm mt-1">Click "Add Batch" to create your first batch schedule.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {batchScheduling.map((batch, index) => (
+                  <div key={batch.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+                    <div className="flex items-center justify-between mb-3">
+                      <h6 className="font-medium text-gray-900 dark:text-gray-100">Batch {index + 1}</h6>
+                      <button
+                        onClick={() => {
+                          setBatchScheduling(prev => prev.filter(b => b.id !== batch.id))
+                        }}
+                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                        <input
+                          type="date"
+                          value={batch.date}
+                          onChange={(e) => {
+                            const updatedBatch = { ...batch, date: e.target.value }
+                            setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
+                          }}
+                          min={format(new Date(), 'yyyy-MM-dd')}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                        <input
+                          type="time"
+                          value={batch.time}
+                          onChange={(e) => {
+                            const updatedBatch = { ...batch, time: e.target.value }
+                            setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
+                          }}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {candidates.filter(c => !batch.candidates.includes(c.id)).map(candidate => (
+                        <button
+                          key={candidate.id}
+                          onClick={() => {
+                            const updatedBatch = { ...batch, candidates: [...batch.candidates, candidate.id] }
+                            setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
+                          }}
+                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+                        >
+                          {candidate.name}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {batch.candidates.length > 0 && (
+                      <div className="mt-2">
+                        <div className="text-xs text-gray-700 dark:text-gray-300 mb-1">Selected candidates:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {batch.candidates.map(candidateId => {
+                            const candidate = candidates.find(c => c.id === candidateId)
+                            return (
+                              <div key={candidateId} className="flex items-center text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                {candidate?.name}
+                                <button
+                                  onClick={() => {
+                                    const updatedBatch = { ...batch, candidates: batch.candidates.filter(id => id !== candidateId) }
+                                    setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
+                                  }}
+                                  className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -798,7 +824,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Calendar className="w-4 h-4 mr-2" />
-              {isScheduling ? 'Scheduling...' : `Schedule ${selectedCandidates.size} Interview${selectedCandidates.size !== 1 ? 's' : ''}`}
+              {isScheduling ? 'Scheduling...' : 'Schedule Interview'}
             </button>
           )}
         </div>

@@ -12,6 +12,158 @@
   }
 }
 
+/* Enhanced Theme transition animations */
+@keyframes themeTransition {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+  70% {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes colorWave {
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+  25% {
+    background-position: 50% 25%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.9;
+  }
+  75% {
+    background-position: 50% 75%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+}
+
+@keyframes themeGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+    transform: scale(1);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 25px rgba(147, 197, 253, 0.3);
+    transform: scale(1.05);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4), 0 0 40px rgba(147, 197, 253, 0.2);
+    transform: scale(1.08);
+  }
+  75% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 25px rgba(147, 197, 253, 0.3);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+    transform: scale(1);
+  }
+}
+
+@keyframes themeRipple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(20);
+    opacity: 0;
+  }
+}
+
+@keyframes themeCardWave {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  25% {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 15px rgba(59, 130, 246, 0.15);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 20px rgba(59, 130, 246, 0.2);
+  }
+  75% {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 15px rgba(59, 130, 246, 0.15);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes themeButtonPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  30% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+  }
+  60% {
+    transform: scale(1.08);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes themeChipGlow {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes themeInputFade {
+  0% {
+    opacity: 1;
+    border-color: currentColor;
+  }
+  50% {
+    opacity: 0.8;
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+  100% {
+    opacity: 1;
+    border-color: currentColor;
+  }
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(-10px);
@@ -537,4 +689,192 @@
 
 .interactive-shake {
   animation: shake 0.5s ease-in-out;
+}
+
+/* Enhanced Theme Transition System */
+.theme-transitioning {
+  animation: themeTransition 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.theme-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08), 
+    rgba(147, 197, 253, 0.12), 
+    rgba(99, 102, 241, 0.08),
+    rgba(59, 130, 246, 0.08));
+  background-size: 400% 400%;
+  animation: colorWave 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.theme-transition-overlay.active {
+  opacity: 1;
+}
+
+.theme-transition-overlay.fade-out {
+  opacity: 0;
+}
+
+/* Ripple effect from theme toggle */
+.theme-ripple-effect {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(59, 130, 246, 0.3) 0%, 
+    rgba(147, 197, 253, 0.2) 50%, 
+    transparent 70%);
+  animation: themeRipple 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+}
+
+/* Enhanced theme toggle button */
+.theme-toggle-enhanced {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 8px;
+}
+
+.theme-toggle-enhanced:hover {
+  transform: scale(1.08);
+  animation: themeGlow 2.5s infinite;
+}
+
+.theme-toggle-enhanced:active {
+  transform: scale(0.92);
+}
+
+.theme-toggle-enhanced.transitioning {
+  animation: themeGlow 0.8s ease-in-out;
+  pointer-events: none;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: background-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Override for elements that shouldn't have theme transitions */
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
+/* Enhanced animation classes for different element types */
+.theme-card-wave {
+  animation: themeCardWave 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.theme-button-pulse {
+  animation: themeButtonPulse 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.theme-chip-glow {
+  animation: themeChipGlow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.theme-input-fade {
+  animation: themeInputFade 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Enhanced staggered animation timing */
+.theme-stagger-1 { animation-delay: 0.05s; }
+.theme-stagger-2 { animation-delay: 0.1s; }
+.theme-stagger-3 { animation-delay: 0.15s; }
+.theme-stagger-4 { animation-delay: 0.2s; }
+.theme-stagger-5 { animation-delay: 0.25s; }
+.theme-stagger-6 { animation-delay: 0.3s; }
+
+/* Special handling for body during transition */
+body.theme-transitioning {
+  overflow-x: hidden; /* Prevent horizontal scroll during animations */
+}
+
+/* Enhanced focus states during transitions */
+.theme-toggle-enhanced:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Performance optimizations */
+.theme-transitioning,
+.theme-card-wave,
+.theme-button-pulse,
+.theme-chip-glow,
+.theme-input-fade {
+  will-change: transform, opacity, box-shadow;
+}
+
+/* Clean up will-change after animations */
+.theme-transitioning.animation-complete {
+  will-change: auto;
+}
+
+/* Initial theme loading optimization */
+html:not(.theme-ready) * {
+  transition: none !important;
+  animation: none !important;
+}
+
+html.theme-ready * {
+  transition: background-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition-overlay,
+  .theme-ripple-effect,
+  .theme-card-wave,
+  .theme-button-pulse,
+  .theme-chip-glow,
+  .theme-input-fade {
+    animation: none !important;
+  }
+  
+  .theme-toggle-enhanced:hover {
+    animation: none !important;
+    transform: scale(1.02) !important;
+  }
+  
+  .theme-transitioning {
+    animation: none !important;
+  }
+  
+  * {
+    transition-duration: 0.1s !important;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .theme-toggle-enhanced {
+    border: 2px solid currentColor;
+  }
+  
+  .theme-transition-overlay {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .theme-transition-overlay {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }

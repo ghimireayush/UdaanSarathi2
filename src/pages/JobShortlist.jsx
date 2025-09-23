@@ -13,7 +13,9 @@ import {
   DollarSign,
   Tag,
   BarChart3,
-  Filter
+  Filter,
+  FileText,
+  CheckCircle
 } from 'lucide-react'
 import CandidateShortlist from '../components/CandidateShortlist'
 import { formatInNepalTz, getCurrentNepalTime } from '../utils/nepaliDate'
@@ -34,17 +36,12 @@ const JobShortlist = () => {
   const [loading, setLoading] = useState(true)
   const [showInsights, setShowInsights] = useState(false)
 
-  // Workflow stages - this would typically come from a service
+  // Workflow stages configuration - exact match with Workflow page
   const workflowStages = [
-    { id: 'applied', label: 'Applied', color: 'blue' },
-    { id: 'shortlisted', label: 'Shortlisted', color: 'yellow' },
-    { id: 'scheduled', label: 'Interview Scheduled', color: 'purple' },
-    { id: 'interviewed', label: 'Interviewed', color: 'indigo' },
-    { id: 'interview-passed', label: 'Interview Passed', color: 'green' },
-
-    { id: 'ready-to-fly', label: 'Ready to Fly', color: 'green' },
-    { id: 'deployed', label: 'Deployed', color: 'green' },
-    { id: 'rejected', label: 'Rejected', color: 'red' }
+    { id: 'applied', label: 'Applied', icon: FileText, description: 'Initial application submitted', color: 'blue' },
+    { id: 'shortlisted', label: 'Shortlisted', icon: CheckCircle, description: 'Selected for interview', color: 'yellow' },
+    { id: 'interview-scheduled', label: 'Interview Scheduled', icon: Calendar, description: 'Interview appointment set', color: 'purple' },
+    { id: 'interview-passed', label: 'Interview Passed', icon: Users, description: 'Successfully completed interview', color: 'green' }
   ]
 
   // Load job and candidates data
@@ -66,8 +63,201 @@ const JobShortlist = () => {
           candidate.applied_jobs?.includes(jobId)
         )
 
+        // Transform candidates to match expected structure for CandidateSummaryS2
+        const validStages = ['applied', 'shortlisted', 'interview-scheduled', 'interview-passed']
+        const transformedCandidates = jobCandidates.map(candidate => {
+          // Ensure stage is valid, default to 'applied' if invalid
+          const validStage = validStages.includes(candidate.stage) ? candidate.stage : 'applied'
+          
+          // Add rich interview data for candidates who have been interviewed
+          let interviewData = {}
+          if (validStage === 'interview-scheduled') {
+            interviewData = {
+              interviewed_at: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(), // Random future date within a week
+              interview_remarks: null,
+              interview_type: 'Video Call'
+            }
+          } else if (validStage === 'interview-passed') {
+            interviewData = {
+              interviewed_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(), // Random past date within a week
+              interview_remarks: `Interview conducted successfully. Candidate demonstrated strong skills in ${candidate.skills?.slice(0, 2).join(' and ')}. Good communication skills and relevant experience. Recommended for next stage.`,
+              interview_type: 'Video Call'
+            }
+          }
+          
+          // Debug logging for interview candidates
+          if (validStage === 'interview-scheduled' || validStage === 'interview-passed') {
+            console.log(`Candidate ${candidate.name} (${validStage}):`, {
+              interviewed_at: interviewData.interviewed_at,
+              interview_remarks: interviewData.interview_remarks,
+              interview_type: interviewData.interview_type
+            })
+          }
+
+          // Generate comprehensive stage-wise documents for all candidates
+          const generateDocuments = (candidateName, stage, appliedAt, interviewedAt) => {
+            const baseName = candidateName.replace(/\s+/g, '_')
+            const documents = []
+
+            // General Documents (always present)
+            documents.push(
+              {
+                name: `${baseName}_profile_photo.jpg`,
+                size: 1024 * 300, // 300KB
+                type: 'image/jpeg',
+                stage: 'general',
+                uploaded_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(), // Random date within last 30 days
+                uploaded_by: 'candidate',
+                file_extension: 'jpg'
+              },
+              {
+                name: `${baseName}_id_card.jpg`,
+                size: 1024 * 250, // 250KB
+                type: 'image/jpeg',
+                stage: 'general',
+                uploaded_at: new Date(Date.now() - Math.random() * 25 * 24 * 60 * 60 * 1000).toISOString(),
+                uploaded_by: 'candidate',
+                file_extension: 'jpg'
+              }
+            )
+
+            // Applied Stage Documents
+            documents.push(
+              {
+                name: `${baseName}_CV.pdf`,
+                size: 1024 * 1024 * 2, // 2MB
+                type: 'application/pdf',
+                stage: 'applied',
+                uploaded_at: appliedAt,
+                uploaded_by: 'candidate',
+                file_extension: 'pdf'
+              },
+              {
+                name: `${baseName}_cover_letter.pdf`,
+                size: 1024 * 512, // 512KB
+                type: 'application/pdf',
+                stage: 'applied',
+                uploaded_at: appliedAt,
+                uploaded_by: 'candidate',
+                file_extension: 'pdf'
+              },
+              {
+                name: `${baseName}_application_form.docx`,
+                size: 1024 * 320, // 320KB
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                stage: 'applied',
+                uploaded_at: appliedAt,
+                uploaded_by: 'candidate',
+                file_extension: 'docx'
+              }
+            )
+
+            // Shortlisted Stage Documents (if candidate reached this stage)
+            if (['shortlisted', 'interview-scheduled', 'interview-passed'].includes(stage)) {
+              documents.push(
+                {
+                  name: `${baseName}_passport.jpg`,
+                  size: 1024 * 800, // 800KB
+                  type: 'image/jpeg',
+                  stage: 'shortlisted',
+                  uploaded_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'hr_team',
+                  file_extension: 'jpg'
+                },
+                {
+                  name: `${baseName}_certificates.pdf`,
+                  size: 1024 * 1024 * 3, // 3MB
+                  type: 'application/pdf',
+                  stage: 'shortlisted',
+                  uploaded_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'candidate',
+                  file_extension: 'pdf'
+                }
+              )
+            }
+
+            // Interview Scheduled Stage Documents (if candidate reached this stage)
+            if (['interview-scheduled', 'interview-passed'].includes(stage)) {
+              documents.push(
+                {
+                  name: `${baseName}_interview_confirmation.pdf`,
+                  size: 1024 * 128, // 128KB
+                  type: 'application/pdf',
+                  stage: 'interview-scheduled',
+                  uploaded_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'hr_team',
+                  file_extension: 'pdf'
+                },
+                {
+                  name: `${baseName}_pre_interview_form.docx`,
+                  size: 1024 * 256, // 256KB
+                  type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  stage: 'interview-scheduled',
+                  uploaded_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'candidate',
+                  file_extension: 'docx'
+                }
+              )
+            }
+
+            // Interview Passed Stage Documents (if candidate reached this stage)
+            if (stage === 'interview-passed') {
+              documents.push(
+                {
+                  name: `${baseName}_interview_notes.pdf`,
+                  size: 1024 * 400, // 400KB
+                  type: 'application/pdf',
+                  stage: 'interview-passed',
+                  uploaded_at: interviewedAt || new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'interviewer',
+                  file_extension: 'pdf'
+                },
+                {
+                  name: `${baseName}_skill_assessment.xlsx`,
+                  size: 1024 * 180, // 180KB
+                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  stage: 'interview-passed',
+                  uploaded_at: interviewedAt || new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                  uploaded_by: 'interviewer',
+                  file_extension: 'xlsx'
+                },
+                {
+                  name: `${baseName}_reference_check.pdf`,
+                  size: 1024 * 220, // 220KB
+                  type: 'application/pdf',
+                  stage: 'interview-passed',
+                  uploaded_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+                  uploaded_by: 'hr_team',
+                  file_extension: 'pdf'
+                }
+              )
+            }
+
+            return documents
+          }
+
+          const documents = generateDocuments(candidate.name, validStage, candidate.applied_at, interviewData.interviewed_at)
+          
+          return {
+            ...candidate,
+            stage: validStage, // Update the candidate's stage to be valid
+            application: {
+              id: `app_${candidate.id}`,
+              stage: validStage,
+              created_at: candidate.applied_at,
+              job_id: jobId,
+              interview_type: interviewData.interview_type || null,
+              interviewed_at: interviewData.interviewed_at || null
+            },
+            documents: documents,
+            job_title: foundJob?.title || 'Unknown Position',
+            interviewed_at: interviewData.interviewed_at || null,
+            interview_remarks: interviewData.interview_remarks || null
+          }
+        })
+
         // Rank candidates based on job requirements
-        const ranked = rankCandidates(jobCandidates, foundJob, { includeAnalysis: true })
+        const ranked = rankCandidates(transformedCandidates, foundJob, { includeAnalysis: true })
         setRankedCandidates(ranked)
         setCandidates(ranked)
 
@@ -92,7 +282,14 @@ const JobShortlist = () => {
       // Update candidate status - this would be an API call
       const updatedCandidates = candidates.map(candidate => 
         candidate.id === candidateId 
-          ? { ...candidate, stage: newStage }
+          ? { 
+              ...candidate, 
+              stage: newStage,
+              application: {
+                ...candidate.application,
+                stage: newStage
+              }
+            }
           : candidate
       )
       setCandidates(updatedCandidates)
@@ -109,11 +306,35 @@ const JobShortlist = () => {
 
   const handleScheduleInterview = async (candidateId) => {
     try {
-      // Schedule interview logic - this would integrate with calendar
-      console.log(`Scheduling interview for candidate: ${candidateId}`)
-      // Navigate to interview scheduling page or open modal
+      // Redirect to JobDetails page with shortlisted tab active
+      navigate(`/jobs/${jobId}?tab=shortlisted`)
     } catch (error) {
-      console.error('Error scheduling interview:', error)
+      console.error('Error navigating to schedule interview:', error)
+    }
+  }
+
+  const handleRefresh = async () => {
+    try {
+      setLoading(true)
+      
+      // Find candidates who applied to this job
+      const jobCandidates = candidatesData.filter(candidate => 
+        candidate.applied_jobs?.includes(jobId)
+      )
+
+      // Rank candidates based on job requirements
+      const ranked = rankCandidates(jobCandidates, job, { includeAnalysis: true })
+      setRankedCandidates(ranked)
+      setCandidates(ranked)
+
+      // Generate insights
+      const jobInsights = getRankingInsights(jobCandidates, job)
+      setInsights(jobInsights)
+
+    } catch (error) {
+      console.error('Error refreshing candidates:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -343,6 +564,7 @@ const JobShortlist = () => {
           job={job}
           onUpdateCandidateStatus={handleUpdateCandidateStatus}
           onScheduleInterview={handleScheduleInterview}
+          onRefresh={handleRefresh}
           workflowStages={workflowStages}
         />
       </div>

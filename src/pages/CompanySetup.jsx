@@ -59,12 +59,12 @@ const CompanySetup = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="absolute top-4 left-4 p-2 text-gray-600 hover:text-brand-navy transition-colors"
+            className="absolute top-4 left-4 p-2 text-gray-600 hover:text-brand-navy transition-colors dark:text-gray-400 dark:hover:text-brand-blue-bright"
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
@@ -75,8 +75,8 @@ const CompanySetup = () => {
               alt="Udaan Sarathi Logo" 
               className="w-24 h-24 object-contain mb-2"
             />
-            <h1 className="text-2xl font-bold text-gray-900">Setup Your Company</h1>
-            <p className="text-gray-600">Tell us about your manpower agency</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Setup Your Company</h1>
+            <p className="text-gray-600 dark:text-gray-400">Tell us about your manpower agency</p>
           </div>
         </div>
 
@@ -87,18 +87,18 @@ const CompanySetup = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-700 dark:text-red-200">
                   {error}
                 </div>
               )}
 
               <div>
-                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                   Company Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Building2 className="h-5 w-5 text-gray-400" />
+                    <Building2 className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     id="companyName"
@@ -107,19 +107,19 @@ const CompanySetup = () => {
                     required
                     value={formData.companyName}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter company name"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                   Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MapPin className="h-5 w-5 text-gray-400" />
+                    <MapPin className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     id="address"
@@ -128,7 +128,7 @@ const CompanySetup = () => {
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter company address"
                   />
                 </div>
@@ -136,7 +136,7 @@ const CompanySetup = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                     City
                   </label>
                   <input
@@ -146,13 +146,13 @@ const CompanySetup = () => {
                     required
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter city"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                     Country
                   </label>
                   <input
@@ -162,7 +162,7 @@ const CompanySetup = () => {
                     required
                     value={formData.country}
                     onChange={handleInputChange}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter country"
                   />
                 </div>
@@ -170,12 +170,12 @@ const CompanySetup = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                     Phone Number
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Phone className="h-5 w-5 text-gray-400" />
+                      <Phone className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="phone"
@@ -184,19 +184,19 @@ const CompanySetup = () => {
                       required
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                       placeholder="Company phone"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                     Website
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Globe className="h-5 w-5 text-gray-400" />
+                      <Globe className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="website"
@@ -204,7 +204,7 @@ const CompanySetup = () => {
                       type="url"
                       value={formData.website}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                       placeholder="Company website (optional)"
                     />
                   </div>
@@ -212,12 +212,12 @@ const CompanySetup = () => {
               </div>
 
               <div>
-                <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                   Company Registration Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FileText className="h-5 w-5 text-gray-400" />
+                    <FileText className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     id="registrationNumber"
@@ -226,14 +226,14 @@ const CompanySetup = () => {
                     required
                     value={formData.registrationNumber}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter registration number"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                   Company Description
                 </label>
                 <textarea
@@ -242,7 +242,7 @@ const CompanySetup = () => {
                   rows={3}
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                   placeholder="Tell us about your company (optional)"
                 />
               </div>
@@ -251,7 +251,7 @@ const CompanySetup = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright disabled:opacity-50"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
                 >
                   {loading ? (
                     <span className="flex items-center">
