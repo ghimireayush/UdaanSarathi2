@@ -335,12 +335,11 @@ class ApplicationService {
       case constants.SHORTLISTED:
         updateData.shortlisted_at = new Date().toISOString()
         break
-      case constants.INTERVIEWED:
-        updateData.interviewed_at = new Date().toISOString()
+      case constants.INTERVIEW_SCHEDULED:
+        updateData.interview_scheduled_at = new Date().toISOString()
         break
-      case constants.SELECTED:
-      case constants.REJECTED:
-        updateData.decision_at = new Date().toISOString()
+      case constants.INTERVIEW_PASSED:
+        updateData.interviewed_at = new Date().toISOString()
         break
     }
     const result = await this.updateApplication(applicationId, updateData)
@@ -403,13 +402,12 @@ class ApplicationService {
    */
   async rejectApplication(applicationId, reason = '') {
     await delay(300)
-    const constants = await constantsService.getApplicationStages()
-    
+    // Since we only have 4 stages, rejection is handled by not progressing further
+    // We'll keep the application at its current stage but mark it as rejected in status
     const updateData = {
-      stage: constants.REJECTED,
-      decision_at: new Date().toISOString(),
       notes: reason,
-      status: 'rejected'
+      status: 'rejected',
+      decision_at: new Date().toISOString()
     }
     const res = await this.updateApplication(applicationId, updateData)
     try {
@@ -439,10 +437,12 @@ class ApplicationService {
     await delay(300)
     const constants = await constantsService.getApplicationStages()
     
+    // Selection means moving to the final stage: Interview Passed
     const updateData = {
-      stage: constants.SELECTED,
+      stage: constants.INTERVIEW_PASSED,
       decision_at: new Date().toISOString(),
-      recruiter_notes: notes
+      recruiter_notes: notes,
+      status: 'selected'
     }
     const res = await this.updateApplication(applicationId, updateData)
     try {
@@ -525,13 +525,13 @@ class ApplicationService {
     const constants = await constantsService.getApplicationStages()
     const appliedCount = stats.byStage[constants.APPLIED] || 0
     const shortlistedCount = stats.byStage[constants.SHORTLISTED] || 0
-    const interviewedCount = stats.byStage[constants.INTERVIEWED] || 0
-    const selectedCount = stats.byStage[constants.SELECTED] || 0
+    const interviewScheduledCount = stats.byStage[constants.INTERVIEW_SCHEDULED] || 0
+    const interviewPassedCount = stats.byStage[constants.INTERVIEW_PASSED] || 0
 
     if (appliedCount > 0) {
       stats.conversionRates.applicationToShortlist = (shortlistedCount / appliedCount) * 100
-      stats.conversionRates.applicationToInterview = (interviewedCount / appliedCount) * 100
-      stats.conversionRates.applicationToSelection = (selectedCount / appliedCount) * 100
+      stats.conversionRates.applicationToInterviewScheduled = (interviewScheduledCount / appliedCount) * 100
+      stats.conversionRates.applicationToInterviewPassed = (interviewPassedCount / appliedCount) * 100
     }
 
     return stats

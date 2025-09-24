@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { 
   History, 
   User, 
@@ -112,62 +112,6 @@ const AuditLogPage = () => {
               creation_timestamp: new Date().toISOString()
             }
           })
-          
-          await auditService.logEvent({
-            user_id: 'user_3',
-            user_name: 'Interview Coordinator',
-            action: 'FILE_UPLOAD',
-            resource_type: 'AGENCY_MEDIA',
-            resource_id: 'agency_001',
-            changes: {
-              logo_url: { from: null, to: '/uploads/agency-logo.png' }
-            },
-            ip_address: '192.168.1.102',
-            session_id: 'session_coordinator_001',
-            metadata: { 
-              file_name: 'agency-logo.png', 
-              file_size: 15420,
-              file_type: 'logo'
-            }
-          })
-          
-          await auditService.logEvent({
-            user_id: 'user_2',
-            user_name: 'Senior Recruiter',
-            action: 'UPDATE',
-            resource_type: 'APPLICATION',
-            resource_id: 'app_candidate_001',
-            changes: {
-              stage: { from: 'Applied', to: 'Shortlisted' },
-              shortlisted_at: { from: 'Not set', to: new Date().toISOString() }
-            },
-            ip_address: '192.168.1.101',
-            session_id: 'session_recruiter_001',
-            metadata: { 
-              candidate_name: 'Ahmed Hassan',
-              stage_change: true,
-              update_timestamp: new Date().toISOString()
-            }
-          })
-          
-          await auditService.logEvent({
-            user_id: 'user_3',
-            user_name: 'Interview Coordinator',
-            action: 'CREATE',
-            resource_type: 'INTERVIEW',
-            resource_id: 'interview_001',
-            changes: {
-              status: { from: null, to: 'scheduled' },
-              scheduled_date: { from: null, to: new Date(Date.now() + 86400000).toISOString() }
-            },
-            ip_address: '192.168.1.102',
-            session_id: 'session_coordinator_001',
-            metadata: { 
-              candidate_name: 'Ahmed Hassan',
-              interview_type: 'Technical Interview',
-              scheduled_date: new Date(Date.now() + 86400000).toISOString()
-            }
-          })
         }
         
         const logsResponse = await auditService.getAuditLogs(filters)
@@ -221,61 +165,6 @@ const AuditLogPage = () => {
     fetchAuditLogs()
   }, [filters])
 
-  // Prepare downloadable PDF with jsPDF + html2canvas via dynamic import
-  const logsContainerRef = useRef(null)
-  const exportPDF = async () => {
-    try {
-      const [{ jsPDF }, html2canvas] = await Promise.all([
-        import('https://esm.sh/jspdf@2.5.1'),
-        import('https://esm.sh/html2canvas@1.4.1')
-      ])
-      // Make html2canvas available for jsPDF.html
-      // @ts-ignore
-      window.html2canvas = html2canvas.default || html2canvas
-
-      const now = new Date()
-      // Build a lightweight container for export
-      const wrapper = document.createElement('div')
-      wrapper.style.width = '800px'
-      wrapper.style.padding = '24px'
-      wrapper.style.fontFamily = 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial'
-      wrapper.innerHTML = `
-        <h1 style="font-size:20px;margin:0 0 12px;">Audit Log</h1>
-        <div style="font-size:12px;color:#4B5563;margin-bottom:16px;">Exported: ${now.toLocaleString()} | Page ${filters.page} | Limit ${filters.limit}</div>
-        ${filteredLogs.map(l => `
-          <div style="border:1px solid #E5E7EB;border-radius:8px;margin:10px 0;page-break-inside:avoid;">
-            <div style="padding:10px 12px;background:#F9FAFB;display:flex;align-items:center;justify-content:space-between;">
-              <div style="font-weight:600;">${auditService.getActionLabel(l.action)} <span style="color:#6B7280;font-weight:400;">by ${l.user_name}</span></div>
-              <div style="display:inline-block;padding:2px 8px;border-radius:9999px;background:#EEF2FF;color:#3730A3;font-size:10px;">${auditService.getResourceLabel(l.resource_type)}</div>
-            </div>
-            <div style="padding:12px;font-size:12px;">
-              <div style="display:flex;gap:16px;color:#4B5563;"><div><strong>Timestamp:</strong> ${new Date(l.timestamp).toLocaleString()}</div><div><strong>User:</strong> ${l.user_id}</div></div>
-              ${l.changes && Object.keys(l.changes).length ? `<div style="margin-top:8px;"><strong>Changes:</strong> ${Object.keys(l.changes).length} field(s)</div>` : ''}
-              <div style="margin-top:8px;color:#6B7280;">Session: ${l.session_id || 'unknown_session'} | IP: ${l.ip_address || 'N/A'}</div>
-            </div>
-          </div>
-        `).join('')}
-      `
-      document.body.appendChild(wrapper)
-
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-      await doc.html(wrapper, {
-        margin: [24, 24, 24, 24],
-        autoPaging: 'text',
-        x: 0,
-        y: 0,
-        html2canvas: { scale: 0.72, useCORS: true },
-        callback: (doc) => {
-          const file = `audit_logs_page${filters.page}_limit${filters.limit}.pdf`
-          doc.save(file)
-          document.body.removeChild(wrapper)
-        }
-      })
-    } catch (e) {
-      console.error('PDF export failed', e)
-    }
-  }
-
   // Get icon for action type
   const getActionIcon = (action) => {
     const icons = {
@@ -287,36 +176,6 @@ const AuditLogPage = () => {
       'LOGOUT': User
     }
     return icons[action] || Settings
-  }
-
-  const filteredLogs = useMemo(() => {
-    if (!search.trim()) return auditLogs
-    const q = search.toLowerCase()
-    return auditLogs.filter(log => {
-      return (
-        log.user_name?.toLowerCase().includes(q) ||
-        log.action?.toLowerCase().includes(q) ||
-        log.resource_type?.toLowerCase().includes(q) ||
-        log.resource_id?.toLowerCase().includes(q) ||
-        auditService.getActionLabel(log.action)?.toLowerCase().includes(q) ||
-        auditService.getResourceLabel(log.resource_type)?.toLowerCase().includes(q) ||
-        log.ip_address?.toLowerCase().includes(q) ||
-        log.session_id?.toLowerCase().includes(q)
-      )
-    })
-  }, [auditLogs, search])
-
-  const exportCSV = () => {
-    const headers = ['id','timestamp','user_id','user_name','action','resource_type','resource_id','ip_address','session_id']
-    const rows = filteredLogs.map(l => headers.map(h => JSON.stringify(l[h] ?? (h==='timestamp'? new Date(l.timestamp).toISOString(): ''))).join(','))
-    const csv = [headers.join(','), ...rows].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `audit_logs_page${filters.page}_limit${filters.limit}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
   }
 
   // Get color for action type
@@ -414,6 +273,36 @@ const AuditLogPage = () => {
     setFilters(prev => ({ ...prev, _refresh: Date.now() }))
   }
 
+  const filteredLogs = useMemo(() => {
+    if (!search.trim()) return auditLogs
+    const q = search.toLowerCase()
+    return auditLogs.filter(log => {
+      return (
+        log.user_name?.toLowerCase().includes(q) ||
+        log.action?.toLowerCase().includes(q) ||
+        log.resource_type?.toLowerCase().includes(q) ||
+        log.resource_id?.toLowerCase().includes(q) ||
+        auditService.getActionLabel(log.action)?.toLowerCase().includes(q) ||
+        auditService.getResourceLabel(log.resource_type)?.toLowerCase().includes(q) ||
+        log.ip_address?.toLowerCase().includes(q) ||
+        log.session_id?.toLowerCase().includes(q)
+      )
+    })
+  }, [auditLogs, search])
+
+  const exportCSV = () => {
+    const headers = ['id','timestamp','user_id','user_name','action','resource_type','resource_id','ip_address','session_id']
+    const rows = filteredLogs.map(l => headers.map(h => JSON.stringify(l[h] ?? (h==='timestamp'? new Date(l.timestamp).toISOString(): ''))).join(','))
+    const csv = [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `audit_logs_page${filters.page}_limit${filters.limit}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -471,13 +360,6 @@ const AuditLogPage = () => {
             Export CSV
           </button>
           <button 
-            onClick={exportPDF}
-            className="btn-secondary"
-            aria-label="Download audit logs as PDF"
-          >
-            Download PDF
-          </button>
-          <button 
             onClick={clearCorruptedLogs}
             className="btn-secondary text-red-600 hover:text-red-800"
             aria-label="Clear corrupted audit logs"
@@ -511,12 +393,8 @@ const AuditLogPage = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">User</label>
             <select
               value={filters.user_id}
-              onChange={(e) => {
-                console.log('User filter clicked:', e.target.value)
-                handleFilterChange('user_id', e.target.value)
-              }}
+              onChange={(e) => handleFilterChange('user_id', e.target.value)}
               className={`form-select ${filters.user_id ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
-              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by user"
             >
               <option value="">All Users</option>
@@ -530,12 +408,8 @@ const AuditLogPage = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Resource Type</label>
             <select
               value={filters.resource_type}
-              onChange={(e) => {
-                console.log('Resource type filter clicked:', e.target.value)
-                handleFilterChange('resource_type', e.target.value)
-              }}
+              onChange={(e) => handleFilterChange('resource_type', e.target.value)}
               className={`form-select ${filters.resource_type ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
-              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by resource type"
             >
               <option value="">All Types</option>
@@ -553,12 +427,8 @@ const AuditLogPage = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Action</label>
             <select
               value={filters.action}
-              onChange={(e) => {
-                console.log('Action filter clicked:', e.target.value)
-                handleFilterChange('action', e.target.value)
-              }}
+              onChange={(e) => handleFilterChange('action', e.target.value)}
               className={`form-select ${filters.action ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
-              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter by action type"
             >
               <option value="">All Actions</option>
@@ -576,12 +446,8 @@ const AuditLogPage = () => {
             <input
               type="date"
               value={filters.date_from}
-              onChange={(e) => {
-                console.log('Date from filter clicked:', e.target.value)
-                handleFilterChange('date_from', e.target.value)
-              }}
+              onChange={(e) => handleFilterChange('date_from', e.target.value)}
               className={`form-input ${filters.date_from ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
-              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter from date"
             />
           </div>
@@ -591,12 +457,8 @@ const AuditLogPage = () => {
             <input
               type="date"
               value={filters.date_to}
-              onChange={(e) => {
-                console.log('Date to filter clicked:', e.target.value)
-                handleFilterChange('date_to', e.target.value)
-              }}
+              onChange={(e) => handleFilterChange('date_to', e.target.value)}
               className={`form-input ${filters.date_to ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
-              style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
               aria-label="Filter to date"
             />
           </div>
@@ -642,30 +504,6 @@ const AuditLogPage = () => {
                 </button>
               </span>
             )}
-            {filters.date_from && (
-              <span className="chip chip-yellow">
-                From: {filters.date_from}
-                <button 
-                  onClick={() => handleFilterChange('date_from', '')}
-                  className="ml-1 text-yellow-600 hover:text-yellow-800"
-                  aria-label="Remove date from filter"
-                >
-                  ×
-                </button>
-              </span>
-            )}
-            {filters.date_to && (
-              <span className="chip chip-orange">
-                To: {filters.date_to}
-                <button 
-                  onClick={() => handleFilterChange('date_to', '')}
-                  className="ml-1 text-orange-600 hover:text-orange-800"
-                  aria-label="Remove date to filter"
-                >
-                  ×
-                </button>
-              </span>
-            )}
           </div>
           
           <InteractiveButton 
@@ -688,10 +526,10 @@ const AuditLogPage = () => {
         </InteractiveCard>
       )}
 
-      {/* Audit Logs */}
-      <InteractiveCard className="p-6" ref={logsContainerRef}>
+      {/* Audit Logs Table */}
+      <InteractiveCard className="overflow-hidden">
         {filteredLogs.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 px-6">
             <History className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No audit logs found</h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
@@ -711,254 +549,299 @@ const AuditLogPage = () => {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredLogs.map(log => {
-              try {
-                const ActionIcon = getActionIcon(log.action)
-                const isExpanded = expandedLogs.has(log.id)
-                const changes = formatChanges(log.changes)
-                
-                return (
-                <InteractiveCard key={log.id} clickable hoverable>
-                  <div 
-                    className="p-4 cursor-pointer"
-                    onClick={() => toggleExpanded(log.id)}
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={isExpanded}
-                    aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${auditService.getActionLabel(log.action)} by ${log.user_name}`}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        toggleExpanded(log.id)
-                      }
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getActionColor(log.action)}`}>
-                          <ActionIcon className="w-4 h-4" />
-                        </div>
-                        
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {auditService.getActionLabel(log.action)}
-                            </span>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              by {log.user_name}
-                            </span>
-                            {log.metadata?.role && (
-                              <span className="chip chip-purple text-xs">{log.metadata.role}</span>
-                            )}
-                          </div>
-                          
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            <div className="flex items-center">
-                              <Clock className="w-3 h-3 mr-1" />
-                              <span className="text-gray-600 dark:text-gray-300">{format(new Date(log.timestamp), 'PPp')}</span>
-                            </div>
-                            
-                            <div className="flex items-center">
-                              <User className="w-3 h-3 mr-1" />
-                              <span>ID: {log.user_id || 'Unknown'}</span>
-                            </div>
-                            
-                            {changes.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th scope="col" className="w-[20%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Action & User
+                  </th>
+                  <th scope="col" className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Resource
+                  </th>
+                  <th scope="col" className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Timestamp
+                  </th>
+                  <th scope="col" className="w-[20%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Changes
+                  </th>
+                  <th scope="col" className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Session Info
+                  </th>
+                  <th scope="col" className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Details
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredLogs.map(log => {
+                  try {
+                    const ActionIcon = getActionIcon(log.action)
+                    const isExpanded = expandedLogs.has(log.id)
+                    const changes = formatChanges(log.changes)
+                    
+                    return (
+                      <React.Fragment key={log.id}>
+                        <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getActionColor(log.action)}`}>
+                                <ActionIcon className="w-4 h-4" />
+                              </div>
                               <div>
-                                {changes.length} field{changes.length !== 1 ? 's' : ''} changed
+                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                  {auditService.getActionLabel(log.action)}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                  by {log.user_name}
+                                </div>
                               </div>
-                            )}
-                            
-                            {log.resource_type && (
-                              <div className="chip-blue">
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <div>
+                              <span className={`chip ${getActionColor(log.action)} text-xs`}>
                                 {auditService.getResourceLabel(log.resource_type)}
+                              </span>
+                              {log.resource_id && (
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                                  {log.resource_id}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <div className="text-sm">
+                              <div className="text-gray-900 dark:text-gray-100">
+                                {format(new Date(log.timestamp), 'MMM dd, yyyy')}
                               </div>
-                            )}
-                            
-                            {log.resource_id && (
-                              <div className="text-xs text-gray-400">
-                                Resource: {log.resource_id}
+                              <div className="text-gray-500 dark:text-gray-400">
+                                {format(new Date(log.timestamp), 'HH:mm:ss')}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        {isExpanded ? (
-                          <ChevronDown className="w-4 h-4 text-gray-400" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {isExpanded && (
-                    <div className="border-t border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-800">
-                      {changes.length > 0 ? (
-                        <div>
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Changes Made:</h4>
-                          <div className="space-y-3">
-                            {changes.map((change, index) => (
-                              <div key={index} className="bg-white dark:bg-gray-700 rounded-md p-3 border border-gray-200 dark:border-gray-600">
-                                <div className="font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
-                                  {change.field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <div className="text-sm">
+                              {changes.length > 0 ? (
+                                <div>
+                                  <div className="text-gray-900 dark:text-gray-100 font-medium">
+                                    {changes.length} field{changes.length !== 1 ? 's' : ''} changed
+                                  </div>
+                                  <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                                    {changes.slice(0, 2).map(c => c.field).join(', ')}
+                                    {changes.length > 2 && ` +${changes.length - 2} more`}
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-gray-400 dark:text-gray-500">No changes</span>
+                              )}
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <div className="text-sm">
+                              <div className="text-gray-900 dark:text-gray-100">
+                                {log.ip_address || 'N/A'}
+                              </div>
+                              <div className="text-gray-500 dark:text-gray-400 text-xs truncate">
+                                {log.session_id || 'unknown'}
+                              </div>
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => toggleExpanded(log.id)}
+                              className="flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <ChevronDown className="w-4 h-4 mr-1" />
+                                  Hide
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronRight className="w-4 h-4 mr-1" />
+                                  Show
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                        
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan="6" className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                              {changes.length > 0 ? (
+                                <div>
+                                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Changes Made:</h4>
+                                  <div className="space-y-3">
+                                    {changes.map((change, index) => (
+                                      <div key={index} className="bg-white dark:bg-gray-700 rounded-md p-3 border border-gray-200 dark:border-gray-600">
+                                        <div className="font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                                          {change.field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                          <div>
+                                            <div className="text-gray-500 dark:text-gray-400 mb-1">From:</div>
+                                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded px-2 py-1 text-red-800 dark:text-red-200 max-h-32 overflow-auto font-mono text-xs">
+                                              {(() => {
+                                                if (change.from === null || change.from === undefined || change.from === '') {
+                                                  return '(Not set)'
+                                                }
+                                                if (typeof change.from === 'object') {
+                                                  try {
+                                                    return JSON.stringify(change.from, null, 2)
+                                                  } catch (e) {
+                                                    return '[Object - Cannot display]'
+                                                  }
+                                                }
+                                                try {
+                                                  return String(change.from)
+                                                } catch (e) {
+                                                  return '[Value - Cannot display]'
+                                                }
+                                              })()}
+                                            </div>
+                                          </div>
+                                          
+                                          <div>
+                                            <div className="text-gray-500 dark:text-gray-400 mb-1">To:</div>
+                                            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded px-2 py-1 text-green-800 dark:text-green-200 max-h-32 overflow-auto font-mono text-xs">
+                                              {(() => {
+                                                if (change.to === null || change.to === undefined || change.to === '') {
+                                                  return '(Not set)'
+                                                }
+                                                if (typeof change.to === 'object') {
+                                                  try {
+                                                    return JSON.stringify(change.to, null, 2)
+                                                  } catch (e) {
+                                                    return '[Object - Cannot display]'
+                                                  }
+                                                }
+                                                try {
+                                                  return String(change.to)
+                                                } catch (e) {
+                                                  return '[Value - Cannot display]'
+                                                }
+                                              })()}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="text-gray-600 dark:text-gray-400">No detailed changes recorded.</p>
+                              )}
+                              
+                              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">System Information:</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                  <div className="space-y-1">
+                                    <div><strong>User ID:</strong> {log.user_id || 'Not specified'}</div>
+                                    <div><strong>User Name:</strong> {log.user_name || 'Not specified'}</div>
+                                    <div><strong>Action Type:</strong> {log.action || 'Not specified'}</div>
+                                    <div><strong>Resource Type:</strong> {log.resource_type || 'Not specified'}</div>
+                                    <div><strong>Resource ID:</strong> {log.resource_id || 'Not specified'}</div>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <div><strong>Session ID:</strong> {log.session_id || 'Not available'}</div>
+                                    <div><strong>IP Address:</strong> {log.ip_address || 'Not available'}</div>
+                                    <div><strong>User Agent:</strong> {log.user_agent || 'Not available'}</div>
+                                    <div><strong>Timestamp:</strong> {log.timestamp ? format(new Date(log.timestamp), 'PPpp') : 'Not available'}</div>
+                                  </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                  <div>
-                                    <div className="text-gray-500 dark:text-gray-400 mb-1">From:</div>
-                                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded px-2 py-1 text-red-800 dark:text-red-200 max-h-32 overflow-auto font-mono text-xs">
-                                      {(() => {
-                                        if (change.from === null || change.from === undefined || change.from === '') {
-                                          return '(Not set)'
-                                        }
-                                        if (typeof change.from === 'object') {
-                                          try {
-                                            return JSON.stringify(change.from, null, 2)
-                                          } catch (e) {
-                                            return '[Object - Cannot display]'
-                                          }
-                                        }
-                                        try {
-                                          return String(change.from)
-                                        } catch (e) {
-                                          return '[Value - Cannot display]'
-                                        }
-                                      })()}
+                                {log.metadata && Object.keys(log.metadata).length > 0 && (
+                                  <div className="mt-4">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Additional Metadata:</h5>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                      {log.metadata.file_name && (
+                                        <div><strong>File:</strong> {log.metadata.file_name}</div>
+                                      )}
+                                      {log.metadata.file_size && (
+                                        <div><strong>File Size:</strong> {(log.metadata.file_size / 1024).toFixed(1)} KB</div>
+                                      )}
+                                      {log.metadata.browser && (
+                                        <div><strong>Browser:</strong> {log.metadata.browser}</div>
+                                      )}
+                                      {log.metadata.section && (
+                                        <div><strong>Section:</strong> {log.metadata.section}</div>
+                                      )}
+                                      {log.metadata.role && (
+                                        <div><strong>User Role:</strong> {log.metadata.role}</div>
+                                      )}
+                                      {log.metadata.job_title && (
+                                        <div><strong>Job Title:</strong> {log.metadata.job_title}</div>
+                                      )}
+                                      {log.metadata.candidate_name && (
+                                        <div><strong>Candidate:</strong> {log.metadata.candidate_name}</div>
+                                      )}
+                                      {log.metadata.stage_change && (
+                                        <div><strong>Stage Change:</strong> Yes</div>
+                                      )}
                                     </div>
                                   </div>
-                                  
-                                  <div>
-                                    <div className="text-gray-500 dark:text-gray-400 mb-1">To:</div>
-                                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded px-2 py-1 text-green-800 dark:text-green-200 max-h-32 overflow-auto font-mono text-xs">
-                                      {(() => {
-                                        if (change.to === null || change.to === undefined || change.to === '') {
-                                          return '(Not set)'
-                                        }
-                                        if (typeof change.to === 'object') {
-                                          try {
-                                            return JSON.stringify(change.to, null, 2)
-                                          } catch (e) {
-                                            return '[Object - Cannot display]'
-                                          }
-                                        }
-                                        try {
-                                          return String(change.to)
-                                        } catch (e) {
-                                          return '[Value - Cannot display]'
-                                        }
-                                      })()}
-                                    </div>
-                                  </div>
-                                </div>
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-gray-600 dark:text-gray-400">No detailed changes recorded.</p>
-                      )}
-                      
-                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">System Information:</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                          <div className="space-y-1">
-                            <div><strong>User ID:</strong> {log.user_id || 'Not specified'}</div>
-                            <div><strong>User Name:</strong> {log.user_name || 'Not specified'}</div>
-                            <div><strong>Action Type:</strong> {log.action || 'Not specified'}</div>
-                            <div><strong>Resource Type:</strong> {log.resource_type || 'Not specified'}</div>
-                            <div><strong>Resource ID:</strong> {log.resource_id || 'Not specified'}</div>
-                          </div>
-                          <div className="space-y-1">
-                            <div><strong>Session ID:</strong> {log.session_id || 'Not available'}</div>
-                            <div><strong>IP Address:</strong> {log.ip_address || 'Not available'}</div>
-                            <div><strong>User Agent:</strong> {log.user_agent || 'Not available'}</div>
-                            <div><strong>Timestamp:</strong> {log.timestamp ? format(new Date(log.timestamp), 'PPpp') : 'Not available'}</div>
-                          </div>
-                        </div>
-                        
-                        {log.metadata && Object.keys(log.metadata).length > 0 && (
-                          <div className="mt-4">
-                            <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Additional Metadata:</h5>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                              {log.metadata.file_name && (
-                                <div><strong>File:</strong> {log.metadata.file_name}</div>
-                              )}
-                              {log.metadata.file_size && (
-                                <div><strong>File Size:</strong> {(log.metadata.file_size / 1024).toFixed(1)} KB</div>
-                              )}
-                              {log.metadata.browser && (
-                                <div><strong>Browser:</strong> {log.metadata.browser}</div>
-                              )}
-                              {log.metadata.section && (
-                                <div><strong>Section:</strong> {log.metadata.section}</div>
-                              )}
-                              {log.metadata.role && (
-                                <div><strong>User Role:</strong> {log.metadata.role}</div>
-                              )}
-                              {log.metadata.job_title && (
-                                <div><strong>Job Title:</strong> {log.metadata.job_title}</div>
-                              )}
-                              {log.metadata.candidate_name && (
-                                <div><strong>Candidate:</strong> {log.metadata.candidate_name}</div>
-                              )}
-                              {log.metadata.stage_change && (
-                                <div><strong>Stage Change:</strong> Yes</div>
-                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    )
+                  } catch (e) {
+                    console.error('Error rendering log:', log, e)
+                    return (
+                      <tr key={log.id || `error-${Math.random()}`}>
+                        <td colSpan="6" className="px-6 py-4">
+                          <div className="p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20">
+                            <div className="flex items-center text-red-800 dark:text-red-200">
+                              <AlertCircle className="w-4 h-4 mr-2" />
+                              <span className="text-sm">Error displaying log entry</span>
                             </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </InteractiveCard>
-              )
-              } catch (error) {
-                console.error('Error rendering audit log:', log.id, error)
-                return (
-                  <InteractiveCard key={log.id} variant="danger">
-                    <div className="p-4">
-                      <div className="flex items-center">
-                        <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-                        <div>
-                          <p className="text-red-800 dark:text-red-200 font-medium">Error displaying audit log</p>
-                          <p className="text-red-600 dark:text-red-400 text-sm">Log ID: {log.id}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </InteractiveCard>
-                )
-              }
-            })}
+                        </td>
+                      </tr>
+                    )
+                  }
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {filteredLogs.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="flex items-center justify-between">
+              <PaginationInfo 
+                currentPage={filters.page}
+                totalPages={totalPages}
+                totalItems={total}
+                itemsPerPage={filters.limit}
+              />
+              <div className="flex items-center space-x-4">
+                <ItemsPerPageSelector
+                  value={filters.limit}
+                  onChange={(newLimit) => handleFilterChange('limit', newLimit)}
+                  options={[10, 20, 50, 100]}
+                />
+                <InteractivePagination
+                  currentPage={filters.page}
+                  totalPages={totalPages}
+                  onPageChange={(page) => handleFilterChange('page', page)}
+                />
+              </div>
+            </div>
           </div>
         )}
       </InteractiveCard>
-
-      {/* Footer controls: Pagination */}
-      <div className="mt-4 flex items-center justify-between">
-        <PaginationInfo
-          currentPage={filters.page}
-          totalPages={totalPages}
-          totalItems={total}
-          itemsPerPage={filters.limit}
-        />
-        <div className="flex items-center gap-4">
-          <ItemsPerPageSelector
-            value={filters.limit}
-            onChange={(val) => setFilters(prev => ({ ...prev, limit: val, page: 1 }))}
-            options={[10,20,50,100]}
-          />
-          <InteractivePagination
-            currentPage={filters.page}
-            totalPages={totalPages}
-            onPageChange={(p) => setFilters(prev => ({ ...prev, page: p }))}
-            size="sm"
-          />
-        </div>
-      </div>
     </div>
   )
 }

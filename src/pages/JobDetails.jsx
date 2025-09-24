@@ -128,7 +128,8 @@ const JobDetails = () => {
           const candidate = await candidateService.getCandidateById(app.candidate_id)
           return {
             ...candidate,
-            application: app
+            application: app,
+            documents: app.documents || []
           }
         })
       )
@@ -1190,4 +1191,5 @@ const JobDetails = () => {
   )
 }
 
-export default JobDetails
+export default JobDetails 
+

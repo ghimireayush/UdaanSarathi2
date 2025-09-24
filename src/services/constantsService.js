@@ -151,16 +151,8 @@ class ConstantsService {
     const labels = {
       [constantsData.applicationStages.APPLIED]: 'Applied',
       [constantsData.applicationStages.SHORTLISTED]: 'Shortlisted',
-      [constantsData.applicationStages.SCHEDULED]: 'Scheduled',
-      [constantsData.applicationStages.INTERVIEWED]: 'Interviewed',
-      [constantsData.applicationStages.INTERVIEW_PASSED]: 'Interview Passed',
-      [constantsData.applicationStages.SELECTED]: 'Selected',
-      [constantsData.applicationStages.REJECTED]: 'Rejected',
-      [constantsData.applicationStages.MEDICAL_SCHEDULED]: 'Medical Scheduled',
-      [constantsData.applicationStages.MEDICAL_PASSED]: 'Medical Passed',
-      [constantsData.applicationStages.VISA_APPLICATION]: 'Visa Application',
-      [constantsData.applicationStages.VISA_APPROVED]: 'Visa Approved',
-      [constantsData.applicationStages.READY_TO_FLY]: 'Ready to Fly'
+      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'Interview Scheduled',
+      [constantsData.applicationStages.INTERVIEW_PASSED]: 'Interview Passed'
     }
     return labels[stage] || stage
   }
@@ -189,16 +181,8 @@ class ConstantsService {
     const colors = {
       [constantsData.applicationStages.APPLIED]: 'blue',
       [constantsData.applicationStages.SHORTLISTED]: 'yellow',
-      [constantsData.applicationStages.SCHEDULED]: 'purple',
-      [constantsData.applicationStages.INTERVIEWED]: 'orange',
-      [constantsData.applicationStages.INTERVIEW_PASSED]: 'indigo',
-      [constantsData.applicationStages.SELECTED]: 'green',
-      [constantsData.applicationStages.REJECTED]: 'red',
-      [constantsData.applicationStages.MEDICAL_SCHEDULED]: 'cyan',
-      [constantsData.applicationStages.MEDICAL_PASSED]: 'teal',
-      [constantsData.applicationStages.VISA_APPLICATION]: 'pink',
-      [constantsData.applicationStages.VISA_APPROVED]: 'emerald',
-      [constantsData.applicationStages.READY_TO_FLY]: 'green'
+      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'purple',
+      [constantsData.applicationStages.INTERVIEW_PASSED]: 'green'
     }
     return colors[stage] || 'gray'
   }

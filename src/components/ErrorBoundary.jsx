@@ -1,6 +1,6 @@
 // Error Boundary Component for Better Error Handling
 import { Component } from 'react'
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
+import ErrorPage from '../pages/ErrorPage.jsx'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -31,52 +31,26 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-          <div className="max-w-md w-full">
-            <div className="card-responsive text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
-              </div>
-              
-              <h1 className="text-responsive-lg font-semibold text-gray-900 mb-2">
-                Something went wrong
-              </h1>
-              
-              <p className="text-responsive-sm text-gray-600 mb-6">
-                We're sorry, but something unexpected happened. Please try again or contact support if the problem persists.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={this.handleRetry}
-                  className="btn-primary btn-mobile flex items-center justify-center"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Again
-                </button>
-                
-                <button
-                  onClick={() => window.location.href = '/dashboard'}
-                  className="btn-secondary btn-mobile flex items-center justify-center"
-                >
-                  <Home className="w-4 h-4 mr-2" />
-                  Go Home
-                </button>
-              </div>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="mt-6 text-left">
-                  <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
-                    Error Details (Development Only)
-                  </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 p-3 rounded overflow-auto max-h-40">
-                    {this.state.error.toString()}
-                    {this.state.errorInfo.componentStack}
-                  </pre>
-                </details>
-              )}
+        <div>
+          <ErrorPage 
+            title="Something went wrong"
+            message="We're sorry, but something unexpected happened. Please contact the UdaanSarathi Tech team for assistance."
+            onRetry={this.handleRetry}
+          />
+          
+          {process.env.NODE_ENV === 'development' && this.state.error && (
+            <div className="fixed bottom-4 right-4 max-w-md">
+              <details className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
+                <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 font-medium">
+                  Error Details (Development Only)
+                </summary>
+                <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-3 rounded overflow-auto max-h-40">
+                  {this.state.error.toString()}
+                  {this.state.errorInfo.componentStack}
+                </pre>
+              </details>
             </div>
-          </div>
+          )}
         </div>
       )
     }

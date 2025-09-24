@@ -84,14 +84,12 @@ const Applications = () => {
   // Toast notification states
   const [showToast, setShowToast] = useState(false)
 
-  // Workflow stages configuration - consistent with Workflow page
+  // Workflow stages configuration - updated to use only 4 stages
   const workflowStages = [
     { id: 'applied', label: 'Applied' },
     { id: 'shortlisted', label: 'Shortlisted' },
-    { id: 'scheduled', label: 'Scheduled' },
-    { id: 'interviewed', label: 'Interviewed' },
-    { id: 'selected', label: 'Selected' },
-    { id: 'rejected', label: 'Rejected' }
+    { id: 'interview-scheduled', label: 'Interview Scheduled' },
+    { id: 'interview-passed', label: 'Interview Passed' }
   ]
   const [toastMessage, setToastMessage] = useState('')
   const [toastType, setToastType] = useState('success') // 'success', 'error', 'info'
@@ -412,7 +410,7 @@ const Applications = () => {
     setSelectedCandidate(null)
   }
 
-  // Define strict stage progression rules
+  // Define strict stage progression rules - updated for 4 stages
   const getNextAllowedStage = (currentStage) => {
     const stageOrder = {
       'applied': 'shortlisted',
@@ -582,10 +580,8 @@ const Applications = () => {
     const stageColors = {
       [applicationStages.APPLIED]: 'chip-blue',
       [applicationStages.SHORTLISTED]: 'chip-yellow',
-      [applicationStages.SCHEDULED]: 'chip-purple',
-      [applicationStages.INTERVIEWED]: 'chip-green',
-      [applicationStages.SELECTED]: 'chip-green',
-      [applicationStages.REJECTED]: 'chip-red'
+      [applicationStages.INTERVIEW_SCHEDULED]: 'chip-purple',
+      [applicationStages.INTERVIEW_PASSED]: 'chip-green'
     }
     return stageColors[stage] || 'chip-blue'
   }
@@ -742,8 +738,11 @@ const Applications = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      setSelectedCandidate(application.candidate)
-                      setSelectedApplication(application)
+                      setSelectedCandidate({
+                        ...application.candidate,
+                        application: application,
+                        documents: application.documents || []
+                      })
                       setIsSidebarOpen(true)
                     }}
                     variant="ghost"
@@ -760,8 +759,11 @@ const Applications = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      setSelectedCandidate(application.candidate)
-                      setSelectedApplication(application)
+                      setSelectedCandidate({
+                        ...application.candidate,
+                        application: application,
+                        documents: application.documents || []
+                      })
                       setIsSidebarOpen(true)
                     }}
                     variant="ghost"
@@ -931,8 +933,11 @@ const Applications = () => {
                         <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">Rejected</span>
                         <button
                           onClick={() => {
-                            setSelectedCandidate(application.candidate)
-                            setSelectedApplication(application)
+                            setSelectedCandidate({
+                              ...application.candidate,
+                              application: application,
+                              documents: application.documents || []
+                            })
                             setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded border border-primary-200 dark:border-primary-700"
@@ -945,8 +950,11 @@ const Applications = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => {
-                            setSelectedCandidate(application.candidate)
-                            setSelectedApplication(application)
+                            setSelectedCandidate({
+                              ...application.candidate,
+                              application: application,
+                              documents: application.documents || []
+                            })
                             setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"

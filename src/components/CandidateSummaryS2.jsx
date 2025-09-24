@@ -55,7 +55,11 @@ const CandidateSummaryS2 = ({
   const rejectedStage = workflowStages.find(s => s.label === 'Rejected')
   // Check for rejected status from either the separate application prop or the candidate.application
   const currentApplication = application || candidate.application
-  const isApplicationRejected = currentApplication?.stage === rejectedStage?.id || currentApplication?.stage === 'rejected'
+  // Fix: Check for various rejected stage formats
+  const isApplicationRejected = currentApplication?.stage === rejectedStage?.id || 
+                               currentApplication?.stage === 'rejected' ||
+                               currentApplication?.stage === 'REJECTED' ||
+                               (typeof currentApplication?.stage === 'string' && currentApplication.stage.toLowerCase().includes('reject'))
 
   // Define strict stage progression rules
   const getNextAllowedStage = (currentStage) => {

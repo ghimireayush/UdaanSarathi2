@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
-import { 
-  Search, 
-  Filter, 
-  Star, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  User, 
+import {
+  Search,
+  Filter,
+  Star,
+  MapPin,
+  Phone,
+  Mail,
+  User,
   Calendar,
   Tag,
   TrendingUp,
@@ -21,10 +21,11 @@ import { formatInNepalTz, getRelativeTime, isToday } from '../utils/nepaliDate'
 import { useConfirm } from './ConfirmProvider.jsx'
 import CandidateSummaryS2 from './CandidateSummaryS2'
 import { applicationService } from '../services/index.js'
+import Pagination from './ui/Pagination'
 
-const CandidateShortlist = ({ 
-  jobId, 
-  candidates = [], 
+const CandidateShortlist = ({
+  jobId,
+  candidates = [],
   job = null,
   onUpdateCandidateStatus,
   onScheduleInterview,
@@ -32,13 +33,17 @@ const CandidateShortlist = ({
   workflowStages = []
 }) => {
   const { confirm } = useConfirm()
-  
+
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('priority_score') // priority_score, applied_at, name
   const [sortOrder, setSortOrder] = useState('desc')
   const [filterStage, setFilterStage] = useState('all')
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   // Handle ESC key to close sidebar
   useEffect(() => {
@@ -56,7 +61,7 @@ const CandidateShortlist = ({
   const processedCandidates = useMemo(() => {
     let filtered = candidates.filter(candidate => {
       // Text search
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         candidate.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase())) ||
         candidate.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -72,17 +77,17 @@ const CandidateShortlist = ({
       filtered = filtered.map(candidate => {
         const candidateSkills = candidate.skills || []
         const jobTags = job.tags || []
-        
+
         // Calculate skill match percentage
-        const matchingSkills = candidateSkills.filter(skill => 
-          jobTags.some(tag => 
+        const matchingSkills = candidateSkills.filter(skill =>
+          jobTags.some(tag =>
             skill.toLowerCase().includes(tag.toLowerCase()) ||
             tag.toLowerCase().includes(skill.toLowerCase())
           )
         )
-        
-        const skillMatchScore = jobTags.length > 0 
-          ? (matchingSkills.length / jobTags.length) * 100 
+
+        const skillMatchScore = jobTags.length > 0
+          ? (matchingSkills.length / jobTags.length) * 100
           : 0
 
         return {
@@ -129,6 +134,29 @@ const CandidateShortlist = ({
     return filtered
   }, [candidates, searchTerm, sortBy, sortOrder, filterStage, job])
 
+  // Paginated candidates
+  const paginatedCandidates = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    return processedCandidates.slice(startIndex, endIndex)
+  }, [processedCandidates, currentPage, itemsPerPage])
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, filterStage, sortBy, sortOrder])
+
+  const totalPages = Math.ceil(processedCandidates.length / itemsPerPage)
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+  }
+
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1)
+  }
+
 
 
   const getStageInfo = (stage) => {
@@ -164,7 +192,7 @@ const CandidateShortlist = ({
   const getNextAllowedStage = (currentStage) => {
     const stageOrder = {
       'applied': 'shortlisted',
-      'shortlisted': 'interview-scheduled', 
+      'shortlisted': 'interview-scheduled',
       'interview-scheduled': 'interview-passed',
       'interview-passed': null // Final stage
     }
@@ -183,7 +211,7 @@ const CandidateShortlist = ({
       if (!candidate) return
 
       const currentStage = candidate.application?.stage
-      
+
       // Prevent any backward flow or skipping stages
       if (!validateStageTransition(currentStage, newStage)) {
         await confirm({
@@ -198,7 +226,7 @@ const CandidateShortlist = ({
       // Show confirmation dialog for valid transitions
       const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label
       const newStageLabel = workflowStages.find(s => s.id === newStage)?.label
-      
+
       const confirmed = await confirm({
         title: 'Confirm Stage Update',
         message: `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"? This action cannot be undone.`,
@@ -212,7 +240,7 @@ const CandidateShortlist = ({
         if (onRefresh) {
           await onRefresh() // Reload data
         }
-        
+
         // Update the selected candidate to reflect the new stage
         if (selectedCandidate && selectedCandidate.id === candidateId) {
           setSelectedCandidate({
@@ -251,7 +279,7 @@ const CandidateShortlist = ({
         if (onRefresh) {
           await onRefresh() // Reload data
         }
-        
+
         // Update the selected candidate to reflect the new document (mock data approach)
         if (selectedCandidate && selectedCandidate.id === candidateId) {
           const updatedDocuments = [...(selectedCandidate.documents || []), document]
@@ -279,7 +307,7 @@ const CandidateShortlist = ({
       if (onRefresh) {
         await onRefresh() // Reload data
       }
-      
+
       // Update the selected candidate to reflect the removed document (mock data approach)
       if (selectedCandidate && selectedCandidate.id === candidateId) {
         const updatedDocuments = [...(selectedCandidate.documents || [])]
@@ -301,7 +329,7 @@ const CandidateShortlist = ({
   }
 
   return (
-    <div className="space-y-6 max-w-8xl mx-auto w-full px-4 sm:px-8 lg:px-12">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -312,7 +340,7 @@ const CandidateShortlist = ({
             </p>
           )}
         </div>
-        
+
         {job?.tags && job.tags.length > 0 && (
           <div className="flex items-center space-x-2">
             <Tag className="w-4 h-4 text-gray-500" />
@@ -393,7 +421,7 @@ const CandidateShortlist = ({
             <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No candidates found</h3>
             <p className="text-gray-500 dark:text-gray-400">
-              {searchTerm || filterStage !== 'all' 
+              {searchTerm || filterStage !== 'all'
                 ? 'Try adjusting your search or filters'
                 : 'No candidates have applied for this position yet'
               }
@@ -401,85 +429,85 @@ const CandidateShortlist = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1600px] divide-y divide-gray-200 dark:divide-gray-700">
+            <table className="w-full min-w-[1200px] divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="w-[22%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Candidate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Contact & Location
+                  <th className="w-[18%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Contact
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="w-[20%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Skills & Experience
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="w-[12%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Scores
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="w-[8%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="w-[8%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Applied
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-80">
+                  <th className="w-[12%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {processedCandidates.map((candidate) => {
+                {paginatedCandidates.map((candidate) => {
                   const stageInfo = getStageInfo(candidate.stage)
                   const appliedToday = isToday(candidate.applied_at)
 
                   return (
                     <tr key={candidate.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       {/* Candidate */}
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                              {candidate.name?.charAt(0)}
-                            </span>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                              <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
+                                {candidate.name?.charAt(0)}
+                              </span>
+                            </div>
                           </div>
-                          <div className="ml-4">
-                            <div className="flex items-center space-x-2">
-                              <div className="text-base font-medium text-gray-900 dark:text-gray-100">
-                                {candidate.name}
-                              </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {candidate.name}
                               {appliedToday && (
-                                <span className="chip chip-green text-xs">New</span>
+                                <span className="ml-2 chip chip-green text-xs">New</span>
                               )}
                             </div>
                             {candidate.education && (
-                              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {candidate.education}
                               </div>
                             )}
                             {candidate.documents && candidate.documents.length > 0 && (
-                              <div className="flex items-center text-xs text-blue-600 dark:text-blue-400 mt-2">
+                              <div className="flex items-center text-xs text-blue-600 dark:text-blue-400 mt-1">
                                 <FileText className="w-3 h-3 mr-1" />
-                                <span>{candidate.documents.length} doc{candidate.documents.length !== 1 ? 's' : ''}</span>
+                                <span>{candidate.documents.length} docs</span>
                               </div>
                             )}
                           </div>
                         </div>
                       </td>
 
-                      {/* Contact & Location */}
+                      {/* Contact */}
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          <div className="flex items-center space-x-2 mb-2">
+                        <div className="text-sm space-y-2">
+                          <div className="flex items-center space-x-2">
                             <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="truncate">{candidate.phone}</span>
+                            <span className="text-gray-900 dark:text-gray-100">{candidate.phone}</span>
                           </div>
-                          <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex items-center space-x-2">
                             <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="truncate max-w-[180px]">{candidate.email}</span>
+                            <span className="text-gray-500 dark:text-gray-400 truncate" title={candidate.email}>{candidate.email}</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 truncate">{candidate.address}</span>
+                            <span className="text-gray-500 dark:text-gray-400 truncate" title={candidate.address}>{candidate.address}</span>
                           </div>
                         </div>
                       </td>
@@ -491,15 +519,14 @@ const CandidateShortlist = ({
                             {candidate.experience}
                           </div>
                           {candidate.skills && candidate.skills.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-1">
                               {candidate.skills.slice(0, 4).map((skill, index) => {
                                 const isMatching = candidate.matchingSkills?.includes(skill)
                                 return (
-                                  <span 
-                                    key={index} 
-                                    className={`chip text-sm ${
-                                      isMatching ? 'chip-green' : 'chip-gray'
-                                    }`}
+                                  <span
+                                    key={index}
+                                    className={`chip text-xs px-2 py-1 ${isMatching ? 'chip-green' : 'chip-gray'
+                                      }`}
                                   >
                                     {skill}
                                     {isMatching && <Star className="w-3 h-3 ml-1" />}
@@ -507,7 +534,7 @@ const CandidateShortlist = ({
                                 )
                               })}
                               {candidate.skills.length > 4 && (
-                                <span className="chip chip-gray text-sm">
+                                <span className="text-xs text-primary-500 font-medium">
                                   +{candidate.skills.length - 4}
                                 </span>
                               )}
@@ -519,13 +546,13 @@ const CandidateShortlist = ({
                       {/* Scores */}
                       <td className="px-6 py-4">
                         <div className="space-y-2">
-                          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${getPriorityColor(candidate.priority_score)}`}>
-                            <TrendingUp className="w-4 h-4 mr-1" />
+                          <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(candidate.priority_score)}`}>
+                            <TrendingUp className="w-3 h-3 mr-1" />
                             {candidate.priority_score || 0}%
                           </div>
                           {candidate.skillMatchScore !== undefined && (
-                            <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${getSkillMatchColor(candidate.skillMatchScore)}`}>
-                              <Award className="w-4 h-4 mr-1" />
+                            <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getSkillMatchColor(candidate.skillMatchScore)}`}>
+                              <Award className="w-3 h-3 mr-1" />
                               {Math.round(candidate.skillMatchScore)}%
                             </div>
                           )}
@@ -534,7 +561,7 @@ const CandidateShortlist = ({
 
                       {/* Status */}
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`chip chip-${stageInfo.color || 'gray'} text-sm`}>
+                        <span className={`chip chip-${stageInfo.color || 'gray'} text-xs px-3 py-1`}>
                           {stageInfo.label}
                         </span>
                       </td>
@@ -542,31 +569,31 @@ const CandidateShortlist = ({
                       {/* Applied */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center">
-                          <Calendar className="w-5 h-5 mr-2" />
+                          <Calendar className="w-4 h-4 mr-2" />
                           <div>
-                            <div className="font-medium">{getRelativeTime(candidate.applied_at)}</div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {formatInNepalTz(candidate.applied_at, 'MMM dd, yyyy')}
+                            <div className="text-xs font-medium text-gray-900 dark:text-gray-100">{getRelativeTime(candidate.applied_at)}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">
+                              {formatInNepalTz(candidate.applied_at, 'MMM dd')}
                             </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm w-80">
-                        <div className="flex items-center space-x-3">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleCandidateClick(candidate)}
-                            className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center px-3 py-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                            className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 shadow-sm hover:shadow-md"
                           >
-                            <Eye className="w-5 h-5 mr-1" />
-                            View Details
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
                           </button>
                           <button
                             onClick={() => onScheduleInterview && onScheduleInterview(candidate.id)}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 shadow-sm hover:shadow-md"
                           >
-                            <MessageSquare className="w-5 h-5 mr-1" />
+                            <MessageSquare className="w-4 h-4 mr-1" />
                             Schedule
                           </button>
                         </div>
@@ -576,6 +603,23 @@ const CandidateShortlist = ({
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {processedCandidates.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={processedCandidates.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+              showItemsPerPage={true}
+              showPageInfo={true}
+              className="justify-between"
+            />
           </div>
         )}
       </div>

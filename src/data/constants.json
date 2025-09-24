@@ -8,18 +8,8 @@
   "applicationStages": {
     "APPLIED": "applied",
     "SHORTLISTED": "shortlisted",
-    "SCHEDULED": "scheduled",
-    "INTERVIEWED": "interviewed",
-    "INTERVIEW_PASSED": "interview-passed",
-    "SELECTED": "selected",
-    "REJECTED": "rejected",
-    "MEDICAL_SCHEDULED": "medical-scheduled",
-    "MEDICAL_PASSED": "medical-passed",
-    "VISA_APPLICATION": "visa-application",
-    "VISA_APPROVED": "visa-approved",
-    "TRAVEL_DOCUMENTS": "travel-documents",
-    "FLIGHT_BOOKED": "flight-booked",
-    "READY_TO_FLY": "ready-to-fly"
+    "INTERVIEW_SCHEDULED": "interview-scheduled",
+    "INTERVIEW_PASSED": "interview-passed"
   },
   "workflowStages": {
     "APPLIED": "applied",

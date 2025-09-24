@@ -460,7 +460,7 @@ const JobShortlist = () => {
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="py-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                 <button
                   onClick={() => setShowInsights(!showInsights)}
                   className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
@@ -471,13 +471,17 @@ const JobShortlist = () => {
                 </button>
                 
                 {insights.recommendations.length > 0 && (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-wrap items-start gap-3 lg:ml-8">
                     {insights.recommendations.map((rec, index) => (
-                      <div key={index} className={`flex items-center space-x-1 text-sm px-2 py-1 rounded ${
-                        rec.type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                      <div key={index} className={`flex items-start space-x-2 text-xs px-3 py-2 rounded-lg border ${
+                        rec.type === 'warning' 
+                          ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800' 
+                          : 'bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                       }`}>
-                        {rec.type === 'warning' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-                        <span>{rec.message}</span>
+                        <div className="flex-shrink-0 mt-0.5">
+                          {rec.type === 'warning' ? <AlertCircle className="w-3 h-3" /> : <Info className="w-3 h-3" />}
+                        </div>
+                        <span className="leading-tight">{rec.message}</span>
                       </div>
                     ))}
                   </div>
@@ -485,67 +489,79 @@ const JobShortlist = () => {
               </div>
 
               {showInsights && (
-                <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="mt-4 flex flex-col lg:flex-row gap-4">
                   {/* Score Distribution */}
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 flex-1">
                     <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                      <TrendingUp className="w-4 h-4 mr-2" />
+                      <TrendingUp className="w-4 h-4 mr-2 text-blue-500" />
                       Score Distribution
                     </h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Excellent (90%+)</span>
-                        <span className="font-medium text-green-600">{insights.scoreDistribution.excellent}</span>
+                    <div className="flex flex-wrap gap-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">Excellent (90%+):</span>
+                        <span className="font-semibold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                          {insights.scoreDistribution.excellent}
+                        </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Good (80-89%)</span>
-                        <span className="font-medium text-blue-600">{insights.scoreDistribution.good}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">Good (80-89%):</span>
+                        <span className="font-semibold text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded text-xs">
+                          {insights.scoreDistribution.good}
+                        </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Average (60-79%)</span>
-                        <span className="font-medium text-yellow-600">{insights.scoreDistribution.average}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">Average (60-79%):</span>
+                        <span className="font-semibold text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded text-xs">
+                          {insights.scoreDistribution.average}
+                        </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Below Average (&lt;60%)</span>
-                        <span className="font-medium text-red-600">{insights.scoreDistribution.below}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">Below Average (&lt;60%):</span>
+                        <span className="font-semibold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded text-xs">
+                          {insights.scoreDistribution.below}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Candidates */}
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 flex-1">
                     <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                      <Award className="w-4 h-4 mr-2" />
+                      <Award className="w-4 h-4 mr-2 text-yellow-500" />
                       Top Candidates
                     </h3>
-                    <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
                       {insights.topCandidates.slice(0, 3).map((candidate, index) => (
-                        <div key={candidate.id} className="flex justify-between items-center">
-                          <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{candidate.name}</span>
-                          <span className="font-medium text-green-600">{candidate.priority_score}%</span>
+                        <div key={candidate.id} className="flex items-center space-x-2 bg-white dark:bg-gray-600 px-2 py-1 rounded border">
+                          <span className="text-xs text-gray-900 dark:text-gray-100">{candidate.name}</span>
+                          <span className="font-semibold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                            {candidate.priority_score}%
+                          </span>
                         </div>
                       ))}
                       {insights.topCandidates.length === 0 && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">No candidates scored above 80%</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">No candidates scored above 80%</p>
                       )}
                     </div>
                   </div>
 
                   {/* Skill Gaps */}
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 flex-1">
                     <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                      <Users className="w-4 h-4 mr-2" />
+                      <Users className="w-4 h-4 mr-2 text-purple-500" />
                       Skill Coverage
                     </h3>
-                    <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
                       {insights.skillGaps.slice(0, 3).map((gap, index) => (
-                        <div key={index} className="flex justify-between items-center">
-                          <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{gap.skill}</span>
-                          <span className="font-medium text-red-600">{gap.coverage}%</span>
+                        <div key={index} className="flex items-center space-x-2 bg-white dark:bg-gray-600 px-2 py-1 rounded border">
+                          <span className="text-xs text-gray-900 dark:text-gray-100">{gap.skill}</span>
+                          <span className="font-semibold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded text-xs">
+                            {gap.coverage}%
+                          </span>
                         </div>
                       ))}
                       {insights.skillGaps.length === 0 && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Good skill coverage across all requirements</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Good skill coverage across all requirements</p>
                       )}
                     </div>
                   </div>
