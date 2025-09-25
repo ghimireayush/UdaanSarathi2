@@ -23,6 +23,7 @@ import { PERMISSIONS } from '../services/authService.js'
 import PermissionGuard from '../components/PermissionGuard.jsx'
 import { InteractiveCard, InteractiveButton, InteractiveDropdown, InteractiveLoader } from '../components/InteractiveUI'
 import DateRangePicker from '../components/DateRangePicker.jsx'
+import LanguageSwitch from '../components/LanguageSwitch.jsx'
 
 import { useNotificationContext } from '../contexts/NotificationContext'
 
@@ -227,7 +228,7 @@ const Dashboard = () => {
           <p className="text-gray-600 mb-4">{error.message}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="btn-primary"
+            className="btn-primary py-3 px-6 text-base font-semibold"
           >
             Retry
           </button>
@@ -361,7 +362,7 @@ const Dashboard = () => {
                 </p>
               </div>
 
-              {/* Right tools: search, bell, avatar */}
+              {/* Right tools: search, bell, language, avatar */}
               <div className="flex items-center gap-2">
                 <div className="relative hidden lg:block">
                   <input
@@ -370,10 +371,11 @@ const Dashboard = () => {
                   />
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
+                <LanguageSwitch variant="default" size="md" showLabel={false} />
                 <div className="relative" ref={notifRef}>
                   <button
                     onClick={() => setShowNotifMenu(v => !v)}
-                    className="relative p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    className="relative p-3 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
                     aria-label="Notifications"
                   >
                     <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -478,7 +480,7 @@ const Dashboard = () => {
                   
                   <button
                     onClick={handleRefresh}
-                    className={`p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${isRefreshing ? 'opacity-60 cursor-wait' : ''}`}
+                    className={`p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${isRefreshing ? 'opacity-60 cursor-wait' : ''}`}
                     aria-label="Refresh"
                     title="Refresh"
                   >

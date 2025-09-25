@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { User, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
+import LanguageSwitch from '../components/LanguageSwitch'
 import logo from '../assets/logo.svg'
 
 const Login = () => {
@@ -11,11 +12,11 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  
+
   const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
@@ -23,12 +24,12 @@ const Login = () => {
       navigate(from, { replace: true })
     }
   }, [isAuthenticated, navigate, location])
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    
+
     try {
       const result = await login(username, password)
       if (result.success) {
@@ -48,21 +49,26 @@ const Login = () => {
       setLoading(false)
     }
   }
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      {/* Language Switch - Top Right */}
+      <div className="absolute top-4 right-4">
+        <LanguageSwitch variant="ghost" size="md" />
+      </div>
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex flex-col items-center mb-4">
-            <img 
-              src={logo} 
-              alt="Udaan Sarathi Logo" 
+            <img
+              src={logo}
+              alt="Udaan Sarathi Logo"
               className="w-40 h-40 object-contain mb-2 drop-shadow-lg"
             />
             <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent dark:text-brand-blue-bright dark:bg-none">Udaan Sarathi</h1>
           </div>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle className="text-center text-xl">Admin Login</CardTitle>
@@ -74,7 +80,7 @@ const Login = () => {
                   {error}
                 </div>
               )}
-              
+
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Username
@@ -95,7 +101,7 @@ const Login = () => {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Password
@@ -127,12 +133,12 @@ const Login = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors"
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors"
                 >
                   {loading ? (
                     <span className="flex items-center">
@@ -147,17 +153,17 @@ const Login = () => {
                   )}
                 </button>
               </div>
-                
+
             </form>
           </CardContent>
         </Card>
-        
+
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
             Don't have an account?
             <button
               onClick={() => navigate('/register')}
-              className="text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-brand-blue-bright font-medium ml-1"
+              className="text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-brand-blue-bright font-semibold text-base ml-1"
             >
               Sign up here
             </button>

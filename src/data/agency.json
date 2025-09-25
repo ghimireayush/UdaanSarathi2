@@ -94,7 +94,6 @@
   "settings": {
     "currency": "NPR",
     "timezone": "Asia/Kathmandu",
-    "language": "en",
     "date_format": "DD/MM/YYYY",
     "notifications": {
       "email_enabled": true,

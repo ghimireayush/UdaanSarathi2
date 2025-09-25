@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { User, Phone, ArrowLeft, Shield } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
+import LanguageSwitch from '../components/LanguageSwitch'
 import logo from '../assets/logo.svg'
 
 const Register = () => {
@@ -103,6 +104,11 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      {/* Language Switch - Top Right */}
+      <div className="absolute top-4 right-4">
+        <LanguageSwitch variant="ghost" size="md" />
+      </div>
+      
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <button
@@ -185,7 +191,7 @@ const Register = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
+                    className="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
                   >
                     {loading ? (
                       <span className="flex items-center">
@@ -248,14 +254,14 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setShowOtpField(false)}
-                    className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-offset-gray-800"
+                    className="flex-1 py-3 px-5 border border-gray-300 rounded-lg shadow-sm text-base font-semibold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-offset-gray-800"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={otpLoading || otp.length !== 6}
-                    className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
+                    className="flex-1 flex justify-center py-3 px-5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
                   >
                     {otpLoading ? (
                       <span className="flex items-center">
@@ -275,7 +281,7 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={handleResendOtp}
-                    className="text-sm text-brand-navy hover:text-brand-navy/80 font-medium dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
+                    className="text-base text-brand-navy hover:text-brand-navy/80 font-semibold dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
                   >
                     Didn't receive the code? Resend OTP
                   </button>

@@ -1497,32 +1497,17 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
-              <select
-                value={formData.language || ''}
-                onChange={(e) => onFormChange('language', e.target.value)}
-                className="form-select"
-              >
-                <option value="en">English</option>
-                <option value="ne">Nepali</option>
-                <option value="hi">Hindi</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
-              <select
-                value={formData.date_format || ''}
-                onChange={(e) => onFormChange('date_format', e.target.value)}
-                className="form-select"
-              >
-                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+            <select
+              value={formData.date_format || ''}
+              onChange={(e) => onFormChange('date_format', e.target.value)}
+              className="form-select"
+            >
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            </select>
           </div>
 
           <div>
@@ -1599,16 +1584,9 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
-            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.language === 'en' ? 'English' : data.settings?.language}</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
-            <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.date_format || 'DD/MM/YYYY'}</p>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+          <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.date_format || 'DD/MM/YYYY'}</p>
         </div>
 
         <div>

@@ -536,7 +536,7 @@ class AuditService {
       contact: ['phone', 'mobile', 'email', 'website'],
       location: ['address'],
       social: ['social_media.facebook', 'social_media.instagram', 'social_media.linkedin', 'social_media.twitter'],
-      settings: ['settings.currency', 'settings.timezone', 'settings.language', 'settings.date_format', 'settings.notifications'],
+      settings: ['settings.currency', 'settings.timezone', 'settings.date_format', 'settings.notifications'],
       services: ['services', 'specializations', 'target_countries'],
       media: ['logo_url', 'banner_url']
     }
