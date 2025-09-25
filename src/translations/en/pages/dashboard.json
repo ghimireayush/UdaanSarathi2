@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "dashboard"
+  },
+  "header": {
+    "welcomeBack": "Welcome back, {{name}}",
+    "roleDescriptions": {
+      "admin": "Full system access - Manage all recruitment operations",
+      "recipient": "Manage jobs, applications, interviews, and workflow",
+      "coordinator": "Handle scheduling, notifications, and document management"
+    },
+    "searchPlaceholder": "Search jobs, candidates...",
+    "notifications": "Notifications",
+    "newApplicants": "{{count}} new applicants today"
+  },
+  "status": {
+    "access": "{{role}} Access",
+    "updated": "Updated: {{time}}",
+    "customRange": "Custom Range: {{startDate}} - {{endDate}}",
+    "liveData": "Live Data",
+    "updatesEvery": "Updates every 5 mins",
+    "lastRefresh": "Last refresh: {{time}}"
+  },
+  "filters": {
+    "timeWindow": {
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month",
+      "custom": "Custom Range"
+    },
+    "allJobs": "All Jobs",
+    "allCountries": "All Countries",
+    "filterByJob": "Filter by Job",
+    "filterByCountry": "Filter by Country"
+  },
+  "metrics": {
+    "jobs": {
+      "title": "Jobs",
+      "total": "Total jobs",
+      "open": "Open jobs",
+      "recent": "Recent jobs (28 days)",
+      "drafts": "Drafts"
+    },
+    "applications": {
+      "title": "Applications",
+      "applicants": "Applicants",
+      "appliedToJobs": "Applied to jobs",
+      "shortlisted": "Shortlisted",
+      "selected": "Selected"
+    },
+    "interviews": {
+      "title": "Interviews",
+      "pendingWeek": "Pending interviews this week",
+      "completedToday": "Completed Today",
+      "interviewedMonth": "Interviewed This Month",
+      "passRate": "Pass Rate",
+      "candidate": "candidate",
+      "candidates": "candidates",
+      "passed": "passed",
+      "failed": "failed"
+    }
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "createJob": {
+      "title": "Create Job",
+      "drafts": "Drafts"
+    },
+    "applications": {
+      "title": "Applications",
+      "applicants": "Applicants"
+    },
+    "interviews": {
+      "title": "Interviews",
+      "pending": "Pending"
+    },
+    "workflow": {
+      "title": "Workflow",
+      "inProcess": "In Process"
+    }
+  },
+  "loading": {
+    "dashboard": "Loading dashboard analytics..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load dashboard",
+    "retry": "Retry"
+  },
+  "success": {
+    "dashboardUpdated": "Dashboard Updated",
+    "dataRefreshed": "Analytics data has been refreshed successfully."
+  },
+  "chart": {
+    "passed": "Passed",
+    "failed": "Failed",
+    "pending": "Pending"
+  },
+  "buttons": {
+    "refresh": "Refresh"
+  }
+}

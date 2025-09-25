@@ -24,6 +24,7 @@ import PermissionGuard from '../components/PermissionGuard.jsx'
 import { InteractiveCard, InteractiveButton, InteractiveDropdown, InteractiveLoader } from '../components/InteractiveUI'
 import DateRangePicker from '../components/DateRangePicker.jsx'
 import LanguageSwitch from '../components/LanguageSwitch.jsx'
+import { useLanguage } from '../hooks/useLanguage'
 
 import { useNotificationContext } from '../contexts/NotificationContext'
 
@@ -54,12 +55,12 @@ const ProgressRing = ({ completed, total, size = 88, stroke = 8, color = '#eab30
   )
 }
 
-const MiniBarChart = ({ passed = 0, failed = 0, pending = 0 }) => {
+const MiniBarChart = ({ passed = 0, failed = 0, pending = 0, tPage }) => {
   const max = Math.max(1, passed, failed, pending)
   const bars = [
-    { label: 'Passed', value: passed, color: 'fill-green-500' },
-    { label: 'Failed', value: failed, color: 'fill-red-500' },
-    { label: 'Pending', value: pending, color: 'fill-yellow-500' },
+    { label: tPage('chart.passed'), value: passed, color: 'fill-green-500' },
+    { label: tPage('chart.failed'), value: failed, color: 'fill-red-500' },
+    { label: tPage('chart.pending'), value: pending, color: 'fill-yellow-500' },
   ]
   return (
     <div className="flex items-end gap-3 h-20">
@@ -84,6 +85,15 @@ const Dashboard = () => {
   const [showNotifMenu, setShowNotifMenu] = useState(false)
   const profileRef = useRef(null)
   const notifRef = useRef(null)
+  const { locale, tPageSync, loadPageTranslations, isLoading: languageLoading } = useLanguage({ 
+    pageName: 'dashboard', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   const [filters, setFilters] = useState({
     timeWindow: 'Week',
@@ -166,7 +176,7 @@ const Dashboard = () => {
       setLastUpdated(new Date())
       
       if (showRefreshIndicator) {
-        success('Dashboard Updated', 'Analytics data has been refreshed successfully.')
+        success(tPage('success.dashboardUpdated'), tPage('success.dataRefreshed'))
       }
       
     } catch (err) {
@@ -211,7 +221,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <InteractiveLoader 
           type="skeleton" 
-          text="Loading dashboard analytics..." 
+          text={tPage('loading.dashboard')} 
           className="min-h-screen flex items-center justify-center"
         />
       </div>
@@ -224,13 +234,13 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load dashboard</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{tPage('error.failedToLoad')}</h2>
           <p className="text-gray-600 mb-4">{error.message}</p>
           <button 
             onClick={() => window.location.reload()} 
             className="btn-primary py-3 px-6 text-base font-semibold"
           >
-            Retry
+            {tPage('error.retry')}
           </button>
         </div>
       </div>
@@ -297,49 +307,49 @@ const Dashboard = () => {
 
   const jobMetrics = [
     { 
-      label: 'Total jobs', 
+      label: tPage('metrics.jobs.total'), 
       value: analytics.jobs?.total?.toLocaleString() || '0', 
       highlight: true
     },
-    { label: 'Open jobs', value: analytics.jobs?.open || '0' },
-    { label: 'Recent jobs (28 days)', value: analytics.jobs?.recent || '0' },
-    { label: 'Drafts', value: analytics.jobs?.drafts || '0' }
+    { label: tPage('metrics.jobs.open'), value: analytics.jobs?.open || '0' },
+    { label: tPage('metrics.jobs.recent'), value: analytics.jobs?.recent || '0' },
+    { label: tPage('metrics.jobs.drafts'), value: analytics.jobs?.drafts || '0' }
   ]
 
   const applicationMetrics = [
     { 
-      label: 'Applicants', 
+      label: tPage('metrics.applications.applicants'), 
       value: `${analytics.applications?.applicants || 0}`,
       highlight: true
     },
     { 
-      label: 'Applied to jobs', 
+      label: tPage('metrics.applications.appliedToJobs'), 
       value: `${analytics.applications?.jobsApplied || 0} jobs`
     },
-    { label: 'Shortlisted', value: analytics.applications?.shortlisted || '0' },
+    { label: tPage('metrics.applications.shortlisted'), value: analytics.applications?.shortlisted || '0' },
     { 
-      label: 'Selected', 
+      label: tPage('metrics.applications.selected'), 
       value: `${analytics.applications?.selected || 0}/${analytics.applications?.shortlisted || 0}`
     }
   ]
 
   const interviewMetrics = [
     {
-      label: 'Pending interviews this week',
+      label: tPage('metrics.interviews.pendingWeek'),
       value: `${analytics.interviews?.weeklyPending || 0}/${analytics.interviews?.weeklyTotal || 0}`,
       highlight: true
     },
     {
-      label: 'Completed Today',
+      label: tPage('metrics.interviews.completedToday'),
       value: `${analytics.interviews?.todayCompleted || 0}/${analytics.interviews?.todayTotal || 0}`
     },
     {
-      label: 'Interviewed This Month',
-      value: `${analytics.interviews?.monthlyInterviewed || 0} candidate${(analytics.interviews?.monthlyInterviewed || 0) === 1 ? '' : 's'}`
+      label: tPage('metrics.interviews.interviewedMonth'),
+      value: `${analytics.interviews?.monthlyInterviewed || 0} ${(analytics.interviews?.monthlyInterviewed || 0) === 1 ? tPage('metrics.interviews.candidate') : tPage('metrics.interviews.candidates')}`
     },
     {
-      label: 'Pass Rate',
-      value: `${analytics.interviews?.monthlyPass || 0} passed, ${analytics.interviews?.monthlyFail || 0} failed`
+      label: tPage('metrics.interviews.passRate'),
+      value: `${analytics.interviews?.monthlyPass || 0} ${tPage('metrics.interviews.passed')}, ${analytics.interviews?.monthlyFail || 0} ${tPage('metrics.interviews.failed')}`
     }
   ]
 
@@ -353,12 +363,12 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                  Welcome back, {user?.name}
+                  {tPage('header.welcomeBack', { name: user?.name })}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 mb-4 text-lg">
-                  {isAdmin() && "Full system access - Manage all recruitment operations"}
-                  {isRecipient() && "Manage jobs, applications, interviews, and workflow"}
-                  {isCoordinator() && "Handle scheduling, notifications, and document management"}
+                  {isAdmin() && tPage('header.roleDescriptions.admin')}
+                  {isRecipient() && tPage('header.roleDescriptions.recipient')}
+                  {isCoordinator() && tPage('header.roleDescriptions.coordinator')}
                 </p>
               </div>
 
@@ -367,7 +377,7 @@ const Dashboard = () => {
                 <div className="relative hidden lg:block">
                   <input
                     className="pl-9 pr-3 py-2 w-72 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Search jobs, candidates..."
+                    placeholder={tPage('header.searchPlaceholder')}
                   />
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
@@ -376,15 +386,15 @@ const Dashboard = () => {
                   <button
                     onClick={() => setShowNotifMenu(v => !v)}
                     className="relative p-3 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
-                    aria-label="Notifications"
+                    aria-label={tPage('header.notifications')}
                   >
                     <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     <span className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-white text-[10px] px-1">2</span>
                   </button>
                   {showNotifMenu && (
                     <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 p-2 text-sm">
-                      <div className="font-medium text-gray-800 dark:text-gray-200 mb-1">Notifications</div>
-                      <div className="text-gray-600 dark:text-gray-400">2 new applicants today</div>
+                      <div className="font-medium text-gray-800 dark:text-gray-200 mb-1">{tPage('header.notifications')}</div>
+                      <div className="text-gray-600 dark:text-gray-400">{tPage('header.newApplicants', { count: 2 })}</div>
                     </div>
                   )}
                 </div>
@@ -403,19 +413,22 @@ const Dashboard = () => {
                 />
                 <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg border border-green-200 dark:border-green-700">
                   <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-sm text-green-700 dark:text-green-300 font-medium capitalize">{user?.role} Access</span>
+                  <span className="text-sm text-green-700 dark:text-green-300 font-medium capitalize">{tPage('status.access', { role: user?.role })}</span>
                 </div>
                 <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600">
                   <Activity className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   <span className="text-sm text-gray-600 dark:text-gray-300">
-                    Updated: {lastUpdated.toLocaleTimeString()}
+                    {tPage('status.updated', { time: lastUpdated.toLocaleTimeString() })}
                   </span>
                 </div>
                 {filters.customStartDate && filters.customEndDate && (
                   <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-700">
                     <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                      Custom Range: {new Date(filters.customStartDate).toLocaleDateString()} - {new Date(filters.customEndDate).toLocaleDateString()}
+                      {tPage('status.customRange', { 
+                        startDate: new Date(filters.customStartDate).toLocaleDateString(), 
+                        endDate: new Date(filters.customEndDate).toLocaleDateString() 
+                      })}
                     </span>
                   </div>
                 )}
@@ -424,12 +437,12 @@ const Dashboard = () => {
                 <div className="flex flex-col sm:flex-row gap-3 flex-1">
                   <InteractiveDropdown
                       options={[
-                        { value: 'Today', label: 'Today' },
-                        { value: 'Week', label: 'This Week' },
-                        { value: 'Month', label: 'This Month' },
+                        { value: 'Today', label: tPage('filters.timeWindow.today') },
+                        { value: 'Week', label: tPage('filters.timeWindow.week') },
+                        { value: 'Month', label: tPage('filters.timeWindow.month') },
                         { value: 'Custom', label: filters.customStartDate && filters.customEndDate ? 
                           `${new Date(filters.customStartDate).toLocaleDateString()} - ${new Date(filters.customEndDate).toLocaleDateString()}` : 
-                          'Custom Range' }
+                          tPage('filters.timeWindow.custom') }
                       ]}
                       value={filters.timeWindow}
                       onChange={(value) => {
@@ -444,14 +457,14 @@ const Dashboard = () => {
                           }))
                         }
                       }}
-                      placeholder="Time Window"
+                      placeholder={tPage('filters.timeWindow.today')}
                       size="md"
                       className="w-full min-w-[150px]"
                     />
                     
                     <InteractiveDropdown
                       options={[
-                        { value: 'All Jobs', label: 'All Jobs' },
+                        { value: 'All Jobs', label: tPage('filters.allJobs') },
                         ...jobs.slice(0, 5).map(job => ({ 
                           value: job.id, 
                           label: `${job.title} - ${job.company}` 
@@ -459,7 +472,7 @@ const Dashboard = () => {
                       ]}
                       value={filters.job}
                       onChange={(value) => setFilters(prev => ({ ...prev, job: value }))}
-                      placeholder="Filter by Job"
+                      placeholder={tPage('filters.filterByJob')}
                       searchable={true}
                       size="md"
                       className="w-full min-w-[200px]"
@@ -468,12 +481,12 @@ const Dashboard = () => {
                 <div className="flex flex-col sm:flex-row gap-3 flex-1">
                   <InteractiveDropdown
                     options={[
-                      { value: 'All Countries', label: 'All Countries' },
+                      { value: 'All Countries', label: tPage('filters.allCountries') },
                       ...countries.map(country => ({ value: country, label: country }))
                     ]}
                     value={filters.country}
                     onChange={(value) => setFilters(prev => ({ ...prev, country: value }))}
-                    placeholder="Filter by Country"
+                    placeholder={tPage('filters.filterByCountry')}
                     size="md"
                     className="w-full min-w-[150px]"
                   />
@@ -481,8 +494,8 @@ const Dashboard = () => {
                   <button
                     onClick={handleRefresh}
                     className={`p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${isRefreshing ? 'opacity-60 cursor-wait' : ''}`}
-                    aria-label="Refresh"
-                    title="Refresh"
+                    aria-label={tPage('buttons.refresh')}
+                    title={tPage('buttons.refresh')}
                   >
                     <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                   </button>
@@ -494,7 +507,7 @@ const Dashboard = () => {
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <InteractiveMetricCard 
-            title="Jobs" 
+            title={tPage('metrics.jobs.title')} 
             icon={Briefcase} 
             metrics={jobMetrics}
             color="info"
@@ -503,7 +516,7 @@ const Dashboard = () => {
           />
           
           <InteractiveMetricCard 
-            title="Applications" 
+            title={tPage('metrics.applications.title')} 
             icon={Users} 
             metrics={applicationMetrics}
             color="success"
@@ -512,7 +525,7 @@ const Dashboard = () => {
           />
           
           <InteractiveMetricCard 
-            title="Interviews" 
+            title={tPage('metrics.interviews.title')} 
             icon={Calendar} 
             metrics={interviewMetrics}
             color="warning"
@@ -523,7 +536,7 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{tPage('quickActions.title')}</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <PermissionGuard permission={PERMISSIONS.CREATE_JOB}>
               <InteractiveCard 
@@ -537,10 +550,10 @@ const Dashboard = () => {
                     <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">Create Job</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{tPage('quickActions.createJob.title')}</p>
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg px-2 py-1">
                       <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{analytics.jobs?.drafts || 0}</p>
-                      <p className="text-xs text-blue-500 dark:text-blue-400 uppercase tracking-wide">Drafts</p>
+                      <p className="text-xs text-blue-500 dark:text-blue-400 uppercase tracking-wide">{tPage('quickActions.createJob.drafts')}</p>
                     </div>
                   </div>
                 </div>
@@ -559,10 +572,10 @@ const Dashboard = () => {
                     <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors mb-1">Applications</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors mb-1">{tPage('quickActions.applications.title')}</p>
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-lg px-2 py-1">
                       <p className="text-lg font-bold text-green-600 dark:text-green-400">{analytics.applications?.applicants || 0}</p>
-                      <p className="text-xs text-green-500 dark:text-green-400 uppercase tracking-wide">Applicants</p>
+                      <p className="text-xs text-green-500 dark:text-green-400 uppercase tracking-wide">{tPage('quickActions.applications.applicants')}</p>
                     </div>
                   </div>
                 </div>
@@ -581,10 +594,10 @@ const Dashboard = () => {
                     <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors mb-1">Interviews</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors mb-1">{tPage('quickActions.interviews.title')}</p>
                     <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg px-2 py-1">
                       <p className="text-lg font-bold text-purple-600 dark:text-purple-400">{analytics.interviews?.weeklyPending || 0}</p>
-                      <p className="text-xs text-purple-500 dark:text-purple-400 uppercase tracking-wide">Pending</p>
+                      <p className="text-xs text-purple-500 dark:text-purple-400 uppercase tracking-wide">{tPage('quickActions.interviews.pending')}</p>
                     </div>
                   </div>
                 </div>
@@ -603,10 +616,10 @@ const Dashboard = () => {
                     <BarChart3 className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors mb-1">Workflow</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors mb-1">{tPage('quickActions.workflow.title')}</p>
                     <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg px-2 py-1">
                       <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{analytics.applications?.selected || 0}</p>
-                      <p className="text-xs text-orange-500 dark:text-orange-400 uppercase tracking-wide">In Process</p>
+                      <p className="text-xs text-orange-500 dark:text-orange-400 uppercase tracking-wide">{tPage('quickActions.workflow.inProcess')}</p>
                     </div>
                   </div>
                 </div>
@@ -621,12 +634,12 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Live Data</span>
+                <span className="font-medium">{tPage('status.liveData')}</span>
               </div>
               <span className="text-gray-300 dark:text-gray-600">•</span>
-              <span>Updates every 5 mins</span>
+              <span>{tPage('status.updatesEvery')}</span>
               <span className="text-gray-300 dark:text-gray-600">•</span>
-              <span>Last refresh: {lastUpdated.toLocaleTimeString()}</span>
+              <span>{tPage('status.lastRefresh', { time: lastUpdated.toLocaleTimeString() })}</span>
             </div>
           </div>
         </div>

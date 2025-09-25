@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "job-details"
+  },
+  "tabs": {
+    "applied": "आवेदन दिएको",
+    "shortlisted": "छनोट सूचीमा",
+    "scheduled": "समयतालिका मिलाइएको",
+    "interviewed": "अन्तर्वार्ता लिइएको",
+    "selected": "चयन गरिएको",
+    "rejected": "अस्वीकार गरिएको"
+  },
+  "stages": {
+    "applied": "आवेदन दिएको",
+    "shortlisted": "छनोट सूचीमा",
+    "scheduled": "समयतालिका मिलाइएको",
+    "interviewed": "अन्तर्वार्ता लिइएको",
+    "selected": "चयन गरिएको",
+    "rejected": "अस्वीकार गरिएको"
+  },
+  "actions": {
+    "shortlist": "छनोट सूचीमा राख्नुहोस्",
+    "removeFromShortlist": "छनोट सूचीबाट हटाउनुहोस्",
+    "completeShortlisting": "छनोट प्रक्रिया पूरा गर्नुहोस्",
+    "scheduleInterview": "अन्तर्वार्ताको समयतालिका मिलाउनुहोस्",
+    "viewProfile": "प्रोफाइल हेर्नुहोस्",
+    "downloadCV": "CV डाउनलोड गर्नुहोस्",
+    "backToJobs": "जागिरहरूमा फिर्ता जानुहोस्"
+  },
+  "labels": {
+    "appliedOn": "{{date}} मा आवेदन दिएको",
+    "applicantCount": "आवेदकहरूको संख्या",
+    "total": "कुल",
+    "shortlisted": "छनोट सूचीमा",
+    "passed": "उत्तीर्ण",
+    "candidatesByPhase": "चरणअनुसार उम्मेदवारहरू",
+    "shortlistedCandidates": "छनोट सूचीमा रहेका उम्मेदवारहरू ({{count}})",
+    "noShortlistedCandidates": "छनोट सूचीमा कुनै उम्मेदवार छैन",
+    "noScheduledInterviews": "कुनै अन्तर्वार्ताको समयतालिका छैन",
+    "startByShortlisting": "आवेदन दिएको ट्याबबाट उम्मेदवारहरूलाई छनोट गरेर सुरु गर्नुहोस्।",
+    "scheduleFromShortlisted": "यहाँ हेर्नको लागि छनोट सूची ट्याबबाट अन्तर्वार्ताको समयतालिका मिलाउनुहोस्।"
+  },
+  "dialog": {
+    "completionTitle": "छनोट प्रक्रिया पूरा गर्नुहोस्",
+    "importantImplications": "⚠️ महत्वपूर्ण प्रभावहरू:",
+    "remainingApplicantsRejected": "• {{count}} बाँकी आवेदकहरूलाई स्वचालित रूपमा अस्वीकार गरिनेछ",
+    "shortlistedProceed": "• {{count}} छनोट गरिएका उम्मेदवारहरू अर्को चरणमा जानेछन्",
+    "cannotUndo": "• यो कार्य फिर्ता गर्न सकिँदैन",
+    "rejectedNotified": "• अस्वीकार गरिएका उम्मेदवारहरूलाई स्वचालित रूपमा सूचना दिइनेछ",
+    "confirm": "हो, छनोट प्रक्रिया पूरा गर्नुहोस्",
+    "cancel": "रद्द गर्नुहोस्"
+  },
+  "messages": {
+    "shortlistingCompleted": "सफलतापूर्वक {{count}} गैर-छनोट उम्मेदवारहरूलाई अस्वीकार गरियो",
+    "failedToCompleteShortlisting": "छनोट प्रक्रिया पूरा गर्न असफल"
+  },
+  "loading": {
+    "jobDetails": "जागिरको विवरण लोड गर्दै..."
+  },
+  "error": {
+    "failedToLoad": "जागिरको विवरण लोड गर्न असफल",
+    "retry": "पुनः प्रयास गर्नुहोस्"
+  }
+}

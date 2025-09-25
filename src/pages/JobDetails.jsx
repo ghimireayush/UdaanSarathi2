@@ -29,6 +29,7 @@ import { useConfirm } from '../components/ConfirmProvider.jsx'
 import EnhancedInterviewScheduling from '../components/EnhancedInterviewScheduling.jsx'
 import ScheduledInterviews from '../components/ScheduledInterviews.jsx'
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
+import { useLanguage } from '../hooks/useLanguage'
 
 
 const JobDetails = () => {
@@ -36,6 +37,15 @@ const JobDetails = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { confirm } = useConfirm()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'job-details', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   // Initialize state from URL params
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'applied')
@@ -63,12 +73,12 @@ const JobDetails = () => {
 
   // Workflow stages configuration - consistent with Workflow page
   const workflowStages = [
-    { id: 'applied', label: 'Applied' },
-    { id: 'shortlisted', label: 'Shortlisted' },
-    { id: 'scheduled', label: 'Scheduled' },
-    { id: 'interviewed', label: 'Interviewed' },
-    { id: 'selected', label: 'Selected' },
-    { id: 'rejected', label: 'Rejected' }
+    { id: 'applied', label: tPage('stages.applied') },
+    { id: 'shortlisted', label: tPage('stages.shortlisted') },
+    { id: 'scheduled', label: tPage('stages.scheduled') },
+    { id: 'interviewed', label: tPage('stages.interviewed') },
+    { id: 'selected', label: tPage('stages.selected') },
+    { id: 'rejected', label: tPage('stages.rejected') }
   ]
 
   // Load data on mount and when filters change
@@ -508,9 +518,9 @@ const JobDetails = () => {
   }
 
   const tabs = [
-    { id: 'applied', label: 'Applied', count: appliedCandidates.length },
-    { id: 'shortlisted', label: 'Shortlisted', count: shortlistedCandidates.length },
-    { id: 'scheduled', label: 'Scheduled', count: scheduledCandidates.length }
+    { id: 'applied', label: tPage('tabs.applied'), count: appliedCandidates.length },
+    { id: 'shortlisted', label: tPage('tabs.shortlisted'), count: shortlistedCandidates.length },
+    { id: 'scheduled', label: tPage('tabs.scheduled'), count: scheduledCandidates.length }
   ]
 
   if (isLoading) {
@@ -649,7 +659,7 @@ const JobDetails = () => {
 
         <div className="flex flex-col items-start sm:items-end space-y-3 min-w-max">
           <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-            Applied {format(new Date(candidate.applied_at), 'MMM dd, yyyy')}
+{tPage('labels.appliedOn', { date: format(new Date(candidate.applied_at), 'MMM dd, yyyy') })}
           </span>
 
           {showShortlistButton && (
@@ -710,12 +720,12 @@ const JobDetails = () => {
                   </p>
 
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                    <h4 className="text-sm font-semibold text-yellow-800 mb-2">⚠️ Important Implications:</h4>
+                    <h4 className="text-sm font-semibold text-yellow-800 mb-2">{tPage('dialog.importantImplications')}</h4>
                     <ul className="text-sm text-yellow-700 space-y-1">
-                      <li>• <strong>{nonShortlistedCount} remaining applicants</strong> will be automatically rejected</li>
-                      <li>• <strong>{shortlistedCount} shortlisted candidates</strong> will proceed to the next stage</li>
-                      <li>• This action cannot be undone</li>
-                      <li>• Rejected candidates will be notified automatically</li>
+                      <li>{tPage('dialog.remainingApplicantsRejected', { count: nonShortlistedCount })}</li>
+                      <li>{tPage('dialog.shortlistedProceed', { count: shortlistedCount })}</li>
+                      <li>{tPage('dialog.cannotUndo')}</li>
+                      <li>{tPage('dialog.rejectedNotified')}</li>
                     </ul>
                   </div>
 
@@ -737,7 +747,7 @@ const JobDetails = () => {
                 onClick={onConfirm}
                 disabled={isCompletingShortlisting}
               >
-                {isCompletingShortlisting ? 'Processing...' : 'Yes, Complete Shortlisting'}
+{isCompletingShortlisting ? 'Processing...' : tPage('dialog.confirm')}
               </button>
               <button
                 type="button"
@@ -745,7 +755,7 @@ const JobDetails = () => {
                 onClick={onClose}
                 disabled={isCompletingShortlisting}
               >
-                Cancel
+{tPage('dialog.cancel')}
               </button>
             </div>
           </div>
@@ -942,7 +952,7 @@ const JobDetails = () => {
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-4">
                 <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 flex items-center">
                   <UserCheck className="w-5 h-5 mr-2" />
-                  Shortlisted Candidates ({shortlistedCandidates.length})
+{tPage('labels.shortlistedCandidates', { count: shortlistedCandidates.length })}
                 </h3>
                 <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                   These candidates have been shortlisted for this position. Click any candidate to view their full profile.
@@ -966,7 +976,7 @@ const JobDetails = () => {
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                    {showShortlistPool ? 'No shortlisted candidates' : 'No candidates found'}
+{showShortlistPool ? tPage('labels.noShortlistedCandidates') : 'No candidates found'}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
                     {showShortlistPool
@@ -1030,8 +1040,8 @@ const JobDetails = () => {
             ) : (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No shortlisted candidates</h3>
-                <p className="text-gray-600 dark:text-gray-400">Start by shortlisting candidates from the Applied tab.</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('labels.noShortlistedCandidates')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{tPage('labels.startByShortlisting')}</p>
               </div>
             )}
           </div>
@@ -1048,8 +1058,8 @@ const JobDetails = () => {
             ) : (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No scheduled interviews</h3>
-                <p className="text-gray-600 dark:text-gray-400">Schedule interviews from the Shortlisted tab to see them here.</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('labels.noScheduledInterviews')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{tPage('labels.scheduleFromShortlisted')}</p>
               </div>
             )}
           </div>
@@ -1138,11 +1148,11 @@ const JobDetails = () => {
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-blue-600 mr-2" />
                     <div>
-                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Applicant Count</p>
+                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">{tPage('labels.applicantCount')}</p>
                       <div className="text-lg font-semibold text-blue-900 dark:text-blue-200">
-                        <div>Total: {analytics?.total_applicants || job.applications_count || 0}</div>
-                        <div>Shortlisted: {analytics?.shortlisted_count || job.shortlisted_count || 0}</div>
-                        <div>Passed: {analytics?.passed_count || 0}</div>
+                        <div>{tPage('labels.total')}: {analytics?.total_applicants || job.applications_count || 0}</div>
+                        <div>{tPage('labels.shortlisted')}: {analytics?.shortlisted_count || job.shortlisted_count || 0}</div>
+                        <div>{tPage('labels.passed')}: {analytics?.passed_count || 0}</div>
                       </div>
                     </div>
                   </div>
@@ -1156,7 +1166,7 @@ const JobDetails = () => {
       {/* Candidates by Phase - Increased width */}
       <div className="card mt-6">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Candidates by phase</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">{tPage('labels.candidatesByPhase')}</h2>
         </div>
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">

@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "audit-log"
+  },
+  "title": "Audit Log",
+  "subtitle": "Track and monitor all system activities and changes",
+  "actions": {
+    "refresh": "Refresh",
+    "exportCSV": "Export CSV",
+    "clearData": "Clear Data"
+  },
+  "search": {
+    "placeholder": "Search logs...",
+    "ariaLabel": "Search audit logs"
+  },
+  "pageActions": {
+    "refresh": "Refresh",
+    "exportCsv": "Export CSV",
+    "clearData": "Clear Data"
+  },
+  "filters": {
+    "title": "Filters",
+    "searchPlaceholder": "Search logs...",
+    "allUsers": "All Users",
+    "allActions": "All Actions",
+    "dateFrom": "Date From",
+    "dateTo": "Date To",
+    "resetAll": "Reset All",
+    "activeFilters": "{{count}} active",
+    "changes": "{{count}} changes"
+  },
+  "resourceTypes": {
+    "agencyProfile": "Agency Profile",
+    "agencyMedia": "Agency Media",
+    "jobPosting": "Job Posting",
+    "candidate": "Candidate",
+    "application": "Application",
+    "user": "User",
+    "auth": "Auth"
+  },
+  "auditActions": {
+    "update": "Update",
+    "create": "Create",
+    "delete": "Delete",
+    "fileUpload": "File Upload",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "table": {
+    "headers": {
+      "actionUser": "Action & User",
+      "resource": "Resource",
+      "timestamp": "Timestamp",
+      "changes": "Changes",
+      "sessionInfo": "Session Info",
+      "details": "Details"
+    },
+    "tableActions": {
+      "show": "Show",
+      "hide": "Hide"
+    }
+  },
+  "changeDetails": {
+    "changesMade": "Changes Made:",
+    "from": "From:",
+    "to": "To:",
+    "notSet": "(Not set)",
+    "cannotDisplay": "[Object - Cannot display]",
+    "errorCannotDisplay": "[Error - Cannot display]"
+  },
+  "messages": {
+    "noLogsFound": "No audit logs found",
+    "noLogsMessage": "Activity logs will appear here when changes are made to the system.",
+    "noLogsWithFilters": "No logs match your current filters. Try adjusting your search criteria.",
+    "clearAllFilters": "Clear All Filters",
+    "fieldsChanged": "{{count}} field{{plural}} changed",
+    "noChanges": "No changes"
+  },
+  "loading": {
+    "auditLogs": "Loading audit logs..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load audit logs",
+    "retry": "Retry"
+  }
+}

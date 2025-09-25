@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "drafts"
+  },
+  "title": "Draft Management",
+  "subtitle": "Create, edit, and manage job posting drafts before publishing",
+  "pageActions": {
+    "createDraft": "Create Draft",
+    "bulkCreate": "Bulk Create"
+  },
+  "viewModes": {
+    "list": "List View",
+    "grid": "Grid View"
+  },
+  "filters": {
+    "searchPlaceholder": "Search drafts by title, company, or description...",
+    "allCountries": "All Countries",
+    "allCompanies": "All Companies",
+    "allCategories": "All Categories",
+    "sortBy": {
+      "createdDate": "Created Date",
+      "title": "Title",
+      "company": "Company",
+      "country": "Country"
+    }
+  },
+  "draftStatus": {
+    "partial": "Partial",
+    "complete": "Complete",
+    "bulk": "Bulk Draft"
+  },
+  "draftActions": {
+    "edit": "Edit",
+    "preview": "Preview",
+    "publish": "Publish",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "expandBulk": "Expand Bulk"
+  },
+  "progress": {
+    "step": "Step {{current}} of {{total}}",
+    "completed": "{{completed}}% Complete",
+    "stepsCompleted": "{{completed}} of {{total}} steps completed"
+  },
+  "messages": {
+    "draftCreated": "Draft created successfully!",
+    "draftUpdated": "Draft updated successfully!",
+    "draftDeleted": "Draft deleted successfully!",
+    "draftPublished": "Draft published successfully! Redirecting to Jobs page...",
+    "bulkDraftCreated": "Successfully created bulk draft with {{count}} jobs!",
+    "progressSaved": "Progress saved! You can continue editing later.",
+    "noDraftsFound": "No drafts found",
+    "noDraftsMessage": "You haven't created any drafts yet. Click 'Create Draft' to get started.",
+    "completeDraftBeforePublish": "Please complete all required sections before publishing the draft.",
+    "cannotEditPublished": "Cannot edit published jobs. Please create a new draft instead."
+  },
+  "bulkDraft": {
+    "totalJobs": "{{count}} jobs",
+    "multiplePositions": "Multiple Positions",
+    "multipleCountries": "Multiple Countries"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} drafts"
+  },
+  "loading": {
+    "drafts": "Loading drafts..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load drafts",
+    "failedToSave": "Failed to save draft. Please try again.",
+    "failedToDelete": "Failed to delete draft. Please try again.",
+    "failedToPublish": "Failed to publish draft. Please try again.",
+    "retry": "Retry"
+  }
+}

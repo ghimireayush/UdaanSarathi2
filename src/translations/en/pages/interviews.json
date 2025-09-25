@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "interviews"
+  },
+  "title": "Interviews",
+  "subtitle": "Manage interview schedules, track attendance, and capture outcomes",
+  "tabs": {
+    "scheduled": "Scheduled Interviews",
+    "scheduleNew": "Schedule New",
+    "aiAssistant": "AI Assistant"
+  },
+  "viewModes": {
+    "list": "List",
+    "calendar": "Calendar"
+  },
+  "timeRanges": {
+    "day": "Day",
+    "week": "Week"
+  },
+  "filters": {
+    "allJobs": "All Jobs",
+    "searchPlaceholder": "Search candidates or interviewers..."
+  },
+  "stats": {
+    "todaysInterviews": "Today's Interviews",
+    "totalScheduled": "Total Scheduled",
+    "unattended": "Unattended",
+    "completed": "Completed",
+    "autoFlagged": "Auto-flagged after {{minutes}}min grace"
+  },
+  "messages": {
+    "selectJob": "Select a Job to Schedule Interviews",
+    "selectJobMessage": "Choose a job from the filter above to view shortlisted candidates and schedule interviews.",
+    "noShortlistedCandidates": "No Shortlisted Candidates",
+    "noShortlistedMessage": "No candidates have been shortlisted for this job yet. Visit the Applications page to shortlist candidates first.",
+    "aiAssistantReady": "AI Assistant Ready",
+    "aiAssistantMessage": "Select a job with shortlisted candidates to get AI-powered scheduling suggestions."
+  },
+  "aiAssistant": {
+    "title": "AI Scheduling Assistant",
+    "subtitle": "Intelligent scheduling suggestions for optimal interview coverage",
+    "phase2Feature": "Phase 2 Feature"
+  },
+  "loading": {
+    "interviews": "Loading interviews..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load interviews",
+    "retry": "Retry"
+  }
+}

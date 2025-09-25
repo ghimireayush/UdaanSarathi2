@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "applications"
+  },
+  "title": "आवेदनहरू",
+  "subtitle": "उम्मेदवार आवेदनहरू व्यवस्थापन गर्नुहोस् र भर्ती पाइपलाइनमा तिनीहरूको प्रगति ट्र्याक गर्नुहोस्",
+  "filters": {
+    "searchPlaceholder": "उम्मेदवार वा अन्तर्वार्ता लिने व्यक्ति खोज्नुहोस्...",
+    "allJobs": "सबै जागिरहरू",
+    "allStages": "सबै चरणहरू",
+    "allCountries": "सबै देशहरू"
+  },
+  "viewModes": {
+    "list": "सूची",
+    "grid": "ग्रिड"
+  },
+  "bulkActions": {
+    "shortlist": "चयनित छनोट गर्नुहोस्",
+    "reject": "चयनित अस्वीकार गर्नुहोस्",
+    "selectAll": "सबै चयन गर्नुहोस्",
+    "clearSelection": "चयन खाली गर्नुहोस्"
+  },
+  "applicationStatus": {
+    "applied": "आवेदन दिएको",
+    "shortlisted": "छनोट सूचीमा",
+    "interviewScheduled": "अन्तर्वार्ता निर्धारित",
+    "interviewPassed": "अन्तर्वार्ता उत्तीर्ण",
+    "rejected": "अस्वीकृत"
+  },
+  "table": {
+    "headers": {
+      "candidate": "उम्मेदवार",
+      "position": "पद",
+      "status": "स्थिति",
+      "dateApplied": "आवेदन मिति",
+      "actions": "कार्यहरू"
+    }
+  },
+  "actions": {
+    "viewSummary": "सारांश हेर्नुहोस्",
+    "shortlist": "छनोट गर्नुहोस्",
+    "removeFromShortlist": "छनोट सूचीबाट हटाउनुहोस्",
+    "reject": "अस्वीकार गर्नुहोस्",
+    "moveToNextStage": "अर्को चरणमा सार्नुहोस्"
+  },
+  "messages": {
+    "loaded": "{{time}}ms मा {{count}} आवेदनहरू लोड भयो",
+    "showing": "{{total}} मध्ये {{start}}-{{end}} आवेदनहरू देखाइँदै",
+    "loadTime": "{{time}}ms मा लोड भयो",
+    "slowLoad": "अपेक्षा भन्दा ढिलो लोड हुँदै",
+    "applicationShortlisted": "आवेदन सफलतापूर्वक छनोट गरियो!",
+    "applicationRejected": "आवेदन सफलतापूर्वक अस्वीकार गरियो!",
+    "bulkActionCompleted": "{{count}} आवेदनहरू सफलतापूर्वक अपडेट गरियो!",
+    "noApplicationsFound": "कुनै आवेदन फेला परेन",
+    "noApplicationsMessage": "तपाईंको हालको फिल्टरसँग कुनै आवेदन मेल खाँदैन। तपाईंको खोज मापदण्ड समायोजन गर्ने प्रयास गर्नुहोस्।"
+  },
+  "pagination": {
+    "info": "{{total}} परिणामहरू मध्ये {{start}} देखि {{end}} सम्म देखाइँदै",
+    "page": "पृष्ठ {{page}} मा जानुहोस्"
+  },
+  "loading": {
+    "applications": "आवेदनहरू लोड गर्दै..."
+  },
+  "error": {
+    "failedToLoad": "आवेदनहरू लोड गर्न असफल",
+    "retry": "पुनः प्रयास गर्नुहोस्",
+    "networkError": "तपाईं अफलाइन देखिन्छ। कृपया आफ्नो इन्टरनेट जडान जाँच गर्नुहोस्।"
+  }
+}

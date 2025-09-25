@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "agency-settings"
+  },
+  "title": "Agency Settings",
+  "subtitle": "Manage your agency profile, preferences, and system configuration",
+  "tabs": {
+    "basicInfo": "Basic Info",
+    "contact": "Contact",
+    "location": "Location",
+    "images": "Images",
+    "socialMedia": "Social Media",
+    "services": "Services",
+    "settings": "Settings"
+  },
+  "sections": {
+    "agencyLogo": "Agency Logo",
+    "basicInfo": {
+      "title": "Basic Information",
+      "subtitle": "Update your agency's basic details and contact information"
+    },
+    "contactInfo": {
+      "title": "Contact Information",
+      "subtitle": "Manage contact details and communication preferences"
+    },
+    "branding": {
+      "title": "Branding & Media",
+      "subtitle": "Upload logos, images, and customize your agency's appearance"
+    },
+    "preferences": {
+      "title": "System Preferences",
+      "subtitle": "Configure system settings and user preferences"
+    },
+    "security": {
+      "title": "Security Settings",
+      "subtitle": "Manage security policies and access controls"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "Connect with external services and APIs"
+    }
+  },
+  "fields": {
+    "agencyName": "Agency Name",
+    "description": "Description",
+    "website": "Website",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "postalCode": "Postal Code",
+    "logo": "Agency Logo",
+    "banner": "Banner Image",
+    "timezone": "Timezone",
+    "language": "Default Language",
+    "currency": "Default Currency",
+    "dateFormat": "Date Format",
+    "notifications": "Email Notifications",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "sessionTimeout": "Session Timeout"
+  },
+  "placeholders": {
+    "enterAgencyName": "Enter agency name",
+    "agencyDescription": "Describe your agency's mission and services",
+    "completeAddress": "Enter complete address including city, district, and country",
+    "agencyName": "Enter your agency name",
+    "description": "Describe your agency's services and expertise",
+    "website": "https://www.yourwebsite.com",
+    "email": "contact@youragency.com",
+    "phone": "+1 (555) 123-4567",
+    "address": "Enter your business address",
+    "city": "Enter city name",
+    "postalCode": "Enter postal/ZIP code"
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "remove": "Remove",
+    "reset": "Reset to Default",
+    "preview": "Preview",
+    "test": "Test Connection"
+  },
+  "messages": {
+    "settingsSaved": "Settings saved successfully!",
+    "settingsError": "Failed to save settings. Please try again.",
+    "logoUploaded": "Logo uploaded successfully!",
+    "logoRemoved": "Logo removed successfully!",
+    "bannerUploaded": "Banner uploaded successfully!",
+    "bannerRemoved": "Banner removed successfully!",
+    "invalidFileType": "Invalid file type. Please upload an image file.",
+    "fileTooLarge": "File size too large. Maximum size is {{maxSize}}MB.",
+    "testConnectionSuccess": "Connection test successful!",
+    "testConnectionFailed": "Connection test failed. Please check your settings.",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+    "resetConfirm": "Are you sure you want to reset to default settings? This action cannot be undone."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidPhone": "Please enter a valid phone number",
+    "minLength": "Minimum {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed"
+  },
+  "loading": {
+    "settings": "Loading settings...",
+    "saving": "Saving changes...",
+    "uploading": "Uploading file...",
+    "testing": "Testing connection..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load agency settings",
+    "failedToSave": "Failed to save settings",
+    "failedToUpload": "Failed to upload file",
+    "retry": "Retry"
+  }
+}

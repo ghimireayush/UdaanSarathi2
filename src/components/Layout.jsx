@@ -20,6 +20,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import { useAgency } from '../contexts/AgencyContext.jsx'
 import { PERMISSIONS } from '../services/authService.js'
 import ThemeToggle from './ThemeToggle.jsx'
+import { useLanguage } from '../hooks/useLanguage'
 import logo from '../assets/inspire-agency-logo.svg'
 
 const Layout = ({ children }) => {
@@ -28,6 +29,15 @@ const Layout = ({ children }) => {
   const navigate = useNavigate()
   const { user, logout, hasPermission, hasAnyPermission, isAdmin } = useAuth()
   const { agencyName, agencyLogo } = useAgency()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'navigation', 
+    autoLoad: true 
+  })
+
+  // Helper function to get navigation translations
+  const tNav = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   const handleLogout = () => {
     logout()
@@ -37,55 +47,55 @@ const Layout = ({ children }) => {
   const navItems = [
     { 
       path: '/dashboard', 
-      label: 'Dashboard', 
+      label: tNav('items.dashboard'), 
       icon: BarChart3,
       show: true // Dashboard is always accessible
     },
     { 
       path: '/jobs', 
-      label: 'Jobs', 
+      label: tNav('items.jobs'), 
       icon: Briefcase,
       show: hasPermission(PERMISSIONS.VIEW_JOBS)
     },
     { 
       path: '/drafts', 
-      label: 'Drafts', 
+      label: tNav('items.drafts'), 
       icon: FileEdit,
       show: hasAnyPermission([PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB])
     },
     { 
       path: '/applications', 
-      label: 'Applications', 
+      label: tNav('items.applications'), 
       icon: Users,
       show: hasPermission(PERMISSIONS.VIEW_APPLICATIONS)
     },
     { 
       path: '/interviews', 
-      label: 'Interviews', 
+      label: tNav('items.interviews'), 
       icon: Calendar,
       show: hasAnyPermission([PERMISSIONS.VIEW_INTERVIEWS, PERMISSIONS.SCHEDULE_INTERVIEW])
     },
     { 
       path: '/workflow', 
-      label: 'Workflow', 
+      label: tNav('items.workflow'), 
       icon: GitBranch,
       show: hasPermission(PERMISSIONS.VIEW_WORKFLOW)
     },
     {
       path: '/teammembers',
-      label: 'Team Members',
+      label: tNav('items.teamMembers'),
       icon: UsersRound,
       show: hasPermission(PERMISSIONS.MANAGE_MEMBERS)
     },
     { 
       path: '/auditlog', 
-      label: 'Audit Log', 
+      label: tNav('items.auditLog'), 
       icon: History,
       show: hasPermission(PERMISSIONS.VIEW_AUDIT_LOGS) // Only show to users with audit log permission (admins)
     },
     { 
       path: '/settings', 
-      label: 'Agency Settings', 
+      label: tNav('items.agencySettings'), 
       icon: Settings,
       show: hasPermission(PERMISSIONS.MANAGE_SETTINGS)
     }
@@ -170,7 +180,7 @@ const Layout = ({ children }) => {
                 <button 
                   onClick={handleLogout}
                   className="flex-shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-600/50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
-                  aria-label="Logout"
+                  aria-label={tNav('userMenu.logout')}
                 >
                   <LogOut className="w-5 h-5" aria-hidden="true" />
                 </button>
@@ -273,7 +283,7 @@ const Layout = ({ children }) => {
                     role="menuitem"
                   >
                     <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-brand-blue-bright" aria-hidden="true" />
-                    <span>Logout</span>
+                    <span>{tNav('userMenu.logout')}</span>
                   </button>
                 )}
               </nav>

@@ -17,11 +17,16 @@ import { jobService, constantsService, PERMISSIONS } from '../services/index.js'
 import { format, formatDistanceToNow } from 'date-fns'
 import PermissionGuard from '../components/PermissionGuard.jsx'
 import useErrorHandler from '../hooks/useErrorHandler.js'
+import { useLanguage } from '../hooks/useLanguage.js'
 
 
 const Jobs = () => {
   const navigate = useNavigate()
   const { error, isRetryable, handleError, clearError } = useErrorHandler()
+  const { t, tPageSync, isLoading: translationsLoading } = useLanguage({ 
+    pageName: 'jobs', 
+    autoLoad: true 
+  })
   const [filters, setFilters] = useState({
     search: '',
     country: 'All Countries',
@@ -73,7 +78,7 @@ const Jobs = () => {
 
 
   // Loading state
-  if (isLoading && jobs.length === 0) {
+  if ((isLoading && jobs.length === 0) || translationsLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
@@ -159,9 +164,9 @@ const Jobs = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Jobs</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPageSync('title')}</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage job postings, applications, and candidate pipeline
+            {tPageSync('subtitle')}
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
@@ -171,7 +176,7 @@ const Jobs = () => {
               className="btn-primary flex items-center"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Job
+              {tPageSync('actions.createJob')}
             </button>
           </PermissionGuard>
         </div>
@@ -185,7 +190,7 @@ const Jobs = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search by reference ID, title, company..."
+              placeholder={tPageSync('filters.searchPlaceholder')}
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -199,10 +204,10 @@ const Jobs = () => {
               onChange={(e) => handleFilterChange('status', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value={jobStatuses.PUBLISHED}>Published</option>
-              <option value={jobStatuses.DRAFT}>Draft</option>
-              <option value={jobStatuses.CLOSED}>Closed</option>
-              <option value={jobStatuses.PAUSED}>Paused</option>
+              <option value={jobStatuses.PUBLISHED}>{tPageSync('filters.status.published')}</option>
+              <option value={jobStatuses.DRAFT}>{tPageSync('filters.status.draft')}</option>
+              <option value={jobStatuses.CLOSED}>{tPageSync('filters.status.closed')}</option>
+              <option value={jobStatuses.PAUSED}>{tPageSync('filters.status.paused')}</option>
             </select>
             
             <select 
@@ -210,7 +215,7 @@ const Jobs = () => {
               onChange={(e) => handleFilterChange('country', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option>All Countries</option>
+              <option>{tPageSync('filters.allCountries')}</option>
               {Object.keys(countryDistribution).map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}

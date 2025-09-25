@@ -4,6 +4,7 @@ import { User, Lock, Eye, EyeOff, UserCheck } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
+import { useLanguage } from '../hooks/useLanguage'
 import logo from '../assets/logo.svg'
 
 const MemberLogin = () => {
@@ -12,15 +13,23 @@ const MemberLogin = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  
   const { memberLogin, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
+  const { locale, tPageSync, loadPageTranslations, isLoading: languageLoading } = useLanguage({ 
+    pageName: 'member-login', 
+    autoLoad: true 
+  })
   
   // Get invitation token from URL if present
   const invitationToken = searchParams.get('token')
   const memberName = searchParams.get('name')
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
   
   // Redirect if already authenticated
   useEffect(() => {
@@ -41,16 +50,16 @@ const MemberLogin = () => {
         // Redirect to agency management dashboard
         navigate('/dashboard', { replace: true })
       } else {
-        const msg = result.error || 'Login failed. Please check your credentials.'
+        const msg = result.error || tPage('messages.loginFailed')
         if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
-          window.alert('This portal is for team members only (Recipients & Interview Coordinators). Administrators must use the /login page.')
+          window.alert(tPage('messages.unauthorizedAccess'))
         }
         setError(msg)
       }
     } catch (err) {
-      const msg = err?.message || 'An unexpected error occurred. Please try again.'
+      const msg = err?.message || tPage('messages.unexpectedError')
       if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
-        window.alert('This portal is for team members only (Recipients & Interview Coordinators). Administrators must use the /login page.')
+        window.alert(tPage('messages.unauthorizedAccess'))
       }
       setError(msg)
     } finally {
@@ -70,19 +79,19 @@ const MemberLogin = () => {
           <div className="flex flex-col items-center mb-4">
             <img 
               src={logo} 
-              alt="Udaan Sarathi Logo" 
+              alt={tPage('branding.logoAlt')} 
               className="w-32 h-32 object-contain mb-2 drop-shadow-lg"
             />
             <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent dark:text-brand-blue-bright dark:bg-none">
-              Member Portal
+              {tPage('title')}
             </h1>
             {memberName ? (
               <div className="flex items-center gap-2 text-brand-navy dark:text-brand-blue-bright">
                 <UserCheck className="w-5 h-5" />
-                <p className="text-sm">Welcome, {memberName}!</p>
+                <p className="text-sm">{tPage('welcome.withName', { name: memberName })}</p>
               </div>
             ) : (
-              <p className="text-gray-600 dark:text-gray-400">Recipients & Interview Coordinators</p>
+              <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
             )}
           </div>
         </div>
@@ -90,11 +99,11 @@ const MemberLogin = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-center text-xl">
-              {invitationToken ? 'Complete Your Setup' : 'Sign in to continue'}
+              {invitationToken ? tPage('cardTitle.withInvitation') : tPage('cardTitle.default')}
             </CardTitle>
             {invitationToken && (
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                You've been invited to join the team. Please sign in to access your dashboard.
+                {tPage('invitationMessage')}
               </p>
             )}
           </CardHeader>
@@ -108,7 +117,7 @@ const MemberLogin = () => {
               
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Username or Phone Number
+                  {tPage('form.username.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -122,14 +131,14 @@ const MemberLogin = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Enter your username or phone"
+                    placeholder={tPage('form.username.placeholder')}
                   />
                 </div>
               </div>
               
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Password
+                  {tPage('form.password.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -143,7 +152,7 @@ const MemberLogin = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Enter your password"
+                    placeholder={tPage('form.password.placeholder')}
                   />
                   <button
                     type="button"
@@ -171,18 +180,18 @@ const MemberLogin = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Signing in...
+                      {tPage('form.submitting')}
                     </span>
                   ) : (
-                    invitationToken ? 'Access Dashboard' : 'Sign In'
+                    invitationToken ? tPage('form.submit.withInvitation') : tPage('form.submit.default')
                   )}
                 </button>
               </div>
 
               {invitationToken && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 text-sm text-blue-700 dark:text-blue-200">
-                  <p className="font-medium">Invitation Details:</p>
-                  <p>You've been invited as a team member. After signing in, you'll have access to the agency management dashboard.</p>
+                  <p className="font-medium">{tPage('invitationDetails.title')}</p>
+                  <p>{tPage('invitationDetails.description')}</p>
                 </div>
               )}
             </form>
@@ -190,8 +199,8 @@ const MemberLogin = () => {
         </Card>
         
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Need help? Contact your agency administrator</p>
-          <p className="mt-2">© {new Date().getFullYear()} Udaan Sarathi. All rights reserved.</p>
+          <p>{tPage('footer.needHelp')}</p>
+          <p className="mt-2">{tPage('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </div>

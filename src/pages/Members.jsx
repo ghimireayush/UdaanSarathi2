@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfirm } from '../components/ConfirmProvider';
+import { useLanguage } from '../hooks/useLanguage';
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService';
 import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
 import Pagination from '../components/ui/Pagination';
@@ -22,6 +23,15 @@ const Members = () => {
   
   const { isAdmin, hasPermission, PERMISSIONS } = useAuth();
   const { confirm } = useConfirm();
+  const { tPageSync } = useLanguage({ 
+    pageName: 'team-members', 
+    autoLoad: true 
+  });
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params);
+  };
 
   useEffect(() => {
     loadMembers();
@@ -43,8 +53,8 @@ const Members = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Access Denied</h2>
-          <p className="text-gray-600 dark:text-gray-400">You don't have permission to manage team members.</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.accessDenied')}</h2>
+          <p className="text-gray-600 dark:text-gray-400">{tPage('messages.noPermission')}</p>
         </div>
       </div>
     );
@@ -174,8 +184,8 @@ const Members = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Team Members</h1>
-        <p className="text-gray-600 dark:text-gray-400">Invite and manage your agency's team members.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
       </div>
 
       {/* Invite Team Member Section */}
@@ -266,7 +276,7 @@ const Members = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Team Members ({totalItems})</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.teamMembers', { count: totalItems })}</h2>
             
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">

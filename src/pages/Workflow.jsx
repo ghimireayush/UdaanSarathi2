@@ -17,6 +17,7 @@ import {
 import { applicationService, candidateService, constantsService } from '../services/index.js'
 import { format } from 'date-fns'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
+import { useLanguage } from '../hooks/useLanguage'
 
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
 import InteractivePagination, { PaginationInfo, ItemsPerPageSelector } from '../components/InteractiveUI/InteractivePagination.jsx'
@@ -24,6 +25,15 @@ import InteractivePagination, { PaginationInfo, ItemsPerPageSelector } from '../
 const Workflow = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { confirm } = useConfirm()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'workflow', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   // State management
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'by-job')
@@ -46,10 +56,10 @@ const Workflow = () => {
 
   // Workflow stages configuration - Simplified 4-stage pipeline
   const workflowStages = [
-    { id: 'applied', label: 'Applied', icon: FileText, description: 'Initial application submitted' },
-    { id: 'shortlisted', label: 'Shortlisted', icon: CheckCircle, description: 'Selected for interview' },
-    { id: 'interview-scheduled', label: 'Interview Scheduled', icon: Calendar, description: 'Interview appointment set' },
-    { id: 'interview-passed', label: 'Interview Passed', icon: Users, description: 'Successfully completed interview' }
+    { id: 'applied', label: tPage('stages.applied'), icon: FileText, description: tPage('stages.appliedDescription') },
+    { id: 'shortlisted', label: tPage('stages.shortlisted'), icon: CheckCircle, description: tPage('stages.shortlistedDescription') },
+    { id: 'interview-scheduled', label: tPage('stages.interviewScheduled'), icon: Calendar, description: tPage('stages.interviewScheduledDescription') },
+    { id: 'interview-passed', label: tPage('stages.interviewPassed'), icon: Users, description: tPage('stages.interviewPassedDescription') }
   ]
 
   useEffect(() => {
@@ -361,10 +371,10 @@ const Workflow = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Failed to load workflow data</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPage('error.failedToLoad')}</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error.message}</p>
           <button onClick={loadWorkflowData} className="btn-primary">
-            Retry
+{tPage('actions.retry')}
           </button>
         </div>
       </div>
@@ -375,8 +385,8 @@ const Workflow = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Workflow Pipeline</h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage candidates through the post-interview process</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
       </div>
 
       {/* Analytics */}
@@ -386,7 +396,7 @@ const Workflow = () => {
           <div className="card p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Candidates</p>
+                <p className="text-blue-100 text-sm font-medium">{tPage('analytics.totalCandidates')}</p>
                 <p className="text-3xl font-bold">{analytics.totalCandidates || 0}</p>
               </div>
               <Users className="w-10 h-10 text-blue-200" />
@@ -396,7 +406,7 @@ const Workflow = () => {
           <div className="card p-6 bg-gradient-to-r from-green-500 to-green-600 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Interview Passed</p>
+                <p className="text-green-100 text-sm font-medium">{tPage('analytics.interviewPassed')}</p>
                 <p className="text-3xl font-bold">{analytics.interviewPassed || 0}</p>
               </div>
               <CheckCircle className="w-10 h-10 text-green-200" />
@@ -406,7 +416,7 @@ const Workflow = () => {
           <div className="card p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Total Processed</p>
+                <p className="text-purple-100 text-sm font-medium">{tPage('analytics.totalProcessed')}</p>
                 <p className="text-3xl font-bold">{analytics.totalProcessed || 0}</p>
               </div>
               <Users className="w-10 h-10 text-purple-200" />
@@ -416,7 +426,7 @@ const Workflow = () => {
           <div className="card p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm font-medium">Success Rate</p>
+                <p className="text-orange-100 text-sm font-medium">{tPage('analytics.successRate')}</p>
                 <p className="text-3xl font-bold">{analytics.conversionRate || 0}%</p>
               </div>
               <AlertCircle className="w-10 h-10 text-orange-200" />

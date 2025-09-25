@@ -37,9 +37,19 @@ import { jobService } from '../services/index.js'
 import DraftListManagement from '../components/DraftListManagement'
 import JobDraftWizard from '../components/JobDraftWizard'
 import { InteractiveFilter, InteractiveButton, InteractiveCard, InteractivePagination, PaginationInfo } from '../components/InteractiveUI'
+import { useLanguage } from '../hooks/useLanguage'
 
 const Drafts = () => {
   const navigate = useNavigate()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'drafts', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
   const [viewMode, setViewMode] = useState('list')
   const [filters, setFilters] = useState({
     search: '',

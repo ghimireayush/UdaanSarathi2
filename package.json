@@ -11,7 +11,12 @@
     "preview": "vite preview",
     "test": "jest",
     "validate-mvp": "node validate-mvp.js",
-    "pre-deploy": "npm run validate-mvp && npm run build"
+    "validate-translations": "node src/utils/validateTranslations.js",
+    "validate-translations:verbose": "node src/utils/validateTranslations.js --verbose",
+    "validate-translations:en": "node src/utils/validateTranslations.js --locale en",
+    "validate-translations:ne": "node src/utils/validateTranslations.js --locale ne",
+    "validate-translations:report": "node src/utils/validateTranslations.js --output translation-validation-report.json",
+    "pre-deploy": "npm run validate-mvp && npm run validate-translations && npm run build"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",

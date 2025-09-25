@@ -1,67 +1,49 @@
-// React hook for internationalization
-import { useState, useEffect, useCallback } from 'react'
+// React hook for internationalization (backward compatibility)
+import { useContext } from 'react'
+import LanguageContext from '../contexts/LanguageContext'
 import i18nService from '../services/i18nService'
 
 /**
- * Custom hook for internationalization
+ * Custom hook for internationalization (backward compatibility)
+ * This hook now uses the global LanguageContext when available,
+ * but falls back to direct i18nService usage for backward compatibility
  * @returns {Object} i18n utilities and state
  */
 export const useI18n = () => {
-  const [locale, setLocaleState] = useState(i18nService.getLocale())
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Update locale state when service locale changes
-  useEffect(() => {
-    const handleLocaleChange = (event) => {
-      setLocaleState(event.detail.locale)
+  const context = useContext(LanguageContext)
+  
+  // If context is available, use it (new global context system)
+  if (context) {
+    return {
+      locale: context.locale,
+      setLocale: context.setLocale,
+      t: context.t,
+      formatDate: context.formatDate,
+      formatNumber: context.formatNumber,
+      formatCurrency: context.formatCurrency,
+      isLoading: context.isLoading,
+      availableLocales: context.availableLocales,
+      getLocaleDisplayName: context.getLocaleDisplayName,
+      isRTL: context.isRTL
     }
+  }
 
-    window.addEventListener('localeChanged', handleLocaleChange)
-    return () => window.removeEventListener('localeChanged', handleLocaleChange)
-  }, [])
-
-  // Translation function
-  const t = useCallback((key, params = {}) => {
-    return i18nService.t(key, params)
-  }, [locale]) // Re-create when locale changes
-
-  // Change locale
-  const setLocale = useCallback(async (newLocale) => {
-    setIsLoading(true)
-    try {
-      i18nService.setLocale(newLocale)
-      i18nService.saveLocalePreference(newLocale)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  // Format date
-  const formatDate = useCallback((date, options = {}) => {
-    return i18nService.formatDate(date, options)
-  }, [locale])
-
-  // Format number
-  const formatNumber = useCallback((number, options = {}) => {
-    return i18nService.formatNumber(number, options)
-  }, [locale])
-
-  // Format currency
-  const formatCurrency = useCallback((amount, currency) => {
-    return i18nService.formatCurrency(amount, currency)
-  }, [locale])
-
+  // Fallback to direct i18nService usage (legacy behavior)
+  console.warn('useI18n: LanguageProvider not found. Consider wrapping your app with LanguageProvider for better performance and features.')
+  
   return {
-    locale,
-    setLocale,
-    t,
-    formatDate,
-    formatNumber,
-    formatCurrency,
-    isLoading,
+    locale: i18nService.getLocale(),
+    setLocale: async (newLocale) => {
+      await i18nService.setLocale(newLocale)
+    },
+    t: (key, params = {}) => i18nService.t(key, params),
+    formatDate: (date, options = {}) => i18nService.formatDate(date, options),
+    formatNumber: (number, options = {}) => i18nService.formatNumber(number, options),
+    formatCurrency: (amount, currency) => i18nService.formatCurrency(amount, currency),
+    isLoading: false, // No loading state in legacy mode
     availableLocales: i18nService.getAvailableLocales(),
-    getLocaleDisplayName: i18nService.getLocaleDisplayName.bind(i18nService),
-    isRTL: i18nService.isRTL(locale)
+    getLocaleDisplayName: (locale) => i18nService.getLocaleDisplayName(locale),
+    isRTL: i18nService.isRTL(i18nService.getLocale())
   }
 }
 

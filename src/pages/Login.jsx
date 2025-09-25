@@ -4,6 +4,7 @@ import { User, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
+import { useLanguage } from '../hooks/useLanguage'
 import logo from '../assets/logo.svg'
 
 const Login = () => {
@@ -12,10 +13,18 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
   const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { locale, tPageSync, loadPageTranslations, isLoading: languageLoading } = useLanguage({ 
+    pageName: 'login', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -39,10 +48,10 @@ const Login = () => {
         setError(result.error)
       }
     } catch (err) {
-      const msg = err?.message || 'An unexpected error occurred. Please try again.'
+      const msg = err?.message || tPage('messages.unexpectedError')
       // If a non-admin tries to log in on /login, show a popup
       if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {
-        window.alert('This portal is for administrators only. Please use the member login if you are a Recipient or Interview Coordinator.')
+        window.alert(tPage('messages.accessDenied'))
       }
       setError(msg)
     } finally {
@@ -62,16 +71,16 @@ const Login = () => {
           <div className="flex flex-col items-center mb-4">
             <img
               src={logo}
-              alt="Udaan Sarathi Logo"
+              alt={tPage('branding.logoAlt')}
               className="w-40 h-40 object-contain mb-2 drop-shadow-lg"
             />
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent dark:text-brand-blue-bright dark:bg-none">Udaan Sarathi</h1>
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent dark:text-brand-blue-bright dark:bg-none">{tPage('branding.appName')}</h1>
           </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-xl">Admin Login</CardTitle>
+            <CardTitle className="text-center text-xl">{tPage('title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -83,7 +92,7 @@ const Login = () => {
 
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Username
+                  {tPage('form.username.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -97,14 +106,14 @@ const Login = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Enter your username"
+                    placeholder={tPage('form.username.placeholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Password
+                  {tPage('form.password.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -118,7 +127,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder="Enter your password"
+                    placeholder={tPage('form.password.placeholder')}
                   />
                   <button
                     type="button"
@@ -146,10 +155,10 @@ const Login = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Signing in...
+                      {tPage('form.submitting')}
                     </span>
                   ) : (
-                    'Sign In'
+                    tPage('form.submit')
                   )}
                 </button>
               </div>
@@ -160,15 +169,15 @@ const Login = () => {
 
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
-            Don't have an account?
+            {tPage('footer.noAccount')}
             <button
               onClick={() => navigate('/register')}
               className="text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-brand-blue-bright font-semibold text-base ml-1"
             >
-              Sign up here
+              {tPage('footer.signUp')}
             </button>
           </p>
-          <p className="mt-2">© {new Date().getFullYear()} Udaan Sarathi. All rights reserved.</p>
+          <p className="mt-2">{tPage('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </div>

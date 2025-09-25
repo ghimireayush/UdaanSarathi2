@@ -1,0 +1,311 @@
+name: Translation Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/translations/**'
+      - 'src/services/i18nService.js'
+      - 'src/utils/translation*.js'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/translations/**'
+      - 'src/services/i18nService.js'
+      - 'src/utils/translation*.js'
+
+jobs:
+  validate-translations:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run translation validation
+      run: |
+        echo "🔍 Running translation validation..."
+        npm run validate-translations:report
+        
+    - name: Check validation results
+      run: |
+        if [ -f translation-validation-report.json ]; then
+          echo "📊 Validation report generated successfully"
+          
+          # Extract key metrics from the report
+          TOTAL_FILES=$(node -e "const report = require('./translation-validation-report.json'); console.log(report.summary.totalFiles)")
+          FILES_WITH_ERRORS=$(node -e "const report = require('./translation-validation-report.json'); console.log(report.summary.filesWithErrors)")
+          TOTAL_ERRORS=$(node -e "const report = require('./translation-validation-report.json'); console.log(report.summary.totalErrors)")
+          TOTAL_WARNINGS=$(node -e "const report = require('./translation-validation-report.json'); console.log(report.summary.totalWarnings)")
+          
+          echo "📈 Validation Summary:"
+          echo "  Total files: $TOTAL_FILES"
+          echo "  Files with errors: $FILES_WITH_ERRORS"
+          echo "  Total errors: $TOTAL_ERRORS"
+          echo "  Total warnings: $TOTAL_WARNINGS"
+          
+          # Set GitHub Actions outputs
+          echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
+          echo "files_with_errors=$FILES_WITH_ERRORS" >> $GITHUB_OUTPUT
+          echo "total_errors=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
+          echo "total_warnings=$TOTAL_WARNINGS" >> $GITHUB_OUTPUT
+          
+          # Fail if there are errors
+          if [ "$FILES_WITH_ERRORS" -gt 0 ]; then
+            echo "❌ Translation validation failed with $TOTAL_ERRORS errors"
+            exit 1
+          else
+            echo "✅ Translation validation passed"
+          fi
+        else
+          echo "❌ Validation report not generated"
+          exit 1
+        fi
+        
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: translation-validation-report
+        path: translation-validation-report.json
+        retention-days: 30
+        
+    - name: Comment PR with validation results
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          if (!fs.existsSync('translation-validation-report.json')) {
+            return;
+          }
+          
+          const report = JSON.parse(fs.readFileSync('translation-validation-report.json', 'utf8'));
+          const { summary, recommendations } = report;
+          
+          let comment = `## 🌐 Translation Validation Report\n\n`;
+          
+          // Summary table
+          comment += `| Metric | Count |\n`;
+          comment += `|--------|-------|\n`;
+          comment += `| Total files | ${summary.totalFiles} |\n`;
+          comment += `| Valid files | ${summary.validFiles} |\n`;
+          comment += `| Files with errors | ${summary.filesWithErrors} |\n`;
+          comment += `| Files with warnings | ${summary.filesWithWarnings} |\n`;
+          comment += `| Total errors | ${summary.totalErrors} |\n`;
+          comment += `| Total warnings | ${summary.totalWarnings} |\n\n`;
+          
+          // Status
+          if (summary.filesWithErrors === 0) {
+            comment += `### ✅ Validation Status: PASSED\n\n`;
+          } else {
+            comment += `### ❌ Validation Status: FAILED\n\n`;
+          }
+          
+          // Recommendations
+          if (recommendations && recommendations.length > 0) {
+            comment += `### 💡 Recommendations\n\n`;
+            recommendations.forEach(rec => {
+              const icon = rec.severity === 'high' ? '🔴' : rec.severity === 'medium' ? '🟡' : '🟢';
+              comment += `${icon} **${rec.message}**\n`;
+              comment += `   Action: ${rec.action}\n\n`;
+            });
+          }
+          
+          // Locale breakdown
+          comment += `### 📁 Locale Breakdown\n\n`;
+          for (const [locale, data] of Object.entries(report.locales)) {
+            const errorRate = data.summary.totalFiles > 0 ? 
+              ((data.summary.filesWithErrors / data.summary.totalFiles) * 100).toFixed(1) : 0;
+            comment += `**${locale.toUpperCase()}**: ${data.summary.validFiles}/${data.summary.totalFiles} valid (${errorRate}% error rate)\n`;
+          }
+          
+          comment += `\n---\n*Generated at ${report.timestamp}*`;
+          
+          // Find existing comment and update or create new one
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const existingComment = comments.find(comment => 
+            comment.body.includes('🌐 Translation Validation Report')
+          );
+          
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: comment
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+          }
+
+  test-translation-system:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run translation system tests
+      run: |
+        echo "🧪 Running translation system tests..."
+        npm test -- --testPathPattern=translationValidation.test.js --verbose
+        
+    - name: Run integration tests
+      run: |
+        echo "🔗 Running translation integration tests..."
+        npm test -- --testPathPattern=integration.*translation --verbose
+
+  check-translation-completeness:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check translation completeness
+      run: |
+        echo "📊 Checking translation completeness between locales..."
+        
+        # Create a simple completeness check script
+        cat > check-completeness.js << 'EOF'
+        import fs from 'fs';
+        import path from 'path';
+        
+        const translationsDir = 'src/translations';
+        const locales = ['en', 'ne'];
+        
+        function getTranslationKeys(obj, prefix = '') {
+          const keys = [];
+          for (const [key, value] of Object.entries(obj)) {
+            if (key === 'meta') continue;
+            const fullKey = prefix ? `${prefix}.${key}` : key;
+            if (typeof value === 'object' && value !== null) {
+              keys.push(...getTranslationKeys(value, fullKey));
+            } else {
+              keys.push(fullKey);
+            }
+          }
+          return keys;
+        }
+        
+        function loadTranslationFile(locale, file) {
+          const filePath = path.join(translationsDir, locale, file);
+          if (!fs.existsSync(filePath)) return null;
+          try {
+            return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+          } catch (error) {
+            console.error(`Error loading ${filePath}:`, error.message);
+            return null;
+          }
+        }
+        
+        const baseLocale = 'en';
+        const compareLocale = 'ne';
+        
+        console.log(`Comparing ${compareLocale} completeness against ${baseLocale}...`);
+        
+        const files = ['common.json'];
+        const pagesDir = path.join(translationsDir, baseLocale, 'pages');
+        if (fs.existsSync(pagesDir)) {
+          const pageFiles = fs.readdirSync(pagesDir)
+            .filter(f => f.endsWith('.json'))
+            .map(f => `pages/${f}`);
+          files.push(...pageFiles);
+        }
+        
+        let totalKeys = 0;
+        let missingKeys = 0;
+        const missingByFile = {};
+        
+        for (const file of files) {
+          const baseTranslations = loadTranslationFile(baseLocale, file);
+          const compareTranslations = loadTranslationFile(compareLocale, file);
+          
+          if (!baseTranslations) continue;
+          
+          const baseKeys = getTranslationKeys(baseTranslations);
+          totalKeys += baseKeys.length;
+          
+          if (!compareTranslations) {
+            missingByFile[file] = baseKeys;
+            missingKeys += baseKeys.length;
+            console.log(`❌ ${file}: Missing entire file (${baseKeys.length} keys)`);
+            continue;
+          }
+          
+          const compareKeys = getTranslationKeys(compareTranslations);
+          const missing = baseKeys.filter(key => !compareKeys.includes(key));
+          
+          if (missing.length > 0) {
+            missingByFile[file] = missing;
+            missingKeys += missing.length;
+            console.log(`⚠️  ${file}: Missing ${missing.length}/${baseKeys.length} keys`);
+          } else {
+            console.log(`✅ ${file}: Complete (${baseKeys.length} keys)`);
+          }
+        }
+        
+        const completeness = totalKeys > 0 ? ((totalKeys - missingKeys) / totalKeys * 100).toFixed(1) : 100;
+        
+        console.log(`\n📊 Translation Completeness Summary:`);
+        console.log(`  Total keys in ${baseLocale}: ${totalKeys}`);
+        console.log(`  Missing keys in ${compareLocale}: ${missingKeys}`);
+        console.log(`  Completeness: ${completeness}%`);
+        
+        if (completeness < 80) {
+          console.log(`\n❌ Translation completeness is below 80% threshold`);
+          process.exit(1);
+        } else if (completeness < 95) {
+          console.log(`\n⚠️  Translation completeness is below 95% (recommended)`);
+        } else {
+          console.log(`\n✅ Translation completeness is good`);
+        }
+        EOF
+        
+        node check-completeness.js
+        
+    - name: Generate completeness badge
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # This would generate a badge for the README
+        # Implementation depends on your badge service (shields.io, etc.)
+        echo "Badge generation would go here"

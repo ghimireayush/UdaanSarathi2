@@ -20,6 +20,7 @@ import {
 import CandidateShortlist from '../components/CandidateShortlist'
 import { formatInNepalTz, getCurrentNepalTime } from '../utils/nepaliDate'
 import { rankCandidates, getRankingInsights } from '../services/candidateRankingService'
+import { useLanguage } from '../hooks/useLanguage'
 
 // Mock data - replace with actual API calls
 import jobsData from '../data/jobs.json'
@@ -28,6 +29,15 @@ import candidatesData from '../data/candidates.json'
 const JobShortlist = () => {
   const { jobId } = useParams()
   const navigate = useNavigate()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'jobs', // Using existing jobs translation file
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
   
   const [job, setJob] = useState(null)
   const [candidates, setCandidates] = useState([])
@@ -38,8 +48,8 @@ const JobShortlist = () => {
 
   // Workflow stages configuration - exact match with Workflow page
   const workflowStages = [
-    { id: 'applied', label: 'Applied', icon: FileText, description: 'Initial application submitted', color: 'blue' },
-    { id: 'shortlisted', label: 'Shortlisted', icon: CheckCircle, description: 'Selected for interview', color: 'yellow' },
+    { id: 'applied', label: tPage('filters.status.applied'), icon: FileText, description: 'Initial application submitted', color: 'blue' },
+    { id: 'shortlisted', label: tPage('filters.status.shortlisted'), icon: CheckCircle, description: 'Selected for interview', color: 'yellow' },
     { id: 'interview-scheduled', label: 'Interview Scheduled', icon: Calendar, description: 'Interview appointment set', color: 'purple' },
     { id: 'interview-passed', label: 'Interview Passed', icon: Users, description: 'Successfully completed interview', color: 'green' }
   ]

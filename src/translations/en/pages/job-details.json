@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "job-details"
+  },
+  "tabs": {
+    "applied": "Applied",
+    "shortlisted": "Shortlisted",
+    "scheduled": "Scheduled",
+    "interviewed": "Interviewed",
+    "selected": "Selected",
+    "rejected": "Rejected"
+  },
+  "stages": {
+    "applied": "Applied",
+    "shortlisted": "Shortlisted",
+    "scheduled": "Scheduled",
+    "interviewed": "Interviewed",
+    "selected": "Selected",
+    "rejected": "Rejected"
+  },
+  "actions": {
+    "shortlist": "Shortlist",
+    "removeFromShortlist": "Remove from Shortlist",
+    "completeShortlisting": "Complete Shortlisting",
+    "scheduleInterview": "Schedule Interview",
+    "viewProfile": "View Profile",
+    "downloadCV": "Download CV",
+    "backToJobs": "Back to Jobs"
+  },
+  "labels": {
+    "appliedOn": "Applied {{date}}",
+    "applicantCount": "Applicant Count",
+    "total": "Total",
+    "shortlisted": "Shortlisted",
+    "passed": "Passed",
+    "candidatesByPhase": "Candidates by phase",
+    "shortlistedCandidates": "Shortlisted Candidates ({{count}})",
+    "noShortlistedCandidates": "No shortlisted candidates",
+    "noScheduledInterviews": "No scheduled interviews",
+    "startByShortlisting": "Start by shortlisting candidates from the Applied tab.",
+    "scheduleFromShortlisted": "Schedule interviews from the Shortlisted tab to see them here."
+  },
+  "dialog": {
+    "completionTitle": "Complete Shortlisting Process",
+    "importantImplications": "⚠️ Important Implications:",
+    "remainingApplicantsRejected": "• {{count}} remaining applicants will be automatically rejected",
+    "shortlistedProceed": "• {{count}} shortlisted candidates will proceed to the next stage",
+    "cannotUndo": "• This action cannot be undone",
+    "rejectedNotified": "• Rejected candidates will be notified automatically",
+    "confirm": "Yes, Complete Shortlisting",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "shortlistingCompleted": "Successfully rejected {{count}} non-shortlisted candidates",
+    "failedToCompleteShortlisting": "Failed to complete shortlisting"
+  },
+  "loading": {
+    "jobDetails": "Loading job details..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load job details",
+    "retry": "Retry"
+  }
+}

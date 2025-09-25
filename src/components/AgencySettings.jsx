@@ -19,10 +19,21 @@ import {
 } from 'lucide-react'
 import { agencyService } from '../services/index.js'
 import { useAgency } from '../contexts/AgencyContext.jsx'
+import { useLanguage } from '../hooks/useLanguage'
 
 
 const AgencySettings = () => {
   const { agencyData, updateAgencyData, updateAgencyLogo, updateAgencyName, isLoading: contextLoading } = useAgency()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'agency-settings', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
+
   const [activeTab, setActiveTab] = useState('basic')
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setSaving] = useState(false)
@@ -294,22 +305,22 @@ const AgencySettings = () => {
   }
 
   const tabs = [
-    { id: 'basic', label: 'Basic Info', icon: Building2 },
-    { id: 'contact', label: 'Contact', icon: Phone },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'media', label: 'Images', icon: Camera },
-    { id: 'social', label: 'Social Media', icon: Globe },
-    { id: 'services', label: 'Services', icon: Briefcase },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'basic', label: tPage('tabs.basicInfo'), icon: Building2 },
+    { id: 'contact', label: tPage('tabs.contact'), icon: Phone },
+    { id: 'location', label: tPage('tabs.location'), icon: MapPin },
+    { id: 'media', label: tPage('tabs.images'), icon: Camera },
+    { id: 'social', label: tPage('tabs.socialMedia'), icon: Globe },
+    { id: 'services', label: tPage('tabs.services'), icon: Briefcase },
+    { id: 'settings', label: tPage('tabs.settings'), icon: Settings }
   ]
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agency Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Manage your agency profile, contact information, and preferences
+          {tPage('subtitle')}
         </p>
       </div>
 
@@ -496,7 +507,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
               className="btn-primary text-sm flex items-center"
             >
               <Save className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tPage('actions.saving') : tPage('actions.save')}
             </button>
           </div>
         </div>
@@ -515,7 +526,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
                 }
               }}
               className="form-input"
-              placeholder="Enter agency name"
+              placeholder={tPage('placeholders.enterAgencyName')}
             />
             <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               💡 This will update the agency name in the navigation menu
@@ -529,7 +540,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
               onChange={(e) => onFormChange('description', e.target.value)}
               rows={4}
               className="form-textarea"
-              placeholder="Describe your agency's mission and services"
+              placeholder={tPage('placeholders.agencyDescription')}
             />
           </div>
 
@@ -624,7 +635,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
               className="btn-primary text-sm flex items-center"
             >
               <Save className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tPage('actions.saving') : tPage('actions.save')}
             </button>
           </div>
         </div>
@@ -789,7 +800,7 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   onChange={(e) => onFormChange('address', e.target.value)}
                   rows={3}
                   className="form-textarea"
-                  placeholder="Enter complete address including city, district, and country"
+                  placeholder={tPage('placeholders.completeAddress')}
                 />
                 <button
                   type="button"
@@ -1007,7 +1018,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
     <div className="space-y-6">
       {/* Logo Section */}
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Agency Logo</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">{tPage('sections.agencyLogo')}</h2>
         
         <div className="flex items-center space-x-6">
           <div className="flex-shrink-0">
@@ -1159,7 +1170,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
               className="btn-primary text-sm flex items-center"
             >
               <Save className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tPage('actions.saving') : tPage('actions.save')}
             </button>
           </div>
         </div>
@@ -1255,7 +1266,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
               className="btn-primary text-sm flex items-center"
             >
               <Save className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tPage('actions.saving') : tPage('actions.save')}
             </button>
           </div>
         </div>
@@ -1460,7 +1471,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
               className="btn-primary text-sm flex items-center"
             >
               <Save className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? tPage('actions.saving') : tPage('actions.save')}
             </button>
           </div>
         </div>

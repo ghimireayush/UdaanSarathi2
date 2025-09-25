@@ -15,8 +15,19 @@ import {
 import { format } from 'date-fns'
 import { auditService } from '../services/index.js'
 import { InteractivePagination, PaginationInfo, ItemsPerPageSelector, InteractiveButton, InteractiveCard, InteractiveLoader } from '../components/InteractiveUI'
+import { useLanguage } from '../hooks/useLanguage'
 
 const AuditLogPage = () => {
+  const { tPageSync } = useLanguage({ 
+    pageName: 'audit-log', 
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
+
   const [auditLogs, setAuditLogs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -311,14 +322,14 @@ const AuditLogPage = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center">
               <History className="w-6 h-6 mr-2" />
-              Audit Log
+{tPage('title')}
             </h1>
             <p className="mt-1 text-sm text-gray-600">
               Track and monitor all system activities and changes
             </p>
           </div>
         </div>
-        <InteractiveLoader type="spinner" size="lg" text="Loading audit logs..." />
+        <InteractiveLoader type="spinner" size="lg" text={tPage('loading.auditLogs')} />
       </div>
     )
   }
@@ -330,10 +341,10 @@ const AuditLogPage = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
             <History className="w-6 h-6 mr-2" />
-            Audit Log
+            {tPage('title')}
           </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Track and monitor all system activities and changes
+            {tPage('subtitle')}
           </p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center gap-2">
@@ -341,23 +352,23 @@ const AuditLogPage = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search logs..."
+            placeholder={tPage('search.placeholder')}
             className="form-input w-64"
-            aria-label="Search audit logs"
+            aria-label={tPage('search.ariaLabel')}
           />
           <InteractiveButton 
             onClick={refreshLogs}
             variant="secondary"
           >
             <RefreshCw className="w-4 h-4 mr-1" />
-            Refresh
+{tPage('actions.refresh')}
           </InteractiveButton>
           <button 
             onClick={exportCSV}
             className="btn-secondary"
             aria-label="Export audit logs as CSV"
           >
-            Export CSV
+{tPage('actions.exportCSV')}
           </button>
           <button 
             onClick={clearCorruptedLogs}
@@ -365,7 +376,7 @@ const AuditLogPage = () => {
             aria-label="Clear corrupted audit logs"
             title="Use this if you're experiencing rendering errors"
           >
-            Clear Data
+{tPage('actions.clearData')}
           </button>
         </div>
       </div>

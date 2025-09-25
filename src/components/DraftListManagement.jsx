@@ -594,7 +594,7 @@ const DraftCard = ({ draft, isSelected, onSelect, onDelete, onEdit, onPreview, g
   
   if (isEditing) {
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 relative draft-card bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg shadow-sm p-6 relative draft-card">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Job</h3>
           

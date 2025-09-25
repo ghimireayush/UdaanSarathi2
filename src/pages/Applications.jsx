@@ -34,7 +34,7 @@ import { applicationService, jobService, constantsService } from '../services/in
 import { format } from 'date-fns'
 import performanceService from '../services/performanceService'
 import { useAccessibility } from '../hooks/useAccessibility'
-import { useI18n } from '../hooks/useI18n'
+import { useLanguage } from '../hooks/useLanguage'
 import { InteractiveButton, InteractiveCard, InteractivePagination, PaginationInfo } from '../components/InteractiveUI'
 import { useNotificationContext } from '../contexts/NotificationContext'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
@@ -105,8 +105,16 @@ const Applications = () => {
 
   // Accessibility and i18n hooks
   const { containerRef, setupRightPaneNavigation, announce } = useAccessibility()
-  const { t, formatDate, formatNumber } = useI18n()
+  const { t, tPageSync, formatDate, formatNumber, locale } = useLanguage({ 
+    pageName: 'applications', 
+    autoLoad: true 
+  })
   const { success, error: notifyError, info } = useNotificationContext()
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   // Toast notification function
   const showToastNotification = (message, type = 'success') => {
@@ -750,7 +758,7 @@ const Applications = () => {
                     icon={Eye}
                     className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-600"
                   >
-                    View Summary
+{tPage('actions.viewSummary')}
                   </InteractiveButton>
                 </div>
               ) : (
@@ -941,9 +949,9 @@ const Applications = () => {
                             setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded border border-primary-200 dark:border-primary-700"
-                          title="View Summary"
+                          title={tPage('actions.viewSummary')}
                         >
-                          <Eye className="w-3 h-3" /> Summary
+                          <Eye className="w-3 h-3" /> {tPage('actions.viewSummary')}
                         </button>
                       </div>
                     ) : (
@@ -958,9 +966,9 @@ const Applications = () => {
                             setIsSidebarOpen(true)
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"
-                          title="View Summary"
+                          title={tPage('actions.viewSummary')}
                         >
-                          <Eye className="w-3 h-3" /> Summary
+                          <Eye className="w-3 h-3" /> {tPage('actions.viewSummary')}
                         </button>
 
                         <button
@@ -1091,7 +1099,7 @@ const Applications = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search by name, phone, email, or skills..."
+              placeholder={tPage('filters.searchPlaceholder')}
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -1105,13 +1113,13 @@ const Applications = () => {
               onChange={(e) => handleFilterChange('stage', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
-              <option value="">All Stages</option>
-              <option value="applied">Applied</option>
-              <option value="shortlisted">Shortlisted</option>
+              <option value="">{tPage('filters.allStages')}</option>
+              <option value="applied">{tPage('applicationStatus.applied')}</option>
+              <option value="shortlisted">{tPage('applicationStatus.shortlisted')}</option>
               <option value="scheduled">Scheduled</option>
               <option value="interviewed">Interviewed</option>
               <option value="selected">Selected</option>
-              <option value="rejected">Rejected</option>
+              <option value="rejected">{tPage('applicationStatus.rejected')}</option>
             </select>
 
             <select
@@ -1119,7 +1127,7 @@ const Applications = () => {
               onChange={(e) => handleFilterChange('country', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
-              <option value="">All Countries</option>
+              <option value="">{tPage('filters.allCountries')}</option>
               {countries.map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}
@@ -1130,7 +1138,7 @@ const Applications = () => {
               onChange={(e) => handleFilterChange('jobId', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
-              <option value="">All Jobs</option>
+              <option value="">{tPage('filters.allJobs')}</option>
               {jobs.map(job => (
                 <option key={job.id} value={job.id}>{job.title} - {job.company}</option>
               ))}
