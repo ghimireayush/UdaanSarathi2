@@ -18,8 +18,9 @@ import {
   Briefcase
 } from 'lucide-react'
 import { agencyService } from '../services/index.js'
-import { useAgency } from '../contexts/AgencyContext.jsx'
+import { useAgency } from '../contexts/AgencyContext'
 import { useLanguage } from '../hooks/useLanguage'
+import LanguageSwitch from './LanguageSwitch'
 
 
 const AgencySettings = () => {
@@ -318,13 +319,20 @@ const AgencySettings = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          {tPage('subtitle')}
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              {tPage('subtitle')}
+            </p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <LanguageSwitch />
+          </div>
+        </div>
       </div>
 
-      {/* Success/Error Messages */}
+      {/* Success Message */}
       {success && (
         <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4">
           <div className="flex items-center">
@@ -428,6 +436,7 @@ const AgencySettings = () => {
               onFileUpload={handleFileUpload}
               isSaving={isSaving}
               onLogoUpdate={updateAgencyLogo}
+              tPage={tPage}
             />
           )}
 
@@ -881,7 +890,7 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 }
 
 // Media/Images Section
-const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate }) => {
+const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => {
   const logoInputRef = React.useRef(null)
   const bannerInputRef = React.useRef(null)
   const [isLogoUploading, setIsLogoUploading] = React.useState(false)

@@ -50,6 +50,9 @@
 
 
 
+
+
+
 - [x] 4.2 Create translation files for main application pages
 
   - Create translation files for /dashboard, /jobs, /applications, /interviews pages

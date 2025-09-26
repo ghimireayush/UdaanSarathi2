@@ -16,6 +16,7 @@ import { format } from 'date-fns'
 import { auditService } from '../services/index.js'
 import { InteractivePagination, PaginationInfo, ItemsPerPageSelector, InteractiveButton, InteractiveCard, InteractiveLoader } from '../components/InteractiveUI'
 import { useLanguage } from '../hooks/useLanguage'
+import LanguageSwitch from '../components/LanguageSwitch'
 
 const AuditLogPage = () => {
   const { tPageSync } = useLanguage({ 
@@ -325,7 +326,7 @@ const AuditLogPage = () => {
 {tPage('title')}
             </h1>
             <p className="mt-1 text-sm text-gray-600">
-              Track and monitor all system activities and changes
+              {tPage('subtitle')}
             </p>
           </div>
         </div>
@@ -348,6 +349,7 @@ const AuditLogPage = () => {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center gap-2">
+          <LanguageSwitch />
           <input
             type="text"
             value={search}
@@ -384,16 +386,16 @@ const AuditLogPage = () => {
       {/* Filters */}
       <InteractiveCard className="p-6 mb-6" style={{ pointerEvents: 'auto' }}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Filters</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{tPage('filters.title')}</h3>
           <div className="flex items-center space-x-2">
             {filterChangeCount > 0 && (
               <span className="chip chip-green text-xs">
-                {filterChangeCount} changes
+                {tPage('filters.changes', { count: filterChangeCount })}
               </span>
             )}
             {(filters.user_id || filters.resource_type || filters.action || filters.date_from || filters.date_to) && (
               <span className="chip chip-blue">
-                {[filters.user_id, filters.resource_type, filters.action, filters.date_from, filters.date_to].filter(Boolean).length} active
+                {tPage('filters.activeFilters', { count: [filters.user_id, filters.resource_type, filters.action, filters.date_from, filters.date_to].filter(Boolean).length })}
               </span>
             )}
           </div>
@@ -401,59 +403,59 @@ const AuditLogPage = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">User</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('filters.labels.user')}</label>
             <select
               value={filters.user_id}
               onChange={(e) => handleFilterChange('user_id', e.target.value)}
               className={`form-select ${filters.user_id ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
               aria-label="Filter by user"
             >
-              <option value="">All Users</option>
-              <option value="user_1">System Administrator</option>
-              <option value="user_2">Senior Recruiter</option>
-              <option value="user_3">Interview Coordinator</option>
+              <option value="">{tPage('filters.options.allUsers')}</option>
+              <option value="user_1">{tPage('filters.userNames.user_1')}</option>
+              <option value="user_2">{tPage('filters.userNames.user_2')}</option>
+              <option value="user_3">{tPage('filters.userNames.user_3')}</option>
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Resource Type</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('filters.labels.resourceType')}</label>
             <select
               value={filters.resource_type}
               onChange={(e) => handleFilterChange('resource_type', e.target.value)}
               className={`form-select ${filters.resource_type ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
               aria-label="Filter by resource type"
             >
-              <option value="">All Types</option>
-              <option value="AGENCY_PROFILE">Agency Profile</option>
-              <option value="AGENCY_MEDIA">Agency Media</option>
-              <option value="JOB_POSTING">Job Posting</option>
-              <option value="CANDIDATE">Candidate</option>
-              <option value="APPLICATION">Application</option>
-              <option value="USER">User</option>
-              <option value="AUTH">Auth</option>
+              <option value="">{tPage('filters.options.allTypes')}</option>
+              <option value="AGENCY_PROFILE">{tPage('resourceTypes.agencyProfile')}</option>
+              <option value="AGENCY_MEDIA">{tPage('resourceTypes.agencyMedia')}</option>
+              <option value="JOB_POSTING">{tPage('resourceTypes.jobPosting')}</option>
+              <option value="CANDIDATE">{tPage('resourceTypes.candidate')}</option>
+              <option value="APPLICATION">{tPage('resourceTypes.application')}</option>
+              <option value="USER">{tPage('resourceTypes.user')}</option>
+              <option value="AUTH">{tPage('resourceTypes.auth')}</option>
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Action</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('filters.labels.action')}</label>
             <select
               value={filters.action}
               onChange={(e) => handleFilterChange('action', e.target.value)}
               className={`form-select ${filters.action ? 'ring-2 ring-primary-500 border-primary-500' : ''}`}
               aria-label="Filter by action type"
             >
-              <option value="">All Actions</option>
-              <option value="UPDATE">Update</option>
-              <option value="CREATE">Create</option>
-              <option value="DELETE">Delete</option>
-              <option value="FILE_UPLOAD">File Upload</option>
-              <option value="LOGIN">Login</option>
-              <option value="LOGOUT">Logout</option>
+              <option value="">{tPage('filters.options.allActions')}</option>
+              <option value="UPDATE">{tPage('auditActions.update')}</option>
+              <option value="CREATE">{tPage('auditActions.create')}</option>
+              <option value="DELETE">{tPage('auditActions.delete')}</option>
+              <option value="FILE_UPLOAD">{tPage('auditActions.fileUpload')}</option>
+              <option value="LOGIN">{tPage('auditActions.login')}</option>
+              <option value="LOGOUT">{tPage('auditActions.logout')}</option>
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date From</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('filters.labels.dateFrom')}</label>
             <input
               type="date"
               value={filters.date_from}
@@ -464,7 +466,7 @@ const AuditLogPage = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date To</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('filters.labels.dateTo')}</label>
             <input
               type="date"
               value={filters.date_to}
@@ -479,9 +481,9 @@ const AuditLogPage = () => {
           <div className="flex items-center space-x-2">
             {filters.user_id && (
               <span className="chip chip-blue">
-                User: {filters.user_id === 'user_1' ? 'System Administrator' : 
-                       filters.user_id === 'user_2' ? 'Senior Recruiter' : 
-                       'Interview Coordinator'}
+                User: {filters.user_id === 'user_1' ? tPage('filters.userNames.user_1') : 
+                       filters.user_id === 'user_2' ? tPage('filters.userNames.user_2') : 
+                       tPage('filters.userNames.user_3')}
                 <button 
                   onClick={() => handleFilterChange('user_id', '')}
                   className="ml-1 text-blue-600 hover:text-blue-800"
@@ -523,7 +525,7 @@ const AuditLogPage = () => {
             className="flex items-center"
           >
             <RefreshCw className="w-4 h-4 mr-1" />
-            Reset All
+            {tPage('filters.resetAll')}
           </InteractiveButton>
         </div>
       </InteractiveCard>
@@ -542,7 +544,7 @@ const AuditLogPage = () => {
         {filteredLogs.length === 0 ? (
           <div className="text-center py-12 px-6">
             <History className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No audit logs found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.noLogsFound')}</h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
               {search || filters.user_id || filters.resource_type || filters.action || filters.date_from || filters.date_to
                 ? 'No logs match your current filters. Try adjusting your search criteria.'
@@ -555,7 +557,7 @@ const AuditLogPage = () => {
                 variant="secondary"
                 className="mt-4"
               >
-                Clear All Filters
+                {tPage('messages.clearAllFilters')}
               </InteractiveButton>
             )}
           </div>

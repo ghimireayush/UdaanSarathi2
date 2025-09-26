@@ -23,13 +23,26 @@
   "filters": {
     "title": "Filters",
     "searchPlaceholder": "Search logs...",
-    "allUsers": "All Users",
-    "allActions": "All Actions",
-    "dateFrom": "Date From",
-    "dateTo": "Date To",
+    "labels": {
+      "user": "User",
+      "resourceType": "Resource Type",
+      "action": "Action",
+      "dateFrom": "Date From",
+      "dateTo": "Date To"
+    },
+    "options": {
+      "allUsers": "All Users",
+      "allTypes": "All Types",
+      "allActions": "All Actions"
+    },
     "resetAll": "Reset All",
     "activeFilters": "{{count}} active",
-    "changes": "{{count}} changes"
+    "changes": "{{count}} changes",
+    "userNames": {
+      "user_1": "System Administrator",
+      "user_2": "Senior Recruiter",
+      "user_3": "Interview Coordinator"
+    }
   },
   "resourceTypes": {
     "agencyProfile": "Agency Profile",
@@ -68,7 +81,35 @@
     "to": "To:",
     "notSet": "(Not set)",
     "cannotDisplay": "[Object - Cannot display]",
-    "errorCannotDisplay": "[Error - Cannot display]"
+    "errorCannotDisplay": "[Error - Cannot display]",
+    "valueCannotDisplay": "[Value - Cannot display]",
+    "noDetailedChanges": "No detailed changes recorded."
+  },
+  "systemInfo": {
+    "title": "System Information:",
+    "userId": "User ID:",
+    "userName": "User Name:",
+    "actionType": "Action Type:",
+    "resourceType": "Resource Type:",
+    "resourceId": "Resource ID:",
+    "sessionId": "Session ID:",
+    "ipAddress": "IP Address:",
+    "userAgent": "User Agent:",
+    "timestamp": "Timestamp:",
+    "notSpecified": "Not specified",
+    "notAvailable": "Not available"
+  },
+  "metadata": {
+    "title": "Additional Metadata:",
+    "file": "File:",
+    "fileSize": "File Size:",
+    "browser": "Browser:",
+    "section": "Section:",
+    "userRole": "User Role:",
+    "jobTitle": "Job Title:",
+    "candidate": "Candidate:",
+    "stageChange": "Stage Change:",
+    "yes": "Yes"
   },
   "messages": {
     "noLogsFound": "No audit logs found",
