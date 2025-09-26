@@ -31,7 +31,7 @@
     "autoFlagged": "Auto-flagged after {{minutes}}min grace"
   },
   "messages": {
-    "selectJob": "Select a Job to Schedule Interviews",
+    "selectJobToSchedule": "Select a Job to Schedule Interviews",
     "selectJobMessage": "Choose a job from the filter above to view shortlisted candidates and schedule interviews.",
     "noShortlistedCandidates": "No Shortlisted Candidates",
     "noShortlistedMessage": "No candidates have been shortlisted for this job yet. Visit the Applications page to shortlist candidates first.",

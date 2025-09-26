@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfirm } from '../components/ConfirmProvider';
 import { useLanguage } from '../hooks/useLanguage';
+import LanguageSwitch from '../components/LanguageSwitch';
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService';
 import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
 import Pagination from '../components/ui/Pagination';
@@ -53,8 +54,8 @@ const Members = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.accessDenied')}</h2>
-          <p className="text-gray-600 dark:text-gray-400">{tPage('messages.noPermission')}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPage('permissions.accessDenied')}</h2>
+          <p className="text-gray-600 dark:text-gray-400">{tPage('permissions.noPermission')}</p>
         </div>
       </div>
     );
@@ -72,10 +73,10 @@ const Members = () => {
     e.preventDefault();
     
     const confirmed = await confirm({
-      title: 'Confirm Invitation',
-      message: `Are you sure you want to invite ${formData.full_name} as ${getRoleDisplayName(formData.role)}?`,
-      confirmText: 'Yes, Invite',
-      cancelText: 'Cancel'
+      title: tPage('modals.confirmInvitation.title'),
+      message: tPage('modals.confirmInvitation.message', { name: formData.full_name, role: getRoleDisplayName(formData.role) }),
+      confirmText: tPage('modals.confirmInvitation.confirm'),
+      cancelText: tPage('modals.confirmInvitation.cancel')
     });
 
     if (!confirmed) return;
@@ -98,10 +99,10 @@ const Members = () => {
 
   const handleDelete = async (memberId, memberName) => {
     const confirmed = await confirm({
-      title: 'Confirm Deletion',
-      message: `Are you sure you want to delete ${memberName}? This action cannot be undone.`,
-      confirmText: 'Yes, Delete',
-      cancelText: 'Cancel',
+      title: tPage('modals.confirmDeletion.title'),
+      message: tPage('modals.confirmDeletion.message', { name: memberName }),
+      confirmText: tPage('modals.confirmDeletion.confirm'),
+      cancelText: tPage('modals.confirmDeletion.cancel'),
       intent: 'danger'
     });
 
@@ -126,14 +127,14 @@ const Members = () => {
 
   const getRoleDisplayName = (role) => {
     const roleNames = {
-      'staff': 'Staff Member',
-      'admin': 'Administrator',
-      'manager': 'Manager',
+      'staff': tPage('roles.staff'),
+      'admin': tPage('roles.admin'),
+      'manager': tPage('roles.manager'),
       // Legacy roles for backward compatibility
-      'recruiter': 'Recruiter',
-      'coordinator': 'Coordinator',
-      'interview-coordinator': 'Interview Coordinator',
-      'recipient': 'Recipient'
+      'recruiter': tPage('roles.recruiter'),
+      'coordinator': tPage('roles.coordinator'),
+      'interview-coordinator': tPage('roles.interviewCoordinator'),
+      'recipient': tPage('roles.recipient')
     };
     return roleNames[role] || role;
   };
@@ -184,24 +185,31 @@ const Members = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <LanguageSwitch />
+          </div>
+        </div>
       </div>
 
       {/* Invite Team Member Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Invite Team Member
+            {tPage('sections.invite.title')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Add new members to your recruitment team</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{tPage('sections.invite.subtitle')}</p>
         </div>
         
         <div className="p-6">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Full Name *
+                {tPage('form.fullName.label')}
               </label>
               <input
                 type="text"
@@ -211,13 +219,13 @@ const Members = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder="Enter full name"
+                placeholder={tPage('form.fullName.placeholder')}
               />
             </div>
 
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Role *
+                {tPage('form.role.label')}
               </label>
               <select
                 id="role"
@@ -227,15 +235,15 @@ const Members = () => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               >
-                <option value="staff">Staff Member</option>
-                <option value="admin">Administrator</option>
-                <option value="manager">Manager</option>
+                <option value="staff">{tPage('form.role.options.staff')}</option>
+                <option value="admin">{tPage('form.role.options.admin')}</option>
+                <option value="manager">{tPage('form.role.options.manager')}</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Phone Number *
+                {tPage('form.phone.label')}
               </label>
               <input
                 type="tel"
@@ -246,7 +254,7 @@ const Members = () => {
                 required
                 pattern="[0-9]{10}"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder="10-digit phone number"
+                placeholder={tPage('form.phone.placeholder')}
               />
             </div>
 
@@ -259,11 +267,11 @@ const Members = () => {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Sending Invitation...
+                    {tPage('form.actions.sending')}
                   </>
                 ) : (
                   <>
-                    Send Invitation
+                    {tPage('form.actions.sendInvitation')}
                   </>
                 )}
               </button>
@@ -276,7 +284,7 @@ const Members = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.teamMembers', { count: totalItems })}</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.members.title', { count: totalItems })}</h2>
             
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
@@ -284,7 +292,7 @@ const Members = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search members..."
+                  placeholder={tPage('search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -296,15 +304,15 @@ const Members = () => {
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="all">All Roles</option>
-                <option value="staff">Staff Member</option>
-                <option value="admin">Administrator</option>
-                <option value="manager">Manager</option>
+                <option value="all">{tPage('search.filters.allRoles')}</option>
+                <option value="staff">{tPage('roles.staff')}</option>
+                <option value="admin">{tPage('roles.admin')}</option>
+                <option value="manager">{tPage('roles.manager')}</option>
                 {/* Legacy roles for backward compatibility */}
-                <option value="recruiter">Recruiter</option>
-                <option value="coordinator">Coordinator</option>
-                <option value="interview-coordinator">Interview Coordinator</option>
-                <option value="recipient">Recipient</option>
+                <option value="recruiter">{tPage('roles.recruiter')}</option>
+                <option value="coordinator">{tPage('roles.coordinator')}</option>
+                <option value="interview-coordinator">{tPage('roles.interviewCoordinator')}</option>
+                <option value="recipient">{tPage('roles.recipient')}</option>
               </select>
               
               <select
@@ -312,11 +320,11 @@ const Members = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="pending">Pending</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
+                <option value="all">{tPage('search.filters.allStatus')}</option>
+                <option value="active">{tPage('status.active')}</option>
+                <option value="pending">{tPage('status.pending')}</option>
+                <option value="inactive">{tPage('status.inactive')}</option>
+                <option value="suspended">{tPage('status.suspended')}</option>
               </select>
             </div>
           </div>
@@ -327,22 +335,22 @@ const Members = () => {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Member
+                  {tPage('table.headers.member')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role
+                  {tPage('table.headers.role')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Contact
+                  {tPage('table.headers.contact')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
+                  {tPage('table.headers.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Joined
+                  {tPage('table.headers.joined')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
+                  {tPage('table.headers.actions')}
                 </th>
               </tr>
             </thead>
@@ -352,7 +360,7 @@ const Members = () => {
                   <td colSpan="6" className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-bright"></div>
-                      <span className="ml-3 text-gray-500 dark:text-gray-400">Loading members...</span>
+                      <span className="ml-3 text-gray-500 dark:text-gray-400">{tPage('loading.members')}</span>
                     </div>
                   </td>
                 </tr>
@@ -360,8 +368,8 @@ const Members = () => {
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                     {filteredMembers.length === 0 && members.length > 0 ? 
-                      'No members match your search criteria' : 
-                      'No team members found. Invite your first member above.'
+                      tPage('empty.noSearchResults') : 
+                      tPage('empty.noMembers')
                     }
                   </td>
                 </tr>
@@ -377,9 +385,9 @@ const Members = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name || member.full_name}</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">ID: {member.id}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{tPage('table.memberInfo.id', { id: member.id })}</div>
                           {member.dev_password && (
-                            <div className="text-xs text-blue-600 dark:text-blue-400">Temp Password: {member.dev_password}</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400">{tPage('table.memberInfo.tempPassword', { password: member.dev_password })}</div>
                           )}
                         </div>
                       </div>
@@ -412,7 +420,7 @@ const Members = () => {
                           <button
                             onClick={() => handleStatusUpdate(member.id, 'inactive')}
                             className="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 p-1 rounded hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
-                            title="Deactivate member"
+                            title={tPage('actions.deactivate')}
                           >
                             <UserX className="w-4 h-4" />
                           </button>
@@ -420,7 +428,7 @@ const Members = () => {
                           <button
                             onClick={() => handleStatusUpdate(member.id, 'active')}
                             className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 p-1 rounded hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                            title="Activate member"
+                            title={tPage('actions.activate')}
                           >
                             <UserCheck className="w-4 h-4" />
                           </button>
@@ -429,7 +437,7 @@ const Members = () => {
                         <button
                           onClick={() => handleDelete(member.id, member.name)}
                           className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                          title="Delete member"
+                          title={tPage('actions.delete')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

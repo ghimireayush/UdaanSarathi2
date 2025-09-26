@@ -45,7 +45,7 @@
 
 
 
-- [x] 4. when i press preview button on /drafts page open a popup and show all the detail filled and show which are remaming and give a edit button on section wize as also show cutout on draft i need a proper preview 
+- [ ] 4.when user cliks create a draft button on /drafts page , open a new page /draftcreation and mantaion all the functionlatiy that button have as it is strcikly before doing everything tell me your understadning  tehn start the code 
 
 
 

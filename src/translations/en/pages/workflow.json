@@ -16,9 +16,13 @@
   },
   "stages": {
     "applied": "Applied",
-    "shortlisted": "Shortlisted",
+    "appliedDescription": "Candidates who have submitted applications",
+    "shortlisted": "Shortlisted", 
+    "shortlistedDescription": "Candidates selected for interview",
     "interviewScheduled": "Interview Scheduled",
-    "interviewPassed": "Interview Passed"
+    "interviewScheduledDescription": "Candidates with scheduled interviews",
+    "interviewPassed": "Interview Passed",
+    "interviewPassedDescription": "Candidates who passed interviews"
   },
   "tabs": {
     "byJob": "By Job Post",
@@ -27,12 +31,6 @@
   "search": {
     "byJobPlaceholder": "Search jobs or candidates...",
     "byApplicantPlaceholder": "Search by phone, passport, or name..."
-  },
-  "actions": {
-    "retry": "Retry"
-  },
-  "error": {
-    "failedToLoad": "Failed to load workflow data"
   },
   "filters": {
     "all": "All ({{count}})",
@@ -85,9 +83,5 @@
   },
   "loading": {
     "workflow": "Loading workflow data..."
-  },
-  "error": {
-    "failedToLoad": "Failed to load workflow data",
-    "retry": "Retry"
   }
 }

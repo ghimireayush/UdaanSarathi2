@@ -16,9 +16,13 @@
   },
   "stages": {
     "applied": "आवेदन दिएको",
+    "appliedDescription": "आवेदन पेश गरेका उम्मेदवारहरू",
     "shortlisted": "छनोट सूचीमा",
+    "shortlistedDescription": "अन्तर्वार्ताका लागि चयनित उम्मेदवारहरू",
     "interviewScheduled": "अन्तर्वार्ता निर्धारित",
-    "interviewPassed": "अन्तर्वार्ता उत्तीर्ण"
+    "interviewScheduledDescription": "निर्धारित अन्तर्वार्ता भएका उम्मेदवारहरू",
+    "interviewPassed": "अन्तर्वार्ता उत्तीर्ण",
+    "interviewPassedDescription": "अन्तर्वार्ता उत्तीर्ण गरेका उम्मेदवारहरू"
   },
   "tabs": {
     "byJob": "जागिर पोस्टअनुसार",

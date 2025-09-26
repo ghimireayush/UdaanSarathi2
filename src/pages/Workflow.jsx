@@ -18,6 +18,7 @@ import { applicationService, candidateService, constantsService } from '../servi
 import { format } from 'date-fns'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
 import { useLanguage } from '../hooks/useLanguage'
+import LanguageSwitch from '../components/LanguageSwitch'
 
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
 import InteractivePagination, { PaginationInfo, ItemsPerPageSelector } from '../components/InteractiveUI/InteractivePagination.jsx'
@@ -385,8 +386,15 @@ const Workflow = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <LanguageSwitch />
+          </div>
+        </div>
       </div>
 
       {/* Analytics */}
@@ -459,7 +467,7 @@ const Workflow = () => {
                 </p>
                 {count > 0 && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {count} candidate{count !== 1 ? 's' : ''}
+                    {count} {count === 1 ? tPage('analytics.candidate') : tPage('analytics.candidates')}
                   </p>
                 )}
               </div>
@@ -483,7 +491,7 @@ const Workflow = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
             >
-              By Job Post
+              {tPage('tabs.byJob')}
             </button>
             <button
               onClick={() => handleTabChange('by-applicant')}
@@ -492,7 +500,7 @@ const Workflow = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
             >
-              By Applicant
+              {tPage('tabs.byApplicant')}
             </button>
           </nav>
         </div>
@@ -501,7 +509,7 @@ const Workflow = () => {
       {/* Job Distribution Controls (for By Job Post tab) */}
       {activeTab === 'by-job' && Object.keys(candidatesByJob).length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Applicant Distribution by Job</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{tPage('filters.applicantDistribution')}</h3>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedJobFilter('all')}
@@ -510,7 +518,7 @@ const Workflow = () => {
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
             >
-              All ({Object.values(candidatesByJob).reduce((sum, candidates) => sum + candidates.length, 0)})
+              {tPage('filters.all', { count: Object.values(candidatesByJob).reduce((sum, candidates) => sum + candidates.length, 0) })}
             </button>
             {Object.entries(candidatesByJob).map(([jobTitle, jobCandidates]) => (
               <button
@@ -534,7 +542,7 @@ const Workflow = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
           <input
             type="text"
-            placeholder={activeTab === 'by-job' ? "Search jobs or candidates..." : "Search by phone, passport, or name..."}
+            placeholder={activeTab === 'by-job' ? tPage('search.byJobPlaceholder') : tPage('search.byApplicantPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -574,11 +582,11 @@ const Workflow = () => {
         {(activeTab === 'by-job' ? Object.keys(candidatesByJob).length === 0 : filteredCandidates.length === 0) ? (
           <div className="card p-8 text-center">
             <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No candidates found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('empty.noCandidates')}</h3>
             <p className="text-gray-600 dark:text-gray-400">
               {activeTab === 'by-applicant' && searchQuery
-                ? 'No candidates match your search criteria.'
-                : `No candidates in ${workflowStages.find(s => s.id === selectedStage)?.label} stage.`
+                ? tPage('empty.noSearchResults')
+                : tPage('empty.noStageResults', { stage: workflowStages.find(s => s.id === selectedStage)?.label })
               }
             </p>
           </div>
@@ -599,7 +607,7 @@ const Workflow = () => {
                       {jobTitle} ({jobCandidates.length})
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {jobCandidates.length} candidate{jobCandidates.length !== 1 ? 's' : ''} in {workflowStages.find(s => s.id === selectedStage)?.label} stage
+                      {jobCandidates.length} {jobCandidates.length === 1 ? tPage('analytics.candidate') : tPage('analytics.candidates')} in {workflowStages.find(s => s.id === selectedStage)?.label} stage
                     </p>
                   </div>
                   <div className="text-right">

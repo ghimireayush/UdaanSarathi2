@@ -7,6 +7,7 @@ import AISchedulingAssistant from '../components/AISchedulingAssistant'
 import { candidateService, jobService, interviewService } from '../services/index.js'
 import { format, startOfWeek, endOfWeek, startOfDay, endOfDay, addMinutes, isPast } from 'date-fns'
 import { useLanguage } from '../hooks/useLanguage'
+import LanguageSwitch from '../components/LanguageSwitch'
 
 const Interviews = () => {
   const { tPageSync } = useLanguage({ 
@@ -218,6 +219,7 @@ const Interviews = () => {
         </div>
         
         <div className="mt-4 sm:mt-0 flex items-center space-x-4">
+          <LanguageSwitch />
           {/* View Mode Toggle */}
           {activeTab === 'scheduled' && (
             <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
@@ -257,7 +259,7 @@ const Interviews = () => {
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                Day
+                {tPage('timeRanges.day')}
               </button>
               <button
                 onClick={() => setTimeRange('week')}
@@ -267,7 +269,7 @@ const Interviews = () => {
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                Week
+                {tPage('timeRanges.week')}
               </button>
             </div>
           )}
@@ -284,7 +286,7 @@ const Interviews = () => {
               onChange={(e) => handleJobSelect(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="">All Jobs</option>
+              <option value="">{tPage('filters.allJobs')}</option>
               {jobs.map(job => (
                 <option key={job.id} value={job.id}>
                   {job.title} - {job.company}
@@ -299,7 +301,7 @@ const Interviews = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search candidates or interviewers..."
+                placeholder={tPage('filters.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -351,7 +353,7 @@ const Interviews = () => {
               }`}
             >
               <Plus className="w-4 h-4 mr-2 inline" />
-              Schedule New
+              {tPage('tabs.scheduleNew')}
             </button>
 
             <button
@@ -363,15 +365,14 @@ const Interviews = () => {
               }`}
             >
               <Bot className="w-4 h-4 mr-2 inline" />
-              AI Assistant
+              {tPage('tabs.aiAssistant')}
               <span className="ml-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 py-0.5 px-2 rounded-full text-xs">
-                Phase 2
+                {tPage('aiAssistant.phase2Feature')}
               </span>
             </button>
           </nav>
         </div>
       </div>
-
       {/* Tab Content */}
       <div className="space-y-6">
         {activeTab === 'scheduled' && (
@@ -400,16 +401,15 @@ const Interviews = () => {
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.selectJobToSchedule')}</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Choose a job from the filter above to view shortlisted candidates and schedule interviews.
+                  {tPage('messages.selectJobMessage')}
                 </p>
               </div>
             ) : candidates.length === 0 ? (
               <div className="card p-8 text-center">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Shortlisted Candidates</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.noShortlistedCandidates')}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  No candidates have been shortlisted for this job yet. 
-                  Visit the Applications page to shortlist candidates first.
+                  {tPage('messages.noShortlistedMessage')}
                 </p>
               </div>
             ) : (
@@ -431,14 +431,14 @@ const Interviews = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                     <Bot className="w-5 h-5 mr-2 text-purple-600" />
-                    AI Scheduling Assistant
+                    {tPage('aiAssistant.title')}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Intelligent scheduling suggestions for optimal interview coverage
+                    {tPage('aiAssistant.subtitle')}
                   </p>
                 </div>
                 <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  Phase 2 Feature
+                  {tPage('aiAssistant.phase2Feature')}
                 </span>
               </div>
               
@@ -468,9 +468,9 @@ const Interviews = () => {
               ) : (
                 <div className="text-center py-8">
                   <Bot className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">AI Assistant Ready</h4>
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.aiAssistantReady')}</h4>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Select a job with shortlisted candidates to get AI-powered scheduling suggestions.
+                    {tPage('messages.aiAssistantMessage')}
                   </p>
                 </div>
               )}
@@ -487,7 +487,7 @@ const Interviews = () => {
               <Calendar className="w-8 h-8 text-blue-600" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Today's Interviews</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.todaysInterviews')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.today}</div>
             </div>
           </div>
@@ -499,7 +499,7 @@ const Interviews = () => {
               <Clock className="w-8 h-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Scheduled</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.totalScheduled')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.scheduled}</div>
             </div>
           </div>
@@ -511,9 +511,9 @@ const Interviews = () => {
               <AlertTriangle className="w-8 h-8 text-red-600" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Unattended</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.unattended')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.unattended}</div>
-              <div className="text-xs text-red-600 mt-1">Auto-flagged after {gracePeriod}min grace</div>
+              <div className="text-xs text-red-600 mt-1">{tPage('stats.autoFlagged', { minutes: gracePeriod })}</div>
             </div>
           </div>
         </div>
@@ -524,7 +524,7 @@ const Interviews = () => {
               <CheckCircle className="w-8 h-8 text-purple-600" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.completed')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.completed}</div>
             </div>
           </div>

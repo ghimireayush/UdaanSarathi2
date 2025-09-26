@@ -39,6 +39,7 @@ import { InteractiveButton, InteractiveCard, InteractivePagination, PaginationIn
 import { useNotificationContext } from '../contexts/NotificationContext'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
+import LanguageSwitch from '../components/LanguageSwitch'
 
 const Applications = () => {
   const { confirm } = useConfirm()
@@ -276,11 +277,11 @@ const Applications = () => {
       // Perform the actual API call first
       if (targetStage === applicationStages.REJECTED && reason) {
         await applicationService.rejectApplication(applicationId, reason)
-        showToastNotification(' Application rejected successfully!', 'success')
+        showToastNotification(tPage('toastMessages.applicationRejectedSuccess'), 'success')
       } else {
         await applicationService.updateApplicationStage(applicationId, targetStage)
         const stageLabel = getStageLabel(targetStage)
-        showToastNotification(` Application moved to ${stageLabel} successfully!`, 'success')
+        showToastNotification(tPage('toastMessages.applicationMovedSuccess', { stage: stageLabel }), 'success')
       }
 
       // Only update UI after successful API call
@@ -351,14 +352,14 @@ const Applications = () => {
 
       // Show success notification
       if (isCurrentlyShortlisted) {
-        showToastNotification(' Candidate removed from shortlist!', 'success')
+        showToastNotification(tPage('toastMessages.candidateRemovedFromShortlist'), 'success')
       } else {
-        showToastNotification(' Candidate shortlisted successfully!', 'success')
+        showToastNotification(tPage('toastMessages.candidateShortlistedSuccess'), 'success')
       }
 
     } catch (err) {
       console.error('Failed to toggle shortlist:', err)
-      showToastNotification(' Failed to update shortlist status. Please try again.', 'error')
+      showToastNotification(tPage('toastMessages.toggleShortlistError'), 'error')
     } finally {
       setShortlistingApps(prev => {
         const newSet = new Set(prev)
@@ -396,13 +397,13 @@ const Applications = () => {
           )
         )
 
-        showToastNotification(` ${applicationIds.length} applications shortlisted successfully!`, 'success')
+        showToastNotification(tPage('toastMessages.bulkShortlistSuccess', { count: applicationIds.length }), 'success')
       }
 
       setSelectedApplications(new Set())
     } catch (err) {
       console.error('Failed to perform bulk action:', err)
-      showToastNotification(' Failed to perform bulk action. Please try again.', 'error')
+      showToastNotification(tPage('toastMessages.bulkActionError'), 'error')
     } finally {
       setIsUpdating(false)
     }
@@ -570,7 +571,7 @@ const Applications = () => {
         )
       )
 
-      showToastNotification(` ${applicationIds.length} applications rejected successfully!`, 'success')
+      showToastNotification(tPage('toastMessages.bulkRejectSuccess', { count: applicationIds.length }), 'success')
       setSelectedApplications(new Set())
 
       // Close modal and reset
@@ -578,7 +579,7 @@ const Applications = () => {
       setBulkRejectionReason('')
     } catch (err) {
       console.error('Failed to perform bulk rejection:', err)
-      showToastNotification(' Failed to perform bulk rejection. Please try again.', 'error')
+      showToastNotification(tPage('toastMessages.bulkRejectError'), 'error')
     } finally {
       setIsUpdating(false)
     }
@@ -631,15 +632,15 @@ const Applications = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Failed to load applications</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPage('error.failedToLoad')}</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {!isOnline ? 'You appear to be offline. Please check your internet connection.' : (error.message || 'An unexpected error occurred.')}
+            {!isOnline ? tPage('error.networkError') : (error.message || tPage('error.failedToLoad'))}
           </p>
           <button
             onClick={fetchApplicationsData}
             className="btn-primary"
           >
-            Retry
+            {tPage('error.retry')}
           </button>
         </div>
       </div>
@@ -678,26 +679,26 @@ const Applications = () => {
 
               <div className="flex-1">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
-                  {application.candidate?.name || 'Unknown Candidate'}
+                  {application.candidate?.name || tPage('gridView.unknownCandidate')}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Applied for <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
-                    {application.job?.title || 'Unknown Job'}
+                  {tPage('gridView.appliedFor')} <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
+                    {application.job?.title || tPage('gridView.unknownJob')}
                   </Link>
                 </p>
 
                 <div className="space-y-2">
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <Phone className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
-                    <span>{application.candidate?.phone || 'N/A'}</span>
+                    <span>{application.candidate?.phone || tPage('gridView.notAvailable')}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <Mail className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
-                    <span>{application.candidate?.email || 'N/A'}</span>
+                    <span>{application.candidate?.email || tPage('gridView.notAvailable')}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <MapPin className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
-                    <span>{application.job?.country || 'N/A'}</span>
+                    <span>{application.job?.country || tPage('gridView.notAvailable')}</span>
                   </div>
                 </div>
               </div>
@@ -705,7 +706,7 @@ const Applications = () => {
 
             <div className="text-xs font-medium mb-4 flex items-center">
               <Calendar className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-600 dark:text-gray-400">Applied {application.applied_at ? format(new Date(application.applied_at), 'MMM dd, yyyy') : 'Unknown date'}</span>
+              <span className="text-gray-600 dark:text-gray-400">{application.applied_at ? tPage('gridView.appliedDate', { date: format(new Date(application.applied_at), 'MMM dd, yyyy') }) : tPage('gridView.unknownDate')}</span>
             </div>
 
             {/* Skills */}
@@ -718,7 +719,7 @@ const Applications = () => {
                     </span>
                   ))}
                   {application.candidate.skills.length > 3 && (
-                    <span className="text-xs text-primary-500 font-medium">+{application.candidate.skills.length - 3} more</span>
+                    <span className="text-xs text-primary-500 font-medium">{tPage('gridView.moreSkills', { count: application.candidate.skills.length - 3 })}</span>
                   )}
                 </div>
               </div>
@@ -729,7 +730,7 @@ const Applications = () => {
               <div className="mb-4">
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <FileText className="w-4 h-4 mr-2 text-primary-400 dark:text-primary-500" />
-                  <span>{application.documents.length} document{application.documents.length !== 1 ? 's' : ''} attached</span>
+                  <span>{tPage('gridView.documentsAttached', { count: application.documents.length, plural: application.documents.length !== 1 ? 's' : '' })}</span>
                 </div>
               </div>
             )}
@@ -740,7 +741,7 @@ const Applications = () => {
                 // Show disabled state for rejected applications
                 <div className="flex flex-col space-y-2">
                   <div className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-center font-medium">
-                    Application Rejected
+                    {tPage('gridView.applicationRejected')}
                   </div>
                   <InteractiveButton
                     onClick={(e) => {
@@ -779,7 +780,7 @@ const Applications = () => {
                     icon={Eye}
                     className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-600"
                   >
-                    Summary
+                    {tPage('actions.summary')}
                   </InteractiveButton>
 
                   <InteractiveButton
@@ -795,7 +796,7 @@ const Applications = () => {
                     icon={ArrowRight}
                     className="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
                   >
-                    Move Stage
+                    {tPage('actions.moveStage')}
                   </InteractiveButton>
 
                   <InteractiveButton
@@ -811,7 +812,7 @@ const Applications = () => {
                     icon={X}
                     className="w-full text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 shadow-sm hover:shadow-md transition-shadow duration-200 border border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600"
                   >
-                    Reject
+                    {tPage('actions.reject')}
                   </InteractiveButton>
                 </div>
               )}
@@ -821,9 +822,9 @@ const Applications = () => {
       ) : (
         <div className="col-span-3 text-center py-12">
           <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No applications found</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.noApplicationsFound')}</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            {Object.values(filters).some(v => v) ? 'No applications match your current filters.' : 'Applications will appear here when candidates apply for jobs.'}
+            {tPage('messages.noApplicationsMessage')}
           </p>
         </div>
       )}
@@ -847,22 +848,22 @@ const Applications = () => {
                 />
               </th>
               <th scope="col" className="w-[24%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Candidate
+                {tPage('table.headers.candidate')}
               </th>
               <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Job
+                {tPage('table.headers.job')}
               </th>
               <th scope="col" className="w-[16%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Contact
+                {tPage('table.headers.contact')}
               </th>
               <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Date
+                {tPage('table.headers.date')}
               </th>
               <th scope="col" className="w-[8%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Stage
+                {tPage('table.headers.stage')}
               </th>
               <th scope="col" className="w-[28%] px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Actions
+                {tPage('table.headers.actions')}
               </th>
             </tr>
           </thead>
@@ -894,7 +895,7 @@ const Applications = () => {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                          {application.candidate?.name || 'Unknown'}
+                          {application.candidate?.name || tPage('gridView.unknownCandidate')}
                         </div>
                         <div className="flex items-center space-x-2">
                           {application.candidate?.skills && (
@@ -916,19 +917,19 @@ const Applications = () => {
                   <td className="px-2 py-3">
                     <div className="text-sm text-gray-900 dark:text-gray-100 truncate">
                       <Link to={`/jobs/${application.job?.id}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
-                        {application.job?.title || 'Unknown Job'}
+                        {application.job?.title || tPage('gridView.unknownJob')}
                       </Link>
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {application.job?.company || 'Unknown Company'}
+                      {application.job?.company || tPage('listView.unknownCompany')}
                     </div>
                   </td>
                   <td className="px-2 py-3">
-                    <div className="text-xs text-gray-900 dark:text-gray-100 truncate">{application.candidate?.phone || 'N/A'}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{application.candidate?.email || 'N/A'}</div>
+                    <div className="text-xs text-gray-900 dark:text-gray-100 truncate">{application.candidate?.phone || tPage('gridView.notAvailable')}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{application.candidate?.email || tPage('gridView.notAvailable')}</div>
                   </td>
                   <td className="px-2 py-3 text-xs text-gray-500 dark:text-gray-400">
-                    {application.applied_at ? format(new Date(application.applied_at), 'MMM dd') : 'N/A'}
+                    {application.applied_at ? format(new Date(application.applied_at), 'MMM dd') : tPage('gridView.notAvailable')}
                   </td>
                   <td className="px-2 py-3">
                     <span className={`chip ${getStageColor(application.stage)} text-xs px-2 py-1`}>
@@ -938,7 +939,7 @@ const Applications = () => {
                   <td className="px-2 py-3 text-sm font-medium">
                     {application.stage === applicationStages.REJECTED ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">Rejected</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">{tPage('applicationStatus.rejected')}</span>
                         <button
                           onClick={() => {
                             setSelectedCandidate({
@@ -975,28 +976,28 @@ const Applications = () => {
                           onClick={() => handleOpenStageModal(application, null)}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-700"
                           disabled={movingStageApps.has(application.id)}
-                          title={movingStageApps.has(application.id) ? 'Moving...' : 'Move Stage'}
+                          title={movingStageApps.has(application.id) ? tPage('modals.stageModal.updating') : tPage('actions.moveStage')}
                         >
                           {movingStageApps.has(application.id) ? (
                             <div className="animate-spin w-3 h-3 border border-blue-600 border-t-transparent rounded-full" />
                           ) : (
                             <ArrowRight className="w-3 h-3" />
                           )}
-                          Move
+                          {tPage('actions.move')}
                         </button>
 
                         <button
                           onClick={() => handleOpenStageModal(application, applicationStages.REJECTED)}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded border border-red-200 dark:border-red-700"
                           disabled={rejectingApps.has(application.id)}
-                          title={rejectingApps.has(application.id) ? 'Rejecting...' : 'Reject'}
+                          title={rejectingApps.has(application.id) ? tPage('modals.rejectModal.rejecting') : tPage('actions.reject')}
                         >
                           {rejectingApps.has(application.id) ? (
                             <div className="animate-spin w-3 h-3 border border-red-600 border-t-transparent rounded-full" />
                           ) : (
                             <X className="w-3 h-3" />
                           )}
-                          Reject
+                          {tPage('actions.reject')}
                         </button>
                       </div>
                     )}
@@ -1007,9 +1008,9 @@ const Applications = () => {
               <tr>
                 <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                   <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No applications found</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.noApplicationsFound')}</h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {Object.values(filters).some(v => v) ? 'No applications match your current filters.' : 'Applications will appear here when candidates apply for jobs.'}
+                    {tPage('messages.noApplicationsMessage')}
                   </p>
                 </td>
               </tr>
@@ -1025,14 +1026,14 @@ const Applications = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Applications</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('pageHeader.title')}</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Centralized view of all candidate applications across jobs
+            {tPage('pageHeader.subtitle')}
           </p>
         </div>
 
-        <div className="mt-4 sm:mt-0 flex space-x-2">
-          {/* Select All button removed */}
+        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          <LanguageSwitch />
 
           {selectedApplications.size > 0 && (
             <>
@@ -1047,7 +1048,7 @@ const Applications = () => {
                 loading={isUpdating}
                 icon={UserCheck}
               >
-                Shortlist ({selectedApplications.size})
+                {tPage('bulkActionButtons.shortlist', { count: selectedApplications.size })}
               </InteractiveButton>
               <InteractiveButton
                 onClick={(e) => {
@@ -1060,7 +1061,7 @@ const Applications = () => {
                 loading={isUpdating}
                 icon={X}
               >
-                Reject ({selectedApplications.size})
+                {tPage('bulkActionButtons.reject', { count: selectedApplications.size })}
               </InteractiveButton>
             </>
           )}
@@ -1116,9 +1117,9 @@ const Applications = () => {
               <option value="">{tPage('filters.allStages')}</option>
               <option value="applied">{tPage('applicationStatus.applied')}</option>
               <option value="shortlisted">{tPage('applicationStatus.shortlisted')}</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="interviewed">Interviewed</option>
-              <option value="selected">Selected</option>
+              <option value="scheduled">{tPage('filterOptions.scheduled')}</option>
+              <option value="interviewed">{tPage('filterOptions.interviewed')}</option>
+              <option value="selected">{tPage('filterOptions.selected')}</option>
               <option value="rejected">{tPage('applicationStatus.rejected')}</option>
             </select>
 
@@ -1150,7 +1151,11 @@ const Applications = () => {
       {/* Results Info */}
       <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
         <span>
-          Showing {applications.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+          {tPage('resultsInfo.showing', {
+            start: applications.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+            end: Math.min(pagination.page * pagination.limit, pagination.total),
+            total: pagination.total
+          })}
         </span>
       </div>
 
@@ -1218,7 +1223,7 @@ const Applications = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Update Application Stage</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{tPage('modals.stageModal.title')}</h3>
               <button
                 onClick={() => {
                   setShowStageModal(false)
@@ -1234,18 +1239,18 @@ const Applications = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Select New Stage
+                  {tPage('modals.stageModal.selectStage')}
                 </label>
                 <select
                   value={newStage || ''}
                   onChange={(e) => setNewStage(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="">Choose a stage...</option>
-                  <option value="applied">Applied</option>
-                  <option value="shortlisted">Shortlisted</option>
-                  <option value="interview-scheduled">Interview Scheduled</option>
-                  <option value="interview-passed">Interview Passed</option>
+                  <option value="">{tPage('modals.stageModal.chooseStage')}</option>
+                  <option value="applied">{tPage('stageOptions.applied')}</option>
+                  <option value="shortlisted">{tPage('stageOptions.shortlisted')}</option>
+                  <option value="interview-scheduled">{tPage('stageOptions.interviewScheduled')}</option>
+                  <option value="interview-passed">{tPage('stageOptions.interviewPassed')}</option>
                 </select>
               </div>
 
@@ -1258,7 +1263,7 @@ const Applications = () => {
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  Cancel
+                  {tPage('modals.stageModal.cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -1269,7 +1274,7 @@ const Applications = () => {
                   disabled={!newStage || movingStageApps.has(selectedApplication.id)}
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {movingStageApps.has(selectedApplication.id) ? 'Updating...' : 'Update Stage'}
+                  {movingStageApps.has(selectedApplication.id) ? tPage('modals.stageModal.updating') : tPage('modals.stageModal.updateStage')}
                 </button>
               </div>
             </div>
@@ -1282,7 +1287,7 @@ const Applications = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Reject Application</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{tPage('modals.rejectModal.title')}</h3>
               <button
                 onClick={() => {
                   setShowRejectModal(false)
@@ -1298,14 +1303,14 @@ const Applications = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Rejection Reason
+                  {tPage('modals.rejectModal.rejectionReason')}
                 </label>
                 <textarea
                   value={rejectionReason || ''}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
-                  placeholder="Please provide a reason for rejection..."
+                  placeholder={tPage('modals.rejectModal.placeholder')}
                 />
               </div>
 
@@ -1329,7 +1334,7 @@ const Applications = () => {
                   disabled={rejectingApps.has(selectedApplication.id)}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {rejectingApps.has(selectedApplication.id) ? 'Rejecting...' : 'Reject Application'}
+                  {rejectingApps.has(selectedApplication.id) ? tPage('modals.rejectModal.rejecting') : tPage('modals.rejectModal.rejectApplication')}
                 </button>
               </div>
             </div>
@@ -1343,7 +1348,7 @@ const Applications = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Reject {selectedApplications.size} Applications
+                {tPage('modals.bulkRejectModal.title', { count: selectedApplications.size })}
               </h3>
               <button
                 onClick={() => {
@@ -1359,20 +1364,20 @@ const Applications = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Rejection Reason (Required)
+                  {tPage('modals.bulkRejectModal.rejectionReason')}
                 </label>
                 <textarea
                   value={bulkRejectionReason || ''}
                   onChange={(e) => setBulkRejectionReason(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   rows={3}
-                  placeholder="Please provide a reason for rejecting these applications..."
+                  placeholder={tPage('modals.bulkRejectModal.placeholder')}
                 />
               </div>
 
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  ⚠️ This action will reject {selectedApplications.size} selected applications. This cannot be undone.
+                  {tPage('modals.bulkRejectModal.warning', { count: selectedApplications.size })}
                 </p>
               </div>
 
@@ -1391,7 +1396,7 @@ const Applications = () => {
                   disabled={!bulkRejectionReason.trim() || isUpdating}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isUpdating ? 'Rejecting...' : `Reject ${selectedApplications.size} Applications`}
+                  {isUpdating ? tPage('modals.bulkRejectModal.rejecting') : tPage('modals.bulkRejectModal.rejectApplications', { count: selectedApplications.size })}
                 </button>
               </div>
             </div>
