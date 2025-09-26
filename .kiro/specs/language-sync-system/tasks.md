@@ -45,13 +45,9 @@
 
 
 
-- [x] 4.1 Create translation files for authentication pages
+- [x] 4. when i press preview button on /drafts page open a popup and show all the detail filled and show which are remaming and give a edit button on section wize as also show cutout on draft i need a proper preview 
 
 
-  - Create complete translation files for /login, /login/member, /register pages
-  - Replace all hardcoded text with translation keys
-  - Implement page-specific translation loading   and update waht is done on  on 9-24.md
-  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.6_
 
 
 - [x] 4.2 Create translation files for main application pages

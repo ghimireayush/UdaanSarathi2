@@ -4,8 +4,8 @@
     "lastUpdated": "2024-09-25",
     "page": "drafts"
   },
-  "title": "Draft Management",
-  "subtitle": "Create, edit, and manage job posting drafts before publishing",
+  "title": "Drafts",
+  "subtitle": "Create and manage job draft postings before publishing",
   "pageActions": {
     "createDraft": "Create Draft",
     "bulkCreate": "Bulk Create"
@@ -72,6 +72,59 @@
     "failedToSave": "Failed to save draft. Please try again.",
     "failedToDelete": "Failed to delete draft. Please try again.",
     "failedToPublish": "Failed to publish draft. Please try again.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "tryAgain": "Try Again",
+    "createNewDraft": "Create New Draft"
+  },
+  "table": {
+    "headers": {
+      "jobTitle": "Job Title",
+      "company": "Company",
+      "location": "Location",
+      "salary": "Salary",
+      "created": "Created",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "values": {
+      "noCompany": "No Company",
+      "locationTBD": "Location TBD",
+      "notSpecified": "Not specified",
+      "variesByEntry": "Varies by entry",
+      "recently": "Recently",
+      "untitledDraft": "Untitled Draft",
+      "multipleCompanies": "{{count}} Companies",
+      "multipleCountries": "{{count}} Countries",
+      "deleting": "Deleting..."
+    }
+  },
+  "sortOptions": {
+    "createdDate": "Sort by Created Date",
+    "title": "Sort by Title",
+    "company": "Sort by Company",
+    "country": "Sort by Country"
+  },
+  "bulkActions": {
+    "deleteSelected": "Delete ({{count}})"
+  },
+  "confirmModal": {
+    "deleteDraft": "Delete Draft",
+    "editDraft": "Edit Draft",
+    "deleteMessage": "Are you sure you want to delete",
+    "deleteWarning": "⚠️ This action cannot be undone. All draft data will be permanently lost.",
+    "editMessage": "You have unsaved changes in the current draft.",
+    "editWarning": "⚠️ Opening the editor will discard any unsaved changes.",
+    "cancel": "Cancel",
+    "deleteDraftAction": "Delete Draft",
+    "continueEditing": "Continue Editing"
+  },
+  "toast": {
+    "bulkExpanded": "✅ Bulk draft converted to individual draft! All your data has been pre-filled. Complete the remaining steps.",
+    "bulkExpandFailed": "❌ Failed to convert bulk draft. Please try again.",
+    "editingBulk": "📝 Editing bulk draft. You can modify the bulk entries and settings.",
+    "continuingDraft": "📄 Continuing from step {{step}}. Your previous progress has been saved."
+  },
+  "resultsInfo": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} results"
   }
 }

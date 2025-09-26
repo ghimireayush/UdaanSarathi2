@@ -65,5 +65,11 @@
     "failedToLoad": "Failed to load jobs",
     "retry": "Retry",
     "reload": "Reload Page"
+  },
+  "sortOptions": {
+    "publishedDate": "Published Date",
+    "applications": "Candidate Count",
+    "shortlisted": "Shortlist Count",
+    "interviews": "Today's Interviews"
   }
 }

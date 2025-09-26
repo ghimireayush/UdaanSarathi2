@@ -18,6 +18,7 @@ import { format, formatDistanceToNow } from 'date-fns'
 import PermissionGuard from '../components/PermissionGuard.jsx'
 import useErrorHandler from '../hooks/useErrorHandler.js'
 import { useLanguage } from '../hooks/useLanguage.js'
+import LanguageSwitch from '../components/LanguageSwitch'
 
 
 const Jobs = () => {
@@ -112,14 +113,14 @@ const Jobs = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Failed to load jobs</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tPageSync('error.failedToLoad')}</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error.message}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <button 
               onClick={() => window.location.reload()} 
               className="btn-primary"
             >
-              Reload Page
+              {tPageSync('error.reload')}
             </button>
             {isRetryable && (
               <button 
@@ -150,7 +151,7 @@ const Jobs = () => {
                 }}
                 className="btn-secondary"
               >
-                Retry
+                {tPageSync('error.retry')}
               </button>
             )}
           </div>
@@ -169,7 +170,13 @@ const Jobs = () => {
             {tPageSync('subtitle')}
           </p>
         </div>
-        <div className="mt-4 sm:mt-0">
+        <div className="mt-4 sm:mt-0 flex items-center space-x-4">
+          <LanguageSwitch 
+            variant="ghost" 
+            size="sm" 
+            showLabel={true}
+            position="bottom-right"
+          />
           <PermissionGuard permission={PERMISSIONS.CREATE_JOB}>
             <button 
               onClick={() => navigate('/drafts')}
@@ -226,10 +233,10 @@ const Jobs = () => {
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="published_date">Published Date</option>
-              <option value="applications">Candidate Count</option>
-              <option value="shortlisted">Shortlist Count</option>
-              <option value="interviews">Today's Interviews</option>
+              <option value="published_date">{tPageSync('sortOptions.publishedDate')}</option>
+              <option value="applications">{tPageSync('sortOptions.applications')}</option>
+              <option value="shortlisted">{tPageSync('sortOptions.shortlisted')}</option>
+              <option value="interviews">{tPageSync('sortOptions.interviews')}</option>
             </select>
           </div>
         </div>
@@ -237,7 +244,7 @@ const Jobs = () => {
 
       {/* Country Distribution */}
       <div className="card p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Open job distribution by country</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{tPageSync('sections.countryDistribution.title')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-1">
           {Object.entries(countryDistribution)
             .filter(([country, count]) => count > 0)
@@ -258,7 +265,7 @@ const Jobs = () => {
       {/* Jobs Table */}
           <div className="card overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Job Listings</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">{tPageSync('sections.jobListings.title')}</h2>
             </div>
             
             <div className="overflow-x-auto">
@@ -266,16 +273,16 @@ const Jobs = () => {
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      JOB DETAILS
+                      {tPageSync('table.headers.jobDetails')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      APPLICATION STATUS
+                      {tPageSync('table.headers.applicationStatus')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      POSTED
+                      {tPageSync('table.headers.posted')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      ACTIONS
+                      {tPageSync('table.headers.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -290,7 +297,7 @@ const Jobs = () => {
                         <td className="px-6 py-4">
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{job.title}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">Ref: {job.id}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">{tPageSync('table.jobDetails.reference', { id: job.id })}</div>
                             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
                               <MapPin className="w-4 h-4 mr-1" />
                               <span>{job.country}</span>
@@ -301,15 +308,15 @@ const Jobs = () => {
                           <div className="text-sm">
                             <div className="flex items-center text-gray-900 dark:text-gray-100 mb-1">
                               <Users className="w-4 h-4 mr-1" />
-                              <span className="font-medium">Applicants ({job.applications_count || 0})</span>
+                              <span className="font-medium">{tPageSync('table.applicationStatus.applicants', { count: job.applications_count || 0 })}</span>
                             </div>
                             <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1">
                               <UserCheck className="w-4 h-4 mr-1" />
-                              <span>Shortlisted: {job.shortlisted_count || 0}</span>
+                              <span>{tPageSync('table.applicationStatus.shortlisted', { count: job.shortlisted_count || 0 })}</span>
                             </div>
                             <div className="flex items-center text-gray-600">
                               <Clock className="w-4 h-4 mr-1" />
-                              <span>Interviews: {job.interviews_today || 0} of {job.total_interviews || 0} today</span>
+                              <span>{tPageSync('table.applicationStatus.interviews', { today: job.interviews_today || 0, total: job.total_interviews || 0 })}</span>
                             </div>
                           </div>
                         </td>
@@ -327,7 +334,7 @@ const Jobs = () => {
                                 className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center"
                               >
                                 <Eye className="w-4 h-4 mr-1" />
-                                View Details
+                                {tPageSync('table.actions.viewDetails')}
                               </Link>
                             </PermissionGuard>
                             <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
@@ -336,7 +343,7 @@ const Jobs = () => {
                                 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center"
                               >
                                 <UserCheck className="w-4 h-4 mr-1" />
-                                View Shortlist
+                                {tPageSync('table.actions.viewShortlist')}
                               </Link>
                             </PermissionGuard>
                             <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
@@ -345,7 +352,7 @@ const Jobs = () => {
                                 className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
                               >
                                 <Users className="w-4 h-4 mr-1" />
-                                Manage Candidates
+                                {tPageSync('table.actions.manageCandidates')}
                               </Link>
                             </PermissionGuard>
                             <PermissionGuard permission={PERMISSIONS.SCHEDULE_INTERVIEW}>
@@ -354,7 +361,7 @@ const Jobs = () => {
                                 className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
                               >
                                 <Calendar className="w-4 h-4 mr-1" />
-                                Schedule
+                                {tPageSync('table.actions.schedule')}
                               </Link>
                             </PermissionGuard>
                           </div>
@@ -370,7 +377,11 @@ const Jobs = () => {
             {jobs.length > 0 && Math.ceil(jobs.length / pagination.limit) > 1 && (
               <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, jobs.length)} of {jobs.length} jobs
+                  {tPageSync('pagination.showing', { 
+                    start: ((pagination.page - 1) * pagination.limit) + 1, 
+                    end: Math.min(pagination.page * pagination.limit, jobs.length), 
+                    total: jobs.length 
+                  })}
                 </div>
                 <div className="flex space-x-2">
                   <button

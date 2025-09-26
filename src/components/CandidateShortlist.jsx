@@ -22,6 +22,7 @@ import { useConfirm } from './ConfirmProvider.jsx'
 import CandidateSummaryS2 from './CandidateSummaryS2'
 import { applicationService } from '../services/index.js'
 import Pagination from './ui/Pagination'
+import { useLanguage } from '../hooks/useLanguage'
 
 const CandidateShortlist = ({
   jobId,
@@ -33,6 +34,15 @@ const CandidateShortlist = ({
   workflowStages = []
 }) => {
   const { confirm } = useConfirm()
+  const { tPageSync } = useLanguage({ 
+    pageName: 'shortlist',
+    autoLoad: true 
+  })
+
+  // Helper function to get page translations
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params)
+  }
 
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('priority_score') // priority_score, applied_at, name
@@ -333,10 +343,10 @@ const CandidateShortlist = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Candidate Shortlist</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('candidateList.title')}</h2>
           {job && (
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              {job.title} • {job.company} • {processedCandidates.length} candidates
+              {tPage('candidateList.description', { jobTitle: job.title, company: job.company, count: processedCandidates.length })}
             </p>
           )}
         </div>
@@ -344,7 +354,7 @@ const CandidateShortlist = ({
         {job?.tags && job.tags.length > 0 && (
           <div className="flex items-center space-x-2">
             <Tag className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600 dark:text-gray-400">Job Skills:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{tPage('candidateList.jobSkills')}:</span>
             <div className="flex flex-wrap gap-1">
               {job.tags.map((tag, index) => (
                 <span key={index} className="chip chip-primary text-xs">
@@ -364,7 +374,7 @@ const CandidateShortlist = ({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search candidates by name, skills, or email..."
+              placeholder={tPage('candidateList.search.placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -381,7 +391,7 @@ const CandidateShortlist = ({
                 onChange={(e) => setFilterStage(e.target.value)}
                 className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="all">All Stages</option>
+                <option value="all">{tPage('candidateList.filters.allStages')}</option>
                 {workflowStages.map(stage => (
                   <option key={stage.id} value={stage.id}>{stage.label}</option>
                 ))}
@@ -390,18 +400,18 @@ const CandidateShortlist = ({
 
             {/* Sort Options */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Sort by:</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{tPage('candidateList.filters.sortBy')}</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="priority_score">Priority Score</option>
+                <option value="priority_score">{tPage('candidateList.filters.sortOptions.priorityScore')}</option>
                 {job?.tags && job.tags.length > 0 && (
-                  <option value="skill_match">Skill Match</option>
+                  <option value="skill_match">{tPage('candidateList.filters.sortOptions.skillMatch')}</option>
                 )}
-                <option value="applied_at">Application Date</option>
-                <option value="name">Name</option>
+                <option value="applied_at">{tPage('candidateList.filters.sortOptions.applicationDate')}</option>
+                <option value="name">{tPage('candidateList.filters.sortOptions.name')}</option>
               </select>
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
@@ -419,11 +429,11 @@ const CandidateShortlist = ({
         {processedCandidates.length === 0 ? (
           <div className="text-center py-12">
             <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No candidates found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('candidateList.empty.title')}</h3>
             <p className="text-gray-500 dark:text-gray-400">
               {searchTerm || filterStage !== 'all'
-                ? 'Try adjusting your search or filters'
-                : 'No candidates have applied for this position yet'
+                ? tPage('candidateList.empty.description')
+                : tPage('candidateList.empty.noApplications')
               }
             </p>
           </div>
@@ -433,25 +443,25 @@ const CandidateShortlist = ({
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="w-[22%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Candidate
+                    {tPage('candidateList.table.headers.candidate')}
                   </th>
                   <th className="w-[18%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Contact
+                    {tPage('candidateList.table.headers.contact')}
                   </th>
                   <th className="w-[20%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Skills & Experience
+                    {tPage('candidateList.table.headers.skillsExperience')}
                   </th>
                   <th className="w-[12%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Scores
+                    {tPage('candidateList.table.headers.scores')}
                   </th>
                   <th className="w-[8%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
+                    {tPage('candidateList.table.headers.status')}
                   </th>
                   <th className="w-[8%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Applied
+                    {tPage('candidateList.table.headers.applied')}
                   </th>
                   <th className="w-[12%] px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Actions
+                    {tPage('candidateList.table.headers.actions')}
                   </th>
                 </tr>
               </thead>
@@ -476,7 +486,7 @@ const CandidateShortlist = ({
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {candidate.name}
                               {appliedToday && (
-                                <span className="ml-2 chip chip-green text-xs">New</span>
+                                <span className="ml-2 chip chip-green text-xs">{tPage('candidateList.table.candidate.newLabel')}</span>
                               )}
                             </div>
                             {candidate.education && (
@@ -487,7 +497,7 @@ const CandidateShortlist = ({
                             {candidate.documents && candidate.documents.length > 0 && (
                               <div className="flex items-center text-xs text-blue-600 dark:text-blue-400 mt-1">
                                 <FileText className="w-3 h-3 mr-1" />
-                                <span>{candidate.documents.length} docs</span>
+                                <span>{tPage('candidateList.table.candidate.documentsCount', { count: candidate.documents.length })}</span>
                               </div>
                             )}
                           </div>
@@ -587,14 +597,14 @@ const CandidateShortlist = ({
                             className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 shadow-sm hover:shadow-md"
                           >
                             <Eye className="w-4 h-4 mr-1" />
-                            View
+                            {tPage('candidateList.table.actions.view')}
                           </button>
                           <button
                             onClick={() => onScheduleInterview && onScheduleInterview(candidate.id)}
                             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 shadow-sm hover:shadow-md"
                           >
                             <MessageSquare className="w-4 h-4 mr-1" />
-                            Schedule
+                            {tPage('candidateList.table.actions.schedule')}
                           </button>
                         </div>
                       </td>
