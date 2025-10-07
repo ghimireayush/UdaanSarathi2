@@ -394,6 +394,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('basic')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 
@@ -496,7 +497,7 @@ const AgencySettings = () => {
 }
 
 // Basic Information Section
-const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   if (isEditing) {
     return (
       <div className="card p-6">
