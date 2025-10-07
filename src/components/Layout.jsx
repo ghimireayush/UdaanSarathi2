@@ -34,9 +34,44 @@ const Layout = ({ children }) => {
     autoLoad: true 
   })
 
-  // Helper function to get navigation translations
+  // Helper function to get navigation translations with fallback
   const tNav = (key, params = {}) => {
-    return tPageSync(key, params)
+    try {
+      const translation = tPageSync(key, params)
+      // If translation is the same as the key, it means it wasn't found
+      if (translation === key || translation.includes('Missing translation')) {
+        // Provide fallback based on the key
+        const fallbacks = {
+          'items.dashboard': 'Dashboard',
+          'items.jobs': 'Jobs',
+          'items.drafts': 'Drafts',
+          'items.applications': 'Applications',
+          'items.interviews': 'Interviews',
+          'items.workflow': 'Workflow',
+          'items.teamMembers': 'Team Members',
+          'items.auditLog': 'Audit Log',
+          'items.agencySettings': 'Agency Settings',
+          'userMenu.logout': 'Logout'
+        }
+        return fallbacks[key] || key
+      }
+      return translation
+    } catch (error) {
+      // Provide fallback based on the key
+      const fallbacks = {
+        'items.dashboard': 'Dashboard',
+        'items.jobs': 'Jobs',
+        'items.drafts': 'Drafts',
+        'items.applications': 'Applications',
+        'items.interviews': 'Interviews',
+        'items.workflow': 'Workflow',
+        'items.teamMembers': 'Team Members',
+        'items.auditLog': 'Audit Log',
+        'items.agencySettings': 'Agency Settings',
+        'userMenu.logout': 'Logout'
+      }
+      return fallbacks[key] || key
+    }
   }
 
   const handleLogout = () => {
