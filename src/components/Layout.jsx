@@ -195,7 +195,7 @@ const Layout = ({ children }) => {
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-200/50 dark:border-gray-700/50 p-4">
+          <div className="flex-shrink-0 flex flex-col border-t border-gray-200/50 dark:border-gray-700/50 p-4 space-y-3">
             <div className="flex items-center w-full bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm p-2 rounded-xl shadow-sm border border-gray-200/30 dark:border-gray-600/30">
               <div className="flex-shrink-0">
                 <div className="w-9 h-9 bg-brand-green-vibrant/10 rounded-full flex items-center justify-center" role="img" aria-label="User avatar">
@@ -210,17 +210,20 @@ const Layout = ({ children }) => {
                   </>
                 )}
               </div>
-              <div className="ml-auto flex items-center space-x-1">
+              <div className="ml-auto">
                 <ThemeToggle className="flex-shrink-0" />
-                <button 
-                  onClick={handleLogout}
-                  className="flex-shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-600/50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
-                  aria-label={tNav('userMenu.logout')}
-                >
-                  <LogOut className="w-5 h-5" aria-hidden="true" />
-                </button>
               </div>
             </div>
+            
+            {/* Redesigned Logout Button */}
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
+              aria-label={tNav('userMenu.logout')}
+            >
+              <LogOut className="w-5 h-5 mr-2" aria-hidden="true" />
+              <span className="text-sm font-semibold">{tNav('userMenu.logout')}</span>
+            </button>
           </div>
         </div>
       </div>
