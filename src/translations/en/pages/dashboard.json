@@ -5,7 +5,7 @@
     "page": "dashboard"
   },
   "header": {
-    "welcomeBack": "Welcome back, {{name}}",
+    "welcomeBack": "Welcome, {{name}}",
     "roleDescriptions": {
       "admin": "Full system access - Manage all recruitment operations",
       "recipient": "Manage jobs, applications, interviews, and workflow",
