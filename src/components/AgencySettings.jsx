@@ -413,6 +413,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('contact')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 
@@ -428,6 +429,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('location')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 
@@ -625,7 +627,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 }
 
 // Contact Information Section
-const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   if (isEditing) {
     return (
       <div className="card p-6">
@@ -756,7 +758,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
 }
 
 // Location Section
-const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   const [showMapModal, setShowMapModal] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState(null)
 
@@ -1153,7 +1155,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
 }
 
 // Social Media Section
-const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   const socialPlatforms = [
     { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
     { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/yourpage' },
@@ -1244,7 +1246,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
 }
 
 // Services Section
-const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   const addItem = (field, item) => {
     const currentItems = formData[field] || []
     if (item.trim() && !currentItems.includes(item.trim())) {
@@ -1461,7 +1463,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 }
 
 // Settings Section
-const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving }) => {
+const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   if (isEditing) {
     return (
       <div className="card p-6">

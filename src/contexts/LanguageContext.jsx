@@ -105,7 +105,7 @@ export const LanguageProvider = ({ children }) => {
     const loadingPromise = async () => {
       try {
         setIsLoading(true)
-        const translations = await i18nService.loadPageTranslationsWithFallback(pageName, locale)
+        const translations = await i18nService.loadPageTranslations(pageName, locale)
         setPageTranslations(prev => new Map(prev).set(cacheKey, translations))
         
         // Preload fallback locale in background if requested
@@ -150,12 +150,19 @@ export const LanguageProvider = ({ children }) => {
     if (background) {
       // Preload in background
       setTimeout(() => {
-        i18nService.preloadPageTranslations(pageNames, locale, true)
+        pageNames.forEach(pageName => {
+          i18nService.loadPageTranslations(pageName, locale)
+            .catch(err => console.warn(`Failed to preload ${pageName}:`, err))
+        })
       }, 0)
       return Promise.resolve({ background: true })
     }
     
-    return i18nService.preloadPageTranslations(pageNames, locale, false)
+    // Load each page individually since preloadPageTranslations doesn't exist
+    const results = await Promise.allSettled(
+      pageNames.map(pageName => i18nService.loadPageTranslations(pageName, locale))
+    )
+    return results
   }, [locale])
 
   /**
