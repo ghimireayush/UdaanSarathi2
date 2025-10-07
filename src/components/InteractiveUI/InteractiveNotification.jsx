@@ -19,35 +19,35 @@ const InteractiveNotification = ({
   const types = {
     success: {
       icon: CheckCircle,
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      iconColor: 'text-green-500',
-      titleColor: 'text-green-800',
-      messageColor: 'text-green-700'
+      bgColor: 'bg-green-50 dark:bg-green-900/20',
+      borderColor: 'border-green-200 dark:border-green-800',
+      iconColor: 'text-green-500 dark:text-green-400',
+      titleColor: 'text-green-800 dark:text-green-200',
+      messageColor: 'text-green-700 dark:text-green-300'
     },
     error: {
       icon: AlertCircle,
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      iconColor: 'text-red-500',
-      titleColor: 'text-red-800',
-      messageColor: 'text-red-700'
+      bgColor: 'bg-red-50 dark:bg-red-900/20',
+      borderColor: 'border-red-200 dark:border-red-800',
+      iconColor: 'text-red-500 dark:text-red-400',
+      titleColor: 'text-red-800 dark:text-red-200',
+      messageColor: 'text-red-700 dark:text-red-300'
     },
     warning: {
       icon: AlertTriangle,
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
-      iconColor: 'text-yellow-500',
-      titleColor: 'text-yellow-800',
-      messageColor: 'text-yellow-700'
+      bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+      borderColor: 'border-yellow-200 dark:border-yellow-800',
+      iconColor: 'text-yellow-500 dark:text-yellow-400',
+      titleColor: 'text-yellow-800 dark:text-yellow-200',
+      messageColor: 'text-yellow-700 dark:text-yellow-300'
     },
     info: {
       icon: Info,
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      iconColor: 'text-blue-500',
-      titleColor: 'text-blue-800',
-      messageColor: 'text-blue-700'
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      borderColor: 'border-blue-200 dark:border-blue-800',
+      iconColor: 'text-blue-500 dark:text-blue-400',
+      titleColor: 'text-blue-800 dark:text-blue-200',
+      messageColor: 'text-blue-700 dark:text-blue-300'
     }
   }
 
@@ -139,7 +139,7 @@ const InteractiveNotification = ({
 
         {/* Progress Bar for Auto Close */}
         {autoClose && isAnimating && (
-          <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+          <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
             <div
               className="bg-current h-1 rounded-full transition-all ease-linear"
               style={{
