@@ -170,7 +170,7 @@ const Layout = ({ children }) => {
               <div className="ml-3">
                 {user && (
                   <>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{user.name}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{user.fullName || user.username}</p>
                     <p className="text-xs font-medium text-gray-600 dark:text-gray-400 capitalize">{user.role}</p>
                   </>
                 )}

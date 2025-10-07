@@ -363,7 +363,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                  {tPage('header.welcomeBack', { name: user?.name })}
+                  {tPage('header.welcomeBack', { name: user?.fullName || user?.username || 'User' })}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 mb-4 text-lg">
                   {isAdmin() && tPage('header.roleDescriptions.admin')}
