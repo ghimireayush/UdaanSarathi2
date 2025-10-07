@@ -120,7 +120,7 @@ describe('TranslationPreloader', () => {
     
     setTimeout(() => {
       expect(i18nService.preloadPageTranslations).toHaveBeenCalledWith(
-        ['login', 'dashboard', 'register', 'member-login'],
+        ['login', 'dashboard', 'register', 'member-login', 'navigation'],
         'en',
         true
       )

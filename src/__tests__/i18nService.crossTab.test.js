@@ -440,10 +440,11 @@ describe('i18nService Cross-Tab Synchronization', () => {
       )
       
       // Don't call init() here as it will trigger preloading automatically
-      await i18nService.preloadCriticalTranslations(['login', 'dashboard'])
+      await i18nService.preloadCriticalTranslations(['login', 'dashboard', 'navigation'])
       
       expect(fetch).toHaveBeenCalledWith('/translations/en/pages/login.json')
       expect(fetch).toHaveBeenCalledWith('/translations/en/pages/dashboard.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/en/pages/navigation.json')
     })
   })
 })

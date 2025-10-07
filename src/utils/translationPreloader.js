@@ -120,7 +120,7 @@ class TranslationPreloader {
    * Preload critical pages for the application
    */
   preloadCriticalPages() {
-    const criticalPages = ['login', 'dashboard', 'register', 'member-login']
+    const criticalPages = ['login', 'dashboard', 'register', 'member-login', 'navigation']
     
     setTimeout(() => {
       i18nService.preloadPageTranslations(criticalPages, i18nService.getLocale(), true)

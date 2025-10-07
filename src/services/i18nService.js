@@ -2690,7 +2690,7 @@ class I18nService {
    * Preload critical translations for performance
    * @param {Array<string>} pageNames - Array of critical page names
    */
-  async preloadCriticalTranslations(pageNames = ['login', 'dashboard', 'register']) {
+  async preloadCriticalTranslations(pageNames = ['login', 'dashboard', 'register', 'navigation']) {
     const startTime = performance.now()
     const promises = []
     
@@ -2993,7 +2993,7 @@ class I18nService {
     this.setLocale(detectedLocale, false) // Don't broadcast on init
     
     // Preload critical translations in background
-    this.preloadCriticalTranslations(['login', 'dashboard', 'register', 'member-login'])
+    this.preloadCriticalTranslations(['login', 'dashboard', 'register', 'member-login', 'navigation'])
     
     // Setup cache optimization interval (every 10 minutes)
     if (typeof window !== 'undefined') {
