@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "type": "common"
+  },
+  "loading": "लोड हुँदै...",
+  "error": "त्रुटि",
+  "success": "सफल",
+  "cancel": "रद्द गर्नुहोस्",
+  "save": "सुरक्षित गर्नुहोस्",
+  "delete": "मेटाउनुहोस्",
+  "edit": "सम्पादन गर्नुहोस्",
+  "view": "हेर्नुहोस्",
+  "search": "खोज्नुहोस्",
+  "filter": "फिल्टर",
+  "sort": "क्रमबद्ध गर्नुहोस्",
+  "next": "अर्को",
+  "previous": "अघिल्लो",
+  "page": "पृष्ठ",
+  "of": "को",
+  "items": "वस्तुहरू",
+  "selected": "चयन गरिएको",
+  "language": "भाषा",
+  "changeLanguage": "भाषा परिवर्तन गर्नुहोस्",
+  "validation": {
+    "required": "यो फिल्ड आवश्यक छ",
+    "invalid": "अवैध इनपुट",
+    "tooShort": "इनपुट धेरै छोटो छ",
+    "tooLong": "इनपुट धेरै लामो छ",
+    "invalidEmail": "अवैध इमेल ठेगाना",
+    "invalidPhone": "अवैध फोन नम्बर"
+  },
+  "buttons": {
+    "submit": "पेश गर्नुहोस्",
+    "reset": "रिसेट गर्नुहोस्",
+    "close": "बन्द गर्नुहोस्",
+    "confirm": "पुष्टि गर्नुहोस्",
+    "back": "फिर्ता",
+    "continue": "जारी राख्नुहोस्"
+  },
+  "navigation": {
+    "home": "घर",
+    "dashboard": "ड्यासबोर्ड",
+    "applications": "आवेदनहरू",
+    "interviews": "अन्तर्वार्ताहरू",
+    "settings": "सेटिङहरू",
+    "logout": "लगआउट"
+  }
+}

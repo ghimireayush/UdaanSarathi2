@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "jobs"
+  },
+  "title": "जागिरहरू",
+  "subtitle": "जागिर पोस्टिङ, आवेदनहरू, र उम्मेदवार पाइपलाइन व्यवस्थापन गर्नुहोस्",
+  "actions": {
+    "createJob": "जागिर सिर्जना गर्नुहोस्"
+  },
+  "filters": {
+    "searchPlaceholder": "सन्दर्भ ID, शीर्षक, कम्पनीद्वारा खोज्नुहोस्...",
+    "allCountries": "सबै देशहरू",
+    "sortBy": {
+      "publishedDate": "प्रकाशित मिति",
+      "applications": "उम्मेदवार संख्या",
+      "shortlisted": "छनोट सूची संख्या",
+      "interviews": "आजका अन्तर्वार्ताहरू"
+    },
+    "status": {
+      "published": "प्रकाशित",
+      "draft": "मस्यौदा",
+      "closed": "बन्द",
+      "paused": "रोकिएको"
+    }
+  },
+  "sections": {
+    "countryDistribution": {
+      "title": "देशअनुसार खुला जागिर वितरण"
+    },
+    "jobListings": {
+      "title": "जागिर सूची"
+    }
+  },
+  "table": {
+    "headers": {
+      "jobDetails": "जागिर विवरण",
+      "applicationStatus": "आवेदन स्थिति",
+      "posted": "पोस्ट गरिएको",
+      "actions": "कार्यहरू"
+    },
+    "jobDetails": {
+      "reference": "सन्दर्भ: {{id}}"
+    },
+    "applicationStatus": {
+      "applicants": "आवेदकहरू ({{count}})",
+      "shortlisted": "छनोट सूचीमा: {{count}}",
+      "interviews": "अन्तर्वार्ता: आज {{today}} मध्ये {{total}}"
+    },
+    "actions": {
+      "viewDetails": "विवरण हेर्नुहोस्",
+      "viewShortlist": "छनोट सूची हेर्नुहोस्",
+      "manageCandidates": "उम्मेदवारहरू व्यवस्थापन गर्नुहोस्",
+      "schedule": "समयतालिका"
+    }
+  },
+  "pagination": {
+    "showing": "{{total}} मध्ये {{start}} देखि {{end}} जागिरहरू देखाइँदै"
+  },
+  "loading": {
+    "jobs": "जागिरहरू लोड गर्दै..."
+  },
+  "error": {
+    "failedToLoad": "जागिरहरू लोड गर्न असफल",
+    "retry": "पुनः प्रयास गर्नुहोस्",
+    "reload": "पृष्ठ पुनः लोड गर्नुहोस्"
+  },
+  "sortOptions": {
+    "publishedDate": "प्रकाशित मिति",
+    "applications": "उम्मेदवार संख्या",
+    "shortlisted": "छनोट सूची संख्या",
+    "interviews": "आजका अन्तर्वार्ताहरू"
+  }
+}

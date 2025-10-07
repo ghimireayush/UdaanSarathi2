@@ -141,7 +141,7 @@ Examples:
   node src/utils/validateTranslations.js
   node src/utils/validateTranslations.js --verbose
   node src/utils/validateTranslations.js --locale en
-  node src/utils/validateTranslations.js --file src/translations/en/pages/login.json
+  node src/utils/validateTranslations.js --file public/translations/en/pages/login.json
   node src/utils/validateTranslations.js --output validation-report.json
 `)
   }

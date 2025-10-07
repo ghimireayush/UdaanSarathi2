@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "member-login"
+  },
+  "title": "Member Portal",
+  "subtitle": "Recipients & Interview Coordinators",
+  "branding": {
+    "logoAlt": "Udaan Sarathi Logo"
+  },
+  "welcome": {
+    "withName": "Welcome, {{name}}!",
+    "general": "Recipients & Interview Coordinators"
+  },
+  "cardTitle": {
+    "withInvitation": "Complete Your Setup",
+    "default": "Sign in to continue"
+  },
+  "invitationMessage": "You've been invited to join the team. Please sign in to access your dashboard.",
+  "form": {
+    "username": {
+      "label": "Username or Phone Number",
+      "placeholder": "Enter your username or phone"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password"
+    },
+    "submit": {
+      "withInvitation": "Access Dashboard",
+      "default": "Sign In"
+    },
+    "submitting": "Signing in..."
+  },
+  "invitationDetails": {
+    "title": "Invitation Details:",
+    "description": "You've been invited as a team member. After signing in, you'll have access to the agency management dashboard."
+  },
+  "messages": {
+    "loginFailed": "Login failed. Please check your credentials.",
+    "unauthorizedAccess": "This portal is for team members only (Recipients & Interview Coordinators). Administrators must use the /login page.",
+    "unexpectedError": "An unexpected error occurred. Please try again."
+  },
+  "footer": {
+    "needHelp": "Need help? Contact your agency administrator",
+    "copyright": "© {{year}} Udaan Sarathi. All rights reserved."
+  }
+}

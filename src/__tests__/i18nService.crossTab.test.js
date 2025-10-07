@@ -394,7 +394,7 @@ describe('i18nService Cross-Tab Synchronization', () => {
         content: 'Test content'
       })
       
-      expect(fetch).toHaveBeenCalledWith('/src/translations/en/pages/test-page.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/en/pages/test-page.json')
     })
 
     test('should handle missing page name gracefully', async () => {
@@ -422,8 +422,8 @@ describe('i18nService Cross-Tab Synchronization', () => {
       await new Promise(resolve => setTimeout(resolve, 10))
       
       // Should load both ne and en (fallback)
-      expect(fetch).toHaveBeenCalledWith('/src/translations/ne/pages/test-page.json')
-      expect(fetch).toHaveBeenCalledWith('/src/translations/en/pages/test-page.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/ne/pages/test-page.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/en/pages/test-page.json')
     })
   })
 
@@ -442,8 +442,8 @@ describe('i18nService Cross-Tab Synchronization', () => {
       // Don't call init() here as it will trigger preloading automatically
       await i18nService.preloadCriticalTranslations(['login', 'dashboard'])
       
-      expect(fetch).toHaveBeenCalledWith('/src/translations/en/pages/login.json')
-      expect(fetch).toHaveBeenCalledWith('/src/translations/en/pages/dashboard.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/en/pages/login.json')
+      expect(fetch).toHaveBeenCalledWith('/translations/en/pages/dashboard.json')
     })
   })
 })

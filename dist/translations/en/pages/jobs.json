@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "jobs"
+  },
+  "title": "Jobs",
+  "subtitle": "Manage job postings, applications, and candidate pipeline",
+  "actions": {
+    "createJob": "Create Job"
+  },
+  "filters": {
+    "searchPlaceholder": "Search by reference ID, title, company...",
+    "allCountries": "All Countries",
+    "sortBy": {
+      "publishedDate": "Published Date",
+      "applications": "Candidate Count",
+      "shortlisted": "Shortlist Count",
+      "interviews": "Today's Interviews"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "closed": "Closed",
+      "paused": "Paused"
+    }
+  },
+  "sections": {
+    "countryDistribution": {
+      "title": "Open job distribution by country"
+    },
+    "jobListings": {
+      "title": "Job Listings"
+    }
+  },
+  "table": {
+    "headers": {
+      "jobDetails": "JOB DETAILS",
+      "applicationStatus": "APPLICATION STATUS",
+      "posted": "POSTED",
+      "actions": "ACTIONS"
+    },
+    "jobDetails": {
+      "reference": "Ref: {{id}}"
+    },
+    "applicationStatus": {
+      "applicants": "Applicants ({{count}})",
+      "shortlisted": "Shortlisted: {{count}}",
+      "interviews": "Interviews: {{today}} of {{total}} today"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "viewShortlist": "View Shortlist",
+      "manageCandidates": "Manage Candidates",
+      "schedule": "Schedule"
+    }
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} jobs"
+  },
+  "loading": {
+    "jobs": "Loading jobs..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load jobs",
+    "retry": "Retry",
+    "reload": "Reload Page"
+  },
+  "sortOptions": {
+    "publishedDate": "Published Date",
+    "applications": "Candidate Count",
+    "shortlisted": "Shortlist Count",
+    "interviews": "Today's Interviews"
+  }
+}

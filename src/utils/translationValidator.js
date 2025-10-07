@@ -24,7 +24,7 @@ export function validateTranslationFile(filePath, translations) {
  * @param {string} translationsDir - Path to translations directory
  * @returns {Promise<Object>} Comprehensive validation report
  */
-export async function validateAllTranslationFiles(translationsDir = '/src/translations') {
+export async function validateAllTranslationFiles(translationsDir = '/translations') {
   const report = {
     timestamp: new Date().toISOString(),
     directory: translationsDir,
@@ -288,7 +288,7 @@ async function loadAllTranslationsForLocale(locale) {
   
   // Load common translations
   try {
-    const commonResponse = await fetch(`/src/translations/${locale}/common.json`)
+    const commonResponse = await fetch(`/translations/${locale}/common.json`)
     if (commonResponse.ok) {
       translations.common = await commonResponse.json()
     }
@@ -306,7 +306,7 @@ async function loadAllTranslationsForLocale(locale) {
   translations.pages = {}
   for (const pageFile of pageFiles) {
     try {
-      const pageResponse = await fetch(`/src/translations/${locale}/pages/${pageFile}.json`)
+      const pageResponse = await fetch(`/translations/${locale}/pages/${pageFile}.json`)
       if (pageResponse.ok) {
         translations.pages[pageFile] = await pageResponse.json()
       }

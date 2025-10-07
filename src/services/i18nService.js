@@ -849,7 +849,7 @@ class I18nService {
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch(`/src/translations/${locale}/pages/${pageName}.json`)
+        const response = await fetch(`/translations/${locale}/pages/${pageName}.json`)
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: Failed to load page translations for ${pageName}`)
         }
@@ -914,7 +914,7 @@ class I18nService {
     }
     
     try {
-      const response = await fetch(`/src/translations/${locale}/components/${componentName}.json`)
+      const response = await fetch(`/translations/${locale}/components/${componentName}.json`)
       if (!response.ok) {
         throw new Error(`Failed to load component translations for ${componentName}`)
       }

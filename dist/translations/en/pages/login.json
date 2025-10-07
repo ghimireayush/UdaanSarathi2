@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-09-25",
+    "page": "login"
+  },
+  "title": "Admin Login",
+  "branding": {
+    "appName": "Udaan Sarathi",
+    "logoAlt": "Udaan Sarathi Logo"
+  },
+  "form": {
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter your username"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password"
+    },
+    "submit": "Sign In",
+    "submitting": "Signing in..."
+  },
+  "messages": {
+    "accessDenied": "This portal is for administrators only. Please use the member login if you are a Recipient or Interview Coordinator.",
+    "unexpectedError": "An unexpected error occurred. Please try again."
+  },
+  "footer": {
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up here",
+    "copyright": "© {{year}} Udaan Sarathi. All rights reserved."
+  }
+}

@@ -456,7 +456,7 @@ class TranslationDevTools {
       
       for (const file of expectedFiles) {
         try {
-          const response = await fetch(`/src/translations/${locale}/${file}`)
+          const response = await fetch(`/translations/${locale}/${file}`)
           if (response.ok) {
             structureReport.locales[locale].existingFiles.push(file)
           } else {

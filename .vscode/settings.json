@@ -32,5 +32,6 @@
     "tailwindCSS.experimental.classRegex": [
         "class[Name]*\\s*[:=]\\s*[\"'`]([^\"'`]*)[\"'`]",
         "className\\s*[:=]\\s*[\"'`]([^\"'`]*)[\"'`]"
-    ]
+    ],
+    "kiroAgent.configureMCP": "Disabled"
 }
