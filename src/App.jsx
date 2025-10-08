@@ -35,8 +35,6 @@ import accessibilityService from './services/accessibilityService'
 function App() {
   // Initialize i18n service
   useEffect(() => {
-    i18nService.init()
-    
     // Cleanup on unmount
     return () => {
       accessibilityService.cleanup()

@@ -1,5 +1,46 @@
 // Internationalization service for multi-language support
 class I18nService {
+  /**
+   * Get default structure for a section
+   * @param {string} pageName - Name of the page
+   * @param {string} section - Section name
+   * @returns {Object} Default structure for the section
+   */
+  getDefaultStructure(pageName, section) {
+    const defaultStructures = {
+      'interviews': {
+        'schedule': {
+          'title': 'Schedule Interview',
+          'form': {},
+          'actions': {}
+        },
+        'status': {
+          'scheduled': 'Scheduled',
+          'completed': 'Completed',
+          'cancelled': 'Cancelled'
+        }
+      }
+    }
+
+    return defaultStructures[pageName]?.[section] || {}
+  }
+
+  /**
+   * Mark translations as structure-ensured
+   * @param {Object} translations - Translations object
+   */
+  markStructureEnsured(translations) {
+    if (translations && typeof translations === 'object') {
+      // Use a non-enumerable property to mark as processed
+      Object.defineProperty(translations, '_structureEnsured', {
+        value: true,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      })
+    }
+  }
+
   constructor() {
     this.currentLocale = 'en'
     this.translations = new Map()
@@ -1386,6 +1427,11 @@ class I18nService {
    * @param {string} pageName - Name of the page
    */
   ensureRequiredStructure(translations, pageName) {
+    if (!translations) return;
+
+    // Skip if already processed to avoid duplicate warnings
+    if (translations._structureEnsured) return;
+    
     // Ensure title exists
     if (!translations.title) {
       translations.title = this.generatePageTitle(pageName)
@@ -1404,8 +1450,9 @@ class I18nService {
     if (requiredSections) {
       for (const section of requiredSections) {
         if (!translations[section]) {
-          translations[section] = {}
-          console.warn(`Added missing section '${section}' to ${pageName} translations`)
+          // Only add structure if it doesn't exist
+          translations[section] = this.getDefaultStructure(pageName, section)
+          console.debug(`Added missing section '${section}' to ${pageName} translations`)
         }
       }
     }
