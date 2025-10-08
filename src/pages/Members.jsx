@@ -5,7 +5,8 @@ import { useLanguage } from '../hooks/useLanguage';
 import LanguageSwitch from '../components/LanguageSwitch';
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService';
 import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
-import Pagination from '../components/ui/Pagination';
+import { usePagination } from '../hooks/usePagination.js';
+import PaginationWrapper from '../components/PaginationWrapper.jsx';
 
 const Members = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +20,34 @@ const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Filter and search logic
+  const filteredMembers = members.filter(member => {
+    const memberName = member.name || member.full_name || '';
+    const memberPhone = member.mobileNumber || member.phone || '';
+    const matchesSearch = memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         memberPhone.includes(searchTerm);
+    const matchesRole = roleFilter === 'all' || member.role === roleFilter;
+    const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
+    
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  // Pagination hook
+  const {
+    currentData: paginatedMembers,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    itemsPerPageOptions,
+    goToPage,
+    changeItemsPerPage,
+    resetPagination
+  } = usePagination(filteredMembers, {
+    initialItemsPerPage: 10,
+    itemsPerPageOptions: [5, 10, 25, 50]
+  });
   
   const { isAdmin, hasPermission, PERMISSIONS } = useAuth();
   const { confirm } = useConfirm();
@@ -154,32 +181,10 @@ const Members = () => {
     }
   };
 
-  // Filter and search logic
-  const filteredMembers = members.filter(member => {
-    const memberName = member.name || member.full_name || '';
-    const memberPhone = member.mobileNumber || member.phone || '';
-    const matchesSearch = memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         memberPhone.includes(searchTerm);
-    const matchesRole = roleFilter === 'all' || member.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
-    
-    return matchesSearch && matchesRole && matchesStatus;
-  });
-
-  // Pagination logic
-  const totalItems = filteredMembers.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + itemsPerPage);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (newItemsPerPage) => {
-    setItemsPerPage(newItemsPerPage);
-    setCurrentPage(1);
-  };
+  // Reset pagination when filters change
+  useEffect(() => {
+    resetPagination();
+  }, [searchTerm, roleFilter, statusFilter, resetPagination]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -451,15 +456,18 @@ const Members = () => {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {filteredMembers.length > 0 && (
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-            <Pagination
+            <PaginationWrapper
               currentPage={currentPage}
               totalPages={totalPages}
               totalItems={totalItems}
               itemsPerPage={itemsPerPage}
-              onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
+              itemsPerPageOptions={itemsPerPageOptions}
+              onPageChange={goToPage}
+              onItemsPerPageChange={changeItemsPerPage}
+              showInfo={true}
+              showItemsPerPageSelector={true}
             />
           </div>
         )}

@@ -27,8 +27,6 @@ import {
   Image,
   Camera,
   Globe,
-  ChevronLeft,
-  ChevronRight,
   CheckSquare,
   Square
 } from 'lucide-react'
@@ -36,9 +34,11 @@ import { format } from 'date-fns'
 import { jobService } from '../services/index.js'
 import DraftListManagement from '../components/DraftListManagement'
 import JobDraftWizard from '../components/JobDraftWizard'
-import { InteractiveFilter, InteractiveButton, InteractiveCard, InteractivePagination, PaginationInfo } from '../components/InteractiveUI'
+import { InteractiveFilter, InteractiveButton, InteractiveCard } from '../components/InteractiveUI'
 import { useLanguage } from '../hooks/useLanguage'
 import LanguageSwitch from '../components/LanguageSwitch'
+import { usePagination } from '../hooks/usePagination.js'
+import PaginationWrapper from '../components/PaginationWrapper.jsx'
 
 const Drafts = () => {
   const navigate = useNavigate()
@@ -65,6 +65,22 @@ const Drafts = () => {
     limit: 20,
     total: 0,
     totalPages: 0
+  })
+
+  // Client-side pagination for drafts
+  const {
+    currentData: paginatedDrafts,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    itemsPerPageOptions,
+    goToPage,
+    changeItemsPerPage,
+    resetPagination
+  } = usePagination(drafts, {
+    initialItemsPerPage: 12,
+    itemsPerPageOptions: [6, 12, 24, 48]
   })
   const [selectedDrafts, setSelectedDrafts] = useState(new Set())
   const [showWizard, setShowWizard] = useState(false)
@@ -99,6 +115,7 @@ const Drafts = () => {
       return debounce((searchTerm) => {
         setFilters(prev => ({ ...prev, search: searchTerm }))
         setPagination(prev => ({ ...prev, page: 1 }))
+        resetPagination()
       }, 300)
     },
     []
@@ -130,6 +147,7 @@ const Drafts = () => {
     } else {
       setFilters(prev => ({ ...prev, [key]: value }))
       setPagination(prev => ({ ...prev, page: 1 }))
+      resetPagination()
     }
   }, [debouncedSearch])
 
@@ -764,7 +782,7 @@ const Drafts = () => {
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
             : "space-y-4"
           }>
-            {drafts.map((draft) => (
+            {paginatedDrafts.map((draft) => (
               <DraftCard
                 key={draft.id}
                 draft={draft}
@@ -786,12 +804,18 @@ const Drafts = () => {
           </div>
 
           {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="mt-8 flex justify-center">
-              <InteractivePagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={handlePageChange}
+          {drafts.length > 0 && (
+            <div className="mt-8 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+              <PaginationWrapper
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                itemsPerPageOptions={itemsPerPageOptions}
+                onPageChange={goToPage}
+                onItemsPerPageChange={changeItemsPerPage}
+                showInfo={true}
+                showItemsPerPageSelector={true}
               />
             </div>
           )}

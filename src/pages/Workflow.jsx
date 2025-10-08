@@ -21,7 +21,8 @@ import { useLanguage } from '../hooks/useLanguage'
 import LanguageSwitch from '../components/LanguageSwitch'
 
 import CandidateSummaryS2 from '../components/CandidateSummaryS2.jsx'
-import InteractivePagination, { PaginationInfo, ItemsPerPageSelector } from '../components/InteractiveUI/InteractivePagination.jsx'
+import { usePagination } from '../hooks/usePagination.js'
+import PaginationWrapper from '../components/PaginationWrapper.jsx'
 
 const Workflow = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -44,10 +45,21 @@ const Workflow = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [selectedJobFilter, setSelectedJobFilter] = useState('all')
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [allCandidates, setAllCandidates] = useState([]) // Store all candidates for pagination
+  // Pagination hook
+  const {
+    currentData: paginatedCandidates,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    itemsPerPageOptions,
+    goToPage,
+    changeItemsPerPage,
+    resetPagination
+  } = usePagination(candidates, {
+    initialItemsPerPage: 15,
+    itemsPerPageOptions: [10, 15, 25, 50]
+  })
 
   // Data state
   const [candidates, setCandidates] = useState([])
@@ -553,27 +565,18 @@ const Workflow = () => {
       {/* Pagination Controls - Top */}
       {(activeTab === 'by-job' ? Object.keys(candidatesByJob).length > 0 : filteredCandidates.length > 0) && (
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <PaginationInfo
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCandidates}
-              itemsPerPage={itemsPerPage}
-            />
-            <div className="flex items-center gap-4">
-              <ItemsPerPageSelector
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-                options={[5, 10, 25, 50]}
-              />
-              <InteractivePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                size="sm"
-              />
-            </div>
-          </div>
+          <PaginationWrapper
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            itemsPerPageOptions={itemsPerPageOptions}
+            onPageChange={goToPage}
+            onItemsPerPageChange={changeItemsPerPage}
+            showInfo={true}
+            showItemsPerPageSelector={true}
+            size="sm"
+          />
         </div>
       )}
 
@@ -653,12 +656,18 @@ const Workflow = () => {
       </div>
 
       {/* Pagination Controls - Bottom */}
-      {totalCandidates > itemsPerPage && (
-        <div className="mt-8 flex justify-center">
-          <InteractivePagination
+      {totalItems > itemsPerPage && (
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <PaginationWrapper
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            itemsPerPageOptions={itemsPerPageOptions}
+            onPageChange={goToPage}
+            onItemsPerPageChange={changeItemsPerPage}
+            showInfo={false}
+            showItemsPerPageSelector={false}
             size="md"
           />
         </div>

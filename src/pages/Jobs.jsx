@@ -8,8 +8,6 @@ import {
   Calendar,
   Eye,
   AlertCircle,
-  ChevronLeft,
-  ChevronRight,
   UserCheck,
   Clock
 } from 'lucide-react'
@@ -19,6 +17,8 @@ import PermissionGuard from '../components/PermissionGuard.jsx'
 import useErrorHandler from '../hooks/useErrorHandler.js'
 import { useLanguage } from '../hooks/useLanguage.js'
 import LanguageSwitch from '../components/LanguageSwitch'
+import { usePagination } from '../hooks/usePagination.js'
+import PaginationWrapper from '../components/PaginationWrapper.jsx'
 
 
 const Jobs = () => {
@@ -34,12 +34,27 @@ const Jobs = () => {
     status: 'published',
     sortBy: 'published_date'
   })
-  const [pagination, setPagination] = useState({ page: 1, limit: 10 })
   const [jobs, setJobs] = useState([])
-
+  const [allJobs, setAllJobs] = useState([]) // Store all jobs for client-side pagination
   const [jobStatuses, setJobStatuses] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [countryDistribution, setCountryDistribution] = useState({})
+
+  // Pagination hook
+  const {
+    currentData: paginatedJobs,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    itemsPerPageOptions,
+    goToPage,
+    changeItemsPerPage,
+    resetPagination
+  } = usePagination(jobs, {
+    initialItemsPerPage: 10,
+    itemsPerPageOptions: [5, 10, 25, 50]
+  })
 
   // Fetch jobs data using service
   useEffect(() => {
@@ -54,6 +69,7 @@ const Jobs = () => {
           jobService.getJobStatistics()
         ])
         
+        setAllJobs(jobsData)
         setJobs(jobsData)
         setJobStatuses(statusesData)
         setCountryDistribution(statsData.byCountry || {})
@@ -69,11 +85,7 @@ const Jobs = () => {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }))
-    setPagination(prev => ({ ...prev, page: 1 })) // Reset to first page
-  }
-
-  const handlePageChange = (newPage) => {
-    setPagination(prev => ({ ...prev, page: newPage }))
+    resetPagination() // Reset to first page when filters change
   }
 
 
@@ -287,7 +299,7 @@ const Jobs = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {jobs.map(job => {
+                  {paginatedJobs.map(job => {
                     const publishedDate = job.published_at || job.created_at
                     const relativeDate = formatDistanceToNow(new Date(publishedDate), { addSuffix: true })
                     const absoluteDate = format(new Date(publishedDate), 'MMM d, yyyy HH:mm')
@@ -372,36 +384,24 @@ const Jobs = () => {
                 </tbody>
               </table>
             </div>
-            
-            {/* Pagination */}
-            {jobs.length > 0 && Math.ceil(jobs.length / pagination.limit) > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {tPageSync('pagination.showing', { 
-                    start: ((pagination.page - 1) * pagination.limit) + 1, 
-                    end: Math.min(pagination.page * pagination.limit, jobs.length), 
-                    total: jobs.length 
-                  })}
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page >= Math.ceil(jobs.length / pagination.limit)}
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
+          
+          {/* Pagination */}
+          {jobs.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+              <PaginationWrapper
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                itemsPerPageOptions={itemsPerPageOptions}
+                onPageChange={goToPage}
+                onItemsPerPageChange={changeItemsPerPage}
+                showInfo={true}
+                showItemsPerPageSelector={true}
+              />
+            </div>
+          )}
     </div>
   )
 }

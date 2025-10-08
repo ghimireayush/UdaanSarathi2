@@ -8,6 +8,8 @@ import { candidateService, jobService, interviewService } from '../services/inde
 import { format, startOfWeek, endOfWeek, startOfDay, endOfDay, addMinutes, isPast } from 'date-fns'
 import { useLanguage } from '../hooks/useLanguage'
 import LanguageSwitch from '../components/LanguageSwitch'
+import { usePagination } from '../hooks/usePagination.js'
+import PaginationWrapper from '../components/PaginationWrapper.jsx'
 
 const Interviews = () => {
   const { tPageSync } = useLanguage({ 
@@ -35,6 +37,22 @@ const Interviews = () => {
   const [selectedCandidatesForBatch, setSelectedCandidatesForBatch] = useState(new Set())
   const [batchScheduleData, setBatchScheduleData] = useState([])
   const [gracePeriod] = useState(30) // 30 minutes grace period for unattended flagging
+
+  // Pagination for interviews
+  const {
+    currentData: paginatedInterviews,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    itemsPerPageOptions,
+    goToPage,
+    changeItemsPerPage,
+    resetPagination
+  } = usePagination(interviews, {
+    initialItemsPerPage: 20,
+    itemsPerPageOptions: [10, 20, 50, 100]
+  })
 
   useEffect(() => {
     loadData()
@@ -378,11 +396,30 @@ const Interviews = () => {
         {activeTab === 'scheduled' && (
           <>
             {viewMode === 'list' ? (
-              <ScheduledInterviews 
-                candidates={candidates}
-                jobId={selectedJob}
-                interviews={getFilteredInterviews()}
-              />
+              <div>
+                <ScheduledInterviews 
+                  candidates={candidates}
+                  jobId={selectedJob}
+                  interviews={paginatedInterviews}
+                />
+                
+                {/* Pagination for interviews */}
+                {interviews.length > 0 && (
+                  <div className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <PaginationWrapper
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={totalItems}
+                      itemsPerPage={itemsPerPage}
+                      itemsPerPageOptions={itemsPerPageOptions}
+                      onPageChange={goToPage}
+                      onItemsPerPageChange={changeItemsPerPage}
+                      showInfo={true}
+                      showItemsPerPageSelector={true}
+                    />
+                  </div>
+                )}
+              </div>
             ) : (
               <InterviewCalendarView
                 interviews={getFilteredInterviews()}

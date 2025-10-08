@@ -5,8 +5,8 @@ import auditService from './auditService.js'
 // Utility function to simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Error simulation (5% chance)
-const shouldSimulateError = () => Math.random() < 0.05
+// Error simulation (0.1% chance - reduced for better development experience)
+const shouldSimulateError = () => Math.random() < 0.001
 
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
@@ -20,8 +20,12 @@ class AgencyService {
    */
   async getAgencyProfile() {
     await delay()
+    
+    // Reduced error simulation for better development experience
     if (shouldSimulateError()) {
-      throw new Error('Failed to fetch agency profile')
+      console.warn('Agency service: Simulated error occurred, using fallback data')
+      // Return fallback data instead of throwing error
+      return deepClone(agencyData)
     }
 
     return deepClone(agencyCache)
