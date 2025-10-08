@@ -37,6 +37,13 @@ const Workflow = () => {
     return tPageSync(key, params)
   }
 
+  // Data state - declare first to avoid temporal dead zone
+  const [candidates, setCandidates] = useState([])
+  const [allCandidates, setAllCandidates] = useState([])
+  const [analytics, setAnalytics] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
   // State management
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'by-job')
   const [selectedStage, setSelectedStage] = useState(searchParams.get('stage') || 'applied')
@@ -60,12 +67,6 @@ const Workflow = () => {
     initialItemsPerPage: 15,
     itemsPerPageOptions: [10, 15, 25, 50]
   })
-
-  // Data state
-  const [candidates, setCandidates] = useState([])
-  const [analytics, setAnalytics] = useState({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
 
   // Workflow stages configuration - Simplified 4-stage pipeline
   const workflowStages = [
@@ -335,28 +336,10 @@ const Workflow = () => {
       return acc
     }, {}) : {}
 
-  // Pagination logic
-  const totalCandidates = activeTab === 'by-job' ?
-    (selectedJobFilter === 'all' ? Object.keys(candidatesByJob).length : 1) :
-    filteredCandidates.length
-  const totalPages = Math.ceil(totalCandidates / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const paginatedCandidates = filteredCandidates.slice(startIndex, endIndex)
-
-  // Reset to first page when stage changes
+  // Reset pagination when filters change
   useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedStage, activeTab, searchQuery, selectedJobFilter])
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page)
-  }
-
-  const handleItemsPerPageChange = (newItemsPerPage) => {
-    setItemsPerPage(newItemsPerPage)
-    setCurrentPage(1)
-  }
+    resetPagination()
+  }, [selectedStage, activeTab, searchQuery, selectedJobFilter, resetPagination])
 
   if (isLoading) {
     return (
@@ -600,6 +583,8 @@ const Workflow = () => {
             const filteredJobEntries = selectedJobFilter === 'all'
               ? jobEntries
               : jobEntries.filter(([jobTitle]) => jobTitle === selectedJobFilter)
+            const startIndex = (currentPage - 1) * itemsPerPage
+            const endIndex = startIndex + itemsPerPage
             const paginatedJobEntries = filteredJobEntries.slice(startIndex, endIndex)
             return paginatedJobEntries.map(([jobTitle, jobCandidates]) => (
               <div key={jobTitle} className="card p-6">

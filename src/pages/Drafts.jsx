@@ -67,6 +67,26 @@ const Drafts = () => {
     totalPages: 0
   })
 
+  // Data state - declare first to avoid temporal dead zone
+  const [drafts, setDrafts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // UI state
+  const [selectedDrafts, setSelectedDrafts] = useState(new Set())
+  const [showWizard, setShowWizard] = useState(false)
+  const [deletingDrafts, setDeletingDrafts] = useState(new Set())
+  const [editingDraft, setEditingDraft] = useState(null)
+  const [editingStep, setEditingStep] = useState(0)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState('success')
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [previewDraft, setPreviewDraft] = useState(null)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [confirmAction, setConfirmAction] = useState(null)
+  const [confirmData, setConfirmData] = useState(null)
+
   // Client-side pagination for drafts
   const {
     currentData: paginatedDrafts,
@@ -82,22 +102,6 @@ const Drafts = () => {
     initialItemsPerPage: 12,
     itemsPerPageOptions: [6, 12, 24, 48]
   })
-  const [selectedDrafts, setSelectedDrafts] = useState(new Set())
-  const [showWizard, setShowWizard] = useState(false)
-  const [drafts, setDrafts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [deletingDrafts, setDeletingDrafts] = useState(new Set())
-  const [editingDraft, setEditingDraft] = useState(null)
-  const [editingStep, setEditingStep] = useState(0)
-  const [showSuccessToast, setShowSuccessToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const [toastType, setToastType] = useState('success')
-  const [showPreviewModal, setShowPreviewModal] = useState(false)
-  const [previewDraft, setPreviewDraft] = useState(null)
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [confirmAction, setConfirmAction] = useState(null)
-  const [confirmData, setConfirmData] = useState(null)
 
   // Header checkbox ref to support indeterminate state
   const headerCheckboxRef = useRef(null)

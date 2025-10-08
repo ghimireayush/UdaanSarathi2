@@ -70,6 +70,23 @@ const Applications = () => {
     totalPages: 0,
   });
 
+  // Data state - declare first to avoid temporal dead zone
+  const [applications, setApplications] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [applicationStages, setApplicationStages] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // UI state
+  const [selectedApplications, setSelectedApplications] = useState(new Set());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showStageModal, setShowStageModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [newStage, setNewStage] = useState("");
+
   // Client-side pagination for better UX (can be switched to server-side if needed)
   const {
     currentData: paginatedApplications,
@@ -85,19 +102,6 @@ const Applications = () => {
     initialItemsPerPage: 25,
     itemsPerPageOptions: [10, 25, 50, 100],
   });
-  const [selectedApplications, setSelectedApplications] = useState(new Set());
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [selectedApplication, setSelectedApplication] = useState(null);
-  const [showStageModal, setShowStageModal] = useState(false);
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [newStage, setNewStage] = useState("");
-  const [applications, setApplications] = useState([]);
-  const [jobs, setJobs] = useState([]);
-  const [applicationStages, setApplicationStages] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== "undefined" ? navigator.onLine : true
   );

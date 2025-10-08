@@ -1,62 +1,74 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Building2, MapPin, Phone, Globe, FileText, ArrowLeft } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
-import { useAuth } from '../contexts/AuthContext'
-import logo from '../assets/logo.svg'
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Building2,
+  MapPin,
+  Phone,
+  Globe,
+  FileText,
+  ArrowLeft,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/Card";
+import { useAuth } from "../contexts/AuthContext";
+import logo from "../assets/logo.svg";
 
 const CompanySetup = () => {
   const [formData, setFormData] = useState({
-    companyName: '',
-    address: '',
-    city: '',
-    country: '',
-    phone: '',
-    website: '',
-    registrationNumber: '',
-    description: ''
-  })
-  
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { createCompany } = useAuth()
-  
-  const userId = location.state?.userId
-  
+    companyName: "",
+    address: "",
+    city: "",
+    country: "",
+    phone: "",
+    website: "",
+    registrationNumber: "",
+    description: "",
+  });
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { createCompany } = useAuth();
+
+  const userId = location.state?.userId;
+
   if (!userId) {
-    navigate('/register', { replace: true })
-    return null
+    navigate("/register", { replace: true });
+    return null;
   }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }))
-  }
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
     try {
       await createCompany({
         ...formData,
-        userId
-      })
+        userId,
+      });
       // After successful company creation, redirect to dashboard
-      navigate('/dashboard')
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.message || 'Failed to create company')
+      setError(err.message || "Failed to create company");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
@@ -68,21 +80,27 @@ const CompanySetup = () => {
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
-          
+
           <div className="flex flex-col items-center mb-4">
-            <img 
-              src={logo} 
-              alt="Udaan Sarathi Logo" 
+            <img
+              src={logo}
+              alt="Udaan Sarathi Logo"
               className="w-24 h-24 object-contain mb-2"
             />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Setup Your Company</h1>
-            <p className="text-gray-600 dark:text-gray-400">Tell us about your manpower agency</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Setup Your Company
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Tell us about your manpower agency
+            </p>
           </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-xl">Company Information</CardTitle>
+            <CardTitle className="text-center text-xl">
+              Company Information
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,7 +111,10 @@ const CompanySetup = () => {
               )}
 
               <div>
-                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                <label
+                  htmlFor="companyName"
+                  className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                >
                   Company Name
                 </label>
                 <div className="relative">
@@ -114,7 +135,10 @@ const CompanySetup = () => {
               </div>
 
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                >
                   Address
                 </label>
                 <div className="relative">
@@ -136,7 +160,10 @@ const CompanySetup = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  <label
+                    htmlFor="city"
+                    className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                  >
                     City
                   </label>
                   <input
@@ -152,7 +179,10 @@ const CompanySetup = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  <label
+                    htmlFor="country"
+                    className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                  >
                     Country
                   </label>
                   <input
@@ -170,7 +200,10 @@ const CompanySetup = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                  >
                     Phone Number
                   </label>
                   <div className="relative">
@@ -191,7 +224,10 @@ const CompanySetup = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  <label
+                    htmlFor="website"
+                    className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                  >
                     Website
                   </label>
                   <div className="relative">
@@ -212,7 +248,10 @@ const CompanySetup = () => {
               </div>
 
               <div>
-                <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                <label
+                  htmlFor="registrationNumber"
+                  className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                >
                   Company Registration Number
                 </label>
                 <div className="relative">
@@ -233,7 +272,10 @@ const CompanySetup = () => {
               </div>
 
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+                >
                   Company Description
                 </label>
                 <textarea
@@ -255,14 +297,30 @@ const CompanySetup = () => {
                 >
                   {loading ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Setting Up Company...
                     </span>
                   ) : (
-                    'Complete Setup'
+                    "Complete Setup"
                   )}
                 </button>
               </div>
@@ -271,7 +329,7 @@ const CompanySetup = () => {
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CompanySetup
+export default CompanySetup;
