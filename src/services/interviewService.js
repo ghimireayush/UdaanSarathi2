@@ -427,6 +427,39 @@ class InterviewService {
   }
 
   /**
+   * Get interviews by candidate ID
+   * @param {string} candidateId - Candidate ID
+   * @returns {Promise<Array>} Array of interviews for the candidate
+   */
+  async getInterviewsByCandidateId(candidateId) {
+    return this.getInterviews({ candidate_id: candidateId })
+  }
+
+  /**
+   * Get interviews by candidate (alias for getInterviewsByCandidateId)
+   * @param {string} candidateId - Candidate ID
+   * @returns {Promise<Array>} Array of interviews for the candidate
+   */
+  async getInterviewsByCandidate(candidateId) {
+    return this.getInterviewsByCandidateId(candidateId)
+  }
+
+  /**
+   * Get interviews by date range
+   * @param {string} startDate - Start date
+   * @param {string} endDate - End date
+   * @returns {Promise<Array>} Array of interviews in the date range
+   */
+  async getInterviewsByDateRange(startDate, endDate) {
+    return this.getInterviews({ 
+      dateRange: { 
+        start: startDate, 
+        end: endDate 
+      } 
+    })
+  }
+
+  /**
    * Get calendar events for interviews
    * @param {string} startDate - Start date for calendar
    * @param {string} endDate - End date for calendar

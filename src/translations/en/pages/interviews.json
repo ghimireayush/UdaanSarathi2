@@ -43,6 +43,31 @@
     "subtitle": "Intelligent scheduling suggestions for optimal interview coverage",
     "phase2Feature": "Phase 2 Feature"
   },
+  "schedule": {
+    "individual": "Individual Scheduling",
+    "batch": "Batch Scheduling",
+    "suggested": "Suggested Schedule",
+    "aiAssisted": "AI-Assisted",
+    "selectCandidates": "Select Candidates",
+    "scheduleDetails": "Schedule Details",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration",
+    "interviewer": "Interviewer",
+    "location": "Location",
+    "notes": "Notes",
+    "requirements": "Requirements Checklist",
+    "conflicts": "Scheduling Conflicts",
+    "scheduleButton": "Schedule Interviews"
+  },
+  "status": {
+    "notScheduled": "Not Scheduled",
+    "scheduled": "Scheduled",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "rescheduled": "Rescheduled",
+    "noShow": "No Show"
+  },
   "loading": {
     "interviews": "Loading interviews..."
   },

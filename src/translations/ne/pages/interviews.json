@@ -43,6 +43,31 @@
     "subtitle": "इष्टतम अन्तर्वार्ता कभरेजको लागि बुद्धिमान निर्धारण सुझावहरू",
     "phase2Feature": "चरण २ सुविधा"
   },
+  "schedule": {
+    "individual": "व्यक्तिगत निर्धारण",
+    "batch": "समूह निर्धारण",
+    "suggested": "सुझावित तालिका",
+    "aiAssisted": "AI-सहायता प्राप्त",
+    "selectCandidates": "उम्मेदवारहरू चयन गर्नुहोस्",
+    "scheduleDetails": "तालिका विवरणहरू",
+    "date": "मिति",
+    "time": "समय",
+    "duration": "अवधि",
+    "interviewer": "अन्तर्वार्ता लिने व्यक्ति",
+    "location": "स्थान",
+    "notes": "टिप्पणीहरू",
+    "requirements": "आवश्यकताहरूको चेकलिस्ट",
+    "conflicts": "निर्धारण द्वन्द्वहरू",
+    "scheduleButton": "अन्तर्वार्ताहरू निर्धारण गर्नुहोस्"
+  },
+  "status": {
+    "notScheduled": "निर्धारित नगरिएको",
+    "scheduled": "निर्धारित",
+    "completed": "पूरा भएको",
+    "cancelled": "रद्द गरिएको",
+    "rescheduled": "पुनः निर्धारित",
+    "noShow": "उपस्थित नभएको"
+  },
   "loading": {
     "interviews": "अन्तर्वार्ताहरू लोड गर्दै..."
   },
