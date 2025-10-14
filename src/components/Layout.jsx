@@ -1,171 +1,180 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { 
-  BarChart3, 
-  Briefcase, 
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  BarChart3,
+  Briefcase,
   Users,
   UsersRound,
-  Calendar, 
-  GitBranch, 
-  FileEdit, 
+  Calendar,
+  GitBranch,
+  FileEdit,
   Settings,
   Bell,
   User,
   Menu,
   X,
   LogOut,
-  History
-} from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext.jsx'
-import { useAgency } from '../contexts/AgencyContext.jsx'
-import { PERMISSIONS } from '../services/authService.js'
-import ThemeToggle from './ThemeToggle.jsx'
-import { useLanguage } from '../hooks/useLanguage'
-import logo from '../assets/inspire-agency-logo.svg'
+  History,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useAgency } from "../contexts/AgencyContext.jsx";
+import { PERMISSIONS } from "../services/authService.js";
+import ThemeToggle from "./ThemeToggle.jsx";
+import { useLanguage } from "../hooks/useLanguage";
+import logo from "../assets/inspire-agency-logo.svg";
 
 const Layout = ({ children }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { user, logout, hasPermission, hasAnyPermission, isAdmin } = useAuth()
-  const { agencyName, agencyLogo } = useAgency()
-  const { tPageSync } = useLanguage({ 
-    pageName: 'navigation', 
-    autoLoad: true 
-  })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, hasPermission, hasAnyPermission, isAdmin } = useAuth();
+  const { agencyName, agencyLogo } = useAgency();
+  const { tPageSync } = useLanguage({
+    pageName: "navigation",
+    autoLoad: true,
+  });
 
   // Helper function to get navigation translations with fallback
   const tNav = (key, params = {}) => {
     try {
-      const translation = tPageSync(key, params)
+      const translation = tPageSync(key, params);
       // If translation is the same as the key, it means it wasn't found
-      if (translation === key || translation.includes('Missing translation')) {
+      if (translation === key || translation.includes("Missing translation")) {
         // Provide fallback based on the key
         const fallbacks = {
-          'items.dashboard': 'Dashboard',
-          'items.jobs': 'Jobs',
-          'items.drafts': 'Drafts',
-          'items.applications': 'Applications',
-          'items.interviews': 'Interviews',
-          'items.workflow': 'Workflow',
-          'items.teamMembers': 'Team Members',
-          'items.auditLog': 'Audit Log',
-          'items.agencySettings': 'Agency Settings',
-          'userMenu.logout': 'Logout'
-        }
-        return fallbacks[key] || key
+          "items.dashboard": "Dashboard",
+          "items.jobs": "Jobs",
+          "items.drafts": "Drafts",
+          "items.applications": "Applications",
+          "items.interviews": "Interviews",
+          "items.workflow": "Workflow",
+          "items.teamMembers": "Team Members",
+          "items.auditLog": "Audit Log",
+          "items.agencySettings": "Agency Settings",
+          "userMenu.logout": "Logout",
+        };
+        return fallbacks[key] || key;
       }
-      return translation
+      return translation;
     } catch (error) {
       // Provide fallback based on the key
       const fallbacks = {
-        'items.dashboard': 'Dashboard',
-        'items.jobs': 'Jobs',
-        'items.drafts': 'Drafts',
-        'items.applications': 'Applications',
-        'items.interviews': 'Interviews',
-        'items.workflow': 'Workflow',
-        'items.teamMembers': 'Team Members',
-        'items.auditLog': 'Audit Log',
-        'items.agencySettings': 'Agency Settings',
-        'userMenu.logout': 'Logout'
-      }
-      return fallbacks[key] || key
+        "items.dashboard": "Dashboard",
+        "items.jobs": "Jobs",
+        "items.drafts": "Drafts",
+        "items.applications": "Applications",
+        "items.interviews": "Interviews",
+        "items.workflow": "Workflow",
+        "items.teamMembers": "Team Members",
+        "items.auditLog": "Audit Log",
+        "items.agencySettings": "Agency Settings",
+        "userMenu.logout": "Logout",
+      };
+      return fallbacks[key] || key;
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate("/login");
+  };
 
   const navItems = [
-    { 
-      path: '/dashboard', 
-      label: tNav('items.dashboard'), 
+    {
+      path: "/dashboard",
+      label: tNav("items.dashboard"),
       icon: BarChart3,
-      show: true // Dashboard is always accessible
-    },
-    { 
-      path: '/jobs', 
-      label: tNav('items.jobs'), 
-      icon: Briefcase,
-      show: hasPermission(PERMISSIONS.VIEW_JOBS)
-    },
-    { 
-      path: '/drafts', 
-      label: tNav('items.drafts'), 
-      icon: FileEdit,
-      show: hasAnyPermission([PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB])
-    },
-    { 
-      path: '/applications', 
-      label: tNav('items.applications'), 
-      icon: Users,
-      show: hasPermission(PERMISSIONS.VIEW_APPLICATIONS)
-    },
-    { 
-      path: '/interviews', 
-      label: tNav('items.interviews'), 
-      icon: Calendar,
-      show: hasAnyPermission([PERMISSIONS.VIEW_INTERVIEWS, PERMISSIONS.SCHEDULE_INTERVIEW])
-    },
-    { 
-      path: '/workflow', 
-      label: tNav('items.workflow'), 
-      icon: GitBranch,
-      show: hasPermission(PERMISSIONS.VIEW_WORKFLOW)
+      show: true, // Dashboard is always accessible
     },
     {
-      path: '/teammembers',
-      label: tNav('items.teamMembers'),
+      path: "/jobs",
+      label: tNav("items.jobs"),
+      icon: Briefcase,
+      show: hasPermission(PERMISSIONS.VIEW_JOBS),
+    },
+    {
+      path: "/drafts",
+      label: tNav("items.drafts"),
+      icon: FileEdit,
+      show: hasAnyPermission([PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]),
+    },
+    {
+      path: "/applications",
+      label: tNav("items.applications"),
+      icon: Users,
+      show: hasPermission(PERMISSIONS.VIEW_APPLICATIONS),
+    },
+    {
+      path: "/interviews",
+      label: tNav("items.interviews"),
+      icon: Calendar,
+      show: hasAnyPermission([
+        PERMISSIONS.VIEW_INTERVIEWS,
+        PERMISSIONS.SCHEDULE_INTERVIEW,
+      ]),
+    },
+    {
+      path: "/workflow",
+      label: tNav("items.workflow"),
+      icon: GitBranch,
+      show: hasPermission(PERMISSIONS.VIEW_WORKFLOW),
+    },
+    {
+      path: "/teammembers",
+      label: tNav("items.teamMembers"),
       icon: UsersRound,
-      show: hasPermission(PERMISSIONS.MANAGE_MEMBERS)
+      show: hasPermission(PERMISSIONS.MANAGE_MEMBERS),
     },
-    { 
-      path: '/auditlog', 
-      label: tNav('items.auditLog'), 
+    {
+      path: "/auditlog",
+      label: tNav("items.auditLog"),
       icon: History,
-      show: hasPermission(PERMISSIONS.VIEW_AUDIT_LOGS) // Only show to users with audit log permission (admins)
+      show: hasPermission(PERMISSIONS.VIEW_AUDIT_LOGS), // Only show to users with audit log permission (admins)
     },
-    { 
-      path: '/settings', 
-      label: tNav('items.agencySettings'), 
+    {
+      path: "/settings",
+      label: tNav("items.agencySettings"),
       icon: Settings,
-      show: hasPermission(PERMISSIONS.MANAGE_SETTINGS)
-    }
-
-  ].filter(item => item.show)
+      show: hasPermission(PERMISSIONS.MANAGE_SETTINGS),
+    },
+  ].filter((item) => item.show);
 
   const isActive = (path) => {
-    if (path === '/dashboard' && location.pathname === '/') return true
-    return location.pathname.startsWith(path)
-  }
+    if (path === "/dashboard" && location.pathname === "/") return true;
+    return location.pathname.startsWith(path);
+  };
 
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
   const closeMobileMenu = () => {
-    setMobileMenuOpen(false)
-  }
+    setMobileMenuOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex transition-colors duration-200">
       {/* Skip to content link for accessibility */}
-      <a 
-        href="#main-content" 
+      <a
+        href="#main-content"
         className="absolute left-0 top-0 bg-brand-navy text-white px-4 py-2 rounded-br-md transform -translate-y-full focus:translate-y-0 transition-transform z-50"
       >
         Skip to main content
       </a>
-      
+
       {/* Left Sidebar Navigation */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <div className="flex flex-col flex-grow bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-r border-gray-200/50 dark:border-gray-700/50 pt-5 pb-4 overflow-y-auto shadow-lg">
           <div className="flex items-center flex-shrink-0 px-4 py-4">
-            <Link to="/dashboard" className="w-full flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300">
-              <img src={agencyLogo || logo} alt={`${agencyName} Logo`} className="w-20 h-20 object-contain drop-shadow-md" />
+            <Link
+              to="/dashboard"
+              className="w-full flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300"
+            >
+              <img
+                src={agencyLogo || logo}
+                alt={`${agencyName} Logo`}
+                className="w-20 h-20 object-contain drop-shadow-md"
+              />
               <h1 className="text-lg font-bold text-brand-navy dark:text-brand-blue-bright mt-3 text-center bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
                 {agencyName}
               </h1>
@@ -174,39 +183,63 @@ const Layout = ({ children }) => {
           <div className="mt-5 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-2">
               {navItems.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-300 ${
                       isActive(item.path)
-                        ? 'bg-white dark:bg-gray-700 shadow-md transform scale-105 border border-brand-blue-bright/30'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-brand-navy dark:hover:text-white hover:shadow-sm border border-transparent'
+                        ? "bg-white dark:bg-gray-700 shadow-md transform scale-105 border border-brand-blue-bright/30"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-brand-navy dark:hover:text-white hover:shadow-sm border border-transparent"
                     }`}
-                    aria-current={isActive(item.path) ? 'page' : undefined}
+                    aria-current={isActive(item.path) ? "page" : undefined}
                   >
-                    <Icon className={`mr-3 flex-shrink-0 h-5 w-5 ${isActive(item.path) ? 'text-brand-blue-bright' : 'text-gray-500 group-hover:text-brand-blue-bright'}`} aria-hidden="true" />
-                    <span className={isActive(item.path) ? 'text-brand-navy dark:text-white font-semibold' : ''}>
+                    <Icon
+                      className={`mr-3 flex-shrink-0 h-5 w-5 ${
+                        isActive(item.path)
+                          ? "text-brand-blue-bright"
+                          : "text-gray-500 group-hover:text-brand-blue-bright"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={
+                        isActive(item.path)
+                          ? "text-brand-navy dark:text-white font-semibold"
+                          : ""
+                      }
+                    >
                       {item.label}
                     </span>
                   </Link>
-                )
+                );
               })}
             </nav>
           </div>
           <div className="flex-shrink-0 flex flex-col border-t border-gray-200/50 dark:border-gray-700/50 p-4 space-y-3">
             <div className="flex items-center w-full bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm p-2 rounded-xl shadow-sm border border-gray-200/30 dark:border-gray-600/30">
               <div className="flex-shrink-0">
-                <div className="w-9 h-9 bg-brand-green-vibrant/10 rounded-full flex items-center justify-center" role="img" aria-label="User avatar">
-                  <User className="w-5 h-5 text-brand-green-vibrant" aria-hidden="true" />
+                <div
+                  className="w-9 h-9 bg-brand-green-vibrant/10 rounded-full flex items-center justify-center"
+                  role="img"
+                  aria-label="User avatar"
+                >
+                  <User
+                    className="w-5 h-5 text-brand-green-vibrant"
+                    aria-hidden="true"
+                  />
                 </div>
               </div>
               <div className="ml-3">
                 {user && (
                   <>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{user.fullName || user.username}</p>
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 capitalize">{user.role}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                      {user.fullName || user.username}
+                    </p>
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 capitalize">
+                      {user.role}
+                    </p>
                   </>
                 )}
               </div>
@@ -214,15 +247,17 @@ const Layout = ({ children }) => {
                 <ThemeToggle className="flex-shrink-0" />
               </div>
             </div>
-            
+
             {/* Redesigned Logout Button */}
-            <button 
+            <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
-              aria-label={tNav('userMenu.logout')}
+              aria-label={tNav("userMenu.logout")}
             >
               <LogOut className="w-5 h-5 mr-2" aria-hidden="true" />
-              <span className="text-sm font-semibold">{tNav('userMenu.logout')}</span>
+              <span className="text-sm font-semibold">
+                {tNav("userMenu.logout")}
+              </span>
             </button>
           </div>
         </div>
@@ -232,7 +267,7 @@ const Layout = ({ children }) => {
       <div className="md:hidden sticky top-0 z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 shadow-md">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center">
-            <button 
+            <button
               className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
               onClick={toggleMobileMenu}
               aria-expanded={mobileMenuOpen}
@@ -245,8 +280,15 @@ const Layout = ({ children }) => {
                 <Menu className="w-6 h-6" aria-hidden="true" />
               )}
             </button>
-            <Link to="/dashboard" className="ml-2 flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded py-2 px-3">
-              <img src={agencyLogo || logo} alt={`${agencyName} Logo`} className="w-12 h-12 object-contain drop-shadow-md" />
+            <Link
+              to="/dashboard"
+              className="ml-2 flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded py-2 px-3"
+            >
+              <img
+                src={agencyLogo || logo}
+                alt={`${agencyName} Logo`}
+                className="w-12 h-12 object-contain drop-shadow-md"
+              />
               <h1 className="text-sm font-bold text-brand-navy dark:text-brand-blue-bright mt-1 text-center bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
                 {agencyName}
               </h1>
@@ -254,7 +296,7 @@ const Layout = ({ children }) => {
           </div>
           <div className="flex items-center space-x-2">
             <ThemeToggle />
-            <button 
+            <button
               className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
               aria-label="View notifications"
             >
@@ -268,14 +310,14 @@ const Layout = ({ children }) => {
       {mobileMenuOpen && (
         <>
           {/* Mobile menu backdrop */}
-          <div 
+          <div
             className="mobile-nav-backdrop md:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
             onClick={closeMobileMenu}
             aria-hidden="true"
           ></div>
-          
+
           {/* Mobile menu */}
-          <div 
+          <div
             id="mobile-menu"
             className="md:hidden fixed inset-y-0 left-0 z-50 w-64 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border-r border-gray-200/50 dark:border-gray-700/50 overflow-y-auto shadow-xl"
             role="menu"
@@ -284,7 +326,10 @@ const Layout = ({ children }) => {
           >
             <div className="pt-5 pb-4">
               <div className="flex items-center px-4">
-                <Link to="/dashboard" className="focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded">
+                <Link
+                  to="/dashboard"
+                  className="focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded"
+                >
                   <h1 className="text-xl font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
                     {agencyName}
                   </h1>
@@ -292,7 +337,7 @@ const Layout = ({ children }) => {
               </div>
               <nav className="mt-5 px-2 space-y-1">
                 {navItems.map((item) => {
-                  const Icon = item.icon
+                  const Icon = item.icon;
                   return (
                     <Link
                       key={item.path}
@@ -300,28 +345,38 @@ const Layout = ({ children }) => {
                       onClick={closeMobileMenu}
                       className={`group flex items-center px-2 py-3 text-base font-medium rounded-lg transition-all duration-300 touch-target ${
                         isActive(item.path)
-                          ? 'bg-white dark:bg-gray-700 shadow-md border border-brand-blue-bright/30 text-brand-navy dark:text-white font-semibold'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-brand-navy dark:hover:text-white border border-transparent'
+                          ? "bg-white dark:bg-gray-700 shadow-md border border-brand-blue-bright/30 text-brand-navy dark:text-white font-semibold"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-brand-navy dark:hover:text-white border border-transparent"
                       }`}
                       role="menuitem"
-                      aria-current={isActive(item.path) ? 'page' : undefined}
+                      aria-current={isActive(item.path) ? "page" : undefined}
                     >
-                      <Icon className={`mr-3 flex-shrink-0 h-6 w-6 ${isActive(item.path) ? 'text-brand-blue-bright' : 'text-gray-500 group-hover:text-brand-blue-bright'}`} aria-hidden="true" />
+                      <Icon
+                        className={`mr-3 flex-shrink-0 h-6 w-6 ${
+                          isActive(item.path)
+                            ? "text-brand-blue-bright"
+                            : "text-gray-500 group-hover:text-brand-blue-bright"
+                        }`}
+                        aria-hidden="true"
+                      />
                       {item.label}
                     </Link>
-                  )
+                  );
                 })}
                 {user && (
                   <button
                     onClick={() => {
-                      handleLogout()
-                      closeMobileMenu()
+                      handleLogout();
+                      closeMobileMenu();
                     }}
                     className="group flex items-center px-2 py-3 text-base font-medium rounded-lg transition-all duration-300 touch-target text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-brand-navy dark:hover:text-white border border-transparent w-full text-left mt-2"
                     role="menuitem"
                   >
-                    <LogOut className="mr-3 flex-shrink-0 h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-brand-blue-bright" aria-hidden="true" />
-                    <span>{tNav('userMenu.logout')}</span>
+                    <LogOut
+                      className="mr-3 flex-shrink-0 h-6 w-6 text-gray-500 dark:text-gray-400 group-hover:text-brand-blue-bright"
+                      aria-hidden="true"
+                    />
+                    <span>{tNav("userMenu.logout")}</span>
                   </button>
                 )}
               </nav>
@@ -335,7 +390,7 @@ const Layout = ({ children }) => {
         {children}
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

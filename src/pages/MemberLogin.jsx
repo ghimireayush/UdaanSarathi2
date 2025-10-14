@@ -13,6 +13,7 @@ const MemberLogin = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const { memberLogin, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -69,6 +70,19 @@ const MemberLogin = () => {
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      {/* Back Button - Top Left */}
+      <div className="absolute top-4 left-4">
+        <button
+          onClick={() => navigate('/login')}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-white dark:hover:bg-gray-800 hover:border-brand-blue-bright dark:hover:border-brand-blue-bright transition-all shadow-sm hover:shadow-md"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Back to Admin Login
+        </button>
+      </div>
+      
       {/* Language Switch - Top Right */}
       <div className="absolute top-4 right-4">
         <LanguageSwitch variant="ghost" size="md" />
@@ -199,10 +213,50 @@ const MemberLogin = () => {
         </Card>
         
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>{tPage('footer.needHelp')}</p>
+          <p>
+            <button
+              onClick={() => setShowHelpModal(true)}
+              className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 transition-colors underline-offset-2 hover:underline"
+            >
+              Need Help?
+            </button>
+          </p>
           <p className="mt-2">{tPage('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 animate-fade-in">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Need Help?</h3>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div className="mb-6">
+              <p className="text-gray-600 dark:text-gray-400">
+                Contact your agency administrator for assistance with login or account issues.
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="px-4 py-2 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg transition-colors font-medium"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

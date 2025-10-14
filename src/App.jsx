@@ -65,7 +65,7 @@ function App() {
                 <Route path="/drafts" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><Drafts /></PrivateRoute></Layout>} />
                 <Route path="/settings" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><AgencySettings /></PrivateRoute></Layout>} />
                 <Route path="/auditlog" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_AUDIT_LOGS}><AuditLogPage /></PrivateRoute></Layout>} />
-                <Route path="/teammembers" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_USERS}><Members /></PrivateRoute></Layout>} />
+                <Route path="/teammembers" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_MEMBERS}><Members /></PrivateRoute></Layout>} />
                 <Route path="/mvp-testing" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><MVPTestingDashboard /></PrivateRoute></Layout>} />
               </Routes>
                 </ConfirmProvider>

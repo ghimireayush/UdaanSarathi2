@@ -163,16 +163,35 @@ const Login = () => {
                 </button>
               </div>
 
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or</span>
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/login/member')}
+                  className="w-full flex justify-center py-4 px-6 border-2 border-brand-blue-bright rounded-lg shadow-sm text-base font-semibold text-brand-blue-bright bg-white dark:bg-gray-800 hover:bg-brand-blue-bright/5 dark:hover:bg-brand-blue-bright/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 transition-colors"
+                >
+                  Member Login
+                </button>
+              </div>
+
             </form>
           </CardContent>
         </Card>
 
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
-            {tPage('footer.noAccount')}
+            {tPage('footer.noAccount')}{' '}
             <button
               onClick={() => navigate('/register')}
-              className="text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-brand-blue-bright font-semibold text-base ml-1"
+              className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 transition-colors underline-offset-2 hover:underline"
             >
               {tPage('footer.signUp')}
             </button>
