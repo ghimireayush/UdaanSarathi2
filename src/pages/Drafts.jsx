@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -39,7 +39,6 @@ import {
 import { format } from "date-fns";
 import { jobService } from "../services/index.js";
 import DraftListManagement from "../components/DraftListManagement";
-import JobDraftWizard from "../components/JobDraftWizard";
 import {
   InteractiveFilter,
   InteractiveButton,
@@ -52,6 +51,7 @@ import PaginationWrapper from "../components/PaginationWrapper.jsx";
 
 const Drafts = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { tPageSync } = useLanguage({
     pageName: "drafts",
     autoLoad: true,
@@ -84,10 +84,7 @@ const Drafts = () => {
 
   // UI state
   const [selectedDrafts, setSelectedDrafts] = useState(new Set());
-  const [showWizard, setShowWizard] = useState(false);
   const [deletingDrafts, setDeletingDrafts] = useState(new Set());
-  const [editingDraft, setEditingDraft] = useState(null);
-  const [editingStep, setEditingStep] = useState(0);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -151,6 +148,33 @@ const Drafts = () => {
       setShowSuccessToast(false);
     }, delay);
   };
+
+  // Handle location state messages (from wizard page)
+  useEffect(() => {
+    if (location.state?.message) {
+      showToast(location.state.message, location.state.type || "success");
+      
+      // Refetch drafts to show updated data
+      const refetchDrafts = async () => {
+        try {
+          const allDrafts = await jobService.getDraftJobs();
+          setDrafts(allDrafts);
+          setPagination((prev) => ({
+            ...prev,
+            total: allDrafts.length,
+          }));
+        } catch (error) {
+          console.error("Failed to refetch drafts:", error);
+        }
+      };
+      
+      refetchDrafts();
+      
+      // Clear the location state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // Event handlers
   const handleFilterChange = useCallback(
@@ -224,155 +248,18 @@ const Drafts = () => {
         total: updatedDrafts.length,
       }));
 
-      setEditingDraft(convertedDraft);
-      setEditingStep(0);
-      setShowWizard(true);
+      // Navigate to wizard page with converted draft
+      navigate("/draftwizard", {
+        state: {
+          draft: convertedDraft,
+          step: 0,
+        },
+      });
 
       showToast(tPage("toast.bulkExpanded"), "success");
     } catch (error) {
       console.error("Error converting bulk draft:", error);
       showToast(tPage("toast.bulkExpandFailed"), "error");
-    }
-  };
-
-  // Handle wizard save
-  const handleWizardSave = async (draftData) => {
-    try {
-      if (draftData.type === "bulk") {
-        const totalJobs = draftData.data.entries.reduce(
-          (sum, entry) => sum + parseInt(entry.job_count || 0),
-          0
-        );
-        const countries = draftData.data.entries
-          .map((entry) => entry.country)
-          .filter(Boolean);
-        const positions = draftData.data.entries
-          .map((entry) => entry.position)
-          .filter(Boolean);
-
-        const bulkDraft = {
-          title:
-            positions.length > 0
-              ? positions.join(", ")
-              : tPage("bulkDraft.multiplePositions"),
-          company: tPage("table.values.multipleCompanies", { count: 1 }),
-          country:
-            countries.length === 1
-              ? countries[0]
-              : tPage("bulkDraft.multipleCountries"),
-          city: "",
-          published_at: null,
-          salary: "",
-          currency: "AED",
-          salary_amount: 0,
-          requirements: [],
-          description: `Bulk job creation for ${totalJobs} positions across ${countries.length} countries`,
-          tags: [],
-          category: "Bulk Creation",
-          employment_type: "Full-time",
-          working_hours: "8 hours/day",
-          accommodation: "Provided",
-          food: "Provided",
-          visa_status: "Company will provide",
-          contract_duration: "2 years",
-          contact_person: "",
-          contact_phone: "",
-          contact_email: "",
-          expenses: [],
-          notes: `Bulk draft containing ${totalJobs} jobs`,
-          created_at: new Date().toISOString(),
-          is_bulk_draft: true,
-          bulk_entries: draftData.data.entries,
-          total_jobs: totalJobs,
-        };
-
-        await jobService.createDraftJob(bulkDraft);
-        showToast(
-          tPage("messages.bulkDraftCreated", { count: totalJobs }),
-          "success"
-        );
-      } else if (draftData.type === "bulk_edit") {
-        const totalJobs = draftData.data.entries.reduce(
-          (sum, entry) => sum + parseInt(entry.job_count || 0),
-          0
-        );
-        const countries = draftData.data.entries
-          .map((entry) => entry.country)
-          .filter(Boolean);
-        const positions = draftData.data.entries
-          .map((entry) => entry.position)
-          .filter(Boolean);
-
-        const updatedBulkDraft = {
-          title:
-            draftData.data.title ||
-            (positions.length > 0
-              ? positions.join(", ")
-              : tPage("bulkDraft.multiplePositions")),
-          company:
-            draftData.data.company ||
-            tPage("table.values.multipleCompanies", { count: 1 }),
-          country:
-            countries.length === 1
-              ? countries[0]
-              : tPage("bulkDraft.multipleCountries"),
-          description:
-            draftData.data.description ||
-            `Bulk job creation for ${totalJobs} positions across ${
-              countries.length
-            } ${countries.length === 1 ? "country" : "countries"}`,
-          bulk_entries: draftData.data.entries,
-          total_jobs: totalJobs,
-          updated_at: new Date().toISOString(),
-        };
-
-        await jobService.updateJob(draftData.data.id, updatedBulkDraft);
-        showToast(
-          tPage("messages.bulkDraftCreated", { count: totalJobs }),
-          "success"
-        );
-      } else if (draftData.type === "partial_draft") {
-        if (editingDraft) {
-          const updatedDraft = {
-            ...draftData.data,
-            id: editingDraft.id,
-            is_partial: true,
-            last_completed_step: draftData.data.last_completed_step,
-            updated_at: new Date().toISOString(),
-          };
-          await jobService.updateJob(editingDraft.id, updatedDraft);
-          showToast(tPage("messages.progressSaved"), "success");
-        } else {
-          const partialDraft = {
-            ...draftData.data,
-            is_partial: true,
-            last_completed_step: draftData.data.last_completed_step,
-            created_at: new Date().toISOString(),
-          };
-          await jobService.createDraftJob(partialDraft);
-          showToast(tPage("messages.progressSaved"), "success");
-        }
-      } else if (editingDraft) {
-        await jobService.updateJob(editingDraft.id, draftData);
-        showToast(tPage("messages.draftUpdated"), "success");
-      } else {
-        await jobService.createDraftJob(draftData);
-        showToast(tPage("messages.draftCreated"), "success");
-      }
-
-      const updatedDrafts = await jobService.getDraftJobs();
-      setDrafts(updatedDrafts);
-      setShowWizard(false);
-      setEditingDraft(null);
-      setEditingStep(0);
-
-      setPagination((prev) => ({
-        ...prev,
-        total: updatedDrafts.length,
-      }));
-    } catch (error) {
-      console.error("Failed to save draft:", error);
-      showToast(tPage("error.failedToSave"), "error");
     }
   };
 
@@ -601,38 +488,25 @@ const Drafts = () => {
       return;
     }
 
-    if (draft.is_bulk_draft) {
-      setEditingDraft(draft);
-      setEditingStep(0);
-      setShowWizard(true);
-      showToast(tPage("toast.editingBulk"), "info");
-      return;
-    }
-
     const progress = getDraftStepProgress(draft);
     const editStep =
       !isDraftComplete(draft) && draft.last_completed_step !== undefined
         ? Math.min(progress.currentStep - 1, 7)
         : targetStep;
 
-    const hasUnsavedChanges = false;
+    // Navigate to wizard page with draft data
+    navigate("/draftwizard", {
+      state: {
+        draft: draft,
+        step: editStep,
+      },
+    });
 
-    if (hasUnsavedChanges) {
-      setConfirmAction("edit");
-      setConfirmData({ draft, hasChanges: true, targetStep: editStep });
-      setShowConfirmModal(true);
-    } else {
-      setEditingDraft(draft);
-      setEditingStep(editStep);
-      setShowWizard(true);
-
-      if (!isDraftComplete(draft)) {
-        const progress = getDraftStepProgress(draft);
-        showToast(
-          tPage("toast.continuingDraft", { step: progress.currentStep }),
-          "info"
-        );
-      }
+    if (!isDraftComplete(draft)) {
+      showToast(
+        tPage("toast.continuingDraft", { step: progress.currentStep }),
+        "info"
+      );
     }
   };
 
@@ -642,9 +516,13 @@ const Drafts = () => {
       if (confirmAction === "delete") {
         await executeDelete(confirmData.id);
       } else if (confirmAction === "edit") {
-        setEditingDraft(confirmData.draft);
-        setEditingStep(confirmData.targetStep || 0);
-        setShowWizard(true);
+        // Navigate to wizard page
+        navigate("/draftwizard", {
+          state: {
+            draft: confirmData.draft,
+            step: confirmData.targetStep || 0,
+          },
+        });
       }
     } catch (error) {
       console.error("Action failed:", error);
@@ -825,7 +703,7 @@ const Drafts = () => {
         <div className="flex items-center space-x-3">
           <LanguageSwitch />
           <InteractiveButton
-            onClick={() => setShowWizard(true)}
+            onClick={() => navigate("/draftwizard")}
             variant="primary"
             icon={Plus}
           >
@@ -886,7 +764,7 @@ const Drafts = () => {
               {tPage("messages.noDraftsMessage")}
             </p>
             <InteractiveButton
-              onClick={() => setShowWizard(true)}
+              onClick={() => navigate("/draftwizard")}
               variant="primary"
               icon={Plus}
               className="mx-auto"
@@ -958,20 +836,6 @@ const Drafts = () => {
       )}
 
       {/* Modals and Overlays */}
-      {showWizard && (
-        <JobDraftWizard
-          isOpen={showWizard}
-          onClose={() => {
-            setShowWizard(false);
-            setEditingDraft(null);
-            setEditingStep(0);
-          }}
-          onSave={handleWizardSave}
-          editingDraft={editingDraft}
-          initialStep={editingStep}
-        />
-      )}
-
       {showConfirmModal && (
         <ConfirmModal
           isOpen={showConfirmModal}

@@ -759,17 +759,10 @@ const JobDraftWizard = ({
         if (!formData.country?.trim())
           errors.country = "Country selection is required";
 
-        if (formData.date_format === "AD") {
-          if (!formData.approval_date_ad)
-            errors.approval_date_ad = "Approval Date is required";
-          if (!formData.posting_date_ad)
-            errors.posting_date_ad = "Posting Date is required";
-        } else {
-          if (!formData.approval_date_bs)
-            errors.approval_date_bs = "Approval Date is required";
-          if (!formData.posting_date_bs)
-            errors.posting_date_bs = "Posting Date is required";
-        }
+        if (!formData.approval_date_ad)
+          errors.approval_date_ad = "Approval Date is required";
+        if (!formData.posting_date_ad)
+          errors.posting_date_ad = "Posting Date is required";
 
         if (!formData.announcement_type?.trim())
           errors.announcement_type = "Please select an announcement type";
@@ -914,7 +907,6 @@ const JobDraftWizard = ({
       case 6: // Interview (Optional)
         if (
           formData.interview?.date_ad ||
-          formData.interview?.date_bs ||
           formData.interview?.time ||
           formData.interview?.location
         ) {
@@ -1446,17 +1438,10 @@ const JobDraftWizard = ({
     if (!formData.chalani_number.trim())
       newErrors.chalani_number = "Chalani Number is required";
 
-    if (formData.date_format === "AD") {
-      if (!formData.approval_date_ad)
-        newErrors.approval_date_ad = "Approval Date is required";
-      if (!formData.posting_date_ad)
-        newErrors.posting_date_ad = "Posting Date is required";
-    } else {
-      if (!formData.approval_date_bs)
-        newErrors.approval_date_bs = "Approval Date is required";
-      if (!formData.posting_date_bs)
-        newErrors.posting_date_bs = "Posting Date is required";
-    }
+    if (!formData.approval_date_ad)
+      newErrors.approval_date_ad = "Approval Date is required";
+    if (!formData.posting_date_ad)
+      newErrors.posting_date_ad = "Posting Date is required";
 
     if (!formData.announcement_type)
       newErrors.announcement_type = "Announcement Type is required";
@@ -1869,10 +1854,11 @@ const JobDraftWizard = ({
         const stepErrors = validateStep(step);
         if (Object.keys(stepErrors).length > 0) {
           setCurrentStep(step);
+          const remainingCount = Object.keys(stepErrors).length;
           alert(
-            `Please complete all required fields in step ${step + 1}: ${
+            `${remainingCount} field${remainingCount > 1 ? 's' : ''} remaining in step ${step + 1}: ${
               singleDraftSteps[step].title
-            }`
+            }. Please complete to continue.`
           );
           break;
         }
@@ -1928,10 +1914,7 @@ const JobDraftWizard = ({
         lt_number: formData.lt_number,
         chalani_number: formData.chalani_number,
         approval_date_ad: formData.approval_date_ad,
-        approval_date_bs: formData.approval_date_bs,
         posting_date_ad: formData.posting_date_ad,
-        posting_date_bs: formData.posting_date_bs,
-        date_format: formData.date_format,
         announcement_type: formData.announcement_type,
         notes: formData.notes,
       },
@@ -1957,11 +1940,9 @@ const JobDraftWizard = ({
           })) || [],
       // Interview details (if provided)
       interview:
-        formData.interview?.date_ad || formData.interview?.date_bs
+        formData.interview?.date_ad
           ? {
               date_ad: formData.interview.date_ad,
-              date_bs: formData.interview.date_bs,
-              date_format: formData.interview.date_format,
               time: formData.interview.time,
               location: formData.interview.location,
               contact_person: formData.interview.contact_person,
@@ -2631,54 +2612,13 @@ const JobDraftWizard = ({
                 </p>
               </div>
 
-              {/* Date Format Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Date Format{" "}
-                  <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">
-                    (Optional)
-                  </span>
-                  <HelpCircle
-                    className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
-                    title="Choose between Gregorian (AD) or Bikram Sambat (BS) calendar"
-                  />
-                </label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center text-gray-700 dark:text-gray-300">
-                    <input
-                      type="radio"
-                      name="date_format"
-                      value="AD"
-                      checked={formData.date_format === "AD"}
-                      onChange={(e) =>
-                        handleInputChange("date_format", e.target.value)
-                      }
-                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                    />
-                    AD (Gregorian)
-                  </label>
-                  <label className="flex items-center text-gray-700 dark:text-gray-300">
-                    <input
-                      type="radio"
-                      name="date_format"
-                      value="BS"
-                      checked={formData.date_format === "BS"}
-                      onChange={(e) =>
-                        handleInputChange("date_format", e.target.value)
-                      }
-                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                    />
-                    BS (Bikram Sambat)
-                  </label>
-                </div>
-              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Approval Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Approval Date ({formData.date_format}){" "}
+                  Approval Date{" "}
                   <span className="text-red-500 dark:text-red-400">*</span>
                   <HelpCircle
                     className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
@@ -2687,40 +2627,30 @@ const JobDraftWizard = ({
                 </label>
                 <input
                   type="date"
-                  value={
-                    formData.date_format === "AD"
-                      ? formData.approval_date_ad
-                      : formData.approval_date_bs
-                  }
+                  value={formData.approval_date_ad}
                   onChange={(e) =>
-                    handleInputChange(
-                      formData.date_format === "AD"
-                        ? "approval_date_ad"
-                        : "approval_date_bs",
-                      e.target.value
-                    )
+                    handleInputChange("approval_date_ad", e.target.value)
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
-                    errors.approval_date_ad || errors.approval_date_bs
+                    errors.approval_date_ad
                       ? "border-red-500"
                       : "border-gray-300 dark:border-gray-600"
                   }`}
                 />
-                {(errors.approval_date_ad || errors.approval_date_bs) && (
+                {errors.approval_date_ad && (
                   <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-                    {errors.approval_date_ad || errors.approval_date_bs}
+                    {errors.approval_date_ad}
                   </p>
                 )}
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  e.g.,{" "}
-                  {formData.date_format === "AD" ? "2025-09-12" : "2082-05-28"}
+                  e.g., 2025-09-12
                 </p>
               </div>
 
               {/* Posting Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Posting Date ({formData.date_format}){" "}
+                  Posting Date{" "}
                   <span className="text-red-500 dark:text-red-400">*</span>
                   <HelpCircle
                     className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
@@ -2729,33 +2659,23 @@ const JobDraftWizard = ({
                 </label>
                 <input
                   type="date"
-                  value={
-                    formData.date_format === "AD"
-                      ? formData.posting_date_ad
-                      : formData.posting_date_bs
-                  }
+                  value={formData.posting_date_ad}
                   onChange={(e) =>
-                    handleInputChange(
-                      formData.date_format === "AD"
-                        ? "posting_date_ad"
-                        : "posting_date_bs",
-                      e.target.value
-                    )
+                    handleInputChange("posting_date_ad", e.target.value)
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
-                    errors.posting_date_ad || errors.posting_date_bs
+                    errors.posting_date_ad
                       ? "border-red-500"
                       : "border-gray-300 dark:border-gray-600"
                   }`}
                 />
-                {(errors.posting_date_ad || errors.posting_date_bs) && (
+                {errors.posting_date_ad && (
                   <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-                    {errors.posting_date_ad || errors.posting_date_bs}
+                    {errors.posting_date_ad}
                   </p>
                 )}
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  e.g.,{" "}
-                  {formData.date_format === "AD" ? "2025-09-12" : "2082-05-28"}
+                  e.g., 2025-09-12
                 </p>
               </div>
             </div>
@@ -4041,9 +3961,9 @@ const JobDraftWizard = ({
                     </>
                   ) : (
                     <>
-                      <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" />
-                      <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        Please complete all required fields in all steps before
+                      <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2" />
+                      <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
+                        Some fields are still incomplete. Please complete all steps before
                         publishing.
                       </span>
                     </>
@@ -5215,62 +5135,18 @@ const JobDraftWizard = ({
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Date Format Selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Date Format
-                    </label>
-                    <div className="flex space-x-4">
-                      <label className="flex items-center text-gray-700 dark:text-gray-300">
-                        <input
-                          type="radio"
-                          name="interview_date_format"
-                          value="AD"
-                          checked={formData.interview.date_format === "AD"}
-                          onChange={(e) =>
-                            updateInterviewField("date_format", "AD")
-                          }
-                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        />
-                        AD (Gregorian)
-                      </label>
-                      <label className="flex items-center text-gray-700 dark:text-gray-300">
-                        <input
-                          type="radio"
-                          name="interview_date_format"
-                          value="BS"
-                          checked={formData.interview.date_format === "BS"}
-                          onChange={(e) =>
-                            updateInterviewField("date_format", "BS")
-                          }
-                          className="mr-2 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        />
-                        BS (Bikram Sambat)
-                      </label>
-                    </div>
-                  </div>
-
                   {/* Interview Date */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Interview Date ({formData.interview.date_format})
+                      Interview Date
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <input
                         type="date"
-                        value={
-                          formData.interview.date_format === "AD"
-                            ? formData.interview.date_ad
-                            : formData.interview.date_bs
-                        }
+                        value={formData.interview.date_ad}
                         onChange={(e) =>
-                          updateInterviewField(
-                            formData.interview.date_format === "AD"
-                              ? "date_ad"
-                              : "date_bs",
-                            e.target.value
-                          )
+                          updateInterviewField("date_ad", e.target.value)
                         }
                         className={`w-full pl-10 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
                           errors.interview_date
@@ -5285,10 +5161,7 @@ const JobDraftWizard = ({
                       </p>
                     )}
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      e.g.,{" "}
-                      {formData.interview.date_format === "AD"
-                        ? "2025-09-20"
-                        : "2082-06-05"}
+                      e.g., 2025-09-20
                     </p>
                   </div>
 
@@ -5690,16 +5563,16 @@ const JobDraftWizard = ({
             Step {currentStep + 1} of {singleDraftSteps.length}
           </div>
 
-          {/* Validation Summary */}
+          {/* Validation Summary - Show remaining fields instead of errors */}
           {(() => {
             const currentStepErrors = validateStep(currentStep);
-            const currentStepErrorCount = Object.keys(currentStepErrors).length;
+            const remainingFieldsCount = Object.keys(currentStepErrors).length;
             return (
-              currentStepErrorCount > 0 && (
-                <div className="flex items-center text-sm text-red-600 dark:text-red-400">
-                  <Info className="w-4 h-4 mr-1" />
-                  {currentStepErrorCount} error
-                  {currentStepErrorCount > 1 ? "s" : ""} found
+              remainingFieldsCount > 0 && (
+                <div className="flex items-center text-sm text-orange-600 dark:text-orange-400">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {remainingFieldsCount} field
+                  {remainingFieldsCount > 1 ? "s" : ""} remaining to complete
                 </div>
               )
             );

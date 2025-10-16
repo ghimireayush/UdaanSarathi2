@@ -13,6 +13,7 @@ import Applications from './pages/Applications'
 import Interviews from './pages/Interviews'
 import Workflow from './pages/Workflow'
 import Drafts from './pages/Drafts'
+import DraftWizard from './pages/DraftWizard'
 import AgencySettings from './pages/AgencySettings'
 import Login from './pages/Login'
 import AuditLogPage from './pages/AuditLog'
@@ -63,6 +64,7 @@ function App() {
                 <Route path="/interviews" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.VIEW_INTERVIEWS, PERMISSIONS.SCHEDULE_INTERVIEW]}><Interviews /></PrivateRoute></Layout>} />
                 <Route path="/workflow" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_WORKFLOW}><Workflow /></PrivateRoute></Layout>} />
                 <Route path="/drafts" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><Drafts /></PrivateRoute></Layout>} />
+                <Route path="/draftwizard" element={<Layout><PrivateRoute requiredPermissions={[PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]}><DraftWizard /></PrivateRoute></Layout>} />
                 <Route path="/settings" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_SETTINGS}><AgencySettings /></PrivateRoute></Layout>} />
                 <Route path="/auditlog" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_AUDIT_LOGS}><AuditLogPage /></PrivateRoute></Layout>} />
                 <Route path="/teammembers" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.MANAGE_MEMBERS}><Members /></PrivateRoute></Layout>} />
