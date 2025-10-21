@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import OwnerLayout from './components/OwnerLayout'
 import Dashboard from './pages/Dashboard'
 import Jobs from './pages/Jobs'
 import JobDetails from './pages/JobDetails'
@@ -16,6 +17,11 @@ import Drafts from './pages/Drafts'
 import DraftWizard from './pages/DraftWizard'
 import AgencySettings from './pages/AgencySettings'
 import Login from './pages/Login'
+import OwnerLogin from './pages/OwnerLogin'
+import OwnerDashboard from './pages/OwnerDashboard'
+import OwnerAgencies from './pages/OwnerAgencies'
+import OwnerUsers from './pages/OwnerUsers'
+import OwnerSettings from './pages/OwnerSettings'
 import AuditLogPage from './pages/AuditLog'
 import Members from './pages/Members'
 import MemberLogin from './pages/MemberLogin'
@@ -51,10 +57,20 @@ function App() {
               <ToastProvider>
                 <ConfirmProvider>
               <Routes>
+                {/* Public Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/member" element={<MemberLogin />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/setup-company" element={<CompanySetup />} />
+                
+                {/* Owner Portal Routes */}
+                <Route path="/owner/login" element={<OwnerLogin />} />
+                <Route path="/owner/dashboard" element={<OwnerLayout><PrivateRoute><OwnerDashboard /></PrivateRoute></OwnerLayout>} />
+                <Route path="/owner/agencies" element={<OwnerLayout><PrivateRoute><OwnerAgencies /></PrivateRoute></OwnerLayout>} />
+                <Route path="/owner/users" element={<OwnerLayout><PrivateRoute><OwnerUsers /></PrivateRoute></OwnerLayout>} />
+                <Route path="/owner/settings" element={<OwnerLayout><PrivateRoute><OwnerSettings /></PrivateRoute></OwnerLayout>} />
+                
+                {/* Agency Portal Routes */}
                 <Route path="/" element={<Layout><PrivateRoute><Dashboard /></PrivateRoute></Layout>} />
                 <Route path="/dashboard" element={<Layout><PrivateRoute><Dashboard /></PrivateRoute></Layout>} />
                 <Route path="/jobs" element={<Layout><PrivateRoute requiredPermission={PERMISSIONS.VIEW_JOBS}><Jobs /></PrivateRoute></Layout>} />

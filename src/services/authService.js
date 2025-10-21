@@ -156,6 +156,18 @@ const MOCK_USERS = [
     createdAt: '2024-01-01T00:00:00Z'
   },
   {
+    id: 'user_owner',
+    username: 'owner@udaan.com',
+    email: 'owner@udaan.com',
+    password: 'owner123',
+    name: 'Platform Owner',
+    role: ROLES.ADMIN,
+    avatar: '/avatars/owner.jpg',
+    isActive: true,
+    lastLogin: '2025-01-15T10:30:00Z',
+    createdAt: '2024-01-01T00:00:00Z'
+  },
+  {
     id: 'user_2',
     username: 'recipient@udaan.com',
     email: 'recipient@udaan.com',
