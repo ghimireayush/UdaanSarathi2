@@ -18,7 +18,7 @@ const formatDraftData = (data) => {
     country: data.country || "",
     city: data.city || "",
     description: data.notes || data.description || "",
-    
+
     // Administrative details
     lt_number: data.lt_number || "",
     chalani_number: data.chalani_number || "",
@@ -29,7 +29,7 @@ const formatDraftData = (data) => {
     date_format: data.date_format || "AD",
     announcement_type: data.announcement_type || "",
     notes: data.notes || "",
-    
+
     // Contract details
     period_years: data.period_years || 2,
     renewable: data.renewable === "yes",
@@ -42,32 +42,37 @@ const formatDraftData = (data) => {
     transport: data.transport || "not_provided",
     annual_leave_days: data.annual_leave_days || 21,
     visa_status: data.visa_status || "Company will provide",
-    contract_duration: data.period_years ? `${data.period_years} years` : "2 years",
+    contract_duration: data.period_years
+      ? `${data.period_years} years`
+      : "2 years",
     employment_type: data.employment_type || "Full-time",
-    working_hours: data.hours_per_day ? `${data.hours_per_day} hours/day` : "8 hours/day",
-    
+    working_hours: data.hours_per_day
+      ? `${data.hours_per_day} hours/day`
+      : "8 hours/day",
+
     // Positions - map to preview-compatible format
-    positions: data.positions?.map((pos) => ({
-      // Preview expects these field names
-      position_title: pos.position_title || pos.title || "",
-      title: pos.position_title || pos.title || "",
-      vacancies_male: pos.vacancies_male || 0,
-      vacancies_female: pos.vacancies_female || 0,
-      monthly_salary: pos.monthly_salary || 0,
-      salary_amount: pos.monthly_salary || 0,
-      currency: pos.currency || "AED",
-      job_description: pos.position_notes || pos.job_description || "",
-      // Contract overrides
-      hours_per_day_override: pos.hours_per_day_override || null,
-      days_per_week_override: pos.days_per_week_override || null,
-      overtime_policy_override: pos.overtime_policy_override || null,
-      weekly_off_days_override: pos.weekly_off_days_override || null,
-      food_override: pos.food_override || null,
-      accommodation_override: pos.accommodation_override || null,
-      transport_override: pos.transport_override || null,
-      position_notes: pos.position_notes || "",
-    })) || [],
-    
+    positions:
+      data.positions?.map((pos) => ({
+        // Preview expects these field names
+        position_title: pos.position_title || pos.title || "",
+        title: pos.position_title || pos.title || "",
+        vacancies_male: pos.vacancies_male || 0,
+        vacancies_female: pos.vacancies_female || 0,
+        monthly_salary: pos.monthly_salary || 0,
+        salary_amount: pos.monthly_salary || 0,
+        currency: pos.currency || "AED",
+        job_description: pos.position_notes || pos.job_description || "",
+        // Contract overrides
+        hours_per_day_override: pos.hours_per_day_override || null,
+        days_per_week_override: pos.days_per_week_override || null,
+        overtime_policy_override: pos.overtime_policy_override || null,
+        weekly_off_days_override: pos.weekly_off_days_override || null,
+        food_override: pos.food_override || null,
+        accommodation_override: pos.accommodation_override || null,
+        transport_override: pos.transport_override || null,
+        position_notes: pos.position_notes || "",
+      })) || [],
+
     // Tags and requirements - ensure both formats
     skills: data.skills || [],
     tags: data.skills || data.tags || [],
@@ -81,44 +86,60 @@ const formatDraftData = (data) => {
     canonical_title_ids: data.canonical_title_ids || [],
     canonical_title_names: data.canonical_title_names || [],
     category: data.category || "General",
-    
+
     // Expenses - map to preview-compatible format
-    expenses: data.expenses?.filter((exp) => exp.type && exp.who_pays).map((exp) => ({
-      type: exp.type,
-      description: exp.type, // Preview looks for description
-      who_pays: exp.who_pays,
-      is_free: exp.is_free,
-      amount: exp.is_free ? null : exp.amount,
-      currency: exp.is_free ? null : exp.currency,
-      notes: exp.notes || "",
-    })) || [],
-    
+    expenses:
+      data.expenses
+        ?.filter((exp) => exp.type && exp.who_pays)
+        .map((exp) => ({
+          type: exp.type,
+          description: exp.type, // Preview looks for description
+          who_pays: exp.who_pays,
+          is_free: exp.is_free,
+          amount: exp.is_free ? null : exp.amount,
+          currency: exp.is_free ? null : exp.currency,
+          notes: exp.notes || "",
+        })) || [],
+
     // Cutout - ensure preview fields
-    cutout: data.cutout ? {
-      file: data.cutout.file || null,
-      file_name: data.cutout.file?.name || data.cutout.file_name || null,
-      file_url: data.cutout.uploaded_url || data.cutout.preview_url || data.cutout.file_url || null,
-      file_size: data.cutout.file?.size || data.cutout.file_size || null,
-      file_type: data.cutout.file?.type || data.cutout.file_type || null,
-      has_file: Boolean(data.cutout.file || data.cutout.uploaded_url || data.cutout.preview_url),
-      is_uploaded: data.cutout.is_uploaded || false,
-      preview_url: data.cutout.preview_url || data.cutout.uploaded_url || null,
-      uploaded_url: data.cutout.uploaded_url || null,
-    } : null,
-    
+    cutout: data.cutout
+      ? {
+          file: data.cutout.file || null,
+          file_name: data.cutout.file?.name || data.cutout.file_name || null,
+          file_url:
+            data.cutout.uploaded_url ||
+            data.cutout.preview_url ||
+            data.cutout.file_url ||
+            null,
+          file_size: data.cutout.file?.size || data.cutout.file_size || null,
+          file_type: data.cutout.file?.type || data.cutout.file_type || null,
+          has_file: Boolean(
+            data.cutout.file ||
+              data.cutout.uploaded_url ||
+              data.cutout.preview_url
+          ),
+          is_uploaded: data.cutout.is_uploaded || false,
+          preview_url:
+            data.cutout.preview_url || data.cutout.uploaded_url || null,
+          uploaded_url: data.cutout.uploaded_url || null,
+        }
+      : null,
+
     // Interview - ensure all fields
-    interview: data.interview ? {
-      date_ad: data.interview.date_ad || "",
-      date_bs: data.interview.date_bs || "",
-      date_format: data.interview.date_format || "AD",
-      time: data.interview.time || "",
-      location: data.interview.location || "",
-      contact_person: data.interview.contact_person || "",
-      required_documents: data.interview.required_documents || [],
-      notes: data.interview.notes || "",
-      expenses: data.interview.expenses || [],
-    } : null,
-    
+    interview: data.interview
+      ? {
+          date_ad: data.interview.date_ad || "",
+          date_bs: data.interview.date_bs || "",
+          date_format: data.interview.date_format || "AD",
+          time: data.interview.time || "",
+          location: data.interview.location || "",
+          contact_person: data.interview.contact_person || "",
+          required_documents: data.interview.required_documents || [],
+          notes: data.interview.notes || "",
+          expenses: data.interview.expenses || [],
+        }
+      : null,
+
     // Metadata
     status: data.status || "draft",
     is_partial: data.is_partial || false,
@@ -132,7 +153,7 @@ const DraftWizard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  
+
   const [editingDraft, setEditingDraft] = useState(null);
   const [initialStep, setInitialStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -151,7 +172,7 @@ const DraftWizard = () => {
         if (stateData?.draft) {
           setEditingDraft(stateData.draft);
           setInitialStep(stateData.step || 0);
-        } 
+        }
         // Otherwise, fetch draft by ID if provided
         else if (draftId) {
           const draft = await jobService.getJobById(draftId);
@@ -193,14 +214,9 @@ const DraftWizard = () => {
 
         const bulkDraft = {
           title:
-            positions.length > 0
-              ? positions.join(", ")
-              : "Multiple Positions",
+            positions.length > 0 ? positions.join(", ") : "Multiple Positions",
           company: "Multiple Companies",
-          country:
-            countries.length === 1
-              ? countries[0]
-              : "Multiple Countries",
+          country: countries.length === 1 ? countries[0] : "Multiple Countries",
           city: "",
           published_at: null,
           salary: "",
@@ -228,7 +244,7 @@ const DraftWizard = () => {
         };
 
         await jobService.createDraftJob(bulkDraft);
-        
+
         // Navigate back to drafts with success message
         navigate("/drafts", {
           state: {
@@ -256,10 +272,7 @@ const DraftWizard = () => {
               ? positions.join(", ")
               : "Multiple Positions"),
           company: draftData.data.company || "Multiple Companies",
-          country:
-            countries.length === 1
-              ? countries[0]
-              : "Multiple Countries",
+          country: countries.length === 1 ? countries[0] : "Multiple Countries",
           description:
             draftData.data.description ||
             `Bulk job creation for ${totalJobs} positions across ${countries.length} countries`,
@@ -269,7 +282,7 @@ const DraftWizard = () => {
         };
 
         await jobService.updateJob(draftData.data.id, updatedBulkDraft);
-        
+
         navigate("/drafts", {
           state: {
             message: `Successfully updated bulk draft with ${totalJobs} jobs`,
@@ -279,7 +292,7 @@ const DraftWizard = () => {
       } else if (draftData.type === "partial_draft") {
         // Handle partial draft save (Save & Exit)
         const formattedData = formatDraftData(draftData.data);
-        
+
         if (editingDraft) {
           const updatedDraft = {
             ...formattedData,
@@ -298,7 +311,7 @@ const DraftWizard = () => {
           };
           await jobService.createDraftJob(partialDraft);
         }
-        
+
         navigate("/drafts", {
           state: {
             message: "Progress saved successfully",
@@ -309,7 +322,7 @@ const DraftWizard = () => {
       } else if (draftData.type === "single_draft") {
         // Handle single draft save
         const formattedData = formatDraftData(draftData.data);
-        
+
         if (editingDraft) {
           await jobService.updateJob(editingDraft.id, formattedData);
           navigate("/drafts", {
@@ -332,7 +345,7 @@ const DraftWizard = () => {
       } else if (draftData.type === "single_publish") {
         // Handle publish
         const formattedData = formatDraftData(draftData.data);
-        
+
         if (editingDraft) {
           await jobService.updateJob(editingDraft.id, formattedData);
           await jobService.publishJob(editingDraft.id);
@@ -340,7 +353,7 @@ const DraftWizard = () => {
           const created = await jobService.createDraftJob(formattedData);
           await jobService.publishJob(created.id);
         }
-        
+
         navigate("/jobs", {
           state: {
             message: "Job published successfully",
@@ -350,16 +363,18 @@ const DraftWizard = () => {
       } else {
         // Default save behavior
         const formattedData = formatDraftData(draftData);
-        
+
         if (editingDraft) {
           await jobService.updateJob(editingDraft.id, formattedData);
         } else {
           await jobService.createDraftJob(formattedData);
         }
-        
+
         navigate("/drafts", {
           state: {
-            message: editingDraft ? "Draft updated successfully" : "Draft created successfully",
+            message: editingDraft
+              ? "Draft updated successfully"
+              : "Draft created successfully",
             type: "success",
             refetch: true,
           },
