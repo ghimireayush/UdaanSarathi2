@@ -8,9 +8,11 @@
   "subtitle": "सम्पूर्ण प्लेटफर्मको उच्च-स्तरीय अवलोकन",
   "metrics": {
     "totalAgencies": "कुल एजेन्सीहरू",
-    "activeAgencies": "सक्रिय एजेन्सीहरू",
-    "inactiveAgencies": "निष्क्रिय एजेन्सीहरू",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
     "totalActiveUsers": "कुल सक्रिय प्रयोगकर्ताहरू",
+    "agencyUsers": "एजेन्सी प्रयोगकर्ताहरू",
+    "appUsers": "एप प्रयोगकर्ताहरू",
     "totalActiveJobs": "कुल सक्रिय कामहरू",
     "ofTotal": "कुलको"
   },
@@ -18,7 +20,7 @@
     "title": "द्रुत तथ्याङ्क",
     "avgJobsPerAgency": "प्रति एजेन्सी औसत काम",
     "activationRate": "एजेन्सी सक्रियता दर",
-    "avgUsersPerAgency": "प्रति एजेन्सी औसत प्रयोगकर्ता"
+    "avgAgencyUsersPerAgency": "प्रति एजेन्सी औसत एजेन्सी प्रयोगकर्ता"
   },
   "recentActivity": {
     "title": "हालको गतिविधि",

@@ -1,29 +1,42 @@
-import { useState, useEffect } from 'react'
-import { Building2, CheckCircle, PauseCircle, Users, Briefcase, TrendingUp, Activity } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
-import { useLanguage } from '../hooks/useLanguage'
+import { useState, useEffect } from "react";
+import {
+  Building2,
+  CheckCircle,
+  PauseCircle,
+  Users,
+  Briefcase,
+  Activity,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/Card";
+import { useLanguage } from "../hooks/useLanguage";
 
 const OwnerDashboard = () => {
-  const { tPageSync } = useLanguage({ 
-    pageName: 'owner-dashboard', 
-    autoLoad: true 
-  })
+  const { tPageSync } = useLanguage({
+    pageName: "owner-dashboard",
+    autoLoad: true,
+  });
 
   const tPage = (key, params = {}) => {
-    return tPageSync(key, params)
-  }
+    return tPageSync(key, params);
+  };
 
   // Mock data - In production, fetch from API
   const [stats, setStats] = useState({
     totalAgencies: 0,
     activeAgencies: 0,
     inactiveAgencies: 0,
-    totalActiveUsers: 0,
+    totalAgencyUsers: 0,
+    totalAppUsers: 0,
     totalActiveJobs: 0,
-    loading: true
-  })
+    loading: true,
+  });
 
-  const [recentActivity, setRecentActivity] = useState([])
+  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     // Simulate API call
@@ -32,57 +45,103 @@ const OwnerDashboard = () => {
         totalAgencies: 45,
         activeAgencies: 38,
         inactiveAgencies: 7,
-        totalActiveUsers: 234,
+        totalAgencyUsers: 152,
+        totalAppUsers: 1847,
         totalActiveJobs: 156,
-        loading: false
-      })
+        loading: false,
+      });
 
       setRecentActivity([
-        { id: 1, agency: 'Tech Solutions Pvt Ltd', action: 'new_agency', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-        { id: 2, agency: 'Global Recruiters', action: 'job_posted', timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000) },
-        { id: 3, agency: 'HR Consultancy Nepal', action: 'status_changed', timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000) },
-        { id: 4, agency: 'Manpower Services', action: 'job_posted', timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000) },
-        { id: 5, agency: 'Career Builders', action: 'new_agency', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-        { id: 6, agency: 'Talent Hub', action: 'job_posted', timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000) },
-        { id: 7, agency: 'Employment Solutions', action: 'status_changed', timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000) },
-      ])
-    }, 500)
-  }, [])
+        {
+          id: 1,
+          agency: "Tech Solutions Pvt Ltd",
+          action: "new_agency",
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        },
+        {
+          id: 2,
+          agency: "Global Recruiters",
+          action: "job_posted",
+          timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+        },
+        {
+          id: 3,
+          agency: "HR Consultancy Nepal",
+          action: "status_changed",
+          timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+        },
+        {
+          id: 4,
+          agency: "Manpower Services",
+          action: "job_posted",
+          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
+        },
+        {
+          id: 5,
+          agency: "Career Builders",
+          action: "new_agency",
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        },
+        {
+          id: 6,
+          agency: "Talent Hub",
+          action: "job_posted",
+          timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000),
+        },
+        {
+          id: 7,
+          agency: "Employment Solutions",
+          action: "status_changed",
+          timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000),
+        },
+      ]);
+    }, 500);
+  }, []);
 
-  const activePercentage = stats.totalAgencies > 0 
-    ? Math.round((stats.activeAgencies / stats.totalAgencies) * 100) 
-    : 0
+  const activePercentage =
+    stats.totalAgencies > 0
+      ? Math.round((stats.activeAgencies / stats.totalAgencies) * 100)
+      : 0;
 
-  const inactivePercentage = stats.totalAgencies > 0 
-    ? Math.round((stats.inactiveAgencies / stats.totalAgencies) * 100) 
-    : 0
+  const inactivePercentage =
+    stats.totalAgencies > 0
+      ? Math.round((stats.inactiveAgencies / stats.totalAgencies) * 100)
+      : 0;
 
-  const avgJobsPerAgency = stats.activeAgencies > 0 
-    ? (stats.totalActiveJobs / stats.activeAgencies).toFixed(1) 
-    : 0
+
 
   const formatTimeAgo = (date) => {
-    const seconds = Math.floor((new Date() - date) / 1000)
-    
-    if (seconds < 60) return tPage('timeAgo.justNow')
-    if (seconds < 3600) return tPage('timeAgo.minutesAgo', { count: Math.floor(seconds / 60) })
-    if (seconds < 86400) return tPage('timeAgo.hoursAgo', { count: Math.floor(seconds / 3600) })
-    return tPage('timeAgo.daysAgo', { count: Math.floor(seconds / 86400) })
-  }
+    const seconds = Math.floor((new Date() - date) / 1000);
+
+    if (seconds < 60) return tPage("timeAgo.justNow");
+    if (seconds < 3600)
+      return tPage("timeAgo.minutesAgo", { count: Math.floor(seconds / 60) });
+    if (seconds < 86400)
+      return tPage("timeAgo.hoursAgo", { count: Math.floor(seconds / 3600) });
+    return tPage("timeAgo.daysAgo", { count: Math.floor(seconds / 86400) });
+  };
 
   const getActionText = (action) => {
     const actions = {
-      new_agency: tPage('activity.newAgency'),
-      job_posted: tPage('activity.jobPosted'),
-      status_changed: tPage('activity.statusChanged')
-    }
-    return actions[action] || action
-  }
+      new_agency: tPage("activity.newAgency"),
+      job_posted: tPage("activity.jobPosted"),
+      status_changed: tPage("activity.statusChanged"),
+    };
+    return actions[action] || action;
+  };
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, color, loading }) => (
+  const StatCard = ({
+    icon: Icon,
+    title,
+    value,
+    subtitle,
+    color,
+    loading,
+    breakdown,
+  }) => (
     <Card className="hover:shadow-lg transition-shadow">
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
               {title}
@@ -100,13 +159,44 @@ const OwnerDashboard = () => {
               </p>
             )}
           </div>
-          <div className={`p-3 rounded-lg ${color.replace('text-', 'bg-').replace(/-(500|600|700)/, '-100')} dark:bg-opacity-20`}>
+          <div
+            className={`p-3 rounded-lg ${color
+              .replace("text-", "bg-")
+              .replace(/-(500|600|700)/, "-100")} dark:bg-opacity-20`}
+          >
             <Icon className={`h-8 w-8 ${color}`} />
           </div>
         </div>
+        {breakdown && breakdown.length > 0 && (
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+            {breakdown.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
+                <span className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  {item.label}
+                </span>
+                <span
+                  className={`font-semibold ${
+                    item.color || "text-gray-900 dark:text-gray-100"
+                  }`}
+                >
+                  {item.value.toLocaleString()}
+                  {item.percentage && (
+                    <span className="text-xs ml-1 text-gray-500 dark:text-gray-400">
+                      ({item.percentage}%)
+                    </span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className="space-y-6">
@@ -114,112 +204,85 @@ const OwnerDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {tPage('title')}
+            {tPage("title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {tPage('subtitle')}
+            {tPage("subtitle")}
           </p>
         </div>
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Total Agencies Card with Breakdown */}
         <StatCard
           icon={Building2}
-          title={tPage('metrics.totalAgencies')}
+          title={tPage("metrics.totalAgencies")}
           value={stats.totalAgencies}
           color="text-blue-600 dark:text-blue-400"
           loading={stats.loading}
+          breakdown={[
+            {
+              icon: CheckCircle,
+              label: tPage("metrics.active"),
+              value: stats.activeAgencies,
+              percentage: activePercentage,
+              color: "text-green-600 dark:text-green-400",
+            },
+            {
+              icon: PauseCircle,
+              label: tPage("metrics.inactive"),
+              value: stats.inactiveAgencies,
+              percentage: inactivePercentage,
+              color: "text-orange-600 dark:text-orange-400",
+            },
+          ]}
         />
-        
-        <StatCard
-          icon={CheckCircle}
-          title={tPage('metrics.activeAgencies')}
-          value={stats.activeAgencies}
-          subtitle={`${activePercentage}% ${tPage('metrics.ofTotal')}`}
-          color="text-green-600 dark:text-green-400"
-          loading={stats.loading}
-        />
-        
-        <StatCard
-          icon={PauseCircle}
-          title={tPage('metrics.inactiveAgencies')}
-          value={stats.inactiveAgencies}
-          subtitle={`${inactivePercentage}% ${tPage('metrics.ofTotal')}`}
-          color="text-orange-600 dark:text-orange-400"
-          loading={stats.loading}
-        />
-        
+
+        {/* Total Active Users Card with Breakdown */}
         <StatCard
           icon={Users}
-          title={tPage('metrics.totalActiveUsers')}
-          value={stats.totalActiveUsers}
+          title={tPage("metrics.totalActiveUsers")}
+          value={stats.totalAgencyUsers + stats.totalAppUsers}
           color="text-purple-600 dark:text-purple-400"
           loading={stats.loading}
+          breakdown={[
+            {
+              label: tPage("metrics.agencyUsers"),
+              value: stats.totalAgencyUsers,
+              color: "text-indigo-600 dark:text-indigo-400",
+            },
+            {
+              label: tPage("metrics.appUsers"),
+              value: stats.totalAppUsers,
+              color: "text-violet-600 dark:text-violet-400",
+            },
+          ]}
         />
-        
+
+        {/* Total Active Jobs Card */}
         <StatCard
           icon={Briefcase}
-          title={tPage('metrics.totalActiveJobs')}
+          title={tPage("metrics.totalActiveJobs")}
           value={stats.totalActiveJobs}
           color="text-amber-600 dark:text-amber-400"
           loading={stats.loading}
         />
       </div>
 
-      {/* Quick Stats and Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-brand-blue-bright" />
-              {tPage('quickStats.title')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {tPage('quickStats.avgJobsPerAgency')}
-              </span>
-              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {avgJobsPerAgency}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {tPage('quickStats.activationRate')}
-              </span>
-              <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                {activePercentage}%
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {tPage('quickStats.avgUsersPerAgency')}
-              </span>
-              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {stats.activeAgencies > 0 ? (stats.totalActiveUsers / stats.activeAgencies).toFixed(1) : 0}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="lg:col-span-2">
+      {/* Recent Activity */}
+      <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-brand-blue-bright" />
-              {tPage('recentActivity.title')}
+              {tPage("recentActivity.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {recentActivity.length === 0 ? (
                 <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-                  {tPage('recentActivity.noActivity')}
+                  {tPage("recentActivity.noActivity")}
                 </p>
               ) : (
                 recentActivity.map((activity) => (
@@ -245,9 +308,8 @@ const OwnerDashboard = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default OwnerDashboard
+export default OwnerDashboard;

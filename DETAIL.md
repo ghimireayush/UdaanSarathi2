@@ -1,6 +1,7 @@
 # UdaanSarathi - Complete Project Documentation
 
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [System Architecture](#system-architecture)
 3. [Page-by-Page Documentation](#page-by-page-documentation)
@@ -20,6 +21,7 @@
 UdaanSarathi is a comprehensive recruitment management system designed specifically for foreign employment agencies in Nepal. The platform streamlines the entire recruitment lifecycle from job posting creation to candidate placement.
 
 ### Purpose
+
 - Manage foreign employment job postings
 - Track candidate applications and interviews
 - Handle agency operations and compliance
@@ -27,6 +29,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Ensure regulatory compliance with Nepali labor laws
 
 ### Target Users
+
 - Foreign Employment Agencies
 - Recruitment Officers
 - HR Managers
@@ -38,6 +41,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## System Architecture
 
 ### Frontend Architecture
+
 - **Framework:** React 18+ with Hooks
 - **Routing:** React Router v6
 - **State Management:** Context API + Local State
@@ -46,12 +50,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - **Date Handling:** date-fns
 
 ### Key Contexts
+
 1. **AgencyContext** - Agency-wide data and settings
 2. **NotificationContext** - Real-time notifications
 3. **ThemeContext** - Light/Dark mode management
 4. **LanguageContext** - Multi-language support (English/Nepali)
 
 ### Service Layer
+
 - **jobService** - Job posting operations
 - **applicationService** - Application management
 - **interviewService** - Interview scheduling
@@ -69,6 +75,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** User authentication entry point
 
 **Features:**
+
 - Email/password authentication
 - Remember me functionality
 - Password visibility toggle
@@ -76,6 +83,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Redirect to dashboard on success
 
 **User Flow:**
+
 1. Enter credentials
 2. Click "Sign In"
 3. System validates credentials
@@ -91,12 +99,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Separate login for team members
 
 **Features:**
+
 - Member-specific authentication
 - Role-based access control
 - Different permission levels
 - Team member dashboard access
 
 **User Flow:**
+
 1. Team member enters credentials
 2. System validates member status
 3. Redirect to appropriate dashboard
@@ -111,6 +121,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** New agency registration
 
 **Features:**
+
 - Agency information collection
 - License number validation
 - Contact details
@@ -118,6 +129,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Email verification
 
 **Form Fields:**
+
 - Agency name
 - License number
 - Contact person
@@ -127,6 +139,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Confirm password
 
 **User Flow:**
+
 1. Fill registration form
 2. Validate license number
 3. Submit registration
@@ -142,6 +155,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Initial agency configuration after registration
 
 **Features:**
+
 - Company profile setup
 - Logo upload
 - Address details
@@ -149,6 +163,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Initial settings configuration
 
 **Setup Steps:**
+
 1. Basic company information
 2. Contact details
 3. Business registration details
@@ -164,6 +179,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Main overview and analytics hub
 
 **Features:**
+
 - Key metrics display
 - Recent activities
 - Quick actions
@@ -173,6 +189,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Application statistics
 
 **Widgets:**
+
 - Total Jobs (Active/Draft/Closed)
 - Total Applications
 - Interview Schedule
@@ -181,6 +198,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Quick Links
 
 **User Flow:**
+
 1. User logs in
 2. Dashboard loads with latest data
 3. View key metrics at a glance
@@ -196,6 +214,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Manage all published job postings
 
 **Features:**
+
 - Job listing with filters
 - Search functionality
 - Sort options (date, title, country)
@@ -205,6 +224,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Pagination
 
 **Filters:**
+
 - Country
 - Status (Active/Paused/Closed)
 - Date range
@@ -212,6 +232,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Job category
 
 **Job Card Information:**
+
 - Job title
 - Company name
 - Country & city
@@ -222,6 +243,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Status badge
 
 **Actions:**
+
 - View details
 - Edit job
 - Pause/Resume
@@ -230,6 +252,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Share job
 
 **User Flow:**
+
 1. Navigate to Jobs page
 2. Apply filters if needed
 3. Browse job listings
@@ -245,6 +268,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Detailed view of a specific job posting
 
 **Features:**
+
 - Complete job information
 - Application statistics
 - Applicant list
@@ -254,7 +278,9 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Share options
 
 **Sections:**
+
 1. **Job Overview**
+
    - Title and company
    - Location
    - Salary details
@@ -262,6 +288,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Posted date
 
 2. **Job Description**
+
    - Responsibilities
    - Requirements
    - Skills needed
@@ -269,6 +296,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Education requirements
 
 3. **Contract Details**
+
    - Duration
    - Working hours
    - Benefits (food, accommodation, transport)
@@ -276,12 +304,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Overtime policy
 
 4. **Positions**
+
    - Position titles
    - Vacancies (male/female)
    - Salary per position
    - Position-specific requirements
 
 5. **Expenses**
+
    - Medical costs
    - Visa fees
    - Travel expenses
@@ -289,6 +319,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Who pays what
 
 6. **Applications**
+
    - Total applications
    - Shortlisted candidates
    - Rejected candidates
@@ -302,6 +333,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Required documents
 
 **Actions:**
+
 - Edit job
 - Pause/Close job
 - View applications
@@ -310,6 +342,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Share job
 
 **User Flow:**
+
 1. Click on job from listing
 2. View complete details
 3. Review applications
@@ -325,6 +358,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Manage shortlisted candidates for a specific job
 
 **Features:**
+
 - Shortlisted candidate list
 - Candidate comparison
 - Bulk actions
@@ -333,6 +367,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notes and comments
 
 **Candidate Information:**
+
 - Name and photo
 - Contact details
 - Experience
@@ -342,6 +377,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Current status
 
 **Actions:**
+
 - Schedule interview
 - Move to next stage
 - Reject candidate
@@ -350,6 +386,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Contact candidate
 
 **User Flow:**
+
 1. Navigate from job details
 2. View shortlisted candidates
 3. Compare candidates
@@ -365,6 +402,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Centralized application management
 
 **Features:**
+
 - All applications across jobs
 - Advanced filtering
 - Stage-based view
@@ -373,6 +411,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Status updates
 
 **Application Stages:**
+
 1. New Applications
 2. Under Review
 3. Shortlisted
@@ -382,6 +421,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 7. Rejected
 
 **Filters:**
+
 - Job title
 - Country
 - Application stage
@@ -390,6 +430,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Skills
 
 **Application Card:**
+
 - Candidate name
 - Applied job
 - Application date
@@ -397,6 +438,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Quick actions
 
 **Bulk Actions:**
+
 - Move to stage
 - Schedule interviews
 - Send emails
@@ -404,6 +446,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Reject multiple
 
 **User Flow:**
+
 1. View all applications
 2. Filter by criteria
 3. Review applications
@@ -419,6 +462,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Interview scheduling and management
 
 **Features:**
+
 - Interview calendar view
 - Upcoming interviews
 - Past interviews
@@ -428,11 +472,13 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Rescheduling options
 
 **Views:**
+
 - Calendar view
 - List view
 - Timeline view
 
 **Interview Information:**
+
 - Candidate name
 - Job title
 - Interview date/time
@@ -442,6 +488,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Status
 
 **Interview Statuses:**
+
 - Scheduled
 - Confirmed
 - In Progress
@@ -450,6 +497,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Rescheduled
 
 **Actions:**
+
 - Schedule new interview
 - Reschedule
 - Cancel interview
@@ -458,6 +506,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Send reminders
 
 **User Flow:**
+
 1. View interview schedule
 2. Check upcoming interviews
 3. Schedule new interviews
@@ -474,6 +523,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Visualize and manage recruitment workflow
 
 **Features:**
+
 - Kanban board view
 - Drag-and-drop functionality
 - Stage customization
@@ -482,6 +532,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Bottleneck identification
 
 **Workflow Stages:**
+
 1. Application Received
 2. Initial Screening
 3. Shortlisted
@@ -492,6 +543,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 8. Accepted/Rejected
 
 **Features per Stage:**
+
 - Candidate count
 - Average time in stage
 - Success rate
@@ -499,6 +551,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Automation rules
 
 **Actions:**
+
 - Move candidates between stages
 - Add notes
 - Set reminders
@@ -506,6 +559,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Bulk operations
 
 **User Flow:**
+
 1. View workflow board
 2. See candidates in each stage
 3. Drag candidates to next stage
@@ -521,6 +575,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Manage unpublished job drafts
 
 **Features:**
+
 - Draft listing
 - Create new draft
 - Edit existing drafts
@@ -530,10 +585,12 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Delete drafts
 
 **Draft Types:**
+
 1. **Single Draft** - One detailed job posting
 2. **Bulk Draft** - Multiple jobs at once
 
 **Draft Information:**
+
 - Draft title
 - Country
 - Company
@@ -543,11 +600,13 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Progress indicator (X/8 steps)
 
 **Draft Statuses:**
+
 - Incomplete (partial)
 - Complete (ready to publish)
 - Bulk draft
 
 **Actions:**
+
 - Create new draft
 - Edit draft
 - Preview draft
@@ -557,10 +616,12 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Duplicate draft
 
 **View Modes:**
+
 - Grid view
 - List view
 
 **Filters:**
+
 - Country
 - Company
 - Category
@@ -568,6 +629,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Completion status
 
 **User Flow:**
+
 1. Navigate to Drafts page
 2. Click "Create Draft"
 3. Choose single or bulk
@@ -585,6 +647,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Step-by-step job draft creation
 
 **Features:**
+
 - 8-step wizard process
 - Progress tracking
 - Field validation
@@ -596,7 +659,9 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Wizard Steps:**
 
 #### Step 1: Posting Details
+
 **Fields:**
+
 - City
 - LT Number
 - Chalani Number
@@ -606,12 +671,15 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notes
 
 **Validation:**
+
 - All fields required except notes
 - Date validation
 - LT/Chalani format check
 
 #### Step 2: Contract
+
 **Fields:**
+
 - Contract period (years)
 - Renewable (yes/no)
 - Hours per day
@@ -624,18 +692,22 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Annual leave days
 
 **Validation:**
+
 - Period: 1-10 years
 - Hours: 1-16 per day
 - Days: 1-7 per week
 - All provisions required
 
 #### Step 3: Positions
+
 **Features:**
+
 - Add multiple positions
 - Position-specific details
 - Contract overrides per position
 
 **Fields per Position:**
+
 - Position title
 - Vacancies (male/female)
 - Monthly salary
@@ -644,13 +716,16 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Position notes
 
 **Validation:**
+
 - At least one position required
 - Total vacancies > 0
 - Salary > 0
 - Currency required
 
 #### Step 4: Tags & Canonical Titles
+
 **Fields:**
+
 - Skills (multiple)
 - Education requirements
 - Experience requirements
@@ -660,17 +735,21 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Canonical job titles
 
 **Validation:**
+
 - At least one skill
 - At least one education requirement
 - At least one experience domain
 - At least one canonical title
 
 #### Step 5: Expenses
+
 **Features:**
+
 - Add multiple expenses
 - Free or paid options
 
 **Fields per Expense:**
+
 - Expense type
 - Who pays
 - Is free (yes/no)
@@ -679,6 +758,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notes
 
 **Expense Types:**
+
 - Medical
 - Insurance
 - Travel
@@ -687,32 +767,40 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Welfare/Service
 
 **Validation:**
+
 - Type and payer required
 - Amount required if not free
 
 #### Step 6: Cutout
+
 **Features:**
+
 - Image upload
 - Preview
 - File validation
 
 **Supported Formats:**
+
 - JPG, JPEG, PNG
 - Max size: 10MB
 
 **Actions:**
+
 - Upload image
 - Preview image
 - Remove image
 - Replace image
 
 **Validation:**
+
 - Optional step
 - File type validation
 - File size validation
 
 #### Step 7: Interview
+
 **Fields:**
+
 - Interview date
 - Interview time
 - Location
@@ -722,12 +810,15 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Interview expenses
 
 **Validation:**
+
 - All fields optional
 - Time format validation
 - Date validation
 
 #### Step 8: Review and Publish
+
 **Features:**
+
 - Complete draft review
 - All sections displayed
 - Edit any section
@@ -735,6 +826,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Publish or save as draft
 
 **Review Sections:**
+
 - Posting details summary
 - Contract terms summary
 - All positions listed
@@ -744,11 +836,13 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Interview details
 
 **Actions:**
+
 - Edit any step
 - Save as draft
 - Publish job
 
 **Wizard Features:**
+
 - Progress indicator
 - Step navigation
 - Save and exit (any step)
@@ -758,6 +852,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Help tooltips
 
 **User Flow:**
+
 1. Navigate to /draftwizard
 2. Complete Step 1 (Posting Details)
 3. Click "Next" or "Save & Exit"
@@ -774,6 +869,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Agency configuration and preferences
 
 **Features:**
+
 - Agency profile
 - User preferences
 - System settings
@@ -784,6 +880,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Settings Sections:**
 
 #### Agency Profile
+
 - Agency name
 - License number
 - Logo
@@ -792,6 +889,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Business details
 
 #### User Preferences
+
 - Language (English/Nepali)
 - Theme (Light/Dark)
 - Date format
@@ -800,6 +898,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notifications
 
 #### System Settings
+
 - Email templates
 - Workflow stages
 - Custom fields
@@ -807,6 +906,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Data retention
 
 #### Notification Settings
+
 - Email notifications
 - In-app notifications
 - SMS notifications
@@ -814,12 +914,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notification types
 
 #### Integration Settings
+
 - API keys
 - Webhooks
 - Third-party integrations
 - Export settings
 
 #### Security Settings
+
 - Password policy
 - Two-factor authentication
 - Session timeout
@@ -827,6 +929,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Audit logs
 
 **User Flow:**
+
 1. Navigate to Settings
 2. Select section
 3. Update settings
@@ -842,6 +945,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Track all system activities
 
 **Features:**
+
 - Activity timeline
 - User actions
 - System events
@@ -849,6 +953,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Export logs
 
 **Log Information:**
+
 - Timestamp
 - User
 - Action type
@@ -857,6 +962,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Details
 
 **Action Types:**
+
 - User login/logout
 - Job created/edited/deleted
 - Application status changed
@@ -865,12 +971,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - User added/removed
 
 **Filters:**
+
 - Date range
 - User
 - Action type
 - Resource type
 
 **User Flow:**
+
 1. Navigate to Audit Log
 2. Apply filters
 3. Review activities
@@ -885,6 +993,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Manage agency team members
 
 **Features:**
+
 - Member listing
 - Add new members
 - Edit member details
@@ -893,6 +1002,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Deactivate members
 
 **Member Information:**
+
 - Name
 - Email
 - Role
@@ -902,12 +1012,14 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Join date
 
 **Roles:**
+
 - Admin
 - Manager
 - Recruiter
 - Viewer
 
 **Permissions:**
+
 - View jobs
 - Create jobs
 - Edit jobs
@@ -920,6 +1032,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Manage members
 
 **Actions:**
+
 - Add member
 - Edit member
 - Change role
@@ -928,6 +1041,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Resend invitation
 
 **User Flow:**
+
 1. Navigate to Team Members
 2. Click "Add Member"
 3. Enter member details
@@ -945,6 +1059,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 **Purpose:** Internal testing and quality assurance
 
 **Features:**
+
 - Feature testing
 - Bug reporting
 - Performance metrics
@@ -952,6 +1067,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Test results
 
 **Testing Categories:**
+
 - Authentication
 - Job management
 - Application workflow
@@ -960,6 +1076,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Integrations
 
 **User Flow:**
+
 1. Navigate to MVP Testing
 2. Select test category
 3. Run test scenarios
@@ -975,6 +1092,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Core Features
 
 #### 1. Job Management
+
 - Create detailed job postings
 - Draft system with 8-step wizard
 - Bulk job creation
@@ -984,6 +1102,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Job analytics
 
 #### 2. Application Management
+
 - Application tracking
 - Stage-based workflow
 - Bulk operations
@@ -993,6 +1112,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Communication history
 
 #### 3. Interview Management
+
 - Interview scheduling
 - Calendar integration
 - Interview reminders
@@ -1002,6 +1122,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Interview analytics
 
 #### 4. Candidate Management
+
 - Candidate database
 - Profile management
 - Document storage
@@ -1011,6 +1132,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Candidate matching
 
 #### 5. Team Collaboration
+
 - Role-based access
 - Permission management
 - Activity tracking
@@ -1019,6 +1141,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Notifications
 
 #### 6. Reporting & Analytics
+
 - Job performance
 - Application metrics
 - Interview statistics
@@ -1028,6 +1151,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Custom reports
 
 #### 7. Compliance & Documentation
+
 - LT number tracking
 - Chalani number management
 - Approval dates
@@ -1038,36 +1162,42 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Advanced Features
 
 #### 1. Multi-language Support
+
 - English
 - Nepali (Devanagari)
 - Dynamic translation
 - Language switching
 
 #### 2. Dark Mode
+
 - System-wide dark theme
 - User preference
 - Automatic switching
 - Consistent styling
 
 #### 3. Responsive Design
+
 - Mobile-friendly
 - Tablet optimized
 - Desktop experience
 - Touch-friendly
 
 #### 4. Real-time Updates
+
 - Live notifications
 - Auto-refresh
 - WebSocket support
 - Push notifications
 
 #### 5. Data Export
+
 - CSV export
 - PDF reports
 - Excel export
 - Custom formats
 
 #### 6. Search & Filters
+
 - Advanced search
 - Multiple filters
 - Saved searches
@@ -1078,6 +1208,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## Technical Stack
 
 ### Frontend
+
 - **React** 18.2.0
 - **React Router** 6.x
 - **Tailwind CSS** 3.x
@@ -1085,22 +1216,26 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - **date-fns** (date handling)
 
 ### State Management
+
 - React Context API
 - Local component state
 - Custom hooks
 
 ### Styling
+
 - Tailwind CSS
 - CSS Modules
 - Dark mode support
 - Responsive utilities
 
 ### Build Tools
+
 - Vite
 - ESLint
 - Prettier
 
 ### Testing
+
 - Manual testing
 - Component testing
 - Integration testing
@@ -1110,7 +1245,9 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## User Roles & Permissions
 
 ### Admin
+
 **Full Access:**
+
 - All job operations
 - All application operations
 - All interview operations
@@ -1120,7 +1257,9 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Reports
 
 ### Manager
+
 **Limited Admin:**
+
 - Create/edit/delete jobs
 - Manage applications
 - Schedule interviews
@@ -1128,14 +1267,18 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Manage team members (limited)
 
 ### Recruiter
+
 **Operational:**
+
 - Create/edit jobs
 - Manage applications
 - Schedule interviews
 - View reports
 
 ### Viewer
+
 **Read-only:**
+
 - View jobs
 - View applications
 - View interviews
@@ -1148,18 +1291,21 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Job Posting Workflow
 
 1. **Draft Creation**
+
    - Create draft (single or bulk)
    - Fill 8-step wizard
    - Save progress
    - Preview draft
 
 2. **Review & Approval**
+
    - Review all details
    - Validate information
    - Get internal approval
    - Make corrections if needed
 
 3. **Publishing**
+
    - Publish job
    - Job goes live
    - Notifications sent
@@ -1174,24 +1320,28 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Application Workflow
 
 1. **Application Received**
+
    - Candidate applies
    - Application logged
    - Notification sent
    - Initial screening
 
 2. **Review**
+
    - Review application
    - Check qualifications
    - Verify documents
    - Shortlist or reject
 
 3. **Shortlisting**
+
    - Move to shortlist
    - Compare candidates
    - Schedule interviews
    - Notify candidates
 
 4. **Interview**
+
    - Conduct interview
    - Add feedback
    - Evaluate candidate
@@ -1206,18 +1356,21 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Interview Workflow
 
 1. **Scheduling**
+
    - Select candidates
    - Choose date/time
    - Set location/link
    - Send invitations
 
 2. **Confirmation**
+
    - Candidate confirms
    - Send reminders
    - Prepare materials
    - Brief interviewers
 
 3. **Conducting**
+
    - Conduct interview
    - Take notes
    - Evaluate candidate
@@ -1234,6 +1387,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## API Integration
 
 ### Job Service
+
 - `getJobs()` - Fetch all jobs
 - `getJobById(id)` - Get job details
 - `createDraftJob(data)` - Create draft
@@ -1244,6 +1398,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - `getDraftJobs()` - Get all drafts
 
 ### Application Service
+
 - `getApplications(filters)` - Fetch applications
 - `getApplicationById(id)` - Get application details
 - `updateApplicationStage(id, stage)` - Update stage
@@ -1251,6 +1406,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - `rejectApplication(id)` - Reject candidate
 
 ### Interview Service
+
 - `getInterviews(filters)` - Fetch interviews
 - `scheduleInterview(data)` - Schedule interview
 - `updateInterview(id, data)` - Update interview
@@ -1258,6 +1414,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - `addInterviewFeedback(id, feedback)` - Add feedback
 
 ### Auth Service
+
 - `login(credentials)` - User login
 - `logout()` - User logout
 - `register(data)` - User registration
@@ -1270,19 +1427,23 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ### Version 2.0.0 (Latest)
 
 #### Major Changes
+
 1. **Draft Wizard Conversion**
+
    - Converted from modal to full-page
    - Added /draftwizard route
    - Browser navigation support
    - Shareable URLs
 
 2. **Data Synchronization**
+
    - Auto-refetch mechanism
    - Real-time updates
    - Data formatting layer
    - Preview compatibility
 
 3. **UI Improvements**
+
    - Positive validation messages
    - Orange color indicators
    - Better error handling
@@ -1295,6 +1456,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
    - Reduced complexity
 
 #### Technical Improvements
+
 - Fixed all TypeScript errors
 - Fixed all ESLint warnings
 - Improved code organization
@@ -1302,6 +1464,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - Enhanced performance
 
 #### Test Results
+
 - 21/21 tests passed
 - 0 errors
 - 0 warnings
@@ -1312,6 +1475,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## Best Practices
 
 ### For Users
+
 1. Complete all required fields
 2. Save drafts frequently
 3. Preview before publishing
@@ -1322,6 +1486,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 8. Monitor application pipeline
 
 ### For Developers
+
 1. Follow React best practices
 2. Use TypeScript for type safety
 3. Write clean, maintainable code
@@ -1336,6 +1501,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 ## Support & Resources
 
 ### Documentation
+
 - UPDATE.md - Recent changes
 - DRAFT_WIZARD_INTEGRATION.md - Wizard guide
 - SYNC_FIX_SUMMARY.md - Sync fixes
@@ -1346,6 +1512,7 @@ UdaanSarathi is a comprehensive recruitment management system designed specifica
 - FINAL_VERIFICATION.md - Verification checklist
 
 ### Getting Help
+
 1. Check documentation
 2. Review test results
 3. Check audit logs

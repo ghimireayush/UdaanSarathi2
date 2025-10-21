@@ -8,9 +8,11 @@
   "subtitle": "High-level overview of the entire platform",
   "metrics": {
     "totalAgencies": "Total Agencies",
-    "activeAgencies": "Active Agencies",
-    "inactiveAgencies": "Inactive Agencies",
+    "active": "Active",
+    "inactive": "Inactive",
     "totalActiveUsers": "Total Active Users",
+    "agencyUsers": "Agency Users",
+    "appUsers": "App Users",
     "totalActiveJobs": "Total Active Jobs",
     "ofTotal": "of total"
   },
@@ -18,7 +20,7 @@
     "title": "Quick Stats",
     "avgJobsPerAgency": "Avg. Jobs per Agency",
     "activationRate": "Agency Activation Rate",
-    "avgUsersPerAgency": "Avg. Users per Agency"
+    "avgAgencyUsersPerAgency": "Avg. Agency Users per Agency"
   },
   "recentActivity": {
     "title": "Recent Activity",
