@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-21",
+    "page": "owner-dashboard"
+  },
+  "title": "प्लेटफर्म अवलोकन",
+  "subtitle": "सम्पूर्ण प्लेटफर्मको उच्च-स्तरीय अवलोकन",
+  "metrics": {
+    "totalAgencies": "कुल एजेन्सीहरू",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "totalActiveUsers": "कुल सक्रिय प्रयोगकर्ताहरू",
+    "agencyUsers": "एजेन्सी प्रयोगकर्ताहरू",
+    "appUsers": "एप प्रयोगकर्ताहरू",
+    "totalActiveJobs": "कुल सक्रिय कामहरू",
+    "ofTotal": "कुलको"
+  },
+  "quickStats": {
+    "title": "द्रुत तथ्याङ्क",
+    "avgJobsPerAgency": "प्रति एजेन्सी औसत काम",
+    "activationRate": "एजेन्सी सक्रियता दर",
+    "avgAgencyUsersPerAgency": "प्रति एजेन्सी औसत एजेन्सी प्रयोगकर्ता"
+  },
+  "recentActivity": {
+    "title": "हालको गतिविधि",
+    "noActivity": "कुनै हालको गतिविधि छैन"
+  },
+  "activity": {
+    "newAgency": "नयाँ एजेन्सी दर्ता भयो",
+    "jobPosted": "काम पोस्ट गरियो",
+    "statusChanged": "स्थिति परिवर्तन भयो"
+  },
+  "timeAgo": {
+    "justNow": "अहिले भर्खर",
+    "minutesAgo": "{{count}} मिनेट अघि",
+    "hoursAgo": "{{count}} घण्टा अघि",
+    "daysAgo": "{{count}} दिन अघि"
+  }
+}

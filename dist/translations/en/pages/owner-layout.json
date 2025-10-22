@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-21",
+    "page": "owner-layout"
+  },
+  "branding": {
+    "appName": "UdaanSarathi",
+    "ownerPortal": "Owner Portal"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "agencies": "Agencies",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Logout"
+  }
+}

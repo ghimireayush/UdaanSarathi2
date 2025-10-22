@@ -105,12 +105,6 @@
       "message": "Change status to {{status}} for {{count}} agencies?",
       "confirm": "Confirm",
       "cancel": "Cancel"
-    },
-    "singleStatusChange": {
-      "title": "Change Agency Status",
-      "message": "Are you sure you want to change the status of \"{{agencyName}}\" to {{status}}?",
-      "confirm": "Confirm",
-      "cancel": "Cancel"
     }
   },
   "toast": {

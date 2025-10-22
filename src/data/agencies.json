@@ -1,0 +1,293 @@
+{
+  "agencies": [
+    {
+      "id": "agency_001",
+      "name": "Inspire International Employment Pvt. Ltd",
+      "license_number": "REG-2024-001",
+      "email": "info@inspireintl.com.np",
+      "phone": "01-4112800",
+      "mobile": "+977-9841234567",
+      "website": "www.inspireintl.com.np",
+      "address": "Manpower Bazar, Sinamangal, Kathmandu, Nepal",
+      "description": "Leading recruitment agency specializing in overseas employment opportunities for Nepali workers in Gulf countries and Malaysia.",
+      "status": "active",
+      "established_year": 2020,
+      "logo_url": "/images/agency_logo.png",
+      "owner_name": "Rajesh Thapa",
+      "owner_email": "rajesh@inspireintl.com.np",
+      "owner_phone": "+977-9841234567",
+      "services": [
+        "Overseas Job Placement",
+        "Visa Processing",
+        "Document Verification",
+        "Pre-departure Training",
+        "Post-placement Support"
+      ],
+      "social_media": {
+        "facebook": "https://facebook.com/inspireintl",
+        "instagram": "https://instagram.com/inspireintl",
+        "linkedin": "https://linkedin.com/company/inspireintl",
+        "twitter": "https://twitter.com/inspireintl"
+      },
+      "target_countries": [
+        "UAE",
+        "Saudi Arabia",
+        "Qatar",
+        "Kuwait",
+        "Oman",
+        "Bahrain",
+        "Malaysia",
+        "Singapore"
+      ],
+      "specializations": [
+        "Hospitality",
+        "Construction",
+        "Healthcare",
+        "Domestic Work",
+        "Security Services"
+      ],
+      "statistics": {
+        "total_jobs": 145,
+        "active_jobs": 23,
+        "total_applications": 3420,
+        "active_applicants": 856,
+        "active_recruiters": 8
+      },
+      "subscription": {
+        "plan": "premium",
+        "expires_at": "2025-12-31",
+        "status": "active"
+      },
+      "created_at": "2020-01-15T00:00:00Z",
+      "updated_at": "2025-01-20T10:30:00Z",
+      "last_activity": "2025-01-21T08:15:00Z"
+    },
+    {
+      "id": "agency_002",
+      "name": "Global Manpower Services",
+      "license_number": "REG-2023-045",
+      "email": "contact@globalmanpower.com.np",
+      "phone": "01-4223456",
+      "mobile": "+977-9851234567",
+      "website": "www.globalmanpower.com.np",
+      "address": "Putalisadak, Kathmandu, Nepal",
+      "description": "Professional manpower recruitment services with focus on skilled workers for international markets.",
+      "status": "active",
+      "established_year": 2018,
+      "logo_url": "/images/agency_logo_2.png",
+      "owner_name": "Sita Gurung",
+      "owner_email": "sita@globalmanpower.com.np",
+      "owner_phone": "+977-9851234567",
+      "services": [
+        "Manpower Recruitment",
+        "Visa Assistance",
+        "Skills Training",
+        "Job Placement"
+      ],
+      "social_media": {
+        "facebook": "https://facebook.com/globalmanpower",
+        "linkedin": "https://linkedin.com/company/globalmanpower"
+      },
+      "target_countries": [
+        "UAE",
+        "Qatar",
+        "Saudi Arabia",
+        "Kuwait"
+      ],
+      "specializations": [
+        "Construction",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "statistics": {
+        "total_jobs": 98,
+        "active_jobs": 15,
+        "total_applications": 2150,
+        "active_applicants": 542,
+        "active_recruiters": 5
+      },
+      "subscription": {
+        "plan": "premium",
+        "expires_at": "2025-08-15",
+        "status": "active"
+      },
+      "created_at": "2018-03-20T00:00:00Z",
+      "updated_at": "2025-01-19T14:20:00Z",
+      "last_activity": "2025-01-21T07:45:00Z"
+    },
+    {
+      "id": "agency_003",
+      "name": "Himalayan Overseas Pvt. Ltd",
+      "license_number": "REG-2022-089",
+      "email": "info@himalayanoverses.com.np",
+      "phone": "01-4334567",
+      "address": "Thamel, Kathmandu",
+      "status": "inactive",
+      "established_year": 2019,
+      "logo_url": "/images/agency_logo_3.png",
+      "owner_name": "Bikram Rai",
+      "owner_email": "bikram@himalayanoverses.com.np",
+      "owner_phone": "+977-9841567890",
+      "statistics": {
+        "total_jobs": 67,
+        "active_jobs": 0,
+        "total_applications": 1340,
+        "active_applicants": 0,
+        "active_recruiters": 3
+      },
+      "subscription": {
+        "plan": "basic",
+        "expires_at": "2024-12-31",
+        "status": "expired"
+      },
+      "created_at": "2019-06-10T00:00:00Z",
+      "updated_at": "2024-12-31T23:59:00Z",
+      "last_activity": "2024-12-28T16:30:00Z"
+    },
+    {
+      "id": "agency_004",
+      "name": "Everest Recruitment Agency",
+      "license_number": "REG-2024-012",
+      "email": "contact@everestrecruit.com.np",
+      "phone": "01-4445678",
+      "address": "Baneshwor, Kathmandu",
+      "status": "active",
+      "established_year": 2021,
+      "logo_url": "/images/agency_logo_4.png",
+      "owner_name": "Anita Sharma",
+      "owner_email": "anita@everestrecruit.com.np",
+      "owner_phone": "+977-9861234567",
+      "statistics": {
+        "total_jobs": 112,
+        "active_jobs": 28,
+        "total_applications": 2890,
+        "active_applicants": 723,
+        "active_recruiters": 6
+      },
+      "subscription": {
+        "plan": "premium",
+        "expires_at": "2026-03-15",
+        "status": "active"
+      },
+      "created_at": "2021-02-01T00:00:00Z",
+      "updated_at": "2025-01-21T09:00:00Z",
+      "last_activity": "2025-01-21T09:30:00Z"
+    },
+    {
+      "id": "agency_005",
+      "name": "Nepal Gulf Connection",
+      "license_number": "REG-2023-078",
+      "email": "info@nepalgulf.com.np",
+      "phone": "01-4556789",
+      "address": "Koteshwor, Kathmandu",
+      "status": "active",
+      "established_year": 2017,
+      "logo_url": "/images/agency_logo_5.png",
+      "owner_name": "Ramesh Tamang",
+      "owner_email": "ramesh@nepalgulf.com.np",
+      "owner_phone": "+977-9841678901",
+      "statistics": {
+        "total_jobs": 189,
+        "active_jobs": 34,
+        "total_applications": 4560,
+        "active_applicants": 1245,
+        "active_recruiters": 10
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "expires_at": "2026-06-30",
+        "status": "active"
+      },
+      "created_at": "2017-08-15T00:00:00Z",
+      "updated_at": "2025-01-21T08:45:00Z",
+      "last_activity": "2025-01-21T09:15:00Z"
+    },
+    {
+      "id": "agency_006",
+      "name": "Sunrise Manpower Solutions",
+      "license_number": "REG-2024-034",
+      "email": "contact@sunrisemanpower.com.np",
+      "phone": "01-4667890",
+      "address": "Chabahil, Kathmandu",
+      "status": "suspended",
+      "established_year": 2022,
+      "logo_url": "/images/agency_logo_6.png",
+      "owner_name": "Prakash Limbu",
+      "owner_email": "prakash@sunrisemanpower.com.np",
+      "owner_phone": "+977-9851789012",
+      "statistics": {
+        "total_jobs": 45,
+        "active_jobs": 0,
+        "total_applications": 890,
+        "active_applicants": 0,
+        "active_recruiters": 4
+      },
+      "subscription": {
+        "plan": "basic",
+        "expires_at": "2025-05-20",
+        "status": "active"
+      },
+      "created_at": "2022-04-10T00:00:00Z",
+      "updated_at": "2025-01-10T11:20:00Z",
+      "last_activity": "2025-01-09T15:40:00Z"
+    },
+    {
+      "id": "agency_007",
+      "name": "Prime Overseas Employment",
+      "license_number": "REG-2023-056",
+      "email": "info@primeoverseas.com.np",
+      "phone": "01-4778901",
+      "address": "Balaju, Kathmandu",
+      "status": "active",
+      "established_year": 2020,
+      "logo_url": "/images/agency_logo_7.png",
+      "owner_name": "Sunita Rana",
+      "owner_email": "sunita@primeoverseas.com.np",
+      "owner_phone": "+977-9861890123",
+      "statistics": {
+        "total_jobs": 78,
+        "active_jobs": 12,
+        "total_applications": 1670,
+        "active_applicants": 389,
+        "active_recruiters": 5
+      },
+      "subscription": {
+        "plan": "standard",
+        "expires_at": "2025-09-30",
+        "status": "active"
+      },
+      "created_at": "2020-07-22T00:00:00Z",
+      "updated_at": "2025-01-20T16:10:00Z",
+      "last_activity": "2025-01-21T07:20:00Z"
+    },
+    {
+      "id": "agency_008",
+      "name": "Kathmandu Job Placement Center",
+      "license_number": "REG-2024-067",
+      "email": "contact@ktmjobs.com.np",
+      "phone": "01-4889012",
+      "address": "New Baneshwor, Kathmandu",
+      "status": "active",
+      "established_year": 2023,
+      "logo_url": "/images/agency_logo_8.png",
+      "owner_name": "Dipak Thapa",
+      "owner_email": "dipak@ktmjobs.com.np",
+      "owner_phone": "+977-9841901234",
+      "statistics": {
+        "total_jobs": 34,
+        "active_jobs": 8,
+        "total_applications": 720,
+        "active_applicants": 198,
+        "active_recruiters": 3
+      },
+      "subscription": {
+        "plan": "standard",
+        "expires_at": "2025-11-15",
+        "status": "active"
+      },
+      "created_at": "2023-01-15T00:00:00Z",
+      "updated_at": "2025-01-21T06:50:00Z",
+      "last_activity": "2025-01-21T08:00:00Z"
+    }
+  ]
+}

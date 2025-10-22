@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-21",
+    "page": "owner-dashboard"
+  },
+  "title": "Platform Overview",
+  "subtitle": "High-level overview of the entire platform",
+  "metrics": {
+    "totalAgencies": "Total Agencies",
+    "active": "Active",
+    "inactive": "Inactive",
+    "totalActiveUsers": "Total Active Users",
+    "agencyUsers": "Agency Users",
+    "appUsers": "App Users",
+    "totalActiveJobs": "Total Active Jobs",
+    "ofTotal": "of total"
+  },
+  "quickStats": {
+    "title": "Quick Stats",
+    "avgJobsPerAgency": "Avg. Jobs per Agency",
+    "activationRate": "Agency Activation Rate",
+    "avgAgencyUsersPerAgency": "Avg. Agency Users per Agency"
+  },
+  "recentActivity": {
+    "title": "Recent Activity",
+    "noActivity": "No recent activity"
+  },
+  "activity": {
+    "newAgency": "New agency registered",
+    "jobPosted": "Job posted",
+    "statusChanged": "Status changed"
+  },
+  "timeAgo": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  }
+}

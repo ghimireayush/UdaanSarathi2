@@ -1,5 +1,6 @@
 // Agency Service - Handles agency settings and profile operations
 import agencyData from '../data/agency.json'
+import agenciesData from '../data/agencies.json'
 import auditService from './auditService.js'
 
 // Utility function to simulate API delay
@@ -12,8 +13,267 @@ const shouldSimulateError = () => Math.random() < 0.001
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
 
 let agencyCache = deepClone(agencyData)
+let agenciesCache = deepClone(agenciesData.agencies)
 
 class AgencyService {
+  // ============================================
+  // MULTI-AGENCY MANAGEMENT (Super Admin)
+  // ============================================
+
+  /**
+   * Get all agencies with optional filters
+   * @param {Object} filters - Filter options
+   * @returns {Promise<Array>} Array of agencies
+   */
+  async getAllAgencies(filters = {}) {
+    await delay(400)
+    
+    if (shouldSimulateError()) {
+      throw new Error('Failed to fetch agencies')
+    }
+
+    let agencies = deepClone(agenciesCache)
+
+    // Apply filters
+    if (filters.status && filters.status !== 'all') {
+      agencies = agencies.filter(a => a.status === filters.status)
+    }
+
+    if (filters.subscription && filters.subscription !== 'all') {
+      agencies = agencies.filter(a => a.subscription.plan === filters.subscription)
+    }
+
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase()
+      agencies = agencies.filter(a => 
+        a.name.toLowerCase().includes(searchLower) ||
+        a.license_number.toLowerCase().includes(searchLower) ||
+        a.email.toLowerCase().includes(searchLower) ||
+        a.owner_name.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Apply sorting
+    if (filters.sortBy) {
+      agencies.sort((a, b) => {
+        let aVal, bVal
+        
+        switch (filters.sortBy) {
+          case 'name':
+            aVal = a.name.toLowerCase()
+            bVal = b.name.toLowerCase()
+            break
+          case 'created':
+            aVal = new Date(a.created_at)
+            bVal = new Date(b.created_at)
+            break
+          case 'jobs':
+            aVal = a.statistics.total_jobs
+            bVal = b.statistics.total_jobs
+            break
+          case 'applicants':
+            aVal = a.statistics.active_applicants
+            bVal = b.statistics.active_applicants
+            break
+          default:
+            return 0
+        }
+
+        if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1
+        if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+
+    return agencies
+  }
+
+  /**
+   * Get single agency by ID
+   * @param {string} agencyId - Agency ID
+   * @returns {Promise<Object>} Agency details
+   */
+  async getAgencyById(agencyId) {
+    await delay(300)
+    
+    if (shouldSimulateError()) {
+      throw new Error('Failed to fetch agency details')
+    }
+
+    const agency = agenciesCache.find(a => a.id === agencyId)
+    
+    if (!agency) {
+      throw new Error('Agency not found')
+    }
+
+    return deepClone(agency)
+  }
+
+  /**
+   * Update agency status
+   * @param {string} agencyId - Agency ID
+   * @param {string} status - New status (active, inactive)
+   * @returns {Promise<Object>} Updated agency
+   */
+  async updateAgencyStatus(agencyId, status) {
+    await delay(400)
+    
+    if (shouldSimulateError()) {
+      throw new Error('Failed to update agency status')
+    }
+
+    const index = agenciesCache.findIndex(a => a.id === agencyId)
+    
+    if (index === -1) {
+      throw new Error('Agency not found')
+    }
+
+    agenciesCache[index] = {
+      ...agenciesCache[index],
+      status,
+      updated_at: new Date().toISOString()
+    }
+
+    return deepClone(agenciesCache[index])
+  }
+
+  /**
+   * Delete agency
+   * @param {string} agencyId - Agency ID
+   * @returns {Promise<boolean>} Success status
+   */
+  async deleteAgency(agencyId) {
+    await delay(500)
+    
+    if (shouldSimulateError()) {
+      throw new Error('Failed to delete agency')
+    }
+
+    const index = agenciesCache.findIndex(a => a.id === agencyId)
+    
+    if (index === -1) {
+      throw new Error('Agency not found')
+    }
+
+    agenciesCache.splice(index, 1)
+    return true
+  }
+
+  /**
+   * Bulk update agency status
+   * @param {Array<string>} agencyIds - Array of agency IDs
+   * @param {string} status - New status
+   * @returns {Promise<Object>} Result with success and failed IDs
+   */
+  async bulkUpdateStatus(agencyIds, status) {
+    await delay(600)
+    
+    const results = {
+      success: [],
+      failed: []
+    }
+
+    for (const id of agencyIds) {
+      try {
+        await this.updateAgencyStatus(id, status)
+        results.success.push(id)
+      } catch (error) {
+        results.failed.push({ id, error: error.message })
+      }
+    }
+
+    return results
+  }
+
+  /**
+   * Bulk delete agencies
+   * @param {Array<string>} agencyIds - Array of agency IDs
+   * @returns {Promise<Object>} Result with success and failed IDs
+   */
+  async bulkDeleteAgencies(agencyIds) {
+    await delay(800)
+    
+    const results = {
+      success: [],
+      failed: []
+    }
+
+    for (const id of agencyIds) {
+      try {
+        await this.deleteAgency(id)
+        results.success.push(id)
+      } catch (error) {
+        results.failed.push({ id, error: error.message })
+      }
+    }
+
+    return results
+  }
+
+  /**
+   * Get agency analytics
+   * @param {string} agencyId - Agency ID
+   * @returns {Promise<Object>} Agency analytics data
+   */
+  async getAgencyAnalytics(agencyId) {
+    await delay(400)
+    
+    const agency = await this.getAgencyById(agencyId)
+    
+    // Calculate additional analytics
+    const avgApplicationsPerJob = agency.statistics.total_jobs > 0 
+      ? Math.round(agency.statistics.total_applications / agency.statistics.total_jobs)
+      : 0
+
+    const activeApplicantRate = agency.statistics.total_applications > 0
+      ? Math.round((agency.statistics.active_applicants / agency.statistics.total_applications) * 100)
+      : 0
+
+    return {
+      ...agency.statistics,
+      avg_applications_per_job: avgApplicationsPerJob,
+      active_applicant_rate: activeApplicantRate
+    }
+  }
+
+  /**
+   * Get platform-wide statistics
+   * @returns {Promise<Object>} Platform statistics
+   */
+  async getPlatformStatistics() {
+    await delay(300)
+    
+    const agencies = deepClone(agenciesCache)
+    
+    return {
+      total_agencies: agencies.length,
+      active_agencies: agencies.filter(a => a.status === 'active').length,
+      inactive_agencies: agencies.filter(a => a.status === 'inactive').length,
+      total_jobs: agencies.reduce((sum, a) => sum + a.statistics.total_jobs, 0),
+      active_jobs: agencies.reduce((sum, a) => sum + a.statistics.active_jobs, 0),
+      total_applications: agencies.reduce((sum, a) => sum + a.statistics.total_applications, 0),
+      active_applicants: agencies.reduce((sum, a) => sum + a.statistics.active_applicants, 0),
+      total_recruiters: agencies.reduce((sum, a) => sum + a.statistics.active_recruiters, 0)
+    }
+  }
+
+  /**
+   * Calculate days until subscription expiry
+   * @param {string} expiryDate - Expiry date string
+   * @returns {number} Days until expiry
+   */
+  calculateDaysUntilExpiry(expiryDate) {
+    const expiry = new Date(expiryDate)
+    const now = new Date()
+    const diffTime = expiry - now
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays
+  }
+
+  // ============================================
+  // SINGLE AGENCY PROFILE MANAGEMENT
+  // ============================================
+
   /**
    * Get agency profile
    * @returns {Promise<Object>} Agency profile data

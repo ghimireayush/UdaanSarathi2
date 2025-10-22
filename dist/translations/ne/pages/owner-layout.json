@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-21",
+    "page": "owner-layout"
+  },
+  "branding": {
+    "appName": "उडानसारथी",
+    "ownerPortal": "मालिक पोर्टल"
+  },
+  "nav": {
+    "dashboard": "ड्यासबोर्ड",
+    "agencies": "एजेन्सीहरू",
+    "users": "प्रयोगकर्ताहरू",
+    "settings": "सेटिङहरू",
+    "logout": "लगआउट"
+  }
+}
