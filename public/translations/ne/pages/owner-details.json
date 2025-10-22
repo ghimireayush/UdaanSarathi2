@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "page": "owner-details"
+  },
+  "title": "एजेन्सी विवरण विश्लेषण",
+  "subtitle": "एजेन्सी भर्ती पाइपलाइन र तथ्याङ्कको गहिरो दृश्य",
+  "backToList": "विश्लेषणमा फर्कनुहोस्",
+  "refresh": "ताजा गर्नुहोस्",
+  "retry": "पुन: प्रयास गर्नुहोस्",
+  "loading": "एजेन्सी विवरण लोड गर्दै...",
+  "changeAgency": "एजेन्सी परिवर्तन गर्नुहोस्",
+  "selectAgency": {
+    "title": "एजेन्सी चयन गर्नुहोस्",
+    "description": "विस्तृत विश्लेषण र भर्ती पाइपलाइन हेर्न सूचीबाट एजेन्सी छान्नुहोस्",
+    "placeholder": "एजेन्सी चयन गर्नुहोस्..."
+  },
+  "agencyList": {
+    "title": "एजेन्सीहरू",
+    "search": "एजेन्सीहरू खोज्नुहोस्...",
+    "noResults": "कुनै एजेन्सी फेला परेन"
+  },
+  "stats": {
+    "totalJobs": "कुल जागिर सूची",
+    "totalJobsSubtitle": "सक्रिय, रोकिएको र बन्द जागिरहरू समावेश",
+    "totalJobsLifetime": "कुल जागिरहरू (जीवनकाल)",
+    "activeJobs": "सक्रिय",
+    "draftJobs": "मस्यौदा",
+    "totalApplicants": "कुल आवेदकहरूको संख्या",
+    "totalApplicantsSubtitle": "सबै जागिरहरूमा समग्र गणना",
+    "lifetimeApplicants": "जीवनकाल आवेदकहरू",
+    "activeApplicants": "सक्रिय आवेदकहरू",
+    "totalMembers": "कुल टोली सदस्यहरू",
+    "totalMembersSubtitle": "प्रशासक र सदस्य भूमिकाहरू",
+    "adminRole": "प्रशासक",
+    "recipientRole": "प्राप्तकर्ता",
+    "coordinatorRole": "अन्तर्वार्ता संयोजक"
+  },
+  "pipeline": {
+    "title": "आवेदन पाइपलाइन विवरण",
+    "funnelView": "फनेल दृश्य",
+    "applied": "आवेदन गरिएको",
+    "shortlisted": "छनोट सूचीमा",
+    "interviewScheduled": "अन्तर्वार्ता निर्धारित",
+    "interviewPassed": "अन्तर्वार्ता उत्तीर्ण",
+    "rejected": "अस्वीकृत"
+  },
+  "efficiency": {
+    "title": "भर्ती दक्षता",
+    "avgTimeToShortlist": "छनोट सूचीमा औसत समय",
+    "avgTimeToInterview": "अन्तर्वार्तामा औसत समय",
+    "avgTimeToHire": "भर्तीमा औसत समय",
+    "days": "दिन"
+  },
+  "lastUpdated": {
+    "justNow": "अहिले",
+    "minutesAgo": "{{count}} मिनेट अघि",
+    "hoursAgo": "{{count}} घण्टा अघि"
+  },
+  "breadcrumb": {
+    "allAgencies": "सबै एजेन्सीहरू",
+    "agency": "एजेन्सी",
+    "job": "जागिर"
+  },
+  "allAgencies": {
+    "title": "सबै एजेन्सीहरू संयुक्त",
+    "description": "प्लेटफर्ममा सबै एजेन्सीहरूको समग्र विश्लेषण"
+  },
+  "jobs": {
+    "title": "जागिर विवरण",
+    "jobTitle": "जागिरको शीर्षक",
+    "applicants": "आवेदकहरू",
+    "status": "स्थिति",
+    "actions": "कार्यहरू",
+    "viewDetails": "विवरण हेर्नुहोस्",
+    "backToAgency": "एजेन्सीमा फर्कनुहोस्",
+    "totalApplicants": "कुल आवेदकहरू",
+    "conversionRates": "जागिर रूपान्तरण दरहरू"
+  }
+}

@@ -20,6 +20,8 @@ import Login from './pages/Login'
 import OwnerLogin from './pages/OwnerLogin'
 import OwnerDashboard from './pages/OwnerDashboard'
 import OwnerAgencies from './pages/OwnerAgencies'
+import OwnerAnalytics from './pages/OwnerAnalytics'
+import OwnerAgencyDetails from './pages/OwnerAgencyDetails'
 import OwnerUsers from './pages/OwnerUsers'
 import OwnerSettings from './pages/OwnerSettings'
 import AuditLogPage from './pages/AuditLog'
@@ -67,6 +69,8 @@ function App() {
                 <Route path="/owner/login" element={<OwnerLogin />} />
                 <Route path="/owner/dashboard" element={<OwnerLayout><PrivateRoute><OwnerDashboard /></PrivateRoute></OwnerLayout>} />
                 <Route path="/owner/agencies" element={<OwnerLayout><PrivateRoute><OwnerAgencies /></PrivateRoute></OwnerLayout>} />
+                <Route path="/owner/analytics" element={<OwnerLayout><PrivateRoute><OwnerAnalytics /></PrivateRoute></OwnerLayout>} />
+                <Route path="/owner/analytics/:agencyId" element={<OwnerLayout><PrivateRoute><OwnerAgencyDetails /></PrivateRoute></OwnerLayout>} />
                 <Route path="/owner/users" element={<OwnerLayout><PrivateRoute><OwnerUsers /></PrivateRoute></OwnerLayout>} />
                 <Route path="/owner/settings" element={<OwnerLayout><PrivateRoute><OwnerSettings /></PrivateRoute></OwnerLayout>} />
                 

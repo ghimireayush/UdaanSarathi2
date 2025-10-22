@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "page": "owner-analytics"
+  },
+  "title": "Agency Analytics",
+  "subtitle": "View and analyze performance metrics for all agencies",
+  "loading": "Loading agencies...",
+  "retry": "Try Again",
+  "search": {
+    "placeholder": "Search agencies by name, license, or email..."
+  },
+  "filters": {
+    "title": "Filters",
+    "clear": "Clear",
+    "status": "Status",
+    "sortBy": "Sort By",
+    "order": "Order",
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive",
+    "name": "Name",
+    "jobs": "Total Jobs",
+    "applicants": "Active Applicants",
+    "aToZ": "A to Z",
+    "zToA": "Z to A",
+    "lowestFirst": "Lowest First",
+    "highestFirst": "Highest First"
+  },
+  "results": {
+    "showing": "Showing {{count}} of {{total}} agencies"
+  },
+  "noResults": {
+    "title": "No Agencies Found",
+    "description": "Try adjusting your search or filters"
+  },
+  "card": {
+    "activeJobs": "Active Jobs",
+    "activeApplicants": "Active Applicants",
+    "teamMembers": "Team Members",
+    "viewDetails": "View Details"
+  }
+}

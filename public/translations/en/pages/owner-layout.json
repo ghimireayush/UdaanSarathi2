@@ -11,6 +11,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "agencies": "Agencies",
+    "analytics": "Analytics",
     "users": "Users",
     "settings": "Settings",
     "logout": "Logout"

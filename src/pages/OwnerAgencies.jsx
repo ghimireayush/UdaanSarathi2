@@ -1195,6 +1195,37 @@ const OverviewTab = ({
       </div>
     </div>
 
+    {/* Team Members */}
+    {agency.team_members && (
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          Team Members
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <StatItem
+            label="Total Team Members"
+            value={agency.team_members.total}
+            description="All active team members in this agency"
+          />
+          <StatItem
+            label="Admin"
+            value={agency.team_members.admin}
+            description="Full system access and management"
+          />
+          <StatItem
+            label="Recipient"
+            value={agency.team_members.recipient}
+            description="Job and application management"
+          />
+          <StatItem
+            label="Interview Coordinator"
+            value={agency.team_members.interview_coordinator}
+            description="Interview scheduling and coordination"
+          />
+        </div>
+      </div>
+    )}
+
     {/* Last Activity */}
     <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
       <InfoItem

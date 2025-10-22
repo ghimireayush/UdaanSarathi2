@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-22",
+    "page": "owner-details"
+  },
+  "title": "Agency Details Analytics",
+  "subtitle": "Deep-dive view into agency recruitment pipeline and statistics",
+  "backToList": "Back to Analytics",
+  "refresh": "Refresh",
+  "retry": "Try Again",
+  "loading": "Loading agency details...",
+  "changeAgency": "Change Agency",
+  "selectAgency": {
+    "title": "Select an Agency",
+    "description": "Choose an agency from the list to view detailed analytics and recruitment pipeline",
+    "placeholder": "Select an agency..."
+  },
+  "agencyList": {
+    "title": "Agencies",
+    "search": "Search agencies...",
+    "noResults": "No agencies found"
+  },
+  "stats": {
+    "totalJobs": "Total Job Listings",
+    "totalJobsSubtitle": "Includes active, paused, and closed jobs",
+    "totalJobsLifetime": "Total Jobs (Lifetime)",
+    "activeJobs": "Active",
+    "draftJobs": "Draft",
+    "totalApplicants": "Total Number of Applicants",
+    "totalApplicantsSubtitle": "Aggregate count across all jobs",
+    "lifetimeApplicants": "Lifetime Applicants",
+    "activeApplicants": "Active Applicants",
+    "totalMembers": "Total Team Members",
+    "totalMembersSubtitle": "Admin and member roles",
+    "adminRole": "Admin",
+    "recipientRole": "Recipient",
+    "coordinatorRole": "Interview Coordinator"
+  },
+  "pipeline": {
+    "title": "Application Pipeline Breakdown",
+    "funnelView": "Funnel Visualization",
+    "applied": "Applied",
+    "shortlisted": "Shortlisted",
+    "interviewScheduled": "Interview Scheduled",
+    "interviewPassed": "Interview Passed",
+    "rejected": "Rejected"
+  },
+  "efficiency": {
+    "title": "Recruitment Efficiency",
+    "avgTimeToShortlist": "Avg. Time to Shortlist",
+    "avgTimeToInterview": "Avg. Time to Interview",
+    "avgTimeToHire": "Avg. Time to Hire",
+    "days": "days"
+  },
+  "lastUpdated": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} minutes ago",
+    "hoursAgo": "{{count}} hours ago"
+  },
+  "breadcrumb": {
+    "allAgencies": "All Agencies",
+    "agency": "Agency",
+    "job": "Job"
+  },
+  "allAgencies": {
+    "title": "All Agencies Combined",
+    "description": "Aggregate analytics across all agencies on the platform"
+  },
+  "jobs": {
+    "title": "Job Breakdown",
+    "jobTitle": "Job Title",
+    "applicants": "Applicants",
+    "status": "Status",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "backToAgency": "Back to Agency",
+    "totalApplicants": "total applicants",
+    "conversionRates": "Job Conversion Rates"
+  }
+}

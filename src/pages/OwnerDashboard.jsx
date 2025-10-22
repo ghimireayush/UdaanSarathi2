@@ -33,6 +33,7 @@ const OwnerDashboard = () => {
     totalAgencyUsers: 0,
     totalAppUsers: 0,
     totalActiveJobs: 0,
+    totalListedJobs: 0,
     loading: true,
   });
 
@@ -48,6 +49,7 @@ const OwnerDashboard = () => {
         totalAgencyUsers: 152,
         totalAppUsers: 1847,
         totalActiveJobs: 156,
+        totalListedJobs: 234,
         loading: false,
       });
 
@@ -260,13 +262,25 @@ const OwnerDashboard = () => {
           ]}
         />
 
-        {/* Total Active Jobs Card */}
+        {/* Total Active Jobs Card with Breakdown */}
         <StatCard
           icon={Briefcase}
           title={tPage("metrics.totalActiveJobs")}
           value={stats.totalActiveJobs}
           color="text-amber-600 dark:text-amber-400"
           loading={stats.loading}
+          breakdown={[
+            {
+              label: tPage("metrics.totalListedJobs"),
+              value: stats.totalListedJobs,
+              color: "text-blue-600 dark:text-blue-400",
+            },
+            {
+              label: tPage("metrics.activeJobs"),
+              value: stats.totalActiveJobs,
+              color: "text-green-600 dark:text-green-400",
+            },
+          ]}
         />
       </div>
 

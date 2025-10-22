@@ -14,6 +14,8 @@
     "agencyUsers": "Agency Users",
     "appUsers": "App Users",
     "totalActiveJobs": "Total Active Jobs",
+    "totalListedJobs": "Total Listed Jobs",
+    "activeJobs": "Active Jobs",
     "ofTotal": "of total"
   },
   "quickStats": {

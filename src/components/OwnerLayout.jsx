@@ -1,66 +1,72 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
   X,
   Moon,
-  Sun
-} from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { useTheme } from '../contexts/ThemeContext'
-import LanguageSwitch from './LanguageSwitch'
-import { useLanguage } from '../hooks/useLanguage'
-import logo from '../assets/logo.svg'
+  Sun,
+  TrendingUp,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
+import LanguageSwitch from "./LanguageSwitch";
+import { useLanguage } from "../hooks/useLanguage";
+import logo from "../assets/logo.svg";
 
 const OwnerLayout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { user, logout } = useAuth()
-  const { theme, toggleTheme } = useTheme()
-  const { tPageSync } = useLanguage({ 
-    pageName: 'owner-layout', 
-    autoLoad: true 
-  })
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { tPageSync } = useLanguage({
+    pageName: "owner-layout",
+    autoLoad: true,
+  });
 
   const tPage = (key, params = {}) => {
-    return tPageSync(key, params)
-  }
+    return tPageSync(key, params);
+  };
 
   const handleLogout = async () => {
-    await logout()
-    navigate('/owner/login')
-  }
+    await logout();
+    navigate("/owner/login");
+  };
 
   const navigation = [
-    { 
-      name: tPage('nav.dashboard'), 
-      href: '/owner/dashboard', 
-      icon: LayoutDashboard 
+    {
+      name: tPage("nav.dashboard"),
+      href: "/owner/dashboard",
+      icon: LayoutDashboard,
     },
-    { 
-      name: tPage('nav.agencies'), 
-      href: '/owner/agencies', 
-      icon: Building2 
+    {
+      name: tPage("nav.agencies"),
+      href: "/owner/agencies",
+      icon: Building2,
     },
-    { 
-      name: tPage('nav.users'), 
-      href: '/owner/users', 
-      icon: Users 
+    {
+      name: tPage("nav.analytics"),
+      href: "/owner/analytics",
+      icon: TrendingUp,
     },
-    { 
-      name: tPage('nav.settings'), 
-      href: '/owner/settings', 
-      icon: Settings 
+    {
+      name: tPage("nav.users"),
+      href: "/owner/users",
+      icon: Users,
     },
-  ]
+    {
+      name: tPage("nav.settings"),
+      href: "/owner/settings",
+      icon: Settings,
+    },
+  ];
 
-  const isActive = (path) => location.pathname === path
+  const isActive = (path) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -77,7 +83,7 @@ const OwnerLayout = ({ children }) => {
         className={`
           fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
           transform transition-transform duration-300 ease-in-out lg:translate-x-0
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         <div className="flex flex-col h-full">
@@ -87,10 +93,10 @@ const OwnerLayout = ({ children }) => {
               <img src={logo} alt="Logo" className="h-10 w-10" />
               <div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                  {tPage('branding.appName')}
+                  {tPage("branding.appName")}
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {tPage('branding.ownerPortal')}
+                  {tPage("branding.ownerPortal")}
                 </p>
               </div>
             </div>
@@ -105,17 +111,18 @@ const OwnerLayout = ({ children }) => {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
-              const Icon = item.icon
-              const active = isActive(item.href)
+              const Icon = item.icon;
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={`
                     flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
-                    ${active
-                      ? 'bg-brand-blue-bright text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ${
+                      active
+                        ? "bg-brand-blue-bright text-white"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }
                   `}
                   onClick={() => setSidebarOpen(false)}
@@ -123,7 +130,7 @@ const OwnerLayout = ({ children }) => {
                   <Icon className="h-5 w-5" />
                   {item.name}
                 </Link>
-              )
+              );
             })}
           </nav>
 
@@ -131,11 +138,11 @@ const OwnerLayout = ({ children }) => {
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 rounded-full bg-brand-blue-bright flex items-center justify-center text-white font-semibold">
-                {user?.name?.charAt(0) || 'O'}
+                {user?.name?.charAt(0) || "O"}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {user?.name || 'Owner'}
+                  {user?.name || "Owner"}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                   {user?.email}
@@ -147,7 +154,7 @@ const OwnerLayout = ({ children }) => {
               className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             >
               <LogOut className="h-4 w-4" />
-              {tPage('nav.logout')}
+              {tPage("nav.logout")}
             </button>
           </div>
         </div>
@@ -177,7 +184,7 @@ const OwnerLayout = ({ children }) => {
                 className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Toggle theme"
               >
-                {theme === 'dark' ? (
+                {theme === "dark" ? (
                   <Sun className="h-5 w-5" />
                 ) : (
                   <Moon className="h-5 w-5" />
@@ -188,12 +195,10 @@ const OwnerLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
+        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default OwnerLayout
+export default OwnerLayout;

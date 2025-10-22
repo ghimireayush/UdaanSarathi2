@@ -49,9 +49,16 @@
       "statistics": {
         "total_jobs": 145,
         "active_jobs": 23,
+        "draft_jobs": 8,
         "total_applications": 3420,
         "active_applicants": 856,
         "active_recruiters": 8
+      },
+      "team_members": {
+        "total": 9,
+        "admin": 1,
+        "recipient": 5,
+        "interview_coordinator": 3
       },
       "subscription": {
         "plan": "premium",
@@ -102,9 +109,16 @@
       "statistics": {
         "total_jobs": 98,
         "active_jobs": 15,
+        "draft_jobs": 5,
         "total_applications": 2150,
         "active_applicants": 542,
         "active_recruiters": 5
+      },
+      "team_members": {
+        "total": 6,
+        "admin": 1,
+        "recipient": 3,
+        "interview_coordinator": 2
       },
       "subscription": {
         "plan": "premium",
@@ -131,9 +145,16 @@
       "statistics": {
         "total_jobs": 67,
         "active_jobs": 0,
+        "draft_jobs": 2,
         "total_applications": 1340,
         "active_applicants": 0,
         "active_recruiters": 3
+      },
+      "team_members": {
+        "total": 4,
+        "admin": 1,
+        "recipient": 2,
+        "interview_coordinator": 1
       },
       "subscription": {
         "plan": "basic",
@@ -160,9 +181,16 @@
       "statistics": {
         "total_jobs": 112,
         "active_jobs": 28,
+        "draft_jobs": 6,
         "total_applications": 2890,
         "active_applicants": 723,
         "active_recruiters": 6
+      },
+      "team_members": {
+        "total": 7,
+        "admin": 1,
+        "recipient": 4,
+        "interview_coordinator": 2
       },
       "subscription": {
         "plan": "premium",
@@ -189,9 +217,16 @@
       "statistics": {
         "total_jobs": 189,
         "active_jobs": 34,
+        "draft_jobs": 12,
         "total_applications": 4560,
         "active_applicants": 1245,
         "active_recruiters": 10
+      },
+      "team_members": {
+        "total": 11,
+        "admin": 1,
+        "recipient": 6,
+        "interview_coordinator": 4
       },
       "subscription": {
         "plan": "enterprise",
@@ -218,9 +253,16 @@
       "statistics": {
         "total_jobs": 45,
         "active_jobs": 0,
+        "draft_jobs": 3,
         "total_applications": 890,
         "active_applicants": 0,
         "active_recruiters": 4
+      },
+      "team_members": {
+        "total": 5,
+        "admin": 1,
+        "recipient": 3,
+        "interview_coordinator": 1
       },
       "subscription": {
         "plan": "basic",
@@ -247,9 +289,16 @@
       "statistics": {
         "total_jobs": 78,
         "active_jobs": 12,
+        "draft_jobs": 4,
         "total_applications": 1670,
         "active_applicants": 389,
         "active_recruiters": 5
+      },
+      "team_members": {
+        "total": 6,
+        "admin": 1,
+        "recipient": 3,
+        "interview_coordinator": 2
       },
       "subscription": {
         "plan": "standard",
@@ -276,9 +325,16 @@
       "statistics": {
         "total_jobs": 34,
         "active_jobs": 8,
+        "draft_jobs": 2,
         "total_applications": 720,
         "active_applicants": 198,
         "active_recruiters": 3
+      },
+      "team_members": {
+        "total": 4,
+        "admin": 1,
+        "recipient": 2,
+        "interview_coordinator": 1
       },
       "subscription": {
         "plan": "standard",
