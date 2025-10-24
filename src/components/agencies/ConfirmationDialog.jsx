@@ -6,10 +6,18 @@ const ConfirmationDialog = ({
   onConfirm,
   onCancel,
   tPage,
+  deleteReason,
+  setDeleteReason,
 }) => {
   const canConfirm = () => {
     if (type === "delete") {
       return confirmText === data?.name;
+    }
+    if (type === "bulkDelete") {
+      // Require both reason and confirmation text "DELETE ALL"
+      const hasReason = deleteReason && deleteReason.trim().length > 0;
+      const hasConfirmation = confirmText === "DELETE ALL";
+      return hasReason && hasConfirmation;
     }
     return true;
   };
@@ -89,6 +97,42 @@ const ConfirmationDialog = ({
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Type: <span className="font-mono font-semibold">{data?.name}</span>
             </p>
+          </div>
+        )}
+
+        {type === "bulkDelete" && (
+          <div className="space-y-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {tPage("confirmDialog.bulkDelete.reasonLabel") || "Reason for deletion:"} <span className="text-red-600">*</span>
+              </label>
+              <textarea
+                value={deleteReason || ""}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                placeholder={tPage("confirmDialog.bulkDelete.reasonPlaceholder") || "Please provide a reason for deleting multiple agencies..."}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {tPage("confirmDialog.bulkDelete.reasonHint") || "This action will be logged for audit purposes."}
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {tPage("confirmDialog.bulkDelete.typeToConfirm") || "Type DELETE ALL to confirm:"} <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                placeholder={tPage("confirmDialog.bulkDelete.confirmPlaceholder") || "DELETE ALL"}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {tPage("confirmDialog.bulkDelete.confirmHint") || "Type:"} <span className="font-mono font-semibold">DELETE ALL</span>
+              </p>
+            </div>
           </div>
         )}
 

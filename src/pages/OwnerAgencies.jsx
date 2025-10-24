@@ -48,6 +48,7 @@ const OwnerAgencies = () => {
     data: null,
   });
   const [confirmText, setConfirmText] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
 
   const tPage = (key, params = {}) => tPageSync(key, params);
 
@@ -56,6 +57,25 @@ const OwnerAgencies = () => {
     loadAgencies();
     loadPlatformStats();
   }, []);
+
+  // Listen for auto-refresh events from OwnerLayout
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('[OwnerAgencies] Auto-refreshing data...');
+      loadAgencies();
+      loadPlatformStats();
+      // Reload detail panel if open
+      if (detailAgency) {
+        loadAgencyDetails(detailAgency.id);
+      }
+    };
+
+    window.addEventListener('ownerPageRefresh', handleRefresh);
+
+    return () => {
+      window.removeEventListener('ownerPageRefresh', handleRefresh);
+    };
+  }, [detailAgency]);
 
   // Handle URL params for detail panel
   useEffect(() => {
@@ -179,10 +199,12 @@ const OwnerAgencies = () => {
   const handleStatusChange = (agencyId, newStatus) => {
     // Show confirmation dialog for single agency status change
     const agency = agencies.find(a => a.id === agencyId);
+    setConfirmText("");
+    setDeleteReason("");
     setConfirmDialog({
       isOpen: true,
-      type: "singleStatusChange",
-      data: { agencyId, newStatus, agencyName: agency?.name },
+      type: "statusChange",
+      data: { status: newStatus, ids: [agencyId], agencyName: agency?.name },
     });
   };
 
@@ -210,31 +232,34 @@ const OwnerAgencies = () => {
   };
 
   const handleDelete = (agency) => {
+    setConfirmText("");
+    setDeleteReason("");
     setConfirmDialog({
       isOpen: true,
-      type: "delete",
-      data: agency,
+      type: "bulkDelete",
+      data: { ids: [agency.id], agencyName: agency.name },
     });
-    setConfirmText("");
   };
 
   const confirmDelete = async () => {
-    if (confirmText !== confirmDialog.data.name) return;
-
     try {
-      await agencyService.deleteAgency(confirmDialog.data.id);
-      setAgencies((prev) => prev.filter((a) => a.id !== confirmDialog.data.id));
-      if (detailAgency?.id === confirmDialog.data.id) {
+      await agencyService.deleteAgency(confirmDialog.data.ids[0]);
+      setAgencies((prev) => prev.filter((a) => a.id !== confirmDialog.data.ids[0]));
+      if (detailAgency?.id === confirmDialog.data.ids[0]) {
         handleClosePanel();
       }
       showToast("success", tPage("toast.deleted"));
       setConfirmDialog({ isOpen: false, type: null, data: null });
+      setConfirmText("");
+      setDeleteReason("");
     } catch (err) {
       showToast("error", tPage("toast.deleteFailed"));
     }
   };
 
   const handleBulkStatusChange = (newStatus) => {
+    setConfirmText("");
+    setDeleteReason("");
     setConfirmDialog({
       isOpen: true,
       type: "statusChange",
@@ -263,6 +288,8 @@ const OwnerAgencies = () => {
         tPage("toast.bulkStatusUpdated", { count: result.success.length })
       );
       setConfirmDialog({ isOpen: false, type: null, data: null });
+      setConfirmText("");
+      setDeleteReason("");
     } catch (err) {
       showToast(
         "error",
@@ -272,6 +299,8 @@ const OwnerAgencies = () => {
   };
 
   const handleBulkDelete = () => {
+    setConfirmText("");
+    setDeleteReason("");
     setConfirmDialog({
       isOpen: true,
       type: "bulkDelete",
@@ -751,6 +780,8 @@ const OwnerAgencies = () => {
           data={confirmDialog.data}
           confirmText={confirmText}
           setConfirmText={setConfirmText}
+          deleteReason={deleteReason}
+          setDeleteReason={setDeleteReason}
           onConfirm={() => {
             if (confirmDialog.type === "delete") confirmDelete();
             else if (confirmDialog.type === "bulkDelete") confirmBulkDelete();
@@ -762,6 +793,7 @@ const OwnerAgencies = () => {
           onCancel={() => {
             setConfirmDialog({ isOpen: false, type: null, data: null });
             setConfirmText("");
+            setDeleteReason("");
           }}
           tPage={tPage}
         />
@@ -1187,11 +1219,6 @@ const OverviewTab = ({
           value={agency.statistics.active_applicants}
           description="Candidates currently in the hiring process"
         />
-        <StatItem
-          label="Active Recruiters"
-          value={agency.statistics.active_recruiters}
-          description="Team members actively managing recruitment"
-        />
       </div>
     </div>
 
@@ -1268,10 +1295,31 @@ const ConfirmationDialog = ({
   onConfirm,
   onCancel,
   tPage,
+  deleteReason,
+  setDeleteReason,
 }) => {
   const canConfirm = () => {
     if (type === "delete") {
       return confirmText === data.name;
+    }
+    if (type === "bulkDelete") {
+      const count = data?.ids?.length || 0;
+      const isSingle = count === 1;
+      const hasReason = deleteReason && deleteReason.trim().length > 0;
+      const hasConfirmation = isSingle 
+        ? confirmText === "DELETE"
+        : confirmText === "DELETE ALL";
+      return hasReason && hasConfirmation;
+    }
+    if (type === "statusChange") {
+      const count = data?.ids?.length || 0;
+      const isSingle = count === 1;
+      const hasReason = deleteReason && deleteReason.trim().length > 0;
+      const actionText = data?.status === "active" ? "ACTIVATE" : "DEACTIVATE";
+      const hasConfirmation = isSingle 
+        ? confirmText === actionText
+        : confirmText === `${actionText} ALL`;
+      return hasReason && hasConfirmation;
     }
     return true;
   };
@@ -1292,9 +1340,18 @@ const ConfirmationDialog = ({
       case "delete":
         return tPage("confirmDialog.delete.title") || "Delete Agency";
       case "bulkDelete":
+        const count = data?.ids?.length || 0;
+        if (count === 1) {
+          return tPage("confirmDialog.bulkDelete.titleSingle") || "Delete Agency";
+        }
         return tPage("confirmDialog.bulkDelete.title") || "Delete Multiple Agencies";
       case "statusChange":
-        return tPage("confirmDialog.statusChange.title") || "Change Status";
+        const statusCount = data?.ids?.length || 0;
+        const statusText = data?.status === "active" ? "Activate" : "Deactivate";
+        if (statusCount === 1) {
+          return tPage("confirmDialog.statusChange.titleSingle", { action: statusText }) || `${statusText} Agency`;
+        }
+        return tPage("confirmDialog.statusChange.title", { action: statusText }) || `${statusText} Multiple Agencies`;
       case "singleStatusChange":
         return tPage("confirmDialog.singleStatusChange.title") || "Change Agency Status";
       default:
@@ -1307,13 +1364,24 @@ const ConfirmationDialog = ({
       case "delete":
         return tPage("confirmDialog.delete.message") || "Are you sure you want to delete this agency?";
       case "bulkDelete":
-        return tPage("confirmDialog.bulkDelete.message", { count: data?.ids?.length || 0 }) || 
-               `Are you sure you want to delete ${data?.ids?.length || 0} agencies?`;
+        const count = data?.ids?.length || 0;
+        if (count === 1) {
+          const agencyName = data?.agencyName || "this agency";
+          return tPage("confirmDialog.bulkDelete.messageSingle", { agencyName }) || 
+                 `Are you sure you want to delete "${agencyName}"? This action cannot be undone.`;
+        }
+        return tPage("confirmDialog.bulkDelete.message", { count }) || 
+               `Are you sure you want to delete ${count} agencies? This action cannot be undone.`;
       case "statusChange":
-        return tPage("confirmDialog.statusChange.message", {
-          count: data?.ids?.length || 0,
-          status: tPage(`status.${data?.status}`) || data?.status,
-        }) || `Change status for ${data?.ids?.length || 0} agencies?`;
+        const statusCount = data?.ids?.length || 0;
+        const statusText = data?.status === "active" ? "activate" : "deactivate";
+        const agencyName = data?.agencyName;
+        if (statusCount === 1 && agencyName) {
+          return tPage("confirmDialog.statusChange.messageSingle", { agencyName, status: statusText }) || 
+                 `Are you sure you want to ${statusText} "${agencyName}"?`;
+        }
+        return tPage("confirmDialog.statusChange.message", { count: statusCount, status: statusText }) || 
+               `Are you sure you want to ${statusText} ${statusCount} agencies?`;
       case "singleStatusChange":
         return tPage("confirmDialog.singleStatusChange.message", {
           agencyName: data?.agencyName || "this agency",
@@ -1354,6 +1422,115 @@ const ConfirmationDialog = ({
           </div>
         )}
 
+        {type === "bulkDelete" && (() => {
+          const count = data?.ids?.length || 0;
+          const isSingle = count === 1;
+          
+          return (
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {tPage("confirmDialog.bulkDelete.reasonLabel") || "Reason for deletion:"} <span className="text-red-600">*</span>
+                </label>
+                <textarea
+                  value={deleteReason || ""}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  placeholder={
+                    isSingle 
+                      ? (tPage("confirmDialog.bulkDelete.reasonPlaceholderSingle") || "Please provide a reason for deleting this agency...")
+                      : (tPage("confirmDialog.bulkDelete.reasonPlaceholder") || "Please provide a reason for deleting multiple agencies...")
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {tPage("confirmDialog.bulkDelete.reasonHint") || "This action will be logged for audit purposes."}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {
+                    isSingle
+                      ? (tPage("confirmDialog.bulkDelete.typeToConfirmSingle") || "Type DELETE to confirm:")
+                      : (tPage("confirmDialog.bulkDelete.typeToConfirm") || "Type DELETE ALL to confirm:")
+                  } <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  placeholder={
+                    isSingle
+                      ? (tPage("confirmDialog.bulkDelete.confirmPlaceholderSingle") || "DELETE")
+                      : (tPage("confirmDialog.bulkDelete.confirmPlaceholder") || "DELETE ALL")
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {tPage("confirmDialog.bulkDelete.confirmHint") || "Type:"} <span className="font-mono font-semibold">{isSingle ? "DELETE" : "DELETE ALL"}</span>
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
+        {type === "statusChange" && (() => {
+          const count = data?.ids?.length || 0;
+          const isSingle = count === 1;
+          const isActivate = data?.status === "active";
+          const actionText = isActivate ? "ACTIVATE" : "DEACTIVATE";
+          const actionLower = isActivate ? "activate" : "deactivate";
+          
+          return (
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {tPage("confirmDialog.statusChange.reasonLabel") || "Reason for status change:"} <span className="text-red-600">*</span>
+                </label>
+                <textarea
+                  value={deleteReason || ""}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  placeholder={
+                    isSingle 
+                      ? (tPage("confirmDialog.statusChange.reasonPlaceholderSingle", { action: actionLower }) || `Please provide a reason for ${actionLower}ing this agency...`)
+                      : (tPage("confirmDialog.statusChange.reasonPlaceholder", { action: actionLower }) || `Please provide a reason for ${actionLower}ing multiple agencies...`)
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {tPage("confirmDialog.statusChange.reasonHint") || "This action will be logged for audit purposes."}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {
+                    isSingle
+                      ? (tPage("confirmDialog.statusChange.typeToConfirmSingle", { action: actionText }) || `Type ${actionText} to confirm:`)
+                      : (tPage("confirmDialog.statusChange.typeToConfirm", { action: actionText }) || `Type ${actionText} ALL to confirm:`)
+                  } <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  placeholder={
+                    isSingle
+                      ? (tPage("confirmDialog.statusChange.confirmPlaceholderSingle", { action: actionText }) || actionText)
+                      : (tPage("confirmDialog.statusChange.confirmPlaceholder", { action: actionText }) || `${actionText} ALL`)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {tPage("confirmDialog.statusChange.confirmHint") || "Type:"} <span className="font-mono font-semibold">{isSingle ? actionText : `${actionText} ALL`}</span>
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
@@ -1371,8 +1548,22 @@ const ConfirmationDialog = ({
             className={`px-4 py-2 rounded-lg text-white ${getButtonColor()}`}
           >
             {type === "delete" && (tPage("confirmDialog.delete.confirm") || "Delete")}
-            {type === "bulkDelete" && (tPage("confirmDialog.bulkDelete.confirm") || "Delete All")}
-            {type === "statusChange" && (tPage("confirmDialog.statusChange.confirm") || "Confirm")}
+            {type === "bulkDelete" && (() => {
+              const count = data?.ids?.length || 0;
+              const isSingle = count === 1;
+              return isSingle
+                ? (tPage("confirmDialog.bulkDelete.confirmSingle") || "Delete")
+                : (tPage("confirmDialog.bulkDelete.confirm") || "Delete All");
+            })()}
+            {type === "statusChange" && (() => {
+              const count = data?.ids?.length || 0;
+              const isSingle = count === 1;
+              const isActivate = data?.status === "active";
+              const actionText = isActivate ? "Activate" : "Deactivate";
+              return isSingle
+                ? (tPage("confirmDialog.statusChange.confirmSingle", { action: actionText }) || actionText)
+                : (tPage("confirmDialog.statusChange.confirm", { action: actionText }) || `${actionText} All`);
+            })()}
             {type === "singleStatusChange" && (tPage("confirmDialog.singleStatusChange.confirm") || "Confirm")}
           </button>
         </div>

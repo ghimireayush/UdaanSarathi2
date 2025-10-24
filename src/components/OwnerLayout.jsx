@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
-  Users,
-  Settings,
   LogOut,
   Menu,
   X,
   Moon,
   Sun,
   TrendingUp,
+  RefreshCw,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -18,8 +17,9 @@ import LanguageSwitch from "./LanguageSwitch";
 import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/logo.svg";
 
-const OwnerLayout = ({ children }) => {
+const OwnerLayout = ({ children, onRefresh }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -32,6 +32,46 @@ const OwnerLayout = ({ children }) => {
   const tPage = (key, params = {}) => {
     return tPageSync(key, params);
   };
+
+  // Auto-refresh functionality - every 2 minutes
+  const triggerRefresh = useCallback(() => {
+    // Trigger a custom event that pages can listen to
+    window.dispatchEvent(
+      new CustomEvent("ownerPageRefresh", {
+        detail: { timestamp: Date.now() },
+      })
+    );
+
+    // Call onRefresh callback if provided
+    if (onRefresh && typeof onRefresh === "function") {
+      onRefresh();
+    }
+  }, [onRefresh]);
+
+  // Manual refresh handler
+  const handleManualRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    triggerRefresh();
+    
+    // Reset refreshing state after animation
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
+  }, [triggerRefresh]);
+
+  // Set up auto-refresh interval (2 minutes = 120000ms)
+  useEffect(() => {
+    const AUTO_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes
+
+    const intervalId = setInterval(() => {
+      triggerRefresh();
+    }, AUTO_REFRESH_INTERVAL);
+
+    // Cleanup on unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [triggerRefresh]);
 
   const handleLogout = async () => {
     await logout();
@@ -53,16 +93,6 @@ const OwnerLayout = ({ children }) => {
       name: tPage("nav.analytics"),
       href: "/owner/analytics",
       icon: TrendingUp,
-    },
-    {
-      name: tPage("nav.users"),
-      href: "/owner/users",
-      icon: Users,
-    },
-    {
-      name: tPage("nav.settings"),
-      href: "/owner/settings",
-      icon: Settings,
     },
   ];
 
@@ -175,6 +205,17 @@ const OwnerLayout = ({ children }) => {
             <div className="flex-1 lg:flex-none" />
 
             <div className="flex items-center gap-3">
+              {/* Manual Refresh Button */}
+              <button
+                onClick={handleManualRefresh}
+                disabled={isRefreshing}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={tPage("nav.refresh") || "Refresh data"}
+                title={tPage("nav.refresh") || "Refresh data"}
+              >
+                <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+
               {/* Language Switch */}
               <LanguageSwitch variant="ghost" size="sm" />
 

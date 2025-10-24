@@ -31,6 +31,11 @@ export const LanguageProvider = ({ children }) => {
     }
   }, [])
 
+  // Clear page translations cache when locale changes
+  useEffect(() => {
+    setPageTranslations(new Map())
+  }, [locale])
+
   /**
    * Change locale with loading state management
    * @param {string} newLocale - New locale to set

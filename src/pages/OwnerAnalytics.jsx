@@ -49,6 +49,20 @@ const OwnerAnalytics = () => {
     loadAgencies();
   }, []);
 
+  // Listen for auto-refresh events from OwnerLayout
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('[OwnerAnalytics] Auto-refreshing data...');
+      loadAgencies();
+    };
+
+    window.addEventListener('ownerPageRefresh', handleRefresh);
+
+    return () => {
+      window.removeEventListener('ownerPageRefresh', handleRefresh);
+    };
+  }, []);
+
   const loadAgencies = async () => {
     try {
       setLoading(true);

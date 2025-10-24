@@ -14,6 +14,7 @@
     "analytics": "Analytics",
     "users": "Users",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "refresh": "Refresh data"
   }
 }

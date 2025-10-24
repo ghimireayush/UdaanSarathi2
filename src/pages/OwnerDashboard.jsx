@@ -39,7 +39,10 @@ const OwnerDashboard = () => {
 
   const [recentActivity, setRecentActivity] = useState([]);
 
-  useEffect(() => {
+  // Function to load dashboard data
+  const loadDashboardData = () => {
+    setStats(prev => ({ ...prev, loading: true }));
+    
     // Simulate API call
     setTimeout(() => {
       setStats({
@@ -98,6 +101,25 @@ const OwnerDashboard = () => {
         },
       ]);
     }, 500);
+  };
+
+  // Load data on mount
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  // Listen for auto-refresh events from OwnerLayout
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('[OwnerDashboard] Auto-refreshing data...');
+      loadDashboardData();
+    };
+
+    window.addEventListener('ownerPageRefresh', handleRefresh);
+
+    return () => {
+      window.removeEventListener('ownerPageRefresh', handleRefresh);
+    };
   }, []);
 
   const activePercentage =

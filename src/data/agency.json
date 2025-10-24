@@ -14,7 +14,7 @@
   "services": [
     "Overseas Job Placement",
     "Visa Processing",
-    "Document Verification", 
+    "Document Verification",
     "Pre-departure Training",
     "Post-placement Support"
   ],
@@ -54,7 +54,7 @@
       "email": "rajesh@udaanrecruitment.com"
     },
     {
-      "name": "Sunita Shrestha", 
+      "name": "Sunita Shrestha",
       "position": "Operations Manager",
       "phone": "+977-9851234567",
       "email": "sunita@udaanrecruitment.com"
@@ -68,7 +68,7 @@
   "target_countries": [
     "UAE",
     "Saudi Arabia",
-    "Qatar", 
+    "Qatar",
     "Kuwait",
     "Oman",
     "Bahrain",

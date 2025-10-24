@@ -768,7 +768,6 @@ const PipelineStageCard = ({ stage }) => {
         <p className="text-sm font-medium">{stage.label}</p>
       </div>
       <p className="text-3xl font-bold mb-1">{stage.count.toLocaleString()}</p>
-      <p className="text-xs opacity-80">{stage.percentage}% of total</p>
     </div>
   );
 };
