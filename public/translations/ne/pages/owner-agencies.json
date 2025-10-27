@@ -1,17 +1,18 @@
 {
   "meta": {
-    "version": "1.0.0",
-    "lastUpdated": "2025-01-21",
+    "version": "1.0.1",
+    "lastUpdated": "2025-10-27",
     "page": "owner-agencies"
   },
   "title": "एजेन्सी व्यवस्थापन",
   "subtitle": "प्लेटफर्ममा सबै एजेन्सीहरू व्यवस्थापन गर्नुहोस्",
   "search": {
-    "placeholder": "नाम, इजाजतपत्र, इमेल, वा मालिकद्वारा खोज्नुहोस्...",
+    "placeholder": "नाम, इजाजतपत्र, इमेल, वा अधिकारिद्वारा खोज्नुहोस्...",
     "noResults": "कुनै एजेन्सी फेला परेन",
     "searching": "खोजी गर्दै..."
   },
   "filters": {
+    "filterButton": "फिल्टर",
     "status": "स्थिति",
     "sortBy": "क्रमबद्ध गर्नुहोस्",
     "all": "सबै",
@@ -28,7 +29,7 @@
   "table": {
     "agency": "एजेन्सी",
     "license": "इजाजतपत्र",
-    "owner": "मालिक",
+    "owner": "अधिकारि",
     "status": "स्थिति",
     "jobs": "जागिरहरू",
     "activeApplicants": "सक्रिय आवेदकहरू",
@@ -65,7 +66,7 @@
       "phone": "फोन",
       "address": "ठेगाना",
       "established": "स्थापना",
-      "owner": "मालिक जानकारी",
+      "owner": "अधिकारि जानकारी",
       "ownerName": "नाम",
       "ownerEmail": "इमेल",
       "ownerPhone": "फोन",

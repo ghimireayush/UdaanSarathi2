@@ -10,6 +10,7 @@ import {
   Sun,
   TrendingUp,
   RefreshCw,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -93,6 +94,11 @@ const OwnerLayout = ({ children, onRefresh }) => {
       name: tPage("nav.analytics"),
       href: "/owner/analytics",
       icon: TrendingUp,
+    },
+    {
+      name: tPage("nav.auditlog"),
+      href: "/owner/auditlog",
+      icon: FileText,
     },
   ];
 

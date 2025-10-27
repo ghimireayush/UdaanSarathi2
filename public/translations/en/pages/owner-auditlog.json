@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-27",
+    "page": "owner-auditlog"
+  },
+  "title": "Audit Log",
+  "subtitle": "Track all administrative actions and changes",
+  "loading": "Loading audit logs...",
+  "export": {
+    "button": "Export Logs",
+    "success": "Logs exported successfully"
+  },
+  "stats": {
+    "totalActions": "Total Actions",
+    "logins": "Owner Logins",
+    "deletions": "Deletions",
+    "deactivations": "Deactivations",
+    "activations": "Activations"
+  },
+  "search": {
+    "placeholder": "Search by agency, user, reason, or action..."
+  },
+  "filters": {
+    "toggle": "Filters",
+    "actionType": "Action Type",
+    "dateRange": "Date Range",
+    "sortOrder": "Sort Order",
+    "all": "All Actions",
+    "logins": "Owner Logins",
+    "deletions": "Deletions",
+    "deactivations": "Deactivations",
+    "activations": "Activations",
+    "allTime": "All Time",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "custom": "Custom Range",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "newest": "Newest First",
+    "oldest": "Oldest First"
+  },
+  "results": {
+    "showing": "Showing {{count}} of {{total}} logs"
+  },
+  "noResults": {
+    "filtered": "No logs found matching your filters",
+    "empty": "No audit logs available"
+  },
+  "actions": {
+    "owner_login": "Owner Login",
+    "delete_agency": "Agency Deleted",
+    "deactivate_agency": "Agency Deactivated",
+    "activate_agency": "Agency Activated"
+  },
+  "log": {
+    "reason": "Reason",
+    "performedBy": "Performed by",
+    "ipAddress": "IP Address",
+    "loginMethod": "Login Method"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} logs",
+    "page": "Page {{current}} of {{total}}",
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next",
+    "last": "Last"
+  }
+}

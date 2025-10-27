@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "1.0.0",
-    "lastUpdated": "2025-01-21",
+    "version": "1.0.1",
+    "lastUpdated": "2025-10-27",
     "page": "owner-agencies"
   },
   "title": "Agencies Management",
@@ -12,6 +12,7 @@
     "searching": "Searching..."
   },
   "filters": {
+    "filterButton": "Filter",
     "status": "Status",
     "sortBy": "Sort By",
     "all": "All",

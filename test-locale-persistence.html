@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locale Persistence Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Locale Persistence Test</h1>
+    
+    <div class="test-section">
+        <h2>Current Locale</h2>
+        <div class="info">
+            <strong>Current Locale:</strong> <span id="currentLocale">-</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Change Locale</h2>
+        <button onclick="setLocale('en')">Set to English</button>
+        <button onclick="setLocale('ne')">Set to Nepali (नेपाली)</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Storage Information</h2>
+        <div id="storageInfo" class="info"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <ol>
+            <li>Click "Set to Nepali" button</li>
+            <li>Verify the current locale shows "ne"</li>
+            <li>Press <strong>Ctrl+R</strong> or click the browser refresh button</li>
+            <li>After refresh, verify the locale is still "ne" (not reverted to "en")</li>
+        </ol>
+        <div id="testResult"></div>
+    </div>
+
+    <script type="module">
+        import i18nService from './src/services/i18nService.js'
+
+        // Initialize the service
+        i18nService.init()
+
+        // Update display
+        function updateDisplay() {
+            const locale = i18nService.getLocale()
+            document.getElementById('currentLocale').textContent = locale
+            
+            // Show storage info
+            const storageInfo = i18nService.getPreferenceStorageInfo()
+            document.getElementById('storageInfo').innerHTML = `
+                <strong>localStorage:</strong> ${storageInfo.localStorage.hasPreference ? 
+                    JSON.stringify(storageInfo.localStorage.preference) : 'No preference'}<br>
+                <strong>sessionStorage:</strong> ${storageInfo.sessionStorage.hasPreference ? 
+                    JSON.stringify(storageInfo.sessionStorage.preference) : 'No preference'}<br>
+                <strong>In-Memory:</strong> ${storageInfo.inMemory.hasPreference ? 
+                    JSON.stringify(storageInfo.inMemory.preference) : 'No preference'}
+            `
+            
+            // Check if locale persisted after refresh
+            const urlParams = new URLSearchParams(window.location.search)
+            if (urlParams.get('test') === 'refresh') {
+                const expectedLocale = urlParams.get('locale')
+                const resultDiv = document.getElementById('testResult')
+                if (locale === expectedLocale) {
+                    resultDiv.innerHTML = `<div class="success">✓ SUCCESS: Locale persisted after refresh! (${locale})</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ FAILED: Locale reverted from ${expectedLocale} to ${locale}</div>`
+                }
+            }
+        }
+
+        // Set locale function
+        window.setLocale = async function(locale) {
+            await i18nService.setLocale(locale)
+            updateDisplay()
+            
+            // Reload page with test parameter
+            const url = new URL(window.location)
+            url.searchParams.set('test', 'refresh')
+            url.searchParams.set('locale', locale)
+            
+            setTimeout(() => {
+                window.location.href = url.toString()
+            }, 500)
+        }
+
+        // Initial display
+        updateDisplay()
+
+        // Subscribe to locale changes
+        i18nService.subscribeToLocaleChanges((newLocale) => {
+            console.log('Locale changed to:', newLocale)
+            updateDisplay()
+        })
+    </script>
+</body>
+</html>

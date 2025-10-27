@@ -6,12 +6,13 @@
   },
   "branding": {
     "appName": "उडानसारथी",
-    "ownerPortal": "मालिक पोर्टल"
+    "ownerPortal": "अधिकारि पोर्टल"
   },
   "nav": {
     "dashboard": "ड्यासबोर्ड",
     "agencies": "एजेन्सीहरू",
     "analytics": "विश्लेषण",
+    "auditlog": "लेखापरीक्षण लग",
     "users": "प्रयोगकर्ताहरू",
     "settings": "सेटिङहरू",
     "logout": "लगआउट",

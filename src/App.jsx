@@ -22,6 +22,7 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import OwnerAgencies from "./pages/OwnerAgencies";
 import OwnerAnalytics from "./pages/OwnerAnalytics";
 import OwnerAgencyDetails from "./pages/OwnerAgencyDetails";
+import OwnerAuditLog from "./pages/OwnerAuditLog";
 
 import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
@@ -106,7 +107,16 @@ function App() {
                         </OwnerLayout>
                       }
                     />
-
+                    <Route
+                      path="/owner/auditlog"
+                      element={
+                        <OwnerLayout>
+                          <PrivateRoute>
+                            <OwnerAuditLog />
+                          </PrivateRoute>
+                        </OwnerLayout>
+                      }
+                    />
 
                     {/* Agency Portal Routes */}
                     <Route

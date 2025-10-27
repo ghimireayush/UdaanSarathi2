@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-27",
+    "page": "owner-auditlog"
+  },
+  "title": "लेखापरीक्षण लग",
+  "subtitle": "सबै प्रशासनिक कार्यहरू र परिवर्तनहरू ट्र्याक गर्नुहोस्",
+  "loading": "लेखापरीक्षण लगहरू लोड गर्दै...",
+  "export": {
+    "button": "लगहरू निर्यात गर्नुहोस्",
+    "success": "लगहरू सफलतापूर्वक निर्यात गरियो"
+  },
+  "stats": {
+    "totalActions": "कुल कार्यहरू",
+    "logins": "अधिकारि लगइनहरू",
+    "deletions": "मेटाइएका",
+    "deactivations": "निष्क्रिय गरिएका",
+    "activations": "सक्रिय गरिएका"
+  },
+  "search": {
+    "placeholder": "एजेन्सी, प्रयोगकर्ता, कारण, वा कार्यद्वारा खोज्नुहोस्..."
+  },
+  "filters": {
+    "toggle": "फिल्टरहरू",
+    "actionType": "कार्य प्रकार",
+    "dateRange": "मिति दायरा",
+    "sortOrder": "क्रमबद्ध गर्नुहोस्",
+    "all": "सबै कार्यहरू",
+    "logins": "अधिकारि लगइनहरू",
+    "deletions": "मेटाइएका",
+    "deactivations": "निष्क्रिय गरिएका",
+    "activations": "सक्रिय गरिएका",
+    "allTime": "सबै समय",
+    "today": "आज",
+    "thisWeek": "यो हप्ता",
+    "thisMonth": "यो महिना",
+    "custom": "अनुकूल दायरा",
+    "startDate": "सुरु मिति",
+    "endDate": "अन्त्य मिति",
+    "newest": "नयाँ पहिले",
+    "oldest": "पुरानो पहिले"
+  },
+  "results": {
+    "showing": "{{total}} मध्ये {{count}} लगहरू देखाइँदै"
+  },
+  "noResults": {
+    "filtered": "तपाईंको फिल्टरसँग मिल्ने कुनै लग फेला परेन",
+    "empty": "कुनै लेखापरीक्षण लग उपलब्ध छैन"
+  },
+  "actions": {
+    "owner_login": "अधिकारि लगइन",
+    "delete_agency": "एजेन्सी मेटाइयो",
+    "deactivate_agency": "एजेन्सी निष्क्रिय गरियो",
+    "activate_agency": "एजेन्सी सक्रिय गरियो"
+  },
+  "log": {
+    "reason": "कारण",
+    "performedBy": "द्वारा गरिएको",
+    "ipAddress": "आईपी ठेगाना",
+    "loginMethod": "लगइन विधि"
+  },
+  "pagination": {
+    "showing": "{{total}} मध्ये {{start}} देखि {{end}} लगहरू देखाइँदै",
+    "page": "{{total}} मध्ये {{current}} पृष्ठ",
+    "first": "पहिलो",
+    "previous": "अघिल्लो",
+    "next": "अर्को",
+    "last": "अन्तिम"
+  }
+}

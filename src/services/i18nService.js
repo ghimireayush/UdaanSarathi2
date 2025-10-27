@@ -42,24 +42,28 @@ class I18nService {
   }
 
   constructor() {
-    this.currentLocale = 'en'
+    // Initialize storage and persistence first
+    this.storageKey = 'udaan-sarathi-locale'
+    this.preferenceVersion = '1.1.0'
+    this.inMemoryPreference = null // Fallback when storage is unavailable
+    this.fallbackLocale = 'en'
+    
+    // Detect locale BEFORE setting currentLocale to ensure persistence works
+    // This must happen before any other initialization
+    const detectedLocale = this.detectLocaleEarly()
+    this.currentLocale = detectedLocale
+    
     this.translations = new Map()
     this.pageTranslations = new Map()
     this.componentTranslations = new Map()
     this.dateFormatters = new Map()
     this.numberFormatters = new Map()
-    this.fallbackLocale = 'en'
     this.missingTranslations = new Set()
     this.translationCache = new Map()
     
     // Cross-tab synchronization
     this.localeChangeCallbacks = new Set()
-    this.storageKey = 'udaan-sarathi-locale'
     this.isInitialized = false
-    
-    // Enhanced persistence system
-    this.inMemoryPreference = null // Fallback when storage is unavailable
-    this.preferenceVersion = '1.1.0'
     
     // Bind methods for event listeners
     this.handleStorageChange = this.handleStorageChange.bind(this)
@@ -576,6 +580,35 @@ class I18nService {
   }
 
   /**
+   * Early locale detection for constructor (simplified version)
+   * This runs before the service is fully initialized
+   * @returns {string} Detected locale
+   */
+  detectLocaleEarly() {
+    try {
+      // Try localStorage first
+      const stored = localStorage.getItem(this.storageKey)
+      if (stored) {
+        const preference = JSON.parse(stored)
+        if (preference && preference.locale && (preference.locale === 'en' || preference.locale === 'ne')) {
+          return preference.locale
+        }
+      }
+      
+      // Try legacy format
+      const legacyStored = localStorage.getItem('preferred-locale')
+      if (legacyStored && (legacyStored === 'en' || legacyStored === 'ne')) {
+        return legacyStored
+      }
+    } catch (error) {
+      console.warn('Early locale detection failed:', error)
+    }
+    
+    // Default to English
+    return 'en'
+  }
+
+  /**
    * Detect user's preferred locale with enhanced validation and corruption handling
    * @returns {string} Detected locale
    */
@@ -810,14 +843,20 @@ class I18nService {
       return false
     }
     
-    // Check if locale is in available locales
-    if (!this.translations.has(locale)) {
+    // Basic format validation (language code or language-country)
+    const localePattern = /^[a-z]{2}(-[A-Z]{2})?$/
+    if (!localePattern.test(locale)) {
       return false
     }
     
-    // Basic format validation (language code or language-country)
-    const localePattern = /^[a-z]{2}(-[A-Z]{2})?$/
-    return localePattern.test(locale)
+    // Check if locale is in available locales (only if translations are loaded)
+    // This allows validation during initialization before all translations are loaded
+    const supportedLocales = ['en', 'ne'] // Hardcoded list of supported locales
+    if (!supportedLocales.includes(locale)) {
+      return false
+    }
+    
+    return true
   }
 
   /**
@@ -3035,9 +3074,17 @@ class I18nService {
     // Setup cross-tab synchronization
     this.setupCrossTabSync()
     
-    // Detect and set locale
+    // Re-detect locale with full validation (in case early detection missed something)
     const detectedLocale = this.detectLocale()
-    this.setLocale(detectedLocale, false) // Don't broadcast on init
+    
+    // Only update if different from what was set in constructor
+    if (detectedLocale !== this.currentLocale) {
+      this.setLocale(detectedLocale, false) // Don't broadcast on init
+    } else {
+      // Ensure document attributes are set even if locale didn't change
+      document.documentElement.lang = this.currentLocale
+      document.documentElement.dir = this.isRTL(this.currentLocale) ? 'rtl' : 'ltr'
+    }
     
     // Preload critical translations in background
     this.preloadCriticalTranslations(['login', 'dashboard', 'register', 'member-login', 'navigation'])
@@ -3050,7 +3097,7 @@ class I18nService {
     }
     
     this.isInitialized = true
-    console.log(`i18nService initialized with locale: ${detectedLocale}`)
+    console.log(`i18nService initialized with locale: ${this.currentLocale}`)
   }
 }
 

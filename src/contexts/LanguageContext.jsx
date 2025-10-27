@@ -9,7 +9,8 @@ const LanguageContext = createContext(null)
  * Provides language state and translation functions to all child components
  */
 export const LanguageProvider = ({ children }) => {
-  const [locale, setLocaleState] = useState(i18nService.getLocale())
+  // Get the current locale from i18nService immediately (it's already detected in constructor)
+  const [locale, setLocaleState] = useState(() => i18nService.getLocale())
   const [isLoading, setIsLoading] = useState(false)
   const [pageTranslations, setPageTranslations] = useState(new Map())
   const [error, setError] = useState(null)
@@ -20,8 +21,14 @@ export const LanguageProvider = ({ children }) => {
       i18nService.init()
     }
     
+    // Ensure state is in sync with service after init
+    const currentLocale = i18nService.getLocale()
+    if (currentLocale !== locale) {
+      setLocaleState(currentLocale)
+    }
+    
     // Subscribe to locale changes from i18nService
-    const unsubscribe = i18nService.subscribeToLocaleChanges((newLocale, previousLocale) => {
+    const unsubscribe = i18nService.subscribeToLocaleChanges((newLocale) => {
       setLocaleState(newLocale)
       setError(null) // Clear any previous errors on successful locale change
     })
@@ -31,9 +38,18 @@ export const LanguageProvider = ({ children }) => {
     }
   }, [])
 
-  // Clear page translations cache when locale changes
+  // Clear page translations cache when locale changes (keep only current locale)
   useEffect(() => {
-    setPageTranslations(new Map())
+    setPageTranslations(prev => {
+      const newMap = new Map()
+      // Keep only translations for the current locale
+      for (const [key, value] of prev.entries()) {
+        if (key.startsWith(`${locale}-`)) {
+          newMap.set(key, value)
+        }
+      }
+      return newMap
+    })
   }, [locale])
 
   /**
