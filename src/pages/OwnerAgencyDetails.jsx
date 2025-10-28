@@ -148,30 +148,6 @@ const OwnerAgencyDetails = () => {
     ];
   }, [state.analytics, tPage]);
 
-  const efficiencyMetrics = useMemo(() => [
-    {
-      label: tPage("efficiency.avgTimeToShortlist"),
-      value: "3-5",
-      unit: tPage("efficiency.days"),
-      icon: Star,
-      color: "text-yellow-600 dark:text-yellow-400",
-    },
-    {
-      label: tPage("efficiency.avgTimeToInterview"),
-      value: "7-10",
-      unit: tPage("efficiency.days"),
-      icon: Calendar,
-      color: "text-purple-600 dark:text-purple-400",
-    },
-    {
-      label: tPage("efficiency.avgTimeToHire"),
-      value: "15-20",
-      unit: tPage("efficiency.days"),
-      icon: CheckCircle,
-      color: "text-green-600 dark:text-green-400",
-    },
-  ], [tPage]);
-
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
@@ -384,9 +360,6 @@ const OwnerAgencyDetails = () => {
 
           {/* Pipeline Breakdown */}
           <PipelineSection pipelineData={pipelineData} tPage={tPage} />
-
-          {/* Recruitment Efficiency */}
-          <EfficiencySection efficiencyMetrics={efficiencyMetrics} tPage={tPage} />
 
           {/* Job Breakdown */}
           <JobBreakdownSection
@@ -797,39 +770,6 @@ const FunnelBar = ({ stage, isFirst }) => {
   );
 };
 
-const EfficiencySection = ({ efficiencyMetrics, tPage }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{tPage("efficiency.title")}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {efficiencyMetrics.map((item, index) => (
-          <EfficiencyCard key={index} metric={item} />
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const EfficiencyCard = ({ metric }) => {
-  const Icon = metric.icon;
-  return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className={`h-5 w-5 ${metric.color}`} />
-        <p className="text-sm text-gray-600 dark:text-gray-400">{metric.label}</p>
-      </div>
-      <div className="flex items-baseline gap-2">
-        <p className={`text-3xl font-bold ${metric.color}`}>
-          {metric.value}
-        </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{metric.unit}</p>
-      </div>
-    </div>
-  );
-};
-
 const JobBreakdownSection = ({ jobs, onJobSelect, tPage, pagination, onPaginationChange }) => {
   const paginatedJobs = useMemo(() => {
     const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
@@ -924,7 +864,7 @@ const JobBreakdownSection = ({ jobs, onJobSelect, tPage, pagination, onPaginatio
   );
 };
 
-const AllAgenciesView = ({ analytics, tPage, pipelineData, efficiencyMetrics }) => (
+const AllAgenciesView = ({ analytics, tPage, pipelineData }) => (
   <div className="space-y-6">
     <Card>
       <CardContent className="p-6">
@@ -939,7 +879,6 @@ const AllAgenciesView = ({ analytics, tPage, pipelineData, efficiencyMetrics }) 
 
     <StatisticsGrid analytics={analytics} tPage={tPage} />
     <PipelineSection pipelineData={pipelineData} tPage={tPage} />
-    <EfficiencySection efficiencyMetrics={efficiencyMetrics} tPage={tPage} />
   </div>
 );
 
@@ -987,19 +926,6 @@ const JobDetailView = ({ job, onBack, tPage }) => {
       </Card>
 
       <PipelineSection pipelineData={jobPipelineData} tPage={tPage} />
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>{tPage("efficiency.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <EfficiencyCard metric={{ label: tPage("efficiency.avgTimeToShortlist"), value: "2-4", unit: tPage("efficiency.days"), icon: Star, color: "text-yellow-600 dark:text-yellow-400" }} />
-            <EfficiencyCard metric={{ label: tPage("efficiency.avgTimeToInterview"), value: "5-7", unit: tPage("efficiency.days"), icon: Calendar, color: "text-purple-600 dark:text-purple-400" }} />
-            <EfficiencyCard metric={{ label: tPage("efficiency.avgTimeToHire"), value: "10-15", unit: tPage("efficiency.days"), icon: CheckCircle, color: "text-green-600 dark:text-green-400" }} />
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
