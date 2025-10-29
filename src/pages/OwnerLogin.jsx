@@ -14,7 +14,7 @@ const OwnerLogin = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login, isAuthenticated, user } = useAuth()
+  const { ownerLogin, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const { tPageSync } = useLanguage({ 
@@ -41,11 +41,21 @@ const OwnerLogin = () => {
     }
   }, [])
 
-  // Redirect if already authenticated as owner
+  // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'admin') {
-      const from = location.state?.from?.pathname || '/owner/dashboard'
-      navigate(from, { replace: true })
+    if (isAuthenticated && user) {
+      // If user is owner, redirect to owner dashboard
+      if (user.isOwner || user.id === 'user_owner' || user.email === 'owner@udaan.com') {
+        const from = location.state?.from?.pathname || '/owner/dashboard'
+        navigate(from, { replace: true })
+      } else {
+        // Non-owner trying to access owner portal - redirect to appropriate portal
+        if (user.role === 'admin') {
+          navigate('/dashboard', { replace: true })
+        } else if (user.role === 'recipient' || user.role === 'interview-coordinator') {
+          navigate('/dashboard', { replace: true })
+        }
+      }
     }
   }, [isAuthenticated, user, navigate, location])
 
@@ -121,17 +131,8 @@ const OwnerLogin = () => {
     }
 
     try {
-      const result = await login(email, password)
-      
-      // Verify the logged-in user is an owner (admin role)
-      if (result.user.role !== 'admin') {
-        setError(tPage('messages.accessDenied'))
-        // Logout the non-owner user
-        localStorage.removeItem('udaan_user')
-        localStorage.removeItem('udaan_token')
-        setLoading(false)
-        return
-      }
+      // Use ownerLogin method specifically for owner portal
+      const result = await ownerLogin(email, password)
 
       // Handle "Remember Me"
       if (rememberMe) {

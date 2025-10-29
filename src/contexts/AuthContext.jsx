@@ -91,6 +91,37 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const ownerLogin = async (email, password) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.ownerLogin(email, password)
+      
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      
+      // Log successful owner login
+      try {
+        await auditService.logLogin({
+          user: result.user,
+          ip_address: '127.0.0.1', // In production, get real IP
+          user_agent: navigator.userAgent,
+          session_id: `session_${Date.now()}`,
+          portal: 'owner'
+        })
+      } catch (auditError) {
+        console.warn('Failed to log owner login event:', auditError)
+      }
+      
+      return result
+    } catch (error) {
+      console.error('Owner login error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const memberLogin = async (username, password, invitationToken = null) => {
     try {
       setIsLoading(true)
@@ -223,6 +254,7 @@ export const AuthProvider = ({ children }) => {
     
     // Actions
     login,
+    ownerLogin,
     memberLogin,
     register,
     createCompany,

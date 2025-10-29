@@ -29,6 +29,16 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
+      // Check if user is an owner - redirect to owner portal
+      const storedUser = localStorage.getItem('udaan_user')
+      if (storedUser) {
+        const userData = JSON.parse(storedUser)
+        if (userData.isOwner || userData.id === 'user_owner' || userData.email === 'owner@udaan.com') {
+          navigate('/owner/dashboard', { replace: true })
+          return
+        }
+      }
+      
       const from = location.state?.from?.pathname || '/dashboard'
       navigate(from, { replace: true })
     }

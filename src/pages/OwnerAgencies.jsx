@@ -10,6 +10,10 @@ import {
   Check,
   Trash2,
   Eye,
+  Grid3x3,
+  List,
+  Briefcase,
+  Users,
 } from "lucide-react";
 
 const OwnerAgencies = () => {
@@ -36,6 +40,9 @@ const OwnerAgencies = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // View mode state
+  const [viewMode, setViewMode] = useState("grid"); // 'list' or 'grid' - default is grid
 
   // Detail panel state
   const [detailAgency, setDetailAgency] = useState(null);
@@ -562,54 +569,88 @@ const OwnerAgencies = () => {
         )}
       </div>
 
-      {/* Bulk Actions */}
-      {selectedAgencies.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-blue-900 dark:text-blue-300 font-medium">
-              {tPage("actions.selected", { count: selectedAgencies.length })}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleBulkStatusChange("active")}
-                className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-              >
-                {tPage("actions.activate")}
-              </button>
-              <button
-                onClick={() => handleBulkStatusChange("inactive")}
-                className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm"
-              >
-                {tPage("actions.deactivate")}
-              </button>
-              <button
-                onClick={handleBulkDelete}
-                className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
-              >
-                {tPage("actions.delete")}
-              </button>
-              <button
-                onClick={() => setSelectedAgencies([])}
-                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm"
-              >
-                {tPage("actions.deselectAll")}
-              </button>
+      {/* View Mode Toggle and Bulk Actions */}
+      <div className="flex items-center justify-between gap-4">
+        {/* Bulk Actions */}
+        {selectedAgencies.length > 0 ? (
+          <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-blue-900 dark:text-blue-300 font-medium">
+                {tPage("actions.selected", { count: selectedAgencies.length })}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleBulkStatusChange("active")}
+                  className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                >
+                  {tPage("actions.activate")}
+                </button>
+                <button
+                  onClick={() => handleBulkStatusChange("inactive")}
+                  className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm"
+                >
+                  {tPage("actions.deactivate")}
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                >
+                  {tPage("actions.delete")}
+                </button>
+                <button
+                  onClick={() => setSelectedAgencies([])}
+                  className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm"
+                >
+                  {tPage("actions.deselectAll")}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Agencies Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {filteredAgencies.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              {searchTerm ? tPage("search.noResults") : tPage("table.noData")}
-            </p>
-          </div>
         ) : (
+          <div className="flex-1" />
+        )}
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode("list")}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+              viewMode === "list"
+                ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+            title="List View"
+          >
+            <List className="h-4 w-4" />
+            <span className="text-sm font-medium">List</span>
+          </button>
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+              viewMode === "grid"
+                ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+            title="Grid View"
+          >
+            <Grid3x3 className="h-4 w-4" />
+            <span className="text-sm font-medium">Grid</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Agencies Display */}
+      {filteredAgencies.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400">
+            {searchTerm ? tPage("search.noResults") : tPage("table.noData")}
+          </p>
+        </div>
+      ) : viewMode === "list" ? (
+        /* List View - Table */
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full border-separate border-spacing-0">
               <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                 <tr>
                   <th className="px-4 py-3 text-left">
@@ -662,8 +703,25 @@ const OwnerAgencies = () => {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        /* Grid View - Cards */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {paginatedAgencies.map((agency) => (
+            <AgencyCard
+              key={agency.id}
+              agency={agency}
+              selected={selectedAgencies.includes(agency.id)}
+              onSelect={handleSelectAgency}
+              onView={handleViewDetails}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+              tPage={tPage}
+              getStatusColor={getStatusColor}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       {filteredAgencies.length > 0 && (
@@ -831,7 +889,184 @@ const StatCard = ({ label, value, color }) => {
   );
 };
 
-// AgencyRow Component
+// AgencyCard Component (Grid View)
+const AgencyCard = ({
+  agency,
+  selected,
+  onSelect,
+  onView,
+  onStatusChange,
+  onDelete,
+  tPage,
+  getStatusColor,
+}) => {
+  const [showMenu, setShowMenu] = useState(false);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow overflow-hidden border-t-4 border-t-transparent hover:border-t-blue-500">
+      {/* Top Accent Bar */}
+      <div
+        className={`h-1 ${
+          agency.status === "active" ? "bg-green-500" : "bg-gray-400"
+        }`}
+      />
+      
+      <div className="p-6">
+        {/* Header with checkbox and menu */}
+        <div className="flex items-start justify-between mb-4">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={() => onSelect(agency.id)}
+            className="rounded border-gray-300 dark:border-gray-600 mt-1"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+            >
+              <MoreVertical className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
+                <button
+                  onClick={() => {
+                    onView(agency.id);
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 flex items-center gap-2 rounded-t-lg"
+                >
+                  <Eye className="h-4 w-4" />
+                  {tPage("actions.view")}
+                </button>
+                {agency.status !== "active" && (
+                  <button
+                    onClick={() => {
+                      onStatusChange(agency.id, "active");
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-green-700 dark:text-green-400 flex items-center gap-2"
+                  >
+                    <Check className="h-4 w-4" />
+                    {tPage("actions.activate")}
+                  </button>
+                )}
+                {agency.status !== "inactive" && (
+                  <button
+                    onClick={() => {
+                      onStatusChange(agency.id, "inactive");
+                      setShowMenu(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-400 flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    {tPage("actions.deactivate")}
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    onDelete(agency);
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600 text-red-700 dark:text-red-400 flex items-center gap-2 border-t border-gray-200 dark:border-gray-600 rounded-b-lg"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tPage("actions.delete")}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Agency Avatar and Name */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="relative flex-shrink-0">
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+              {agency.name.charAt(0)}
+            </div>
+            {/* Status Indicator Dot */}
+            <div
+              className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-gray-800 ${
+                agency.status === "active" ? "bg-green-500" : "bg-gray-400"
+              }`}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+              {agency.name}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+              {agency.license_number}
+            </p>
+          </div>
+        </div>
+
+        {/* Status Badge */}
+        <div className="mb-4">
+          <span
+            className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+              agency.status
+            )}`}
+          >
+            {tPage(`status.${agency.status}`)}
+          </span>
+        </div>
+
+        {/* Statistics */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+              <Briefcase className="h-4 w-4" />
+              {tPage("table.jobs")}
+            </span>
+            <div className="text-right">
+              <span className="font-semibold text-gray-900 dark:text-gray-100">
+                {agency.statistics.total_jobs}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                ({agency.statistics.active_jobs} active)
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              {tPage("table.activeApplicants")}
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
+              {agency.statistics.active_applicants}
+            </span>
+          </div>
+        </div>
+
+        {/* Owner Info */}
+        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Owner</p>
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            {agency.owner_name}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {agency.owner_phone}
+          </p>
+        </div>
+
+        {/* View Details Button with Border Separator */}
+        <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => onView(agency.id)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+          >
+            <Eye className="h-4 w-4" />
+            {tPage("actions.view")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// AgencyRow Component (List View)
 const AgencyRow = ({
   agency,
   selected,
@@ -845,7 +1080,11 @@ const AgencyRow = ({
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+    <tr className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-4 ${
+      agency.status === "active" 
+        ? "border-l-green-500" 
+        : "border-l-gray-400"
+    }`}>
       <td className="px-4 py-3">
         <input
           type="checkbox"
@@ -856,8 +1095,16 @@ const AgencyRow = ({
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 font-semibold">
-            {agency.name.charAt(0)}
+          <div className="relative">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
+              {agency.name.charAt(0)}
+            </div>
+            {/* Status Indicator Dot */}
+            <div
+              className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-gray-800 ${
+                agency.status === "active" ? "bg-green-500" : "bg-gray-400"
+              }`}
+            />
           </div>
           <div>
             <p className="font-medium text-gray-900 dark:text-gray-100">
@@ -904,7 +1151,7 @@ const AgencyRow = ({
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
         {agency.statistics.active_applicants}
       </td>
-      <td className="px-4 py-3 text-right">
+      <td className="px-4 py-3 text-right border-l border-gray-200 dark:border-gray-700">
         <div className="relative inline-block">
           <button
             onClick={() => setShowMenu(!showMenu)}

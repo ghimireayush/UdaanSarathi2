@@ -33,5 +33,5 @@
         "class[Name]*\\s*[:=]\\s*[\"'`]([^\"'`]*)[\"'`]",
         "className\\s*[:=]\\s*[\"'`]([^\"'`]*)[\"'`]"
     ],
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Enabled"
 }

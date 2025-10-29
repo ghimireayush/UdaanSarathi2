@@ -312,7 +312,7 @@ class AuthService {
     return company
   }
 
-  // Simulate login API call
+  // Agency portal login - Only for ADMIN role (not for owners)
   async login(username, password) {
     await delay(1000) // Simulate network delay
     
@@ -325,9 +325,14 @@ class AuthService {
       throw new Error('Invalid credentials')
     }
 
-    // Only allow admin login
+    // Only allow admin login (NOT agency owners)
     if (user.role !== ROLES.ADMIN) {
       throw new Error('Access Denied: Only administrators can access this portal')
+    }
+    
+    // Additional check: Prevent owner accounts from logging in here
+    if (user.id === 'user_owner' || user.email === 'owner@udaan.com') {
+      throw new Error('Access Denied: Owner accounts must use the Owner Portal at /owner/login')
     }
     
     if (!user.isActive) {
@@ -378,19 +383,96 @@ class AuthService {
     return authData
   }
 
-  // Member login for Recipients and Coordinators
-  async memberLogin(username, password, invitationToken = null) {
+  // Owner portal login - Only for platform owners
+  async ownerLogin(email, password) {
     await delay(1000) // Simulate network delay
     
-    // Find user in mock data - only allow recipients and coordinators
+    // Find user in mock data
     const user = MOCK_USERS.find(u => 
-      (u.email === username || u.username === username) && 
-      u.password === password &&
-      (u.role === ROLES.RECIPIENT || u.role === ROLES.COORDINATOR)
+      (u.email === email || u.username === email) && u.password === password
     )
     
     if (!user) {
-      throw new Error('Invalid credentials or unauthorized role')
+      throw new Error('Invalid credentials')
+    }
+    
+    // Only allow admin role AND must be the owner account
+    if (user.role !== ROLES.ADMIN) {
+      throw new Error('Access Denied: Only platform owners can access this portal')
+    }
+    
+    // Verify this is actually an owner account (not regular admin)
+    if (user.id !== 'user_owner' && user.email !== 'owner@udaan.com') {
+      throw new Error('Access Denied: This account does not have owner privileges. Please use the Agency Portal.')
+    }
+    
+    if (!user.isActive) {
+      throw new Error('Account is deactivated')
+    }
+    
+    // Store authentication data
+    const authData = {
+      token: `owner_token_${Date.now()}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.name,
+        role: user.role,
+        permissions: this.getUserPermissions(user.role),
+        isActive: user.isActive,
+        isOwner: true
+      },
+      permissions: this.getUserPermissions(user.role),
+      expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    }
+    
+    localStorage.setItem('udaan_token', authData.token)
+    localStorage.setItem('udaan_user', JSON.stringify(authData.user))
+    localStorage.setItem('udaan_permissions', JSON.stringify(authData.permissions))
+    
+    this.currentUser = authData.user
+    this.isAuthenticated = true
+    
+    // Log successful owner login
+    try {
+      await auditService.logEvent({
+        action: 'OWNER_LOGIN',
+        user_id: user.id,
+        user_name: user.name,
+        resource_type: 'AUTH',
+        resource_id: user.id,
+        metadata: {
+          email: user.email,
+          role: user.role,
+          loginTime: new Date().toISOString(),
+          portal: 'owner'
+        }
+      })
+    } catch (e) {
+      console.warn('Audit logging (OWNER_LOGIN) failed:', e)
+    }
+    
+    return authData
+  }
+
+  // Member login for Recipients and Coordinators ONLY
+  async memberLogin(username, password, invitationToken = null) {
+    await delay(1000) // Simulate network delay
+    
+    // Find user in mock data
+    const user = MOCK_USERS.find(u => 
+      (u.email === username || u.username === username) && 
+      u.password === password
+    )
+    
+    if (!user) {
+      throw new Error('Invalid credentials')
+    }
+    
+    // Only allow recipients and coordinators (NOT admins or owners)
+    if (user.role !== ROLES.RECIPIENT && user.role !== ROLES.COORDINATOR) {
+      throw new Error('Access Denied: Only team members (Recipients and Coordinators) can access this portal')
     }
     
     if (!user.isActive) {
