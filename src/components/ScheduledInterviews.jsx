@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Calendar,
   Clock,
@@ -35,8 +35,13 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
   const [activeSubtab, setActiveSubtab] = useState('today')
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [notes, setNotes] = useState('')
+  const notesRef = useRef(null)
+  const charCountRef = useRef(null)
   const [actionType, setActionType] = useState('')
+  const [isEditingNotes, setIsEditingNotes] = useState(false)
+  const [editingNoteIndex, setEditingNoteIndex] = useState(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const MAX_NOTE_LENGTH = 300
   const [rejectionReason, setRejectionReason] = useState('')
   const [rescheduleData, setRescheduleData] = useState({ date: '', time: '' })
   const [isProcessing, setIsProcessing] = useState(false)
@@ -153,6 +158,49 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isSidebarOpen])
 
+  // Helper function to parse notes into individual entries
+  const parseNotes = (notesString) => {
+    if (!notesString) return []
+    
+    const entries = []
+    const parts = notesString.split(/\n--- Note added on /)
+    
+    parts.forEach((part, index) => {
+      if (index === 0 && !part.includes('---')) {
+        // First note without separator (old format or first entry)
+        if (part.trim()) {
+          entries.push({
+            timestamp: null,
+            content: part.trim(),
+            rawText: part
+          })
+        }
+      } else {
+        // Extract timestamp and content
+        const subParts = part.split(' ---\n')
+        if (subParts.length === 2) {
+          entries.push({
+            timestamp: subParts[0].trim(),
+            content: subParts[1].trim(),
+            rawText: `--- Note added on ${part}`
+          })
+        }
+      }
+    })
+    
+    return entries
+  }
+
+  // Helper function to reconstruct notes string from entries
+  const reconstructNotes = (entries) => {
+    return entries.map(entry => {
+      if (entry.timestamp) {
+        return `--- Note added on ${entry.timestamp} ---\n${entry.content}`
+      }
+      return entry.content
+    }).join('\n\n')
+  }
+
   // Debug: Monitor actionType and selectedCandidate changes
   useEffect(() => {
     console.log('State changed - actionType:', actionType, 'selectedCandidate:', selectedCandidate?.name)
@@ -233,7 +281,6 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
   const handleCloseSidebar = () => {
     setIsSidebarOpen(false)
     setSelectedCandidate(null)
-    setNotes('')
     setActionType('')
     setRejectionReason('')
     setRescheduleData({ date: '', time: '' })
@@ -403,8 +450,44 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
   const handleAction = async (candidate, action, additionalData = null) => {
     try {
       setIsProcessing(true)
+      
+      // Get the new note content and trim to max length
+      let newNote = typeof additionalData === 'string' ? additionalData : (notesRef.current?.value || '')
+      
+      // Ensure note doesn't exceed max length
+      if (newNote.length > MAX_NOTE_LENGTH) {
+        newNote = newNote.substring(0, MAX_NOTE_LENGTH)
+      }
+      
+      // For take_notes action, handle different scenarios
+      let notesContent = newNote
+      if (action === 'take_notes') {
+        if (isEditingNotes && editingNoteIndex !== null) {
+          // Editing a specific note
+          const noteEntries = parseNotes(candidate.interview?.notes || '')
+          noteEntries[editingNoteIndex] = {
+            ...noteEntries[editingNoteIndex],
+            content: newNote
+          }
+          notesContent = reconstructNotes(noteEntries)
+        } else if (!isEditingNotes) {
+          // Adding a new note
+          const existingNotes = candidate.interview?.notes || ''
+          const timestamp = format(new Date(), 'MMM dd, yyyy HH:mm')
+          
+          if (existingNotes) {
+            // Append new note with separator and timestamp
+            notesContent = `${existingNotes}\n\n--- Note added on ${timestamp} ---\n${newNote}`
+          } else {
+            // First note with timestamp
+            notesContent = `--- Note added on ${timestamp} ---\n${newNote}`
+          }
+        }
+        // If isEditingNotes is true but editingNoteIndex is null, it means editing all notes (use newNote as is)
+      }
+      
       let updateData = {
-        notes: notes,
+        notes: notesContent,
         updated_at: new Date().toISOString()
       }
 
@@ -415,7 +498,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
           updateData.reminder_sent_at = new Date().toISOString()
           break
         case 'take_notes':
-          // Just update notes
+          // Just update notes (already handled above)
           break
         case 'mark_interviewed':
           updateData.status = 'completed'
@@ -446,24 +529,25 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
       await interviewService.updateInterview(candidate.interview.id, updateData)
 
-      // Reload interviews - handle both prop-based and candidate-based data
-      if (propInterviews) {
-        // If using propInterviews, we need to refresh the parent component's data
-        // For now, we'll update the local state optimistically
-        setInterviews(prevInterviews => 
-          prevInterviews.map(item => 
-            item.interview.id === candidate.interview.id 
-              ? { ...item, interview: { ...item.interview, ...updateData } }
-              : item
-          )
+      // Update local state immediately
+      setInterviews(prevInterviews => 
+        prevInterviews.map(item => 
+          item.interview.id === candidate.interview.id 
+            ? { ...item, interview: { ...item.interview, ...updateData } }
+            : item
         )
-      } else {
-        // If using candidates prop, reload from service
-        await loadInterviews()
-      }
+      )
+      
+      // Update selected candidate to show new notes immediately
+      setSelectedCandidate(prev => ({
+        ...prev,
+        interview: { ...prev.interview, ...updateData }
+      }))
 
-      // Close sidebar and reset state
-      handleCloseSidebar()
+      // Only close sidebar for non-note actions
+      if (action !== 'take_notes') {
+        handleCloseSidebar()
+      }
     } catch (error) {
       console.error('Failed to update interview:', error)
     } finally {
@@ -644,7 +728,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     return <MapPin className="w-4 h-4" />
   }
 
-  const CandidateSidebar = ({ candidate, isOpen, onClose }) => {
+  const CandidateSidebar = React.memo(({ candidate, isOpen, onClose }) => {
     if (!isOpen || !candidate) return null
 
     return (
@@ -662,6 +746,24 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
+
+              {/* Success Message */}
+              {showSuccessMessage && (
+                <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 flex items-center justify-between animate-fade-in">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
+                    <span className="text-green-800 dark:text-green-300 font-medium">
+                      Notes updated successfully!
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowSuccessMessage(false)}
+                    className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
 
               {/* Profile Section */}
               <div className="mb-8">
@@ -776,14 +878,107 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                     {/* Interview Feedback/Remarks */}
                     {(candidate.interview.notes || candidate.interview_remarks || candidate.interview.feedback) && (
                       <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
-                        <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                          <MessageSquare className="w-4 h-4 mr-2 text-blue-600" />
-                          Interview Feedback & Remarks
-                        </h5>
-                        <div className="prose prose-sm max-w-none">
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                            {candidate.interview.notes || candidate.interview_remarks || candidate.interview.feedback || 'No feedback recorded yet.'}
-                          </p>
+                        <div className="flex items-center justify-between mb-4">
+                          <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center">
+                            <MessageSquare className="w-4 h-4 mr-2 text-blue-600" />
+                            Interview Feedback & Remarks
+                          </h5>
+                        </div>
+                        <div className="space-y-3">
+                          {(() => {
+                            const noteEntries = parseNotes(candidate.interview.notes || candidate.interview_remarks || candidate.interview.feedback)
+                            
+                            return noteEntries.length > 0 ? noteEntries.map((entry, index) => (
+                              <div 
+                                key={index} 
+                                className="group bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                              >
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    {entry.timestamp && (
+                                      <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">
+                                        📝 {entry.timestamp}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setIsEditingNotes(true)
+                                        setEditingNoteIndex(index)
+                                        if (notesRef.current && charCountRef.current) {
+                                          notesRef.current.value = entry.content
+                                          // Update character count display
+                                          const length = entry.content.length
+                                          charCountRef.current.textContent = `${length}/${MAX_NOTE_LENGTH}`
+                                          charCountRef.current.className = `text-xs font-medium ${
+                                            length >= MAX_NOTE_LENGTH 
+                                              ? 'text-red-600 dark:text-red-400' 
+                                              : length >= MAX_NOTE_LENGTH * 0.8
+                                                ? 'text-yellow-600 dark:text-yellow-400'
+                                                : 'text-gray-500 dark:text-gray-400'
+                                          }`
+                                          notesRef.current.focus()
+                                          notesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                        }
+                                      }}
+                                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                      title="Edit this note"
+                                    >
+                                      <FileText className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={async (e) => {
+                                        e.stopPropagation()
+                                        if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
+                                          try {
+                                            // Remove this specific note
+                                            const updatedEntries = noteEntries.filter((_, i) => i !== index)
+                                            const updatedNotes = reconstructNotes(updatedEntries)
+                                            
+                                            await interviewService.updateInterview(candidate.interview.id, {
+                                              notes: updatedNotes,
+                                              updated_at: new Date().toISOString()
+                                            })
+                                            
+                                            // Update local state
+                                            setInterviews(prevInterviews => 
+                                              prevInterviews.map(item => 
+                                                item.interview.id === candidate.interview.id 
+                                                  ? { ...item, interview: { ...item.interview, notes: updatedNotes } }
+                                                  : item
+                                              )
+                                            )
+                                            
+                                            // Update selected candidate
+                                            setSelectedCandidate(prev => ({
+                                              ...prev,
+                                              interview: { ...prev.interview, notes: updatedNotes }
+                                            }))
+                                            
+                                            alert('Note deleted successfully!')
+                                          } catch (error) {
+                                            console.error('Failed to delete note:', error)
+                                            alert('Failed to delete note. Please try again.')
+                                          }
+                                        }
+                                      }}
+                                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                      title="Delete this note"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
+                                  {entry.content}
+                                </p>
+                              </div>
+                            )) : (
+                              <p className="text-sm text-gray-500 dark:text-gray-400 italic">No feedback recorded yet.</p>
+                            )
+                          })()}
                         </div>
                       </div>
                     )}
@@ -814,25 +1009,137 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
               )}
 
               {/* Notes Field */}
-              <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                  <MessageSquare className="w-5 h-5 mr-2" />
-                  Interview Notes
-                </h4>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add notes about the interview..."
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                <button
-                  onClick={() => handleAction(candidate, 'take_notes')}
-                  disabled={isProcessing}
-                  className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50"
-                >
-                  {isProcessing ? 'Saving...' : 'Save Notes'}
-                </button>
+              <div className="mb-8" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    {isEditingNotes && editingNoteIndex !== null 
+                      ? `Edit Note #${editingNoteIndex + 1}` 
+                      : isEditingNotes 
+                        ? 'Edit All Interview Notes' 
+                        : 'Add New Interview Note'}
+                  </h4>
+                  {!isEditingNotes && candidate.interview?.notes && (
+                    <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">
+                      New note will be appended
+                    </span>
+                  )}
+                </div>
+                {isEditingNotes && editingNoteIndex !== null && (
+                  <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
+                    ℹ️ Editing note #{editingNoteIndex + 1}. The timestamp will be preserved.
+                  </div>
+                )}
+                {isEditingNotes && editingNoteIndex === null && (
+                  <div className="mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-300">
+                    ⚠️ You are editing all notes. Changes will replace the entire note history.
+                  </div>
+                )}
+                <div className="relative">
+                  <textarea
+                    ref={notesRef}
+                    key={`notes-${candidate.id}-${isEditingNotes}-${editingNoteIndex}`}
+                    defaultValue=""
+                    placeholder={isEditingNotes ? "Edit note (max 300 characters)..." : "Add a new note (max 300 characters). Press Enter for line breaks..."}
+                    rows={isEditingNotes ? 8 : 4}
+                    maxLength={MAX_NOTE_LENGTH}
+                    onInput={(e) => {
+                      // Update character count display directly in DOM (no React state update)
+                      const length = e.target.value.length
+                      if (charCountRef.current) {
+                        charCountRef.current.textContent = `${length}/${MAX_NOTE_LENGTH}`
+                        
+                        // Update color classes
+                        charCountRef.current.className = `text-xs font-medium ${
+                          length >= MAX_NOTE_LENGTH 
+                            ? 'text-red-600 dark:text-red-400' 
+                            : length >= MAX_NOTE_LENGTH * 0.8
+                              ? 'text-yellow-600 dark:text-yellow-400'
+                              : 'text-gray-500 dark:text-gray-400'
+                        }`
+                      }
+                      
+                      // Visual feedback on textarea border
+                      if (length >= MAX_NOTE_LENGTH) {
+                        e.target.classList.add('border-red-500', 'dark:border-red-400')
+                      } else {
+                        e.target.classList.remove('border-red-500', 'dark:border-red-400')
+                      }
+                    }}
+                    className="w-full px-3 py-2 pb-8 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  />
+                  <div className="absolute bottom-2 right-2 flex items-center space-x-2">
+                    <span ref={charCountRef} className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                      0/{MAX_NOTE_LENGTH}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  💡 Tip: Character limit will turn red when reached.
+                </div>
+                <div className="flex items-center space-x-2 mt-2">
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation()
+                      const notesValue = notesRef.current?.value || ''
+                      
+                      if (!notesValue.trim()) {
+                        alert('Please enter some notes before saving.')
+                        return
+                      }
+                      
+                      try {
+                        setIsProcessing(true)
+                        await handleAction(candidate, 'take_notes', notesValue)
+                        
+                        // Clear the textarea and reset character count
+                        if (notesRef.current) {
+                          notesRef.current.value = ''
+                        }
+                        if (charCountRef.current) {
+                          charCountRef.current.textContent = `0/${MAX_NOTE_LENGTH}`
+                          charCountRef.current.className = 'text-xs font-medium text-gray-500 dark:text-gray-400'
+                        }
+                        
+                        // Reset editing mode
+                        setIsEditingNotes(false)
+                        setEditingNoteIndex(null)
+                        
+                        // Show success message
+                        setShowSuccessMessage(true)
+                        setTimeout(() => setShowSuccessMessage(false), 3000)
+                      } catch (error) {
+                        console.error('Failed to save notes:', error)
+                        alert('Failed to save notes. Please try again.')
+                      } finally {
+                        setIsProcessing(false)
+                      }
+                    }}
+                    disabled={isProcessing}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50"
+                  >
+                    {isProcessing ? 'Saving...' : 'Save Notes'}
+                  </button>
+                  {isEditingNotes && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsEditingNotes(false)
+                        setEditingNoteIndex(null)
+                        if (notesRef.current) {
+                          notesRef.current.value = ''
+                        }
+                        if (charCountRef.current) {
+                          charCountRef.current.textContent = `0/${MAX_NOTE_LENGTH}`
+                          charCountRef.current.className = 'text-xs font-medium text-gray-500 dark:text-gray-400'
+                        }
+                      }}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Additional Details */}
@@ -1125,12 +1432,13 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
         </div>
       </div>
     )
-  }
+  })
 
   return (
     <div className="space-y-6">
       {/* Candidate Sidebar */}
       <CandidateSidebar
+        key={selectedCandidate?.id || 'sidebar'}
         candidate={selectedCandidate}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
@@ -1215,7 +1523,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
                       {interview.notes && (
                         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-3">
-                          <p className="text-sm text-yellow-800 dark:text-yellow-300">{interview.notes}</p>
+                          <p className="text-sm text-yellow-800 dark:text-yellow-300 whitespace-pre-wrap break-words">{interview.notes}</p>
                         </div>
                       )}
 

@@ -27,6 +27,7 @@ import OwnerAuditLog from "./pages/OwnerAuditLog";
 import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
 import MemberLogin from "./pages/MemberLogin";
+import PublicLandingPage from "./pages/PublicLandingPage";
 
 import MVPTestingDashboard from "./components/MVPTestingDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute";
@@ -60,6 +61,7 @@ function App() {
                 <ConfirmProvider>
                   <Routes>
                     {/* Public Routes */}
+                    <Route path="/public" element={<PublicLandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/login/member" element={<MemberLogin />} />
                     <Route path="/register" element={<Register />} />
@@ -121,13 +123,7 @@ function App() {
                     {/* Agency Portal Routes */}
                     <Route
                       path="/"
-                      element={
-                        <Layout>
-                          <PrivateRoute>
-                            <Dashboard />
-                          </PrivateRoute>
-                        </Layout>
-                      }
+                      element={<PublicLandingPage />}
                     />
                     <Route
                       path="/dashboard"

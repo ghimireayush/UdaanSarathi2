@@ -1,0 +1,136 @@
+{
+  "nav": {
+    "howItWorks": "How It Works",
+    "features": "Features",
+    "forAgencies": "For Agencies",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Transform Your Career Journey",
+    "subtitle": "Connect with Nepal's top recruitment agencies and discover opportunities that match your aspirations",
+    "metricLabel": "Total Successful Job Placements",
+    "livesTransformed": "Lives Transformed",
+    "ctaPrimary": "Find Your Dream Job",
+    "ctaSecondary": "For Agencies"
+  },
+  "stats": {
+    "title": "Empowering Careers Across the Nation",
+    "subtitle": "Join thousands of successful job seekers who found their dream careers through our platform",
+    "placements": "Successful Placements",
+    "agencies": "Registered Agencies",
+    "jobs": "Active Job Openings",
+    "cities": "Cities Covered"
+  },
+  "search": {
+    "title": "Find Your Perfect Job",
+    "subtitle": "Search from thousands of job opportunities across Nepal",
+    "placeholder": "Search for jobs by title, skills, or location...",
+    "activeJobs": "Active Jobs",
+    "viewDetails": "View Details",
+    "noResults": "No jobs found",
+    "tryAgain": "Try adjusting your search terms",
+    "modal": {
+      "title": "Unlock Your Potential!",
+      "subtitle": "Download Udaan Sarathi from Play Store or App Store to view agency details and apply for jobs",
+      "downloadOn": "Download on the",
+      "getItOn": "Get it on",
+      "appStore": "App Store",
+      "playStore": "Google Play",
+      "maybeLater": "Maybe Later"
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Your dream job is just three steps away",
+    "jobSeekers": "For Job Seekers",
+    "agencies": "For Agencies",
+    "steps": {
+      "search": {
+        "title": "Search & Discover",
+        "description": "Browse through verified recruitment agencies tailored to your industry and location"
+      },
+      "apply": {
+        "title": "Apply to Opportunities",
+        "description": "Submit your application directly to agencies with active job openings"
+      },
+      "matched": {
+        "title": "Get Matched",
+        "description": "Connect with your dream job through our intelligent matching system"
+      },
+      "register": {
+        "title": "Register Your Agency",
+        "description": "Create your agency profile and showcase your expertise"
+      },
+      "post": {
+        "title": "Post Job Openings",
+        "description": "List your available positions and reach qualified candidates"
+      },
+      "manage": {
+        "title": "Manage Candidates",
+        "description": "Efficiently track and manage your recruitment pipeline"
+      }
+    }
+  },
+  "features": {
+    "title": "Powerful Features for Modern Recruitment",
+    "subtitle": "Everything you need to streamline your recruitment process and find the perfect candidates",
+    "items": {
+      "scheduling": {
+        "title": "Real-time Interview Scheduling",
+        "description": "Schedule and manage interviews seamlessly with automated reminders and calendar integration"
+      },
+      "management": {
+        "title": "Comprehensive Candidate Management",
+        "description": "Track every candidate through your recruitment pipeline with detailed profiles and history"
+      },
+      "feedback": {
+        "title": "Interview Notes & Feedback",
+        "description": "Document interview feedback and collaborate with your team in real-time"
+      },
+      "analytics": {
+        "title": "Agency Performance Analytics",
+        "description": "Get insights into your recruitment metrics with powerful analytics and reporting"
+      },
+      "mobile": {
+        "title": "Mobile-Friendly Interface",
+        "description": "Access your recruitment dashboard anywhere, anytime from any device"
+      },
+      "secure": {
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security to protect your sensitive recruitment data"
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Recruitment?",
+      "subtitle": "Join thousands of agencies and job seekers who trust Udaan Sarathi",
+      "primary": "Get Started Free",
+      "secondary": "Schedule Demo"
+    }
+  },
+  "footer": {
+    "tagline": "Empowering careers and connecting talent with opportunities across Nepal.",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "downloadApp": "Download Our App",
+    "downloadSubtitle": "Get the Udaan Sarathi app for a seamless experience on the go",
+    "appStore": "App Store",
+    "playStore": "Google Play",
+    "downloadOn": "Download on the",
+    "getItOn": "Get it on",
+    "copyright": "Udaan Sarathi. All rights reserved.",
+    "links": {
+      "about": "About Us",
+      "howItWorks": "How It Works",
+      "forAgencies": "For Agencies",
+      "forJobSeekers": "For Job Seekers",
+      "contact": "Contact Us",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "disclaimer": "Disclaimer",
+      "sitemap": "Sitemap",
+      "accessibility": "Accessibility",
+      "careers": "Careers"
+    }
+  }
+}

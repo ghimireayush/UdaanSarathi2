@@ -123,3 +123,4 @@ After the fix, when you refresh the page with Nepali selected:
 2. Add automated tests for locale persistence
 3. Consider adding locale preference sync across multiple devices
 4. Add user notification when locale preference expires (after 30 days)
+ 
