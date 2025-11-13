@@ -57,7 +57,7 @@ const HowItWorks = ({ t }) => {
   ]
 
   return (
-    <section id="how-it-works" className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
+    <section id="how-it-works" className="py-16 md:py-24 bg-gradient-to-b from-white via-blue-50/30 to-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -79,10 +79,10 @@ const HowItWorks = ({ t }) => {
             
             {jobSeekerSteps.map((step, index) => (
               <div key={index} className="relative">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow relative z-10">
+                <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative z-10 border border-blue-100/50 dark:border-gray-600">
                   <div className="flex flex-col items-center text-center">
                     <div className={`${step.iconBg} dark:bg-opacity-20 w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}>
-                      <step.icon className={`w-10 h-10 ${step.iconColor}`} />
+                      <step.icon className={`w-10 h-10 ${step.iconColor} dark:text-opacity-90`} />
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                         {index + 1}
                       </div>
@@ -90,7 +90,7 @@ const HowItWorks = ({ t }) => {
                     <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {t(step.titleKey)}
                     </h4>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-300">
                       {t(step.descKey)}
                     </p>
                   </div>
@@ -111,10 +111,10 @@ const HowItWorks = ({ t }) => {
             
             {agencySteps.map((step, index) => (
               <div key={index} className="relative">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow relative z-10">
+                <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative z-10 border border-blue-100/50 dark:border-gray-600">
                   <div className="flex flex-col items-center text-center">
                     <div className={`${step.iconBg} dark:bg-opacity-20 w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}>
-                      <step.icon className={`w-10 h-10 ${step.iconColor}`} />
+                      <step.icon className={`w-10 h-10 ${step.iconColor} dark:text-opacity-90`} />
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-indigo-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                         {index + 1}
                       </div>
@@ -122,7 +122,7 @@ const HowItWorks = ({ t }) => {
                     <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {t(step.titleKey)}
                     </h4>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-300">
                       {t(step.descKey)}
                     </p>
                   </div>

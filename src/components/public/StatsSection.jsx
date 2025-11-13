@@ -65,7 +65,7 @@ const StatsSection = ({ t }) => {
   ]
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-blue-50/40 via-white to-blue-50/40 dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -80,7 +80,7 @@ const StatsSection = ({ t }) => {
           {statItems.map((stat, index) => (
             <div
               key={index}
-              className="group relative bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+              className="group relative bg-white/95 backdrop-blur-sm dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100/50 dark:border-gray-600"
             >
               {/* Gradient Border Effect */}
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity`}></div>

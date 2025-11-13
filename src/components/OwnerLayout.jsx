@@ -53,7 +53,7 @@ const OwnerLayout = ({ children, onRefresh }) => {
   const handleManualRefresh = useCallback(() => {
     setIsRefreshing(true);
     triggerRefresh();
-    
+
     // Reset refreshing state after animation
     setTimeout(() => {
       setIsRefreshing(false);
@@ -219,7 +219,9 @@ const OwnerLayout = ({ children, onRefresh }) => {
                 aria-label={tPage("nav.refresh") || "Refresh data"}
                 title={tPage("nav.refresh") || "Refresh data"}
               >
-                <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-5 w-5 ${isRefreshing ? "animate-spin" : ""}`}
+                />
               </button>
 
               {/* Language Switch */}

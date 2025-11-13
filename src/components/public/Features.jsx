@@ -54,7 +54,7 @@ const Features = ({ t }) => {
   ]
 
   return (
-    <section id="features" className="py-16 md:py-24 bg-white dark:bg-gray-900">
+    <section id="features" className="py-16 md:py-24 bg-gradient-to-b from-white via-blue-50/20 to-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -69,11 +69,11 @@ const Features = ({ t }) => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-8 hover:border-transparent hover:shadow-2xl transition-all duration-300"
+              className="group relative bg-white/95 backdrop-blur-sm dark:bg-gray-700 border-2 border-blue-100/50 dark:border-gray-600 rounded-2xl p-8 hover:border-transparent hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
             >
               {/* Gradient Border on Hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-10`}></div>
-              <div className="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-2xl -z-10"></div>
+              <div className="absolute inset-0.5 bg-white/95 backdrop-blur-sm dark:bg-gray-700 rounded-2xl -z-10"></div>
 
               <div className="relative">
                 <div className={`${feature.iconBg} dark:bg-opacity-20 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
@@ -84,7 +84,7 @@ const Features = ({ t }) => {
                   {t(feature.titleKey)}
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {t(feature.descKey)}
                 </p>
               </div>

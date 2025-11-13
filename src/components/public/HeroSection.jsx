@@ -6,13 +6,22 @@ import AnimatedCounter from './AnimatedCounter'
 const HeroSection = ({ onSearchClick, t }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        {/* Animated Background Elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        {/* Nepal map image */}
+        <img 
+          src="/nplc.png" 
+          alt="Nepal Map Background" 
+          className="absolute inset-0 w-full h-full object-cover scale-125 opacity-80"
+        />
+        
+        {/* Dark overlay with Udaan Sarathi brand colors */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#006BA3]/70 via-[#003E76]/60 to-[#56AF12]/50"></div>
+        
+        {/* Animated Liquid Glassmorphism Blobs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-400/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-400/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-1/2 w-96 h-96 bg-cyan-400/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Content */}
