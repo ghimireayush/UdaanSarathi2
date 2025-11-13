@@ -99,6 +99,10 @@ html {
   background: #f1f1f1;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #3b82f6;
   border-radius: 5px;
@@ -106,6 +110,14 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #2563eb;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Glassmorphism Effect */
@@ -117,16 +129,19 @@ html {
 
 /* Liquid Glassmorphism for Navbar */
 .glass-navbar {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 .dark .glass-navbar {
-  background: rgba(17, 24, 39, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Gradient Text */
@@ -163,6 +178,10 @@ html {
   background-size: 1000px 100%;
 }
 
+.dark .skeleton {
+  background: linear-gradient(to right, #374151 4%, #4b5563 25%, #374151 36%);
+}
+
 /* Responsive Typography */
 @media (max-width: 640px) {
   h1 {
@@ -179,9 +198,20 @@ html {
   outline-offset: 2px;
 }
 
+.dark *:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
 button:focus,
 a:focus {
   outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.dark button:focus,
+.dark a:focus {
+  outline: 2px solid #60a5fa;
   outline-offset: 2px;
 }
 

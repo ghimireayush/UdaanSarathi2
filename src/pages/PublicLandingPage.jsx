@@ -107,7 +107,7 @@ const PublicLandingPage = () => {
               <img
                 src={logo}
                 alt="Udaan Sarathi Logo"
-                className="h-10 w-10 md:h-12 md:w-12"
+                className="h-12 w-12 md:h-16 md:w-16 object-contain"
               />
               <div
                 className={`text-xl md:text-2xl font-bold transition-colors ${

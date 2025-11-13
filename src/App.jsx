@@ -28,6 +28,7 @@ import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
 import MemberLogin from "./pages/MemberLogin";
 import PublicLandingPage from "./pages/PublicLandingPage";
+import PolicyPage from "./pages/PolicyPage";
 
 import MVPTestingDashboard from "./components/MVPTestingDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute";
@@ -62,6 +63,7 @@ function App() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/public" element={<PublicLandingPage />} />
+                    <Route path="/privacy-policy" element={<PolicyPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/login/member" element={<MemberLogin />} />
                     <Route path="/register" element={<Register />} />

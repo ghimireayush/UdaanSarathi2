@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react'
 
 const Footer = ({ t }) => {
   const currentYear = new Date().getFullYear()
@@ -30,15 +30,6 @@ const Footer = ({ t }) => {
 
           {/* Social Media Icons */}
           <div className="flex justify-center space-x-4 mb-12">
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-12 h-12 bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center hover:bg-[#006BA3] dark:hover:bg-[#56AF12] transition-all transform hover:scale-110"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="w-6 h-6" />
-            </a>
             <a
               href="https://twitter.com"
               target="_blank"
@@ -114,15 +105,15 @@ const Footer = ({ t }) => {
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-sm">
             <a href="mailto:contact@udaansarathi.com" className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
               <Mail className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>contact@udaansarathi.com</span>
+              <span>info@udaansarathi.com</span>
             </a>
             <a href="tel:+911800123456" className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
               <Phone className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>+91 1800-123-4567</span>
+              <span>+977 9800000000</span>
             </a>
             <div className="flex items-center space-x-2">
               <MapPin className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>Kathmandu, Nepal</span>
+              <span>Kathmandu,Nepal</span>
             </div>
           </div>
         </div>
