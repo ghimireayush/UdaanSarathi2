@@ -1,6 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import logo from '../../assets/logo.svg'
 
 const Footer = ({ t }) => {
   const currentYear = new Date().getFullYear()
@@ -15,7 +14,7 @@ const Footer = ({ t }) => {
           <div className="mb-8">
             <div className="flex justify-center items-center space-x-4 mb-4">
               <img 
-                src="/src/assets/logo.svg" 
+                src={logo} 
                 alt="Udaan Sarathi Logo" 
                 className="h-16 w-16 md:h-20 md:w-20"
               />
