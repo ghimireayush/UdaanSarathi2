@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import { agencyService } from "../services";
+import LoadingScreen from "../components/LoadingScreen";
 import {
   Search,
   Filter,
@@ -21,7 +22,7 @@ import {
 } from "../components/ui/Card";
 
 const OwnerAnalytics = () => {
-  const { tPageSync } = useLanguage({
+  const { tPageSync, isLoading: languageLoading } = useLanguage({
     pageName: "owner-analytics",
     autoLoad: true,
   });
@@ -33,6 +34,7 @@ const OwnerAnalytics = () => {
   const [agencies, setAgencies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showContent, setShowContent] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -48,6 +50,17 @@ const OwnerAnalytics = () => {
   useEffect(() => {
     loadAgencies();
   }, []);
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!languageLoading && !loading) {
+      const timer = setTimeout(() => {
+        setShowContent(true);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [languageLoading, loading]);
 
   // Listen for auto-refresh events from OwnerLayout
   useEffect(() => {
@@ -184,6 +197,11 @@ const OwnerAnalytics = () => {
         </div>
       </div>
     );
+  }
+
+  // Show loading screen while translations or data are loading or minimum time hasn't passed
+  if (languageLoading || loading || !showContent) {
+    return <LoadingScreen />;
   }
 
   return (

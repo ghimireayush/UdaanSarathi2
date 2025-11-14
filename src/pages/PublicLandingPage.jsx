@@ -7,6 +7,7 @@ import AgencySearch from "../components/public/AgencySearch";
 import HowItWorks from "../components/public/HowItWorks";
 import Features from "../components/public/Features";
 import Footer from "../components/public/Footer";
+import LoadingScreen from "../components/LoadingScreen";
 import logo from "../assets/logo.svg";
 
 const PublicLandingPage = () => {
@@ -23,6 +24,8 @@ const PublicLandingPage = () => {
   });
   const [translations, setTranslations] = useState({});
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,6 +50,7 @@ const PublicLandingPage = () => {
     // Load translations
     const loadTranslations = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(
           `/translations/${language}/pages/landing.json`
         );
@@ -56,10 +60,23 @@ const PublicLandingPage = () => {
         }
       } catch (error) {
         console.error("Failed to load translations:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadTranslations();
   }, [language]);
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setShowContent(true);
+      }, 300); // 0.3 second minimum display time
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -89,6 +106,11 @@ const PublicLandingPage = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Show loading screen while translations are loading or minimum time hasn't passed
+  if (isLoading || !showContent) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">

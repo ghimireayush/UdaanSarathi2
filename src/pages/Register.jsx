@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
 import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
+import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
 
 const Register = () => {
@@ -19,10 +20,11 @@ const Register = () => {
   const [otp, setOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [registrationData, setRegistrationData] = useState(null)
+  const [showContent, setShowContent] = useState(false)
   
   const navigate = useNavigate()
   const { register } = useAuth()
-  const { locale, tPageSync, loadPageTranslations, isLoading: languageLoading } = useLanguage({ 
+  const { tPageSync, isLoading: languageLoading } = useLanguage({ 
     pageName: 'register', 
     autoLoad: true 
   })
@@ -31,6 +33,17 @@ const Register = () => {
   const tPage = (key, params = {}) => {
     return tPageSync(key, params)
   }
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!languageLoading) {
+      const timer = setTimeout(() => {
+        setShowContent(true)
+      }, 300) // 0.3 second minimum display time
+      
+      return () => clearTimeout(timer)
+    }
+  }, [languageLoading])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -111,6 +124,11 @@ const Register = () => {
     console.log(`Resending OTP to ${registrationData.phone}`)
     // In real implementation, this would call API to resend OTP
     setError('')
+  }
+
+  // Show loading screen while translations are loading or minimum time hasn't passed
+  if (languageLoading || !showContent) {
+    return <LoadingScreen />
   }
 
   return (

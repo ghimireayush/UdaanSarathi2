@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
+import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
 
 const OwnerLogin = () => {
@@ -14,10 +15,11 @@ const OwnerLogin = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showContent, setShowContent] = useState(false)
   const { ownerLogin, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { tPageSync } = useLanguage({ 
+  const { tPageSync, isLoading: languageLoading } = useLanguage({ 
     pageName: 'owner-login', 
     autoLoad: true 
   })
@@ -26,6 +28,17 @@ const OwnerLogin = () => {
   const tPage = (key, params = {}) => {
     return tPageSync(key, params)
   }
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!languageLoading) {
+      const timer = setTimeout(() => {
+        setShowContent(true)
+      }, 300) // 0.3 second minimum display time
+      
+      return () => clearTimeout(timer)
+    }
+  }, [languageLoading])
 
   // Session timeout (30 minutes of inactivity)
   const SESSION_TIMEOUT = 30 * 60 * 1000
@@ -155,6 +168,11 @@ const OwnerLogin = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading screen while translations are loading or minimum time hasn't passed
+  if (languageLoading || !showContent) {
+    return <LoadingScreen />
   }
 
   return (

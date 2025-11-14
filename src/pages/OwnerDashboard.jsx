@@ -14,9 +14,10 @@ import {
   CardTitle,
 } from "../components/ui/Card";
 import { useLanguage } from "../hooks/useLanguage";
+import LoadingScreen from "../components/LoadingScreen";
 
 const OwnerDashboard = () => {
-  const { tPageSync } = useLanguage({
+  const { tPageSync, isLoading: languageLoading } = useLanguage({
     pageName: "owner-dashboard",
     autoLoad: true,
   });
@@ -38,6 +39,18 @@ const OwnerDashboard = () => {
   });
 
   const [recentActivity, setRecentActivity] = useState([]);
+  const [showContent, setShowContent] = useState(false);
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!languageLoading && !stats.loading) {
+      const timer = setTimeout(() => {
+        setShowContent(true);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [languageLoading, stats.loading]);
 
   // Function to load dashboard data
   const loadDashboardData = () => {
@@ -221,6 +234,11 @@ const OwnerDashboard = () => {
       </CardContent>
     </Card>
   );
+
+  // Show loading screen while translations or data are loading or minimum time hasn't passed
+  if (languageLoading || stats.loading || !showContent) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="space-y-6">

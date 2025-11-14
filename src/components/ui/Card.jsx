@@ -25,7 +25,7 @@ export const CardHeader = ({ children, className = '', ...props }) => {
 export const CardTitle = ({ children, className = '', ...props }) => {
   return (
     <h3 
-      className={`text-lg font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text dark:bg-none dark:text-brand-blue-bright ${className}`}
+      className={`text-lg font-bold text-gray-900 bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text dark:bg-none dark:text-brand-blue-bright ${className}`}
       {...props}
     >
       {children}

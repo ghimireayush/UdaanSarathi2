@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
+import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
 
 const Login = () => {
@@ -13,10 +14,11 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showContent, setShowContent] = useState(false)
   const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { locale, tPageSync, loadPageTranslations, isLoading: languageLoading } = useLanguage({ 
+  const { tPageSync, isLoading: languageLoading } = useLanguage({ 
     pageName: 'login', 
     autoLoad: true 
   })
@@ -25,6 +27,17 @@ const Login = () => {
   const tPage = (key, params = {}) => {
     return tPageSync(key, params)
   }
+
+  // Minimum loading screen display time
+  useEffect(() => {
+    if (!languageLoading) {
+      const timer = setTimeout(() => {
+        setShowContent(true)
+      }, 300) // 0.3 second minimum display time
+      
+      return () => clearTimeout(timer)
+    }
+  }, [languageLoading])
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -43,6 +56,11 @@ const Login = () => {
       navigate(from, { replace: true })
     }
   }, [isAuthenticated, navigate, location])
+
+  // Show loading screen while translations are loading or minimum time hasn't passed
+  if (languageLoading || !showContent) {
+    return <LoadingScreen />
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
