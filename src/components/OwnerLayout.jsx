@@ -11,6 +11,7 @@ import {
   TrendingUp,
   RefreshCw,
   FileText,
+  Languages,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -94,6 +95,11 @@ const OwnerLayout = ({ children, onRefresh }) => {
       name: tPage("nav.analytics"),
       href: "/owner/analytics",
       icon: TrendingUp,
+    },
+    {
+      name: "Content Management",
+      href: "/owner/content",
+      icon: Languages,
     },
     {
       name: tPage("nav.auditlog"),
@@ -211,21 +217,25 @@ const OwnerLayout = ({ children, onRefresh }) => {
             <div className="flex-1 lg:flex-none" />
 
             <div className="flex items-center gap-3">
-              {/* Manual Refresh Button */}
-              <button
-                onClick={handleManualRefresh}
-                disabled={isRefreshing}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label={tPage("nav.refresh") || "Refresh data"}
-                title={tPage("nav.refresh") || "Refresh data"}
-              >
-                <RefreshCw
-                  className={`h-5 w-5 ${isRefreshing ? "animate-spin" : ""}`}
-                />
-              </button>
+              {/* Manual Refresh Button - Hidden on content management page */}
+              {location.pathname !== "/owner/content" && (
+                <button
+                  onClick={handleManualRefresh}
+                  disabled={isRefreshing}
+                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={tPage("nav.refresh") || "Refresh data"}
+                  title={tPage("nav.refresh") || "Refresh data"}
+                >
+                  <RefreshCw
+                    className={`h-5 w-5 ${isRefreshing ? "animate-spin" : ""}`}
+                  />
+                </button>
+              )}
 
-              {/* Language Switch */}
-              <LanguageSwitch variant="ghost" size="sm" />
+              {/* Language Switch - Hidden on content management page */}
+              {location.pathname !== "/owner/content" && (
+                <LanguageSwitch variant="ghost" size="sm" />
+              )}
 
               {/* Theme Toggle */}
               <button

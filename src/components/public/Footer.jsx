@@ -30,7 +30,7 @@ const Footer = ({ t }) => {
           {/* Social Media Icons */}
           <div className="flex justify-center space-x-4 mb-12">
             <a
-              href="https://twitter.com"
+              href={t('social.twitter')}
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center hover:bg-[#006BA3] dark:hover:bg-[#56AF12] transition-all transform hover:scale-110"
@@ -39,7 +39,7 @@ const Footer = ({ t }) => {
               <Twitter className="w-6 h-6" />
             </a>
             <a
-              href="https://facebook.com"
+              href={t('social.facebook')}
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center hover:bg-[#006BA3] dark:hover:bg-[#56AF12] transition-all transform hover:scale-110"
@@ -48,7 +48,7 @@ const Footer = ({ t }) => {
               <Facebook className="w-6 h-6" />
             </a>
             <a
-              href="https://instagram.com"
+              href={t('social.instagram')}
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center hover:bg-[#006BA3] dark:hover:bg-[#56AF12] transition-all transform hover:scale-110"
@@ -102,17 +102,17 @@ const Footer = ({ t }) => {
         {/* Contact Info */}
         <div className="border-t border-gray-800 dark:border-gray-900 pt-8 mb-8">
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-sm">
-            <a href="mailto:contact@udaansarathi.com" className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
+            <a href={`mailto:${t('contact.email')}`} className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
               <Mail className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>info@udaansarathi.com</span>
+              <span>{t('contact.email')}</span>
             </a>
-            <a href="tel:+911800123456" className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
+            <a href={`tel:${t('contact.phone')}`} className="flex items-center space-x-2 hover:text-[#56AF12] transition-colors">
               <Phone className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>+977 9800000000</span>
+              <span>{t('contact.phone')}</span>
             </a>
             <div className="flex items-center space-x-2">
               <MapPin className="w-5 h-5 text-[#006BA3] dark:text-[#56AF12]" />
-              <span>Kathmandu,Nepal</span>
+              <span>{t('contact.address')}</span>
             </div>
           </div>
         </div>

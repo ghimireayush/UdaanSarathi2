@@ -107,6 +107,16 @@
       "secondary": "Schedule Demo"
     }
   },
+  "contact": {
+    "email": "info@udaansarathi.com",
+    "phone": "+977 9800000000",
+    "address": "Kathmandu, Nepal"
+  },
+  "social": {
+    "twitter": "https://twitter.com",
+    "facebook": "https://facebook.com",
+    "instagram": "https://instagram.com"
+  },
   "footer": {
     "tagline": "Empowering careers and connecting talent with opportunities across Nepal.",
     "quickLinks": "Quick Links",

@@ -107,6 +107,16 @@
       "secondary": "डेमो समयतालिका गर्नुहोस्"
     }
   },
+  "contact": {
+    "email": "info@udaansarathi.com",
+    "phone": "+977 9800000000",
+    "address": "काठमाडौं, नेपाल"
+  },
+  "social": {
+    "twitter": "https://twitter.com",
+    "facebook": "https://facebook.com",
+    "instagram": "https://instagram.com"
+  },
   "footer": {
     "tagline": "नेपालभरि करियरहरू सशक्तिकरण र प्रतिभालाई अवसरहरूसँग जोड्दै।",
     "quickLinks": "द्रुत लिङ्कहरू",

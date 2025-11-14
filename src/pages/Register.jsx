@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { User, Phone, ArrowLeft, Shield } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
@@ -12,6 +12,7 @@ const Register = () => {
     fullName: '',
     phone: ''
   })
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showOtpField, setShowOtpField] = useState(false)
@@ -197,11 +198,39 @@ const Register = () => {
                   </div>
                 </div>
 
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <input
+                    id="terms"
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-brand-navy focus:ring-brand-blue-bright border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700"
+                  />
+                  <label htmlFor="terms" className="text-sm text-gray-700 dark:text-gray-300">
+                    I agree to the{' '}
+                    <Link
+                      to="/terms-and-conditions"
+                      target="_blank"
+                      className="text-brand-navy hover:text-brand-navy/80 font-semibold underline dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
+                    >
+                      Terms & Conditions
+                    </Link>
+                    {' '}and{' '}
+                    <Link
+                      to="/privacy-policy"
+                      target="_blank"
+                      className="text-brand-navy hover:text-brand-navy/80 font-semibold underline dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </label>
+                </div>
+
                 <div>
                   <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50"
+                    disabled={loading || !agreedToTerms}
+                    className="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-bright dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <span className="flex items-center">

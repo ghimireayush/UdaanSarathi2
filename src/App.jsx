@@ -23,12 +23,14 @@ import OwnerAgencies from "./pages/OwnerAgencies";
 import OwnerAnalytics from "./pages/OwnerAnalytics";
 import OwnerAgencyDetails from "./pages/OwnerAgencyDetails";
 import OwnerAuditLog from "./pages/OwnerAuditLog";
+import OwnerContentManagement from "./pages/OwnerContentManagement";
 
 import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
 import MemberLogin from "./pages/MemberLogin";
 import PublicLandingPage from "./pages/PublicLandingPage";
 import PolicyPage from "./pages/PolicyPage";
+import TermsPage from "./pages/TermsPage";
 
 import MVPTestingDashboard from "./components/MVPTestingDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute";
@@ -64,6 +66,7 @@ function App() {
                     {/* Public Routes */}
                     <Route path="/public" element={<PublicLandingPage />} />
                     <Route path="/privacy-policy" element={<PolicyPage />} />
+                    <Route path="/terms-and-conditions" element={<TermsPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/login/member" element={<MemberLogin />} />
                     <Route path="/register" element={<Register />} />
@@ -117,6 +120,16 @@ function App() {
                         <OwnerLayout>
                           <PrivateRoute>
                             <OwnerAuditLog />
+                          </PrivateRoute>
+                        </OwnerLayout>
+                      }
+                    />
+                    <Route
+                      path="/owner/content"
+                      element={
+                        <OwnerLayout>
+                          <PrivateRoute>
+                            <OwnerContentManagement />
                           </PrivateRoute>
                         </OwnerLayout>
                       }

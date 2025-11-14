@@ -11,6 +11,7 @@ import {
   ToggleRight,
   FileText,
   AlertCircle,
+  Languages,
 } from "lucide-react";
 import {
   Card,
@@ -66,6 +67,13 @@ const OwnerAuditLog = () => {
   const loadAuditLogs = async () => {
     try {
       setLoading(true);
+      
+      // Load audit logs from localStorage (in production, fetch from API)
+      const storedLogs = JSON.parse(localStorage.getItem('audit_logs') || '[]').map(log => ({
+        ...log,
+        timestamp: new Date(log.timestamp) // Convert string timestamp to Date object
+      }))
+      
       // Mock data - In production, fetch from API
       const mockLogs = [
         {
@@ -159,7 +167,12 @@ const OwnerAuditLog = () => {
         },
       ];
 
-      setLogs(mockLogs);
+      // Merge stored logs with mock logs
+      const allLogs = [...storedLogs, ...mockLogs].sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      )
+
+      setLogs(allLogs);
     } catch (err) {
       console.error("Failed to load audit logs:", err);
     } finally {
@@ -255,6 +268,8 @@ const OwnerAuditLog = () => {
         );
       case "owner_login":
         return <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
+      case "update_content":
+        return <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />;
       default:
         return (
           <FileText className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -272,6 +287,8 @@ const OwnerAuditLog = () => {
         return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
       case "owner_login":
         return "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
+      case "update_content":
+        return "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800";
       default:
         return "bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700";
     }
@@ -323,7 +340,7 @@ const OwnerAuditLog = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card
           className={`cursor-pointer transition-all hover:shadow-lg ${
             filters.actionType === "all"
@@ -433,6 +450,32 @@ const OwnerAuditLog = () => {
 
         <Card
           className={`cursor-pointer transition-all hover:shadow-lg ${
+            filters.actionType === "update_content"
+              ? "ring-2 ring-purple-500 dark:ring-purple-400"
+              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
+          }`}
+          onClick={() => {
+            setFilters((prev) => ({ ...prev, actionType: "update_content" }));
+            setShowFilters(false);
+          }}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Content Updates
+                </p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {logs.filter((l) => l.action === "update_content").length}
+                </p>
+              </div>
+              <Languages className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`cursor-pointer transition-all hover:shadow-lg ${
             filters.actionType === "owner_login"
               ? "ring-2 ring-blue-500 dark:ring-blue-400"
               : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
@@ -503,6 +546,7 @@ const OwnerAuditLog = () => {
                 >
                   <option value="all">{tPage("filters.all")}</option>
                   <option value="owner_login">{tPage("filters.logins")}</option>
+                  <option value="update_content">Content Updates</option>
                   <option value="delete_agency">
                     {tPage("filters.deletions")}
                   </option>
@@ -652,7 +696,7 @@ const OwnerAuditLog = () => {
                       </div>
                     </div>
 
-                    {/* Agency Info or Login Info */}
+                    {/* Agency Info or Login Info or Content Info */}
                     {log.action === "owner_login" ? (
                       <div className="flex items-center gap-4 mb-3 text-sm text-gray-600 dark:text-gray-400">
                         <span className="flex items-center gap-1">
@@ -663,6 +707,19 @@ const OwnerAuditLog = () => {
                           <strong>{tPage("log.loginMethod")}:</strong>{" "}
                           {log.details.loginMethod}
                         </span>
+                      </div>
+                    ) : log.action === "update_content" ? (
+                      <div className="mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileText className="h-4 w-4 text-purple-500" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            Landing Page Content Updated
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          <p>Languages: {log.details?.languages?.join(', ').toUpperCase()}</p>
+                          <p>Content Type: {log.details?.contentType?.replace(/_/g, ' ')}</p>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 mb-3">

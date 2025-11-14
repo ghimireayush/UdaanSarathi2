@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Shield, Lock, Eye, Users, FileText, Globe, Bell, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Shield, FileText, Users, Lock, AlertCircle, Scale, Globe, ChevronDown, ChevronUp, X } from 'lucide-react'
 import logo from '../assets/logo.svg'
 
-const PolicyPage = () => {
+const TermsPage = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [showAcceptModal, setShowAcceptModal] = useState(false)
   const [expandedSections, setExpandedSections] = useState({})
@@ -30,82 +30,160 @@ const PolicyPage = () => {
     window.scrollTo(0, 0)
   }, [])
 
-  const privacySections = [
-    {
-      icon: FileText,
-      title: "Information We Collect",
-      items: [
-        {
-          subtitle: "Personal Information",
-          text: "Includes account details, profile information, identity verification, contact details, employment information, and communications."
-        },
-        {
-          subtitle: "Information Collected Automatically",
-          text: "Includes device information, usage data, location data, and cookies."
-        },
-        {
-          subtitle: "Information from Third Parties",
-          text: "May include data from recruitment agencies, social media, background checks, and references."
-        }
-      ]
-    },
-    {
-      icon: Eye,
-      title: "How We Use Your Information",
-      items: [
-        {
-          subtitle: "Service Delivery",
-          text: "We use the collected data for service delivery, communication, security, compliance, and improvement of user experience."
-        }
-      ]
-    },
+  const termsSections = [
     {
       icon: Users,
-      title: "Information Sharing and Disclosure",
+      title: "1. Eligibility",
       items: [
         {
-          subtitle: "Sharing",
-          text: "We may share your data with recruitment agencies, service providers, or when required by law, with your consent, or in case of business transfers."
+          subtitle: "Requirements",
+          text: "To use Udaan Sarathi, you must: Be at least 18 years old, provide accurate and truthful information, use the platform only for lawful purposes, and not be suspended or banned from using similar platforms."
         }
       ]
     },
     {
       icon: Lock,
-      title: "Data Security",
+      title: "2. User Accounts",
       items: [
         {
-          subtitle: "Security Measures",
-          text: "We apply encryption, access controls, audits, and security training to safeguard data."
+          subtitle: "Account Creation",
+          text: "You must create an account to access certain features. You agree to provide accurate, complete, and updated information during registration."
+        },
+        {
+          subtitle: "Account Security",
+          text: "You are responsible for maintaining the confidentiality of your account login credentials and all activity that occurs under your account. We are not liable for unauthorized access caused by your failure to secure your credentials."
+        },
+        {
+          subtitle: "Account Termination",
+          text: "We may suspend or terminate your account if you violate these Terms, provide false or misleading information, or engage in fraudulent or harmful behavior. You may delete your account at any time."
+        }
+      ]
+    },
+    {
+      icon: AlertCircle,
+      title: "3. Use of the Service",
+      items: [
+        {
+          subtitle: "Acceptable Use",
+          text: "You agree to use Udaan Sarathi legally and ethically. You must not upload false or misleading information, impersonate any person or entity, submit fake applications or fraudulent documents, attempt to hack, disrupt, or bypass security measures, use the platform for any unauthorized commercial purpose, or harvest, scrape, or misuse user data. Violation may lead to termination and potential legal action."
+        }
+      ]
+    },
+    {
+      icon: FileText,
+      title: "4. Services Provided",
+      items: [
+        {
+          subtitle: "Platform Features",
+          text: "Udaan Sarathi offers job search and application tools, profile creation and resume sharing, communication tools for job seekers and recruitment agencies, and interview coordination and application tracking. We are not responsible for hiring decisions made by recruitment agencies or employers."
+        }
+      ]
+    },
+    {
+      icon: FileText,
+      title: "5. User Content",
+      items: [
+        {
+          subtitle: "What You Provide",
+          text: "You may upload content such as resume/CV, professional information, documents, and messages and feedback."
+        },
+        {
+          subtitle: "License You Grant Us",
+          text: "By uploading content, you grant Udaan Sarathi a non-exclusive, royalty-free, worldwide license to use your information for providing the service, sharing with recruitment agencies, and improving the platform. We do not sell your data."
+        }
+      ]
+    },
+    {
+      icon: Users,
+      title: "6. Recruitment Agencies & Third Parties",
+      items: [
+        {
+          subtitle: "Information Sharing",
+          text: "When you apply for a job, your profile, resume, and relevant information will be shared with the recruitment agency or employer. They may contact you directly and may conduct background checks with your consent."
+        },
+        {
+          subtitle: "Our Responsibility",
+          text: "Udaan Sarathi is not responsible for decisions made by recruiters, accuracy of job information posted by agencies, or communication between you and third parties."
         }
       ]
     },
     {
       icon: Globe,
-      title: "Cookies and Tracking Technologies",
+      title: "7. Payments (If Applicable)",
       items: [
         {
-          subtitle: "Cookie Usage",
-          text: "We use cookies for functionality, analytics, preferences, and marketing. You can manage cookies in your browser settings."
+          subtitle: "Current Status",
+          text: "Udaan Sarathi currently offers free services. If premium features are introduced later, you will be informed before payment is required, all pricing and billing details will be clearly displayed, and payments are non-refundable unless stated otherwise."
         }
       ]
     },
     {
       icon: Shield,
-      title: "Your Rights and Choices",
+      title: "8. Intellectual Property Rights",
       items: [
         {
-          subtitle: "Data Rights",
-          text: "You can access, correct, delete, or export your data and manage consent through privacy@udaansarathi.com."
+          subtitle: "Platform Ownership",
+          text: "All content on Udaan Sarathi—including logos, branding, text, design, and technology—is the property of Udaan Sarathi. You agree not to copy, modify, distribute, reverse-engineer, or reproduce any content without permission."
         }
       ]
     },
     {
-      icon: Bell,
-      title: "Data Retention",
+      icon: Lock,
+      title: "9. Privacy",
       items: [
         {
-          subtitle: "Retention Period",
-          text: "Your data is retained as long as necessary for service, compliance, and legal requirements. Inactive accounts may be deleted after 2 years."
+          subtitle: "Privacy Policy",
+          text: "Your use of Udaan Sarathi is also governed by our Privacy Policy. By using the Service, you agree to how we collect, store, use, and share your personal information."
+        }
+      ]
+    },
+    {
+      icon: AlertCircle,
+      title: "10. Limitation of Liability",
+      items: [
+        {
+          subtitle: "Disclaimer",
+          text: "Udaan Sarathi is not liable for hiring outcomes, decisions made by employers or agencies, loss of data due to external factors, technical issues, outages, or interruptions, or any damages resulting from misuse of the platform. Your use of the platform is at your own risk."
+        }
+      ]
+    },
+    {
+      icon: Shield,
+      title: "11. Indemnification",
+      items: [
+        {
+          subtitle: "Your Responsibility",
+          text: "You agree to indemnify and hold harmless Udaan Sarathi and its team from any claims, liabilities, or damages arising from your use of the platform, your violation of these Terms, or your interactions with recruitment agencies or employers."
+        }
+      ]
+    },
+    {
+      icon: FileText,
+      title: "12. Changes to the Service",
+      items: [
+        {
+          subtitle: "Service Updates",
+          text: "We may modify, update, improve, add or remove features at any time without prior notice."
+        }
+      ]
+    },
+    {
+      icon: FileText,
+      title: "13. Changes to These Terms",
+      items: [
+        {
+          subtitle: "Terms Updates",
+          text: "We may update these Terms. If significant changes occur, we will notify you by email or display a notice on the platform. Continued use of the Service after changes indicates your acceptance."
+        }
+      ]
+    },
+    {
+      icon: Scale,
+      title: "14. Governing Law",
+      items: [
+        {
+          subtitle: "Legal Jurisdiction",
+          text: "These Terms are governed by the laws of Nepal. Any disputes shall be resolved in the courts of Kathmandu, Nepal."
         }
       ]
     }
@@ -131,7 +209,7 @@ const PolicyPage = () => {
                 className="h-14 w-14 object-contain"
               />
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Privacy Policy
+                Terms & Conditions
               </h1>
             </div>
           </div>
@@ -154,7 +232,7 @@ const PolicyPage = () => {
           <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -166,22 +244,17 @@ const PolicyPage = () => {
               </div>
             </div>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Welcome to Udaan Sarathi ("we," "our," or "us"). We are committed to
-              protecting your privacy and ensuring the security of your personal
-              information. This Privacy Policy explains how we collect, use, disclose,
-              and safeguard your information when you use our recruitment platform and
-              services.
+              Welcome to Udaan Sarathi ("we," "our," or "us"). These Terms & Conditions ("Terms") govern your access to and use of our recruitment platform, website, and related services ("Service").
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mt-4">
-              By using Udaan Sarathi, you agree to the collection and use of information
-              in accordance with this policy.
+              By creating an account or using Udaan Sarathi, you agree to comply with and be bound by these Terms. If you do not agree, please do not use our Service.
             </p>
           </div>
         </div>
 
-        {/* Privacy Sections - Interactive Tiles */}
+        {/* Terms Sections - Interactive Tiles */}
         <div className="space-y-4">
-          {privacySections.map((section, idx) => (
+          {termsSections.map((section, idx) => (
             <div
               key={idx}
               className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl shadow-lg border border-blue-100/50 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden"
@@ -227,57 +300,14 @@ const PolicyPage = () => {
           ))}
         </div>
 
-        {/* Additional Sections */}
-        <div className="mt-8 space-y-8">
-          {/* Children's Privacy */}
-          <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Children's Privacy
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Our services are not intended for users under 18. We promptly delete any data collected from minors.
-            </p>
-          </div>
-
-          {/* International Data Transfers */}
-          <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              International Data Transfers
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Your data may be processed outside Nepal with appropriate safeguards.
-            </p>
-          </div>
-
-          {/* Third-Party Links */}
-          <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Third-Party Links
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Our platform may include links to third-party sites with independent privacy policies.
-            </p>
-          </div>
-
-          {/* Changes to Policy */}
-          <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Changes to This Privacy Policy
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              We may update this policy periodically and will notify users through our platform or email.
-            </p>
-          </div>
-        </div>
-
         {/* Acknowledgment */}
         <div className="mt-12 text-center">
           <div className="bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl p-8 shadow-lg border border-blue-100/50 dark:border-gray-700">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-              By using Udaan Sarathi, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.
+              By using Udaan Sarathi, you acknowledge that you have read and understood these Terms & Conditions and agree to be bound by them.
             </p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              By registering and logging into the system, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.
+              By registering and logging into the system, you acknowledge that you have read and understood these Terms & Conditions and agree to comply with them.
             </p>
           </div>
         </div>
@@ -290,10 +320,10 @@ const PolicyPage = () => {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Privacy Policy Accepted
+                  Terms Accepted
                 </h3>
               </div>
               <button
@@ -304,8 +334,7 @@ const PolicyPage = () => {
               </button>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Thank you for reviewing our Privacy Policy. Your privacy and data security
-              are important to us.
+              Thank you for reviewing our Terms & Conditions. Your compliance helps us maintain a safe and effective platform.
             </p>
             <div className="flex space-x-3">
               <Link
@@ -328,4 +357,4 @@ const PolicyPage = () => {
   )
 }
 
-export default PolicyPage
+export default TermsPage
