@@ -19,6 +19,7 @@ import { useLanguage } from '../hooks/useLanguage.js'
 import LanguageSwitch from '../components/LanguageSwitch'
 import { usePagination } from '../hooks/usePagination.js'
 import PaginationWrapper from '../components/PaginationWrapper.jsx'
+import LoadingScreen from '../components/LoadingScreen'
 
 
 const Jobs = () => {
@@ -92,31 +93,7 @@ const Jobs = () => {
 
   // Loading state
   if ((isLoading && jobs.length === 0) || translationsLoading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
-          <div className="card p-6 mb-6">
-            <div className="h-6 bg-gray-200 rounded mb-4"></div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-6">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              ))}
-            </div>
-          </div>
-          <div className="card p-6">
-            <div className="h-6 bg-gray-200 rounded mb-4"></div>
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex justify-between py-4 border-b">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/6"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   // Error state

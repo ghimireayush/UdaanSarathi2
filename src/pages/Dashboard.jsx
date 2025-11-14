@@ -27,6 +27,7 @@ import LanguageSwitch from '../components/LanguageSwitch.jsx'
 import { useLanguage } from '../hooks/useLanguage'
 
 import { useNotificationContext } from '../contexts/NotificationContext'
+import LoadingScreen from '../components/LoadingScreen'
 
 // UI helpers (progress ring + mini bar) --------------------------------------
 const ProgressRing = ({ completed, total, size = 88, stroke = 8, color = '#eab308' }) => {
@@ -217,15 +218,7 @@ const Dashboard = () => {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <InteractiveLoader 
-          type="skeleton" 
-          text={tPage('loading.dashboard')} 
-          className="min-h-screen flex items-center justify-center"
-        />
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   // Error state

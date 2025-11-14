@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Save, RefreshCw, Globe, Languages, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
+import LoadingScreen from '../components/LoadingScreen'
 
 const OwnerContentManagement = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('en')
@@ -178,11 +179,7 @@ const OwnerContentManagement = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   const currentTranslations = translations[selectedLanguage]

@@ -37,6 +37,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ToastProvider from "./components/ToastProvider";
 import ConfirmProvider from "./components/ConfirmProvider";
+import LoadingScreen from "./components/LoadingScreen";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { AgencyProvider } from "./contexts/AgencyContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -44,6 +45,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { PERMISSIONS } from "./services/authService.js";
 import i18nService from "./services/i18nService";
 import accessibilityService from "./services/accessibilityService";
+import { Suspense } from "react";
 
 function App() {
   // Initialize i18n service
@@ -62,7 +64,8 @@ function App() {
             <AgencyProvider>
               <ToastProvider>
                 <ConfirmProvider>
-                  <Routes>
+                  <Suspense fallback={<LoadingScreen />}>
+                    <Routes>
                     {/* Public Routes */}
                     <Route path="/public" element={<PublicLandingPage />} />
                     <Route path="/privacy-policy" element={<PolicyPage />} />
@@ -304,6 +307,7 @@ function App() {
                       }
                     />
                   </Routes>
+                  </Suspense>
                 </ConfirmProvider>
               </ToastProvider>
             </AgencyProvider>
