@@ -1,7 +1,8 @@
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.svg'
 
-const Footer = ({ t }) => {
+const Footer = ({ t, hideAboutLink = false }) => {
   const currentYear = new Date().getFullYear()
 
   return (
@@ -96,6 +97,32 @@ const Footer = ({ t }) => {
                 </div>
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="border-t border-gray-800 dark:border-gray-900 pt-8 mb-8">
+          <div className="flex justify-center gap-6 mb-8">
+            {!hideAboutLink && (
+              <Link
+                to="/about"
+                className="text-gray-400 dark:text-gray-500 hover:text-[#56AF12] dark:hover:text-[#56AF12] transition-colors"
+              >
+                {t('footer.about')}
+              </Link>
+            )}
+            <Link
+              to="/privacy-policy"
+              className="text-gray-400 dark:text-gray-500 hover:text-[#56AF12] dark:hover:text-[#56AF12] transition-colors"
+            >
+              {t('footer.privacy')}
+            </Link>
+            <Link
+              to="/terms-and-conditions"
+              className="text-gray-400 dark:text-gray-500 hover:text-[#56AF12] dark:hover:text-[#56AF12] transition-colors"
+            >
+              {t('footer.terms')}
+            </Link>
           </div>
         </div>
 

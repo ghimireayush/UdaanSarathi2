@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Moon, Sun, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useTheme } from "../contexts/ThemeContext";
+import Navbar from "../components/public/Navbar";
 import HeroSection from "../components/public/HeroSection";
 import StatsSection from "../components/public/StatsSection";
 import AgencySearch from "../components/public/AgencySearch";
@@ -8,17 +8,9 @@ import HowItWorks from "../components/public/HowItWorks";
 import Features from "../components/public/Features";
 import Footer from "../components/public/Footer";
 import LoadingScreen from "../components/LoadingScreen";
-import logo from "../assets/logo.svg";
 
 const PublicLandingPage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage or system preference
-    const saved = localStorage.getItem("landing-theme");
-    if (saved) return saved === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const { theme, toggleTheme } = useTheme();
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem("landing-language") || "en";
   });
@@ -26,25 +18,6 @@ const PublicLandingPage = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    // Apply dark mode class to document
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("landing-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("landing-theme", "light");
-    }
-  }, [isDarkMode]);
 
   useEffect(() => {
     // Load translations
@@ -78,9 +51,21 @@ const PublicLandingPage = () => {
     }
   }, [isLoading]);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  // Handle hash scrolling after content is loaded
+  useEffect(() => {
+    if (showContent && window.location.hash) {
+      // Wait a bit for the page to fully render
+      const timer = setTimeout(() => {
+        const hash = window.location.hash.substring(1);
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showContent]);
 
   const toggleLanguage = () => {
     const newLang = language === "en" ? "ne" : "en";
@@ -103,9 +88,7 @@ const PublicLandingPage = () => {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+
 
   // Show loading screen while translations are loading or minimum time hasn't passed
   if (isLoading || !showContent) {
@@ -114,227 +97,14 @@ const PublicLandingPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Sticky Navbar with Liquid Glassmorphism */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled ? "glass-navbar shadow-lg py-4" : "bg-transparent py-6"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={scrollToTop}
-              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
-            >
-              <img
-                src={logo}
-                alt="Udaan Sarathi Logo"
-                className="h-12 w-12 md:h-16 md:w-16 object-contain"
-              />
-              <div
-                className={`text-xl md:text-2xl font-bold transition-colors ${
-                  isScrolled ? "text-blue-600 dark:text-blue-400" : "text-white"
-                }`}
-              >
-                Udaan Sarathi
-              </div>
-            </button>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a
-                href="#how-it-works"
-                className={`transition-colors ${
-                  isScrolled
-                    ? "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    : "text-white hover:text-blue-200"
-                }`}
-              >
-                {t("nav.howItWorks")}
-              </a>
-              <a
-                href="#features"
-                className={`transition-colors ${
-                  isScrolled
-                    ? "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    : "text-white hover:text-blue-200"
-                }`}
-              >
-                {t("nav.features")}
-              </a>
-
-              {/* Language Toggle */}
-              <button
-                onClick={toggleLanguage}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                  isScrolled
-                    ? "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
-                aria-label="Toggle language"
-              >
-                <Globe
-                  className={`w-4 h-4 ${
-                    isScrolled
-                      ? "text-gray-700 dark:text-gray-300"
-                      : "text-white"
-                  }`}
-                />
-                <span
-                  className={`text-sm font-medium ${
-                    isScrolled
-                      ? "text-gray-700 dark:text-gray-300"
-                      : "text-white"
-                  }`}
-                >
-                  {language === "en" ? "नेपाली" : "English"}
-                </span>
-              </button>
-
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className={`p-2 rounded-lg transition-colors ${
-                  isScrolled
-                    ? "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun
-                    className={`w-5 h-5 ${
-                      isScrolled
-                        ? "text-gray-700 dark:text-gray-300"
-                        : "text-white"
-                    }`}
-                  />
-                ) : (
-                  <Moon
-                    className={`w-5 h-5 ${
-                      isScrolled
-                        ? "text-gray-700 dark:text-gray-300"
-                        : "text-white"
-                    }`}
-                  />
-                )}
-              </button>
-
-              <Link
-                to="/login"
-                className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition"
-              >
-                {t("nav.login")}
-              </Link>
-            </div>
-
-            {/* Mobile Actions */}
-            <div className="md:hidden flex items-center space-x-2">
-              {/* Language Toggle - Mobile */}
-              <button
-                onClick={toggleLanguage}
-                className={`p-2 rounded-lg transition-colors ${
-                  isScrolled
-                    ? "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
-                aria-label="Toggle language"
-              >
-                <Globe
-                  className={`w-5 h-5 ${
-                    isScrolled
-                      ? "text-gray-700 dark:text-gray-300"
-                      : "text-white"
-                  }`}
-                />
-              </button>
-
-              {/* Dark Mode Toggle - Mobile */}
-              <button
-                onClick={toggleDarkMode}
-                className={`p-2 rounded-lg transition-colors ${
-                  isScrolled
-                    ? "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun
-                    className={`w-5 h-5 ${
-                      isScrolled
-                        ? "text-gray-700 dark:text-gray-300"
-                        : "text-white"
-                    }`}
-                  />
-                ) : (
-                  <Moon
-                    className={`w-5 h-5 ${
-                      isScrolled
-                        ? "text-gray-700 dark:text-gray-300"
-                        : "text-white"
-                    }`}
-                  />
-                )}
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                <svg
-                  className={`w-6 h-6 ${
-                    isScrolled
-                      ? "text-gray-700 dark:text-gray-300"
-                      : "text-white"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  {mobileMenuOpen ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 space-y-4 bg-white dark:bg-gray-800 rounded-lg p-4">
-              <a
-                href="#how-it-works"
-                className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-              >
-                {t("nav.howItWorks")}
-              </a>
-              <a
-                href="#features"
-                className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-              >
-                {t("nav.features")}
-              </a>
-              <Link
-                to="/login"
-                className="block px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition text-center"
-              >
-                {t("nav.login")}
-              </Link>
-            </div>
-          )}
-        </div>
-      </nav>
+      {/* Navbar */}
+      <Navbar 
+        isDarkMode={theme === 'dark'}
+        toggleDarkMode={toggleTheme}
+        language={language}
+        toggleLanguage={toggleLanguage}
+        t={t}
+      />
 
       {/* Page Sections */}
       <HeroSection onSearchClick={scrollToSearch} t={t} />

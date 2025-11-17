@@ -1,5 +1,6 @@
 {
   "nav": {
+    "about": "About",
     "howItWorks": "How It Works",
     "features": "Features",
     "forAgencies": "For Agencies",
@@ -109,7 +110,7 @@
   },
   "contact": {
     "email": "info@udaansarathi.com",
-    "phone": "+977 9800000000",
+    "phone": "01-5907701",
     "address": "Kathmandu, Nepal"
   },
   "social": {
@@ -119,6 +120,9 @@
   },
   "footer": {
     "tagline": "Empowering careers and connecting talent with opportunities across Nepal.",
+    "about": "About Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
     "quickLinks": "Quick Links",
     "legal": "Legal",
     "downloadApp": "Download Our App",

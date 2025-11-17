@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { User, Lock, ArrowLeft, Moon, Sun } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
@@ -9,14 +10,17 @@ import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
 
 const OwnerLogin = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [otp, setOtp] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showContent, setShowContent] = useState(false)
+  const [otpSent, setOtpSent] = useState(false)
+  const [sendingOtp, setSendingOtp] = useState(false)
+  const [resendTimer, setResendTimer] = useState(0)
   const { ownerLogin, isAuthenticated, user } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const { tPageSync, isLoading: languageLoading } = useLanguage({ 
@@ -39,6 +43,14 @@ const OwnerLogin = () => {
       return () => clearTimeout(timer)
     }
   }, [languageLoading])
+
+  // Resend OTP timer
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [resendTimer])
 
   // Session timeout (30 minutes of inactivity)
   const SESSION_TIMEOUT = 30 * 60 * 1000
@@ -108,9 +120,26 @@ const OwnerLogin = () => {
     }
   }, [isAuthenticated])
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+  const handleSendOtp = async () => {
+    if (!username || username.length !== 10) {
+      setError('Please enter a valid 10-digit phone number')
+      return
+    }
+
+    setSendingOtp(true)
+    setError('')
+
+    try {
+      // Simulate OTP sending (in production, this would call your backend)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setOtpSent(true)
+      setResendTimer(30) // 30 seconds cooldown
+      setError('')
+    } catch (err) {
+      setError('Failed to send OTP. Please try again.')
+    } finally {
+      setSendingOtp(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -119,40 +148,28 @@ const OwnerLogin = () => {
     setError('')
 
     // Validation
-    if (!email.trim()) {
-      setError(tPage('validation.emailRequired'))
+    if (!username || username.length !== 10) {
+      setError('Please enter a valid 10-digit phone number')
       setLoading(false)
       return
     }
 
-    if (!validateEmail(email)) {
-      setError(tPage('validation.emailInvalid'))
-      setLoading(false)
-      return
-    }
-
-    if (!password) {
-      setError(tPage('validation.passwordRequired'))
-      setLoading(false)
-      return
-    }
-
-    if (password.length < 6) {
-      setError(tPage('validation.passwordMinLength'))
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      setError('Please enter a valid 6-digit OTP')
       setLoading(false)
       return
     }
 
     try {
-      // Use ownerLogin method specifically for owner portal
-      const result = await ownerLogin(email, password)
+      // Use ownerLogin method specifically for owner portal (using OTP as password for now)
+      const result = await ownerLogin(username, otp)
 
       // Handle "Remember Me"
       if (rememberMe) {
-        localStorage.setItem('owner_email', email)
+        localStorage.setItem('owner_username', username)
         localStorage.setItem('owner_remember_me', 'true')
       } else {
-        localStorage.removeItem('owner_email')
+        localStorage.removeItem('owner_username')
         localStorage.removeItem('owner_remember_me')
       }
 
@@ -177,8 +194,30 @@ const OwnerLogin = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      {/* Language Switch - Top Right */}
-      <div className="absolute top-4 right-4">
+      {/* Back Button - Top Left */}
+      <div className="absolute top-4 left-4">
+        <Link
+          to="/public"
+          className="group flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back</span>
+        </Link>
+      </div>
+
+      {/* Language Switch and Theme Toggle - Top Right */}
+      <div className="absolute top-4 right-4 flex items-center gap-3">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          ) : (
+            <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          )}
+        </button>
         <LanguageSwitch variant="ghost" size="md" />
       </div>
 
@@ -219,70 +258,113 @@ const OwnerLogin = () => {
                 </div>
               )}
 
-              {/* Email Field */}
+              {/* Phone Number Field */}
               <div>
                 <label 
-                  htmlFor="email" 
+                  htmlFor="username" 
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                 >
-                  {tPage('form.email.label')}
+                  Phone Number (10 digits)
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <input
+                      id="username"
+                      name="username"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="\d{10}"
+                      maxLength={10}
+                      required
+                      value={username}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '')
+                        setUsername(value)
+                        if (value.length === 10) {
+                          setOtpSent(false)
+                        }
+                      }}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                      placeholder="9809999999"
+                      aria-describedby={error ? "username-error" : undefined}
+                    />
                   </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder={tPage('form.email.placeholder')}
-                    aria-describedby={error ? "email-error" : undefined}
-                  />
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={sendingOtp || username.length !== 10 || resendTimer > 0}
+                    className="px-4 py-2 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {sendingOtp ? 'Sending...' : resendTimer > 0 ? `${resendTimer}s` : otpSent ? 'Resend' : 'Send OTP'}
+                  </button>
                 </div>
+                {otpSent && (
+                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+                    ✓ OTP sent successfully! Check your phone.
+                  </p>
+                )}
               </div>
 
-              {/* Password Field */}
+              {/* OTP Field */}
               <div>
                 <label 
-                  htmlFor="password" 
+                  htmlFor="otp" 
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                 >
-                  {tPage('form.password.label')}
+                  6-Digit OTP
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{6}"
+                    maxLength={6}
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder={tPage('form.password.placeholder')}
-                    aria-describedby={error ? "password-error" : undefined}
+                    value={otp}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '')
+                      setOtp(value)
+                    }}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                    aria-describedby={error ? "otp-error" : undefined}
                   />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand-navy dark:text-gray-400 dark:hover:text-brand-blue-bright transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? tPage('form.hidePassword') : tPage('form.showPassword')}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
                 </div>
+                <div className="mt-1 flex items-center justify-between text-xs">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Enter the 6-digit OTP sent to your registered contact
+                  </p>
+                  {otpSent && (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={resendTimer > 0}
+                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
+                    </button>
+                  )}
+                </div>
+                {!otpSent && username.length === 10 && (
+                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    Didn't receive OTP?{' '}
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium underline transition-colors"
+                    >
+                      Press here
+                    </button>
+                  </p>
+                )}
               </div>
 
               {/* Remember Me Checkbox */}

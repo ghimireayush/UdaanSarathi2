@@ -141,13 +141,13 @@ const ROLE_PERMISSIONS = {
   ]
 }
 
-// Mock user data
+// Mock user data - Phone-based authentication only
 const MOCK_USERS = [
   {
     id: 'user_1',
-    username: 'admin@udaan.com',
+    phone: '9801234567',
     email: 'admin@udaan.com',
-    password: 'admin123',
+    password: '123456',
     name: 'System Administrator',
     role: ROLES.ADMIN,
     avatar: '/avatars/admin.jpg',
@@ -157,9 +157,9 @@ const MOCK_USERS = [
   },
   {
     id: 'user_owner',
-    username: 'owner@udaan.com',
+    phone: '9809999999',
     email: 'owner@udaan.com',
-    password: 'owner123',
+    password: '123456',
     name: 'Platform Owner',
     role: ROLES.ADMIN,
     avatar: '/avatars/owner.jpg',
@@ -169,9 +169,9 @@ const MOCK_USERS = [
   },
   {
     id: 'user_2',
-    username: 'recipient@udaan.com',
+    phone: '9801111111',
     email: 'recipient@udaan.com',
-    password: 'recruit123',
+    password: '123456',
     name: 'Recipient',
     role: ROLES.RECIPIENT,
     avatar: '/avatars/recipient.jpg',
@@ -181,9 +181,9 @@ const MOCK_USERS = [
   },
   {
     id: 'user_3',
-    username: 'coordinator@udaan.com',
+    phone: '9802222222',
     email: 'coordinator@udaan.com',
-    password: 'coord123',
+    password: '123456',
     name: 'Interview Coordinator',
     role: ROLES.COORDINATOR,
     avatar: '/avatars/coordinator.jpg',
@@ -316,13 +316,13 @@ class AuthService {
   async login(username, password) {
     await delay(1000) // Simulate network delay
     
-    // Find user in mock data
+    // Find user in mock data - phone number only
     const user = MOCK_USERS.find(u => 
-      (u.email === username || u.username === username) && u.password === password
+      u.phone === username && u.password === password
     )
     
     if (!user) {
-      throw new Error('Invalid credentials')
+      throw new Error('Invalid phone number or OTP')
     }
 
     // Only allow admin login (NOT agency owners)
@@ -331,7 +331,7 @@ class AuthService {
     }
     
     // Additional check: Prevent owner accounts from logging in here
-    if (user.id === 'user_owner' || user.email === 'owner@udaan.com') {
+    if (user.id === 'user_owner' || user.phone === '9809999999') {
       throw new Error('Access Denied: Owner accounts must use the Owner Portal at /owner/login')
     }
     
@@ -344,9 +344,9 @@ class AuthService {
       token: `token_${Date.now()}`,
       user: {
         id: user.id,
-        username: user.username,
+        phone: user.phone,
         email: user.email,
-        fullName: user.fullName,
+        name: user.name,
         role: user.role,
         permissions: this.getUserPermissions(user.role),
         isActive: user.isActive
@@ -371,7 +371,7 @@ class AuthService {
         resource_type: 'AUTH',
         resource_id: user.id,
         metadata: {
-          username: user.username,
+          phone: user.phone,
           role: user.role,
           loginTime: new Date().toISOString()
         }
@@ -384,16 +384,16 @@ class AuthService {
   }
 
   // Owner portal login - Only for platform owners
-  async ownerLogin(email, password) {
+  async ownerLogin(phone, password) {
     await delay(1000) // Simulate network delay
     
-    // Find user in mock data
+    // Find user in mock data - phone number only
     const user = MOCK_USERS.find(u => 
-      (u.email === email || u.username === email) && u.password === password
+      u.phone === phone && u.password === password
     )
     
     if (!user) {
-      throw new Error('Invalid credentials')
+      throw new Error('Invalid phone number or OTP')
     }
     
     // Only allow admin role AND must be the owner account
@@ -402,7 +402,7 @@ class AuthService {
     }
     
     // Verify this is actually an owner account (not regular admin)
-    if (user.id !== 'user_owner' && user.email !== 'owner@udaan.com') {
+    if (user.id !== 'user_owner' || user.phone !== '9809999999') {
       throw new Error('Access Denied: This account does not have owner privileges. Please use the Agency Portal.')
     }
     
@@ -415,9 +415,9 @@ class AuthService {
       token: `owner_token_${Date.now()}`,
       user: {
         id: user.id,
-        username: user.username,
+        phone: user.phone,
         email: user.email,
-        fullName: user.name,
+        name: user.name,
         role: user.role,
         permissions: this.getUserPermissions(user.role),
         isActive: user.isActive,
@@ -457,17 +457,16 @@ class AuthService {
   }
 
   // Member login for Recipients and Coordinators ONLY
-  async memberLogin(username, password, invitationToken = null) {
+  async memberLogin(phone, password, invitationToken = null) {
     await delay(1000) // Simulate network delay
     
-    // Find user in mock data
+    // Find user in mock data - phone number only
     const user = MOCK_USERS.find(u => 
-      (u.email === username || u.username === username) && 
-      u.password === password
+      u.phone === phone && u.password === password
     )
     
     if (!user) {
-      throw new Error('Invalid credentials')
+      throw new Error('Invalid phone number or OTP')
     }
     
     // Only allow recipients and coordinators (NOT admins or owners)
@@ -484,9 +483,9 @@ class AuthService {
       token: `member_token_${Date.now()}`,
       user: {
         id: user.id,
-        username: user.username,
+        phone: user.phone,
         email: user.email,
-        fullName: user.name,
+        name: user.name,
         role: user.role,
         permissions: this.getUserPermissions(user.role),
         isActive: user.isActive,
@@ -512,7 +511,7 @@ class AuthService {
         resource_type: 'AUTH',
         resource_id: user.id,
         metadata: {
-          username: user.username,
+          phone: user.phone,
           role: user.role,
           loginTime: new Date().toISOString(),
           invitationToken: invitationToken

@@ -29,6 +29,7 @@ import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
 import MemberLogin from "./pages/MemberLogin";
 import PublicLandingPage from "./pages/PublicLandingPage";
+import AboutPage from "./pages/AboutPage";
 import PolicyPage from "./pages/PolicyPage";
 import TermsPage from "./pages/TermsPage";
 
@@ -68,6 +69,7 @@ function App() {
                     <Routes>
                     {/* Public Routes */}
                     <Route path="/public" element={<PublicLandingPage />} />
+                    <Route path="/about" element={<AboutPage />} />
                     <Route path="/privacy-policy" element={<PolicyPage />} />
                     <Route path="/terms-and-conditions" element={<TermsPage />} />
                     <Route path="/login" element={<Login />} />

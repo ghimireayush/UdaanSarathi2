@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "back": "Back to Home",
+    "about": "About",
+    "howItWorks": "How It Works",
+    "features": "Features",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "About Udaan Sarathi",
+    "subtitle": "Bridging the gap between employment agencies and job seekers with accessible, verified information"
+  },
+  "mission": {
+    "title": "Our Mission",
+    "description": "Udaan Sarathi exists to eliminate the information gap between employment agencies and the workforce. We provide a mobile-first platform that delivers verified, transparent, and accessible job information to everyone, ensuring that opportunities are within reach for all."
+  },
+  "problem": {
+    "title": "The Gap We're Filling",
+    "subtitle": "Understanding the challenges faced by both job seekers and agencies",
+    "workforce": {
+      "title": "Job Seekers Face",
+      "point1": "Limited access to verified job opportunities",
+      "point2": "Difficulty finding trustworthy employment agencies",
+      "point3": "Lack of transparency in the hiring process"
+    },
+    "agencies": {
+      "title": "Agencies Struggle With",
+      "point1": "Reaching qualified candidates efficiently",
+      "point2": "Managing applications and communications",
+      "point3": "Building trust with potential applicants"
+    }
+  },
+  "solution": {
+    "title": "How Udaan Sarathi Helps",
+    "subtitle": "A comprehensive platform designed to connect, verify, and empower",
+    "mobile": {
+      "title": "Mobile-First Access",
+      "description": "Access job opportunities anytime, anywhere from your mobile phone. No barriers, no complications—just simple, direct access to opportunities."
+    },
+    "verified": {
+      "title": "Verified Information",
+      "description": "Every agency and job listing is verified to ensure authenticity. We protect job seekers from fraud and help agencies build credibility."
+    },
+    "transparent": {
+      "title": "Complete Transparency",
+      "description": "Clear job requirements, honest agency profiles, and straightforward application processes. No hidden fees, no surprises."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "jobSeekers": {
+      "title": "For Job Seekers",
+      "step1": {
+        "title": "Browse Opportunities",
+        "description": "Search through verified job listings from trusted agencies on your mobile phone"
+      },
+      "step2": {
+        "title": "View Agency Details",
+        "description": "Check agency credentials, reviews, and contact information before applying"
+      },
+      "step3": {
+        "title": "Apply Directly",
+        "description": "Submit your application with confidence knowing the agency is verified"
+      },
+      "step4": {
+        "title": "Track Progress",
+        "description": "Stay updated on your application status and communicate directly with agencies"
+      }
+    },
+    "agencies": {
+      "title": "For Agencies",
+      "step1": {
+        "title": "Register & Verify",
+        "description": "Complete your agency profile with license and credential verification"
+      },
+      "step2": {
+        "title": "Post Jobs",
+        "description": "Create detailed job listings that reach qualified candidates instantly"
+      },
+      "step3": {
+        "title": "Manage Applications",
+        "description": "Review, shortlist, and communicate with applicants through our platform"
+      },
+      "step4": {
+        "title": "Build Reputation",
+        "description": "Earn trust through transparent practices and successful placements"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "subtitle": "Join thousands of job seekers and agencies already using Udaan Sarathi",
+    "getStarted": "Get Started Today",
+    "learnMore": "Learn More"
+  },
+  "footer": {
+    "tagline": "Empowering Nepal's workforce, one opportunity at a time",
+    "about": "About Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "downloadApp": "Download Our App",
+    "downloadSubtitle": "Get the Udaan Sarathi mobile app for the best experience",
+    "downloadOn": "Download on the",
+    "appStore": "App Store",
+    "getItOn": "Get it on",
+    "playStore": "Google Play",
+    "copyright": "Udaan Sarathi. All rights reserved."
+  },
+  "contact": {
+    "email": "info@udaansarathi.com",
+    "phone": "01-5907701",
+    "address": "Kathmandu, Nepal"
+  },
+  "social": {
+    "twitter": "#",
+    "facebook": "#",
+    "instagram": "#"
+  }
+}

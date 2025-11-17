@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { User, Lock, Eye, EyeOff, UserCheck } from 'lucide-react'
+import { useNavigate, useLocation, useSearchParams, Link } from 'react-router-dom'
+import { User, Lock, ArrowLeft, UserCheck, Moon, Sun } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import LanguageSwitch from '../components/LanguageSwitch'
@@ -10,13 +11,17 @@ import logo from '../assets/logo.svg'
 
 const MemberLogin = () => {
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [otp, setOtp] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showContent, setShowContent] = useState(false)
+  const [otpSent, setOtpSent] = useState(false)
+  const [sendingOtp, setSendingOtp] = useState(false)
+  const [resendTimer, setResendTimer] = useState(0)
   const { memberLogin, isAuthenticated } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -44,6 +49,14 @@ const MemberLogin = () => {
       return () => clearTimeout(timer)
     }
   }, [languageLoading])
+
+  // Resend OTP timer
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [resendTimer])
   
   // Redirect if already authenticated
   useEffect(() => {
@@ -68,13 +81,50 @@ const MemberLogin = () => {
     return <LoadingScreen />
   }
   
+  const handleSendOtp = async () => {
+    if (!username || username.length !== 10) {
+      setError('Please enter a valid 10-digit phone number')
+      return
+    }
+
+    setSendingOtp(true)
+    setError('')
+
+    try {
+      // Simulate OTP sending (in production, this would call your backend)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setOtpSent(true)
+      setResendTimer(30) // 30 seconds cooldown
+      setError('')
+    } catch (err) {
+      setError('Failed to send OTP. Please try again.')
+    } finally {
+      setSendingOtp(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     
+    // Validate phone number
+    if (!username || username.length !== 10) {
+      setError('Please enter a valid 10-digit phone number')
+      setLoading(false)
+      return
+    }
+
+    // Validate OTP format
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      setError('Please enter a valid 6-digit OTP')
+      setLoading(false)
+      return
+    }
+    
     try {
-      const result = await memberLogin(username, password, invitationToken)
+      // For now, using OTP as password until backend is updated
+      const result = await memberLogin(username, otp, invitationToken)
       if (result.success) {
         // Redirect to agency management dashboard
         navigate('/dashboard', { replace: true })
@@ -100,19 +150,28 @@ const MemberLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       {/* Back Button - Top Left */}
       <div className="absolute top-4 left-4">
-        <button
-          onClick={() => navigate('/login')}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-white dark:hover:bg-gray-800 hover:border-brand-blue-bright dark:hover:border-brand-blue-bright transition-all shadow-sm hover:shadow-md"
+        <Link
+          to="/public"
+          className="group flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6"/>
-          </svg>
-          Back to Admin Login
-        </button>
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back</span>
+        </Link>
       </div>
-      
-      {/* Language Switch - Top Right */}
-      <div className="absolute top-4 right-4">
+
+      {/* Language Switch and Theme Toggle - Top Right */}
+      <div className="absolute top-4 right-4 flex items-center gap-3">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          ) : (
+            <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          )}
+        </button>
         <LanguageSwitch variant="ghost" size="md" />
       </div>
       
@@ -148,6 +207,23 @@ const MemberLogin = () => {
                 {tPage('invitationMessage')}
               </p>
             )}
+            
+            {/* Login Type Toggle */}
+            <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg mt-4">
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="flex-1 py-2 px-4 rounded-md font-medium transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                className="flex-1 py-2 px-4 rounded-md font-medium transition-all bg-white dark:bg-gray-800 text-brand-navy dark:text-brand-blue-bright shadow-sm"
+              >
+                Member
+              </button>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,55 +235,101 @@ const MemberLogin = () => {
               
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {tPage('form.username.label')}
+                  Phone Number (10 digits)
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <input
+                      id="username"
+                      name="username"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="\d{10}"
+                      maxLength={10}
+                      required
+                      value={username}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '')
+                        setUsername(value)
+                        if (value.length === 10) {
+                          setOtpSent(false)
+                        }
+                      }}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                      placeholder="9801111111"
+                    />
                   </div>
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder={tPage('form.username.placeholder')}
-                  />
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={sendingOtp || username.length !== 10 || resendTimer > 0}
+                    className="px-4 py-2 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {sendingOtp ? 'Sending...' : resendTimer > 0 ? `${resendTimer}s` : otpSent ? 'Resend' : 'Send OTP'}
+                  </button>
                 </div>
+                {otpSent && (
+                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+                    ✓ OTP sent successfully! Check your phone.
+                  </p>
+                )}
               </div>
               
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {tPage('form.password.label')}
+                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  6-Digit OTP
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{6}"
+                    maxLength={6}
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                    placeholder={tPage('form.password.placeholder')}
+                    value={otp}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '')
+                      setOtp(value)
+                    }}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
                   />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand-navy dark:text-gray-400 dark:hover:text-brand-blue-bright transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
                 </div>
+                <div className="mt-1 flex items-center justify-between text-xs">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Enter the 6-digit OTP sent to your registered contact
+                  </p>
+                  {otpSent && (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={resendTimer > 0}
+                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
+                    </button>
+                  )}
+                </div>
+                {!otpSent && username.length === 10 && (
+                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    Didn't receive OTP?{' '}
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium underline transition-colors"
+                    >
+                      Press here
+                    </button>
+                  </p>
+                )}
               </div>
               
               <div>
@@ -228,6 +350,21 @@ const MemberLogin = () => {
                     invitationToken ? tPage('form.submit.withInvitation') : tPage('form.submit.default')
                   )}
                 </button>
+              </div>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-brand-blue-bright focus:ring-brand-blue-bright border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Remember me
+                </label>
               </div>
 
               {invitationToken && (
