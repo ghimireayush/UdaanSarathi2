@@ -10,8 +10,12 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      // Redirect to login if not authenticated
-      navigate('/login', { 
+      // Redirect to appropriate login based on stored portal
+      const loginPortal = localStorage.getItem('login_portal') || 'admin';
+      const loginPath = loginPortal === 'owner' ? '/owner/login' : 
+                        loginPortal === 'member' ? '/login/member' : '/login';
+      
+      navigate(loginPath, { 
         state: { from: location.pathname }, 
         replace: true 
       })

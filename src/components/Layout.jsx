@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useAgency } from "../contexts/AgencyContext.jsx";
+import { ROLES } from "../services/authService.js";
 import { PERMISSIONS } from "../services/authService.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useLanguage } from "../hooks/useLanguage";
@@ -74,9 +75,18 @@ const Layout = ({ children }) => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    // Get the portal they logged in from
+    const loginPortal = localStorage.getItem('login_portal') || 'admin';
+    
+    // Determine redirect path based on login portal
+    const redirectPath = loginPortal === 'member' ? '/login/member' : '/login';
+    
+    // Call logout first
+    await logout();
+    
+    // Then navigate with replace to prevent back button issues
+    navigate(redirectPath, { replace: true });
   };
 
   const navItems = [

@@ -70,6 +70,9 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true)
       setPermissions(result.permissions)
       
+      // Store login portal for logout redirect
+      localStorage.setItem('login_portal', 'admin')
+      
       // Log successful login
       try {
         await auditService.logLogin({
@@ -99,6 +102,9 @@ export const AuthProvider = ({ children }) => {
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
+      
+      // Store login portal for logout redirect
+      localStorage.setItem('login_portal', 'owner')
       
       // Log successful owner login
       try {
@@ -130,6 +136,9 @@ export const AuthProvider = ({ children }) => {
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
+      
+      // Store login portal for logout redirect
+      localStorage.setItem('login_portal', 'member')
       
       // Log successful member login
       if (result.success) {
