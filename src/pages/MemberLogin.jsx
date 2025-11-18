@@ -303,33 +303,9 @@ const MemberLogin = () => {
                     placeholder="000000"
                   />
                 </div>
-                <div className="mt-1 flex items-center justify-between text-xs">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Enter the 6-digit OTP sent to your registered contact
-                  </p>
-                  {otpSent && (
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      disabled={resendTimer > 0}
-                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
-                    </button>
-                  )}
-                </div>
-                {!otpSent && username.length === 10 && (
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                    Didn't receive OTP?{' '}
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      className="text-brand-blue-bright hover:text-brand-navy dark:hover:text-brand-blue-bright/80 font-medium underline transition-colors"
-                    >
-                      Press here
-                    </button>
-                  </p>
-                )}
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Enter the 6-digit OTP sent to your registered contact
+                </p>
               </div>
               
               <div>
