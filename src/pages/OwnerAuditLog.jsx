@@ -5,13 +5,8 @@ import {
   Filter,
   Calendar,
   User,
-  Building2,
-  Trash2,
-  ToggleLeft,
-  ToggleRight,
   FileText,
   AlertCircle,
-  Languages,
 } from "lucide-react";
 import {
   Card,
@@ -34,7 +29,6 @@ const OwnerAuditLog = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    actionType: "all",
     dateRange: "all",
     sortOrder: "desc",
   });
@@ -72,105 +66,65 @@ const OwnerAuditLog = () => {
       // Load audit logs from localStorage (in production, fetch from API)
       const storedLogs = JSON.parse(localStorage.getItem('audit_logs') || '[]').map(log => ({
         ...log,
-        timestamp: new Date(log.timestamp) // Convert string timestamp to Date object
+        loginTime: new Date(log.loginTime), // Convert string timestamp to Date object
+        logoutTime: log.logoutTime ? new Date(log.logoutTime) : null
       }))
       
       // Mock data - In production, fetch from API
       const mockLogs = [
         {
           id: 1,
-          timestamp: new Date(Date.now() - 30 * 60 * 1000),
-          action: "owner_login",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          details: {
-            ipAddress: "192.168.1.100",
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            loginMethod: "email_password",
-          },
+          name: "Ram Sharma",
+          phoneNumber: "+977-9841234567",
+          role: "Owner",
+          loginTime: new Date(Date.now() - 30 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 15 * 60 * 1000),
         },
         {
           id: 2,
-          timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
-          action: "delete_agency",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          targetAgency: "Tech Solutions Pvt Ltd",
-          targetAgencyId: "agency_001",
-          reason: "Company closed operations and requested account deletion",
-          details: {
-            agencyName: "Tech Solutions Pvt Ltd",
-            licenseNumber: "REG-2024-001",
-          },
+          name: "Sita Poudel",
+          phoneNumber: "+977-9851234568",
+          role: "Admin",
+          loginTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 1 * 60 * 60 * 1000),
         },
         {
           id: 3,
-          timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
-          action: "deactivate_agency",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          targetAgency: "Global Recruiters",
-          targetAgencyId: "agency_002",
-          reason: "License expired, pending renewal documentation",
-          details: {
-            agencyName: "Global Recruiters",
-            licenseNumber: "REG-2024-002",
-            previousStatus: "active",
-            newStatus: "inactive",
-          },
+          name: "Hari Thapa",
+          phoneNumber: "+977-9861234569",
+          role: "Manager",
+          loginTime: new Date(Date.now() - 4 * 60 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 3 * 60 * 60 * 1000),
         },
         {
           id: 4,
-          timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
-          action: "activate_agency",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          targetAgency: "HR Consultancy Nepal",
-          targetAgencyId: "agency_003",
-          reason: "License renewed and all documentation verified",
-          details: {
-            agencyName: "HR Consultancy Nepal",
-            licenseNumber: "REG-2024-003",
-            previousStatus: "inactive",
-            newStatus: "active",
-          },
+          name: "Ram Sharma",
+          phoneNumber: "+977-9841234567",
+          role: "Owner",
+          loginTime: new Date(Date.now() - 6 * 60 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 5 * 60 * 60 * 1000),
         },
         {
           id: 5,
-          timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
-          action: "delete_agency",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          targetAgency: "Manpower Services",
-          targetAgencyId: "agency_004",
-          reason:
-            "Multiple policy violations and fraudulent activities reported",
-          details: {
-            agencyName: "Manpower Services",
-            licenseNumber: "REG-2024-004",
-          },
+          name: "Maya Gurung",
+          phoneNumber: "+977-9871234570",
+          role: "Staff",
+          loginTime: new Date(Date.now() - 8 * 60 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 7 * 60 * 60 * 1000),
         },
         {
           id: 6,
-          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
-          action: "deactivate_agency",
-          performedBy: "Owner Admin",
-          performedByEmail: "owner@udaansarathi.com",
-          targetAgency: "Career Builders",
-          targetAgencyId: "agency_005",
-          reason: "Temporary suspension due to pending investigation",
-          details: {
-            agencyName: "Career Builders",
-            licenseNumber: "REG-2024-005",
-            previousStatus: "active",
-            newStatus: "inactive",
-          },
+          name: "Krishna Tamang",
+          phoneNumber: "+977-9881234571",
+          role: "Admin",
+          loginTime: new Date(Date.now() - 12 * 60 * 60 * 1000),
+          logoutTime: new Date(Date.now() - 10 * 60 * 60 * 1000),
         },
       ];
 
       // Merge stored logs with mock logs
       const allLogs = [...storedLogs, ...mockLogs].sort((a, b) => 
-        new Date(b.timestamp) - new Date(a.timestamp)
+        new Date(b.loginTime) - new Date(a.loginTime)
       )
 
       setLogs(allLogs);
@@ -190,18 +144,13 @@ const OwnerAuditLog = () => {
       const search = searchTerm.toLowerCase();
       result = result.filter(
         (log) =>
-          log.targetAgency?.toLowerCase().includes(search) ||
-          log.performedBy.toLowerCase().includes(search) ||
-          log.reason?.toLowerCase().includes(search) ||
-          log.action.toLowerCase().includes(search) ||
-          log.details?.ipAddress?.toLowerCase().includes(search)
+          log.name?.toLowerCase().includes(search) ||
+          log.phoneNumber?.toLowerCase().includes(search) ||
+          log.role?.toLowerCase().includes(search)
       );
     }
 
-    // Action type filter
-    if (filters.actionType !== "all") {
-      result = result.filter((log) => log.action === filters.actionType);
-    }
+    // No action type filter needed for simplified logs
 
     // Date range filter
     if (filters.dateRange !== "all") {
@@ -209,7 +158,7 @@ const OwnerAuditLog = () => {
         // Custom date range
         if (customDateRange.startDate || customDateRange.endDate) {
           result = result.filter((log) => {
-            const logDate = log.timestamp.getTime();
+            const logDate = log.loginTime.getTime();
             const startDate = customDateRange.startDate
               ? new Date(customDateRange.startDate).setHours(0, 0, 0, 0)
               : 0;
@@ -229,16 +178,16 @@ const OwnerAuditLog = () => {
         };
         const range = ranges[filters.dateRange];
         if (range) {
-          result = result.filter((log) => now - log.timestamp.getTime() <= range);
+          result = result.filter((log) => now - log.loginTime.getTime() <= range);
         }
       }
     }
 
-    // Sort by timestamp
+    // Sort by login time
     result.sort((a, b) => {
       return filters.sortOrder === "desc"
-        ? b.timestamp.getTime() - a.timestamp.getTime()
-        : a.timestamp.getTime() - b.timestamp.getTime();
+        ? b.loginTime.getTime() - a.loginTime.getTime()
+        : a.loginTime.getTime() - b.loginTime.getTime();
     });
 
     return result;
@@ -255,40 +204,13 @@ const OwnerAuditLog = () => {
     setCurrentPage(1);
   }, [searchTerm, filters, customDateRange]);
 
-  const getActionIcon = (action) => {
-    switch (action) {
-      case "delete_agency":
-        return <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />;
-      case "deactivate_agency":
-        return (
-          <ToggleLeft className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-        );
-      case "activate_agency":
-        return (
-          <ToggleRight className="h-5 w-5 text-green-600 dark:text-green-400" />
-        );
-      case "owner_login":
-        return <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
-      case "update_content":
-        return <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />;
-      default:
-        return (
-          <FileText className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-        );
-    }
-  };
-
-  const getActionColor = (action) => {
-    switch (action) {
-      case "delete_agency":
-        return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
-      case "deactivate_agency":
-        return "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800";
-      case "activate_agency":
-        return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
-      case "owner_login":
+  const getRoleColor = (role) => {
+    switch (role.toLowerCase()) {
+      case "owner":
         return "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
-      case "update_content":
+      case "admin":
+        return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
+      case "manager":
         return "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800";
       default:
         return "bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700";
@@ -314,31 +236,21 @@ const OwnerAuditLog = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          {tPage("title")}
+          User Access Log
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {tPage("subtitle")}
+          Track user login and logout activities with name, phone number, role, and timestamps
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "all"
-              ? "ring-2 ring-blue-500 dark:ring-blue-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({ ...prev, actionType: "all" }));
-            setShowFilters(false);
-          }}
-        >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {tPage("stats.totalActions")}
+                  Total Access Logs
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {logs.length}
@@ -349,135 +261,38 @@ const OwnerAuditLog = () => {
           </CardContent>
         </Card>
 
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "delete_agency"
-              ? "ring-2 ring-red-500 dark:ring-red-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({ ...prev, actionType: "delete_agency" }));
-            setShowFilters(false);
-          }}
-        >
+        <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {tPage("stats.deletions")}
-                </p>
-                <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {logs.filter((l) => l.action === "delete_agency").length}
-                </p>
-              </div>
-              <Trash2 className="h-8 w-8 text-red-600 dark:text-red-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "deactivate_agency"
-              ? "ring-2 ring-orange-500 dark:ring-orange-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({
-              ...prev,
-              actionType: "deactivate_agency",
-            }));
-            setShowFilters(false);
-          }}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {tPage("stats.deactivations")}
-                </p>
-                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                  {logs.filter((l) => l.action === "deactivate_agency").length}
-                </p>
-              </div>
-              <ToggleLeft className="h-8 w-8 text-orange-600 dark:text-orange-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "activate_agency"
-              ? "ring-2 ring-green-500 dark:ring-green-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({ ...prev, actionType: "activate_agency" }));
-            setShowFilters(false);
-          }}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {tPage("stats.activations")}
+                  Unique Users
                 </p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {logs.filter((l) => l.action === "activate_agency").length}
+                  {new Set(logs.map(l => l.phoneNumber)).size}
                 </p>
               </div>
-              <ToggleRight className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <User className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "update_content"
-              ? "ring-2 ring-purple-500 dark:ring-purple-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({ ...prev, actionType: "update_content" }));
-            setShowFilters(false);
-          }}
-        >
+        <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Content Updates
+                  Today's Access
                 </p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {logs.filter((l) => l.action === "update_content").length}
+                  {logs.filter(l => {
+                    const today = new Date();
+                    const logDate = new Date(l.loginTime);
+                    return logDate.toDateString() === today.toDateString();
+                  }).length}
                 </p>
               </div>
-              <Languages className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            filters.actionType === "owner_login"
-              ? "ring-2 ring-blue-500 dark:ring-blue-400"
-              : "hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600"
-          }`}
-          onClick={() => {
-            setFilters((prev) => ({ ...prev, actionType: "owner_login" }));
-            setShowFilters(false);
-          }}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {tPage("stats.logins")}
-                </p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {logs.filter((l) => l.action === "owner_login").length}
-                </p>
-              </div>
-              <User className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <Calendar className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
           </CardContent>
         </Card>
@@ -494,7 +309,7 @@ const OwnerAuditLog = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={tPage("search.placeholder")}
+                placeholder="Search by name, phone number or role..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -511,35 +326,7 @@ const OwnerAuditLog = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {tPage("filters.actionType")}
-                </label>
-                <select
-                  value={filters.actionType}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      actionType: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                >
-                  <option value="all">{tPage("filters.all")}</option>
-                  <option value="owner_login">{tPage("filters.logins")}</option>
-                  <option value="update_content">Content Updates</option>
-                  <option value="delete_agency">
-                    {tPage("filters.deletions")}
-                  </option>
-                  <option value="deactivate_agency">
-                    {tPage("filters.deactivations")}
-                  </option>
-                  <option value="activate_agency">
-                    {tPage("filters.activations")}
-                  </option>
-                </select>
-              </div>
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -632,10 +419,7 @@ const OwnerAuditLog = () => {
 
       {/* Results Info */}
       <div className="text-sm text-gray-600 dark:text-gray-400">
-        {tPage("results.showing", {
-          count: paginatedLogs.length,
-          total: filteredLogs.length,
-        })}
+        Showing {paginatedLogs.length} of {filteredLogs.length} access logs
       </div>
 
       {/* Audit Logs List */}
@@ -645,9 +429,9 @@ const OwnerAuditLog = () => {
             <CardContent className="p-12 text-center">
               <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 dark:text-gray-400">
-                {searchTerm || filters.actionType !== "all"
-                  ? tPage("noResults.filtered")
-                  : tPage("noResults.empty")}
+                {searchTerm || filters.dateRange !== "all"
+                  ? "No access logs found matching your search criteria."
+                  : "No access logs available."}
               </p>
             </CardContent>
           </Card>
@@ -655,86 +439,45 @@ const OwnerAuditLog = () => {
           paginatedLogs.map((log) => (
             <Card
               key={log.id}
-              className={`border-l-4 ${getActionColor(log.action)}`}
+              className={`border-l-4 ${getRoleColor(log.role)}`}
             >
               <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  {/* Icon */}
-                  <div className="flex-shrink-0 mt-1">
-                    {getActionIcon(log.action)}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      <User className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                        {log.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {log.phoneNumber}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {tPage(`actions.${log.action}`)}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 mt-1">
-                          <Calendar className="h-4 w-4" />
-                          {formatDate(log.timestamp)}
-                        </p>
-                      </div>
-                    </div>
+                  {/* Role */}
+                  <div className="text-center md:text-left">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Role</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{log.role}</p>
+                  </div>
 
-                    {/* Agency Info or Login Info or Content Info */}
-                    {log.action === "owner_login" ? (
-                      <div className="flex items-center gap-4 mb-3 text-sm text-gray-600 dark:text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <strong>{tPage("log.ipAddress")}:</strong>{" "}
-                          {log.details.ipAddress}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <strong>{tPage("log.loginMethod")}:</strong>{" "}
-                          {log.details.loginMethod}
-                        </span>
-                      </div>
-                    ) : log.action === "update_content" ? (
-                      <div className="mb-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FileText className="h-4 w-4 text-purple-500" />
-                          <span className="font-medium text-gray-900 dark:text-gray-100">
-                            Landing Page Content Updated
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                          <p>Languages: {log.details?.languages?.join(', ').toUpperCase()}</p>
-                          <p>Content Type: {log.details?.contentType?.replace(/_/g, ' ')}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 mb-3">
-                        <Building2 className="h-4 w-4 text-gray-500" />
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
-                          {log.targetAgency}
-                        </span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                          ({log.details.licenseNumber})
-                        </span>
-                      </div>
-                    )}
+                  {/* Login Time */}
+                  <div className="text-center md:text-left">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Login Time</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {formatDate(log.loginTime)}
+                    </p>
+                  </div>
 
-                    {/* Reason */}
-                    {log.reason && (
-                      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 mb-3">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {tPage("log.reason")}:
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {log.reason}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Performed By */}
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <User className="h-4 w-4" />
-                      <span>
-                        {tPage("log.performedBy")}: {log.performedBy} (
-                        {log.performedByEmail})
-                      </span>
-                    </div>
+                  {/* Logout Time */}
+                  <div className="text-center md:text-right">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Logout Time</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {log.logoutTime ? formatDate(log.logoutTime) : "Still logged in"}
+                    </p>
                   </div>
                 </div>
               </CardContent>
