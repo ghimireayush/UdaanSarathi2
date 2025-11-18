@@ -12,8 +12,19 @@ import {
   CardContent,
 } from "../components/ui/Card";
 import LoadingScreen from "../components/LoadingScreen";
+import { useLanguage } from "../hooks/useLanguage";
+import LanguageSwitch from "../components/LanguageSwitch";
 
 const AuditLogPage = () => {
+  const { tPageSync } = useLanguage({
+    pageName: "audit-log",
+    autoLoad: true,
+  });
+
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params);
+  };
+
   // State
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -214,13 +225,18 @@ const AuditLogPage = () => {
   return (
     <div className="space-y-6 pt-8 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          User Access Log
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Track user login and logout activities with name, phone number, role, and timestamps
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {tPage("title")}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            {tPage("subtitle")}
+          </p>
+        </div>
+        <div className="flex-shrink-0">
+          <LanguageSwitch />
+        </div>
       </div>
 
       {/* Stats */}
@@ -230,7 +246,7 @@ const AuditLogPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Total Access Logs
+                  {tPage("stats.totalLogs")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {logs.length}
@@ -246,7 +262,7 @@ const AuditLogPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Unique Users
+                  {tPage("stats.uniqueUsers")}
                 </p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {new Set(logs.map(l => l.phoneNumber)).size}
@@ -262,7 +278,7 @@ const AuditLogPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Today's Access
+                  {tPage("stats.todayAccess")}
                 </p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {logs.filter(l => {
@@ -289,7 +305,7 @@ const AuditLogPage = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, phone number or role..."
+                placeholder={tPage("search.placeholder")}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -300,7 +316,7 @@ const AuditLogPage = () => {
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
             >
               <Filter className="h-5 w-5" />
-              Filters
+              {tPage("filters.toggle")}
             </button>
           </div>
 
@@ -310,7 +326,7 @@ const AuditLogPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Date Range
+                  {tPage("filters.dateRange")}
                 </label>
                 <select
                   value={filters.dateRange}
@@ -326,11 +342,11 @@ const AuditLogPage = () => {
                   }}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="all">All Time</option>
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="custom">Custom Range</option>
+                  <option value="all">{tPage("filters.allTime")}</option>
+                  <option value="today">{tPage("filters.today")}</option>
+                  <option value="week">{tPage("filters.thisWeek")}</option>
+                  <option value="month">{tPage("filters.thisMonth")}</option>
+                  <option value="custom">{tPage("filters.custom")}</option>
                 </select>
 
                 {/* Custom Date Range Inputs */}
@@ -338,7 +354,7 @@ const AuditLogPage = () => {
                   <div className="mt-3 space-y-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        Start Date
+                        {tPage("filters.startDate")}
                       </label>
                       <input
                         type="date"
@@ -355,7 +371,7 @@ const AuditLogPage = () => {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        End Date
+                        {tPage("filters.endDate")}
                       </label>
                       <input
                         type="date"
@@ -376,7 +392,7 @@ const AuditLogPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Role
+                  {tPage("filters.role")}
                 </label>
                 <select
                   value={filters.role}
@@ -388,16 +404,16 @@ const AuditLogPage = () => {
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="all">All Roles</option>
-                  <option value="Recipient">Recipient</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Coordinator">Coordinator</option>
+                  <option value="all">{tPage("filters.allRoles")}</option>
+                  <option value="Recipient">{tPage("roles.recipient")}</option>
+                  <option value="Admin">{tPage("roles.admin")}</option>
+                  <option value="Coordinator">{tPage("roles.coordinator")}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Sort Order
+                  {tPage("filters.sortOrder")}
                 </label>
                 <select
                   value={filters.sortOrder}
@@ -409,8 +425,8 @@ const AuditLogPage = () => {
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="desc">Newest First</option>
-                  <option value="asc">Oldest First</option>
+                  <option value="desc">{tPage("filters.newest")}</option>
+                  <option value="asc">{tPage("filters.oldest")}</option>
                 </select>
               </div>
             </div>
@@ -420,7 +436,10 @@ const AuditLogPage = () => {
 
       {/* Results Info */}
       <div className="text-sm text-gray-600 dark:text-gray-400">
-        Showing {paginatedLogs.length} of {filteredLogs.length} access logs
+        {tPage("messages.results.showing", {
+          count: paginatedLogs.length,
+          total: filteredLogs.length,
+        })}
       </div>
 
       {/* Audit Logs List */}
@@ -430,9 +449,9 @@ const AuditLogPage = () => {
             <CardContent className="p-12 text-center">
               <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 dark:text-gray-400">
-                {searchTerm || filters.dateRange !== "all"
-                  ? "No access logs found matching your search criteria."
-                  : "No access logs available."}
+                {searchTerm || filters.dateRange !== "all" || filters.role !== "all"
+                  ? tPage("messages.noResults.filtered")
+                  : tPage("messages.noResults.empty")}
               </p>
             </CardContent>
           </Card>
@@ -461,13 +480,13 @@ const AuditLogPage = () => {
 
                   {/* Role */}
                   <div className="text-center md:text-left">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Role</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tPage("table.headers.role")}</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">{log.role}</p>
                   </div>
 
                   {/* Login Time */}
                   <div className="text-center md:text-left">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Login Time</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tPage("table.headers.loginTime")}</p>
                     <p className="text-sm text-gray-900 dark:text-gray-100">
                       {formatDate(log.loginTime)}
                     </p>
@@ -475,9 +494,9 @@ const AuditLogPage = () => {
 
                   {/* Logout Time */}
                   <div className="text-center md:text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Logout Time</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tPage("table.headers.logoutTime")}</p>
                     <p className="text-sm text-gray-900 dark:text-gray-100">
-                      {log.logoutTime ? formatDate(log.logoutTime) : "Still logged in"}
+                      {log.logoutTime ? formatDate(log.logoutTime) : tPage("table.stillLoggedIn")}
                     </p>
                   </div>
                 </div>
@@ -494,7 +513,7 @@ const AuditLogPage = () => {
             {/* Items per page */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-700 dark:text-gray-300">
-                Show
+                {tPage("pagination.show")}
               </span>
               <select
                 value={itemsPerPage}
@@ -510,15 +529,17 @@ const AuditLogPage = () => {
                 <option value={100}>100</option>
               </select>
               <span className="text-sm text-gray-700 dark:text-gray-300">
-                per page
+                {tPage("pagination.perPage")}
               </span>
             </div>
 
             {/* Page info */}
             <div className="text-sm text-gray-700 dark:text-gray-300">
-              Showing {startIndex + 1} to{" "}
-              {Math.min(endIndex, filteredLogs.length)} of{" "}
-              {filteredLogs.length} logs
+              {tPage("pagination.showing", {
+                start: startIndex + 1,
+                end: Math.min(endIndex, filteredLogs.length),
+                total: filteredLogs.length,
+              })}
             </div>
 
             {/* Page navigation */}
@@ -528,14 +549,14 @@ const AuditLogPage = () => {
                 disabled={currentPage === 1}
                 className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm"
               >
-                First
+                {tPage("pagination.first")}
               </button>
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm"
               >
-                Previous
+                {tPage("pagination.previous")}
               </button>
 
               {/* Page numbers */}
@@ -575,14 +596,14 @@ const AuditLogPage = () => {
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm"
               >
-                Next
+                {tPage("pagination.next")}
               </button>
               <button
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 text-sm"
               >
-                Last
+                {tPage("pagination.last")}
               </button>
             </div>
           </div>
