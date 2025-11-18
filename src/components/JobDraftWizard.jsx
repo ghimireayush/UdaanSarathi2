@@ -527,7 +527,7 @@ const JobDraftWizard = ({
       id: "cutout",
       title: "Cutout",
       icon: Camera,
-      description: "Job advertisement image",
+      description: "Job advertisement image (Required)",
     },
     {
       id: "interview",
@@ -901,8 +901,10 @@ const JobDraftWizard = ({
         }
         break;
 
-      case 5: // Cutout (Optional)
-        // No required validation for cutout
+      case 5: // Cutout (Required)
+        if (!formData.cutout.file && !formData.cutout.uploaded_url) {
+          errors.cutout_file = "Job advertisement image is required";
+        }
         break;
 
       case 6: // Interview (Optional)
@@ -1181,24 +1183,22 @@ const JobDraftWizard = ({
     }
   };
 
-  const removeCutout = (deleteFile = false) => {
+  const removeCutout = () => {
     // Clean up preview URL to prevent memory leaks
     if (formData.cutout.preview_url) {
       URL.revokeObjectURL(formData.cutout.preview_url);
     }
 
+    // Reset cutout state - only removes from the form, doesn't delete server files
     setFormData((prev) => ({
       ...prev,
       cutout: {
         file: null,
         preview_url: null,
-        uploaded_url: deleteFile ? null : prev.cutout.uploaded_url,
+        uploaded_url: null,
         is_uploaded: false,
       },
     }));
-
-    // Here you would normally make API call:
-    // DELETE /agencies/:license/job-postings/:id/cutout?deleteFile=${deleteFile}
   };
 
   const uploadCutout = async () => {
@@ -4437,7 +4437,7 @@ const JobDraftWizard = ({
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">
-                    Job Advertisement Image
+                    Job Advertisement Image <span className="text-red-500 dark:text-red-400">*</span>
                   </h4>
                   <button
                     onClick={() => setCurrentStep(5)}
@@ -4455,15 +4455,15 @@ const JobDraftWizard = ({
                         formData.cutout.uploaded_url
                       }
                       alt="Job Advertisement"
-                      className="w-24 h-24 object-cover rounded-lg border border-gray-300"
+                      className="w-24 h-24 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
                     />
-                    <div className="text-sm">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
                       <div>
                         <span className="font-medium">Status:</span>{" "}
-                        <span className="ml-2">
+                        <span className="ml-2 text-green-600 dark:text-green-400">
                           {formData.cutout.is_uploaded
-                            ? "Uploaded"
-                            : "Ready to Upload"}
+                            ? "✓ Uploaded"
+                            : "✓ Ready to Upload"}
                         </span>
                       </div>
                       {formData.cutout.file && (
@@ -4474,10 +4474,18 @@ const JobDraftWizard = ({
                           </span>
                         </div>
                       )}
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Required field completed
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No cutout uploaded</p>
+                  <div className="flex items-center space-x-2">
+                    <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
+                    <p className="text-red-500 dark:text-red-400 text-sm font-medium">
+                      Required: Job advertisement image must be uploaded
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -4921,7 +4929,7 @@ const JobDraftWizard = ({
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                 Upload and manage the job advertisement image (e.g., newspaper
-                scan).
+                scan). <span className="text-red-500 dark:text-red-400 font-medium">This field is required.</span>
               </p>
             </div>
 
@@ -4930,9 +4938,7 @@ const JobDraftWizard = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Upload File{" "}
-                  <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">
-                    (Optional)
-                  </span>
+                  <span className="text-red-500 dark:text-red-400">*</span>
                   <HelpCircle
                     className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
                     title="Upload a job advertisement image like a newspaper scan or digital poster"
@@ -4942,12 +4948,19 @@ const JobDraftWizard = ({
                 {/* File Input */}
                 <div className="mt-2">
                   <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                    <label className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                      errors.cutout_file 
+                        ? "border-red-500 dark:border-red-400 hover:border-red-600 dark:hover:border-red-300" 
+                        : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    }`}>
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                           <span className="font-semibold">Click to upload</span>{" "}
                           or drag and drop
+                        </p>
+                        <p className="text-xs text-red-500 dark:text-red-400 mb-1">
+                          Required field
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           JPG, PNG (MAX. 10MB)
@@ -4998,40 +5011,22 @@ const JobDraftWizard = ({
                         </button>
                       )}
 
-                      {/* Remove Options */}
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to remove this image? (Soft delete - file remains on disk)"
-                              )
+                      {/* Remove Option */}
+                      <button
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to remove this image from the form?"
                             )
-                              removeCutout(false);
-                          }}
-                          className="flex items-center px-3 py-1 bg-yellow-600 text-white text-sm rounded-md hover:bg-yellow-700 transition-colors"
-                          title="Soft Delete (file remains on disk)"
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          Soft Remove
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to permanently delete this image? This action cannot be undone."
-                              )
-                            )
-                              removeCutout(true);
-                          }}
-                          className="flex items-center px-3 py-1 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
-                          title="Hard Delete (permanently delete file)"
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          Delete
-                        </button>
-                      </div>
+                          )
+                            removeCutout();
+                        }}
+                        className="flex items-center px-3 py-1 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
+                        title="Remove image from form"
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Remove
+                      </button>
                     </div>
                   </div>
 
