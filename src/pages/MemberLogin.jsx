@@ -4,6 +4,7 @@ import { User, Lock, ArrowLeft, UserCheck, Moon, Sun } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
+import OTPInput from '../components/ui/OTPInput'
 import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
 import LoadingScreen from '../components/LoadingScreen'
@@ -258,7 +259,7 @@ const MemberLogin = () => {
                           setOtpSent(false)
                         }
                       }}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                      className="block w-full pl-10 pr-3 py-3 text-lg border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="9801111111"
                     />
                   </div>
@@ -266,7 +267,7 @@ const MemberLogin = () => {
                     type="button"
                     onClick={handleSendOtp}
                     disabled={sendingOtp || username.length !== 10 || resendTimer > 0}
-                    className="px-4 py-2 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="px-4 py-3 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {sendingOtp ? 'Sending...' : resendTimer > 0 ? `${resendTimer}s` : otpSent ? 'Resend' : 'Send OTP'}
                   </button>
@@ -279,31 +280,18 @@ const MemberLogin = () => {
               </div>
               
               <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  6-Digit OTP
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
+                  Enter 6 Digit OTP
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                  </div>
-                  <input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="\d{6}"
-                    maxLength={6}
-                    required
-                    value={otp}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '')
-                      setOtp(value)
-                    }}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-center text-2xl tracking-widest font-mono"
-                    placeholder="000000"
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <OTPInput
+                  value={otp}
+                  onChange={setOtp}
+                  length={6}
+                  autoFocus={otpSent}
+                  disabled={loading}
+                  className="mb-3"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                   Enter the 6-digit OTP sent to your registered contact
                 </p>
               </div>

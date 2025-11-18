@@ -103,25 +103,25 @@ const JobDraftWizard = ({
     notes: "",
 
     // Contract fields
-    period_years: 2,
+    period_years: "",
     renewable: "yes",
-    hours_per_day: 8,
-    days_per_week: 6,
+    hours_per_day: "",
+    days_per_week: "",
     overtime_policy: "as_per_company_policy",
-    weekly_off_days: 1,
+    weekly_off_days: "",
     food: "not_provided",
     accommodation: "not_provided",
     transport: "not_provided",
-    annual_leave_days: 21,
+    annual_leave_days: "",
 
     // Positions
     positions: [
       {
         id: 1,
         position_title: "",
-        vacancies_male: 0,
-        vacancies_female: 0,
-        monthly_salary: 0,
+        vacancies_male: "",
+        vacancies_female: "",
+        monthly_salary: "",
         currency: "AED",
         hours_per_day_override: "",
         days_per_week_override: "",
@@ -138,7 +138,7 @@ const JobDraftWizard = ({
     skills: [],
     education_requirements: [],
     experience_requirements: {
-      min_years: 0,
+      min_years: "",
       preferred_years: "",
       domains: [],
     },
@@ -194,10 +194,10 @@ const JobDraftWizard = ({
 
     // Bulk position data
     bulk_position_title: "",
-    bulk_monthly_salary: 0,
+    bulk_monthly_salary: "",
     bulk_currency: "AED",
-    bulk_vacancies_male: 0,
-    bulk_vacancies_female: 0,
+    bulk_vacancies_male: "",
+    bulk_vacancies_female: "",
   });
 
   // Effect to populate form data when editing a draft
@@ -769,29 +769,29 @@ const JobDraftWizard = ({
         break;
 
       case 1: // Contract
-        if (!formData.period_years || formData.period_years < 1)
+        if (!formData.period_years || (typeof formData.period_years === 'number' && formData.period_years < 1) || (typeof formData.period_years === 'string' && formData.period_years.trim() === ''))
           errors.period_years = "Contract period must be at least 1 year";
         if (!formData.renewable)
           errors.renewable = "Please specify if contract is renewable";
         if (
           !formData.hours_per_day ||
-          formData.hours_per_day < 1 ||
-          formData.hours_per_day > 16
+          (typeof formData.hours_per_day === 'number' && (formData.hours_per_day < 1 || formData.hours_per_day > 16)) ||
+          (typeof formData.hours_per_day === 'string' && formData.hours_per_day.trim() === '')
         ) {
           errors.hours_per_day =
             "Working hours must be between 1 and 16 hours per day";
         }
         if (
           !formData.days_per_week ||
-          formData.days_per_week < 1 ||
-          formData.days_per_week > 7
+          (typeof formData.days_per_week === 'number' && (formData.days_per_week < 1 || formData.days_per_week > 7)) ||
+          (typeof formData.days_per_week === 'string' && formData.days_per_week.trim() === '')
         ) {
           errors.days_per_week =
             "Working days must be between 1 and 7 days per week";
         }
         if (!formData.overtime_policy?.trim())
           errors.overtime_policy = "Please select an overtime policy";
-        if (formData.weekly_off_days < 0 || formData.weekly_off_days > 7) {
+        if ((typeof formData.weekly_off_days === 'number' && (formData.weekly_off_days < 0 || formData.weekly_off_days > 7)) || (typeof formData.weekly_off_days === 'string' && formData.weekly_off_days.trim() === '')) {
           errors.weekly_off_days = "Weekly off days must be between 0 and 7";
         }
         if (!formData.food?.trim())
@@ -800,7 +800,7 @@ const JobDraftWizard = ({
           errors.accommodation = "Please specify accommodation provision";
         if (!formData.transport?.trim())
           errors.transport = "Please specify transport provision";
-        if (!formData.annual_leave_days || formData.annual_leave_days < 0) {
+        if (!formData.annual_leave_days || (typeof formData.annual_leave_days === 'number' && formData.annual_leave_days < 0) || (typeof formData.annual_leave_days === 'string' && formData.annual_leave_days.trim() === '')) {
           errors.annual_leave_days = "Annual leave days must be 0 or greater";
         }
         break;
@@ -814,22 +814,21 @@ const JobDraftWizard = ({
               errors[`positions_${position.id}_position_title`] =
                 "Position title is required";
             }
-            if (position.vacancies_male < 0) {
+            if ((typeof position.vacancies_male === 'number' && position.vacancies_male < 0) || (typeof position.vacancies_male === 'string' && position.vacancies_male.trim() === '')) {
               errors[`positions_${position.id}_vacancies_male`] =
                 "Male vacancies must be 0 or greater";
             }
-            if (position.vacancies_female < 0) {
+            if ((typeof position.vacancies_female === 'number' && position.vacancies_female < 0) || (typeof position.vacancies_female === 'string' && position.vacancies_female.trim() === '')) {
               errors[`positions_${position.id}_vacancies_female`] =
                 "Female vacancies must be 0 or greater";
             }
-            if (
-              position.vacancies_male === 0 &&
-              position.vacancies_female === 0
-            ) {
+            const maleVacancies = typeof position.vacancies_male === 'string' ? parseInt(position.vacancies_male) || 0 : position.vacancies_male;
+            const femaleVacancies = typeof position.vacancies_female === 'string' ? parseInt(position.vacancies_female) || 0 : position.vacancies_female;
+            if (maleVacancies === 0 && femaleVacancies === 0) {
               errors[`positions_${position.id}_vacancies_total`] =
                 "Total vacancies must be greater than 0";
             }
-            if (!position.monthly_salary || position.monthly_salary <= 0) {
+            if (!position.monthly_salary || (typeof position.monthly_salary === 'number' && position.monthly_salary <= 0) || (typeof position.monthly_salary === 'string' && position.monthly_salary.trim() === '')) {
               errors[`positions_${position.id}_monthly_salary`] =
                 "Monthly salary must be greater than 0";
             }
@@ -853,8 +852,10 @@ const JobDraftWizard = ({
             "Please specify education requirements";
         }
         if (
-          !formData.experience_requirements.min_years ||
-          formData.experience_requirements.min_years < 0
+          formData.experience_requirements.min_years === "" ||
+          formData.experience_requirements.min_years === null ||
+          formData.experience_requirements.min_years === undefined ||
+          (typeof formData.experience_requirements.min_years === 'number' && formData.experience_requirements.min_years < 0)
         ) {
           errors.experience_min_years =
             "Minimum experience years is required (use 0 for no experience)";
@@ -887,7 +888,7 @@ const JobDraftWizard = ({
                 "Please specify who pays for this expense";
             }
             if (expense.is_free === false) {
-              if (!expense.amount || expense.amount <= 0) {
+              if (!expense.amount || (typeof expense.amount === 'number' && expense.amount <= 0) || (typeof expense.amount === 'string' && expense.amount.trim() === '')) {
                 errors[`expenses_${expense.id}_amount`] =
                   "Please enter a valid amount greater than 0";
               }
@@ -1582,8 +1583,10 @@ const JobDraftWizard = ({
     }
 
     if (
-      !formData.experience_requirements.min_years ||
-      formData.experience_requirements.min_years < 0
+      formData.experience_requirements.min_years === "" ||
+      formData.experience_requirements.min_years === null ||
+      formData.experience_requirements.min_years === undefined ||
+      (typeof formData.experience_requirements.min_years === 'number' && formData.experience_requirements.min_years < 0)
     ) {
       newErrors.experience_min_years =
         "Minimum years of experience is required and must be 0 or greater";
@@ -2771,7 +2774,7 @@ const JobDraftWizard = ({
                   onChange={(e) =>
                     handleInputChange(
                       "period_years",
-                      parseInt(e.target.value) || 0
+                      e.target.value === "" ? "" : parseInt(e.target.value) || ""
                     )
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -2836,7 +2839,7 @@ const JobDraftWizard = ({
                   onChange={(e) =>
                     handleInputChange(
                       "hours_per_day",
-                      parseInt(e.target.value) || 0
+                      e.target.value === "" ? "" : parseInt(e.target.value) || ""
                     )
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -2865,7 +2868,7 @@ const JobDraftWizard = ({
                   onChange={(e) =>
                     handleInputChange(
                       "days_per_week",
-                      parseInt(e.target.value) || 0
+                      e.target.value === "" ? "" : parseInt(e.target.value) || ""
                     )
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -2924,7 +2927,7 @@ const JobDraftWizard = ({
                   onChange={(e) =>
                     handleInputChange(
                       "weekly_off_days",
-                      parseInt(e.target.value) || 0
+                      e.target.value === "" ? "" : parseInt(e.target.value) || ""
                     )
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -3026,7 +3029,7 @@ const JobDraftWizard = ({
                   onChange={(e) =>
                     handleInputChange(
                       "annual_leave_days",
-                      parseInt(e.target.value) || 0
+                      e.target.value === "" ? "" : parseInt(e.target.value) || ""
                     )
                   }
                   className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -3131,7 +3134,7 @@ const JobDraftWizard = ({
                         updatePosition(
                           position.id,
                           "vacancies_male",
-                          parseInt(e.target.value) || 0
+                          e.target.value === "" ? "" : parseInt(e.target.value) || ""
                         )
                       }
                       className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3164,7 +3167,7 @@ const JobDraftWizard = ({
                         updatePosition(
                           position.id,
                           "vacancies_female",
-                          parseInt(e.target.value) || 0
+                          e.target.value === "" ? "" : parseInt(e.target.value) || ""
                         )
                       }
                       className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3206,7 +3209,7 @@ const JobDraftWizard = ({
                         updatePosition(
                           position.id,
                           "monthly_salary",
-                          parseInt(e.target.value) || 0
+                          e.target.value === "" ? "" : parseInt(e.target.value) || ""
                         )
                       }
                       className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3280,7 +3283,7 @@ const JobDraftWizard = ({
                           updatePosition(
                             position.id,
                             "hours_per_day_override",
-                            e.target.value ? parseInt(e.target.value) : ""
+                            e.target.value === "" ? "" : parseInt(e.target.value) || ""
                           )
                         }
                         className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3322,7 +3325,7 @@ const JobDraftWizard = ({
                           updatePosition(
                             position.id,
                             "days_per_week_override",
-                            e.target.value ? parseInt(e.target.value) : ""
+                            e.target.value === "" ? "" : parseInt(e.target.value) || ""
                           )
                         }
                         className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3397,7 +3400,7 @@ const JobDraftWizard = ({
                           updatePosition(
                             position.id,
                             "weekly_off_days_override",
-                            e.target.value ? parseInt(e.target.value) : ""
+                            e.target.value === "" ? "" : parseInt(e.target.value) || ""
                           )
                         }
                         className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
@@ -3731,7 +3734,7 @@ const JobDraftWizard = ({
                           ...prev,
                           experience_requirements: {
                             ...prev.experience_requirements,
-                            min_years: parseInt(e.target.value) || 0,
+                            min_years: e.target.value === "" ? "" : parseInt(e.target.value) || "",
                           },
                         }));
                         // Clear related errors when updating min years
@@ -3773,9 +3776,7 @@ const JobDraftWizard = ({
                           ...prev,
                           experience_requirements: {
                             ...prev.experience_requirements,
-                            preferred_years: e.target.value
-                              ? parseInt(e.target.value)
-                              : "",
+                            preferred_years: e.target.value === "" ? "" : parseInt(e.target.value) || "",
                           },
                         }))
                       }
@@ -4804,7 +4805,7 @@ const JobDraftWizard = ({
                             updateExpense(
                               expense.id,
                               "amount",
-                              parseFloat(e.target.value) || ""
+                              e.target.value === "" ? "" : parseFloat(e.target.value) || ""
                             )
                           }
                           className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
@@ -5455,7 +5456,7 @@ const JobDraftWizard = ({
                                   updateInterviewExpense(
                                     expense.id,
                                     "amount",
-                                    parseFloat(e.target.value) || ""
+                                    e.target.value === "" ? "" : parseFloat(e.target.value) || ""
                                   )
                                 }
                                 className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
