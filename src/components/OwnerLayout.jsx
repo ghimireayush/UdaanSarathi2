@@ -132,7 +132,7 @@ const OwnerLayout = ({ children, onRefresh }) => {
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="Logo" className="h-10 w-10" />
+              <img src={logo} alt="Logo" className="h-16 w-16 md:h-20 md:w-20" />
               <div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                   {tPage("branding.appName")}

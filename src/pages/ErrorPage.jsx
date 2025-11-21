@@ -26,7 +26,7 @@ const ErrorPage = ({
             <img 
               src={logo} 
               alt="UdaanSarathi Logo" 
-              className="w-24 h-24 object-contain mb-3 drop-shadow-lg"
+              className="w-32 h-32 md:w-40 md:h-40 object-contain mb-3 drop-shadow-lg"
             />
             <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400">
               UdaanSarathi

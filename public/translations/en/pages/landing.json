@@ -7,7 +7,7 @@
     "login": "Login"
   },
   "hero": {
-    "title": "Transform Your Career Journey",
+    "title": "Finding the job beyond borders with Udaan Sarathi",
     "subtitle": "Connect with Nepal's top recruitment agencies and discover opportunities that match your aspirations",
     "metricLabel": "Total Successful Job Placements",
     "livesTransformed": "Lives Transformed",
@@ -25,14 +25,15 @@
   "search": {
     "title": "Find Your Perfect Job",
     "subtitle": "Search from thousands of job opportunities across Nepal",
-    "placeholder": "Search for jobs by title, skills, or location...",
+    "placeholder": "Search for jobs by title, skills, or company...",
+    "locationPlaceholder": "Location (e.g., Kathmandu, Pokhara)",
     "activeJobs": "Active Jobs",
     "viewDetails": "View Details",
     "noResults": "No jobs found",
     "tryAgain": "Try adjusting your search terms",
     "modal": {
-      "title": "Unlock Your Potential!",
-      "subtitle": "Download Udaan Sarathi from Play Store or App Store to view agency details and apply for jobs",
+      "title": "View Job Details",
+      "subtitle": "Download Udaan Sarathi app to view complete job details, requirements, and apply directly to opportunities",
       "downloadOn": "Download on the",
       "getItOn": "Get it on",
       "appStore": "App Store",

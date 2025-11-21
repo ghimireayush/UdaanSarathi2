@@ -13,13 +13,13 @@ const Footer = ({ t, hideAboutLink = false }) => {
         <div className="text-center mb-12">
           {/* Logo and Tagline */}
           <div className="mb-8">
-            <div className="flex justify-center items-center space-x-4 mb-4">
+            <div className="flex flex-row justify-center items-baseline space-x-6 mb-4 flex-nowrap">
               <img 
                 src={logo} 
                 alt="Udaan Sarathi Logo" 
-                className="h-16 w-16 md:h-20 md:w-20"
+                className="h-20 w-20 md:h-24 md:w-24 object-contain flex-shrink-0 self-center"
               />
-              <h2 className="text-4xl md:text-5xl font-bold text-white dark:text-gray-100">
+              <h2 className="text-3xl md:text-4xl font-bold text-white dark:text-gray-100 leading-none whitespace-nowrap self-center">
                 Udaan Sarathi
               </h2>
             </div>

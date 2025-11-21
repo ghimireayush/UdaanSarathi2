@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Moon, Sun, Globe } from 'lucide-react'
 import logo from '../../assets/logo.svg'
 
@@ -7,6 +7,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,7 +17,8 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const scrollToTop = () => {
+  const handleLogoClick = () => {
+    navigate('/public')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -25,29 +27,33 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'glass-navbar shadow-lg py-4' : 'bg-transparent py-6'
-      }`}
+        isScrolled 
+          ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg' 
+          : 'bg-white/10 dark:bg-gray-900/10 backdrop-blur-sm'
+      } py-3`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <Link
-            to="/public"
-            onClick={scrollToTop}
-            className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+          {/* Logo */}
+          <div
+            onClick={handleLogoClick}
+            className="cursor-pointer hover:opacity-80 transition-opacity flex items-center space-x-3"
           >
             <img
               src={logo}
-              alt="Udaan Sarathi Logo"
-              className="h-12 w-12 md:h-16 md:w-16 object-contain"
+              alt="UDAAN Logo"
+              className="h-12 w-auto object-cover"
             />
-            <div
-              className={`text-xl md:text-2xl font-bold transition-colors ${
-                isScrolled ? 'text-blue-600 dark:text-blue-400' : 'text-white'
+            <span
+              className={`text-xl font-bold ${
+                isScrolled
+                  ? 'text-gray-800 dark:text-gray-200'
+                  : 'text-gray-800 dark:text-gray-200'
               }`}
             >
               Udaan Sarathi
-            </div>
-          </Link>
+            </span>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -55,12 +61,10 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               to="/about"
               className={`transition-colors ${
                 isActive('/about')
-                  ? isScrolled
-                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                    : 'text-white font-semibold underline underline-offset-4'
+                  ? 'text-blue-600 dark:text-blue-400 font-semibold'
                   : isScrolled
                   ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-                  : 'text-white hover:text-blue-200'
+                  : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               {t('nav.about')}
@@ -70,7 +74,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`transition-colors ${
                 isScrolled
                   ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-                  : 'text-white hover:text-blue-200'
+                  : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               {t('nav.howItWorks')}
@@ -80,7 +84,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`transition-colors ${
                 isScrolled
                   ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-                  : 'text-white hover:text-blue-200'
+                  : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               {t('nav.features')}
@@ -92,7 +96,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
                 isScrolled
                   ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  : 'bg-white/10 hover:bg-white/20'
+                  : 'bg-white/20 dark:bg-gray-700/50 hover:bg-white/30 dark:hover:bg-gray-600/50'
               }`}
               aria-label="Toggle language"
             >
@@ -100,14 +104,14 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                 className={`w-4 h-4 ${
                   isScrolled
                     ? 'text-gray-700 dark:text-gray-300'
-                    : 'text-white'
+                    : 'text-gray-800 dark:text-gray-200'
                 }`}
               />
               <span
                 className={`text-sm font-medium ${
                   isScrolled
                     ? 'text-gray-700 dark:text-gray-300'
-                    : 'text-white'
+                    : 'text-gray-800 dark:text-gray-200'
                 }`}
               >
                 {language === 'en' ? 'नेपाली' : 'English'}
@@ -120,7 +124,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`p-2 rounded-lg transition-colors ${
                 isScrolled
                   ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  : 'bg-white/10 hover:bg-white/20'
+                  : 'bg-white/20 dark:bg-gray-700/50 hover:bg-white/30 dark:hover:bg-gray-600/50'
               }`}
               aria-label="Toggle dark mode"
             >
@@ -129,7 +133,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                   className={`w-5 h-5 ${
                     isScrolled
                       ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-white'
+                      : 'text-gray-800 dark:text-gray-200'
                   }`}
                 />
               ) : (
@@ -137,7 +141,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                   className={`w-5 h-5 ${
                     isScrolled
                       ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-white'
+                      : 'text-gray-800 dark:text-gray-200'
                   }`}
                 />
               )}
@@ -159,7 +163,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`p-2 rounded-lg transition-colors ${
                 isScrolled
                   ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  : 'bg-white/10 hover:bg-white/20'
+                  : 'bg-white/20 dark:bg-gray-700/50 hover:bg-white/30 dark:hover:bg-gray-600/50'
               }`}
               aria-label="Toggle language"
             >
@@ -167,7 +171,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                 className={`w-5 h-5 ${
                   isScrolled
                     ? 'text-gray-700 dark:text-gray-300'
-                    : 'text-white'
+                    : 'text-gray-800 dark:text-gray-200'
                 }`}
               />
             </button>
@@ -178,7 +182,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
               className={`p-2 rounded-lg transition-colors ${
                 isScrolled
                   ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  : 'bg-white/10 hover:bg-white/20'
+                  : 'bg-white/20 dark:bg-gray-700/50 hover:bg-white/30 dark:hover:bg-gray-600/50'
               }`}
               aria-label="Toggle dark mode"
             >
@@ -187,7 +191,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                   className={`w-5 h-5 ${
                     isScrolled
                       ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-white'
+                      : 'text-gray-800 dark:text-gray-200'
                   }`}
                 />
               ) : (
@@ -195,7 +199,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                   className={`w-5 h-5 ${
                     isScrolled
                       ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-white'
+                      : 'text-gray-800 dark:text-gray-200'
                   }`}
                 />
               )}
@@ -207,7 +211,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
                 className={`w-6 h-6 ${
                   isScrolled
                     ? 'text-gray-700 dark:text-gray-300'
-                    : 'text-white'
+                    : 'text-gray-800 dark:text-gray-200'
                 }`}
                 fill="none"
                 stroke="currentColor"
@@ -232,45 +236,45 @@ const Navbar = ({ isDarkMode, toggleDarkMode, language, toggleLanguage, t }) => 
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-4 bg-white dark:bg-gray-800 rounded-lg p-4">
-            <Link
-              to="/about"
-              className={`block ${
-                isActive('/about')
-                  ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.about')}
-            </Link>
-            <a
-              href="/public#how-it-works"
-              className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.howItWorks')}
-            </a>
-            <a
-              href="/public#features"
-              className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.features')}
-            </a>
-            <Link
-              to="/login"
-              className="block px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition text-center"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t('nav.login')}
-            </Link>
-          </div>
-        )}
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-4 pb-4 space-y-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg p-4 mx-4">
+          <Link
+            to="/about"
+            className={`block ${
+              isActive('/about')
+                ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
+            }`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {t('nav.about')}
+          </Link>
+          <a
+            href="/public#how-it-works"
+            className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {t('nav.howItWorks')}
+          </a>
+          <a
+            href="/public#features"
+            className="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {t('nav.features')}
+          </a>
+          <Link
+            to="/login"
+            className="block px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition text-center"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {t('nav.login')}
+          </Link>
+        </div>
+      )}
     </nav>
   )
 }

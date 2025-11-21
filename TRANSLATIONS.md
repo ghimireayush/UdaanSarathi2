@@ -108,7 +108,7 @@ This document contains all English to Nepali translations used in the Udaan Sara
 | English | Nepali (नेपाली) |
 |---------|----------------|
 | Unlock Your Potential! | आफ्नो क्षमता अनलक गर्नुहोस्! |
-| Download Udaan Sarathi from Play Store or App Store to view agency details and apply for jobs | एजेन्सी विवरणहरू हेर्न र जागिरहरूको लागि आवेदन दिन प्ले स्टोर वा एप स्टोरबाट उदान सारथी डाउनलोड गर्नुहोस् |
+| Download Udaan Sarathi from Play Store or App Store to view agency details and apply for jobs | एजेन्सी विवरणहरू हेर्न र जागिरहरूको लागि आवेदन दिन प्ले स्टोर वा एप स्टोरबाट उडान सारथी डाउनलोड गर्नुहोस् |
 | Download on the | डाउनलोड गर्नुहोस् |
 | Get it on | यसमा प्राप्त गर्नुहोस् |
 | App Store | एप स्टोर |
@@ -177,7 +177,7 @@ This document contains all English to Nepali translations used in the Udaan Sara
 | English | Nepali (नेपाली) |
 |---------|----------------|
 | Ready to Transform Your Recruitment? | आफ्नो भर्ती रूपान्तरण गर्न तयार हुनुहुन्छ? |
-| Join thousands of agencies and job seekers who trust Udaan Sarathi | उदान सारथीमा विश्वास गर्ने हजारौं एजेन्सीहरू र जागिर खोज्नेहरूसँग सामेल हुनुहोस् |
+| Join thousands of agencies and job seekers who trust Udaan Sarathi | उडान सारथीमा विश्वास गर्ने हजारौं एजेन्सीहरू र जागिर खोज्नेहरूसँग सामेल हुनुहोस् |
 | Get Started Free | नि:शुल्क सुरु गर्नुहोस् |
 | Schedule Demo | डेमो समयतालिका गर्नुहोस् |
 
@@ -227,7 +227,7 @@ This document contains all English to Nepali translations used in the Udaan Sara
 | Quick Links | द्रुत लिङ्कहरू |
 | Legal | कानूनी |
 | Download Our App | हाम्रो एप डाउनलोड गर्नुहोस् |
-| Get the Udaan Sarathi app for a seamless experience on the go | चलिरहेको निर्बाध अनुभवको लागि उदान सारथी एप प्राप्त गर्नुहोस् |
+| Get the Udaan Sarathi app for a seamless experience on the go | चलिरहेको निर्बाध अनुभवको लागि उडान सारथी एप प्राप्त गर्नुहोस् |
 | All rights reserved | सर्वाधिकार सुरक्षित |
 | For Job Seekers | जागिर खोज्नेहरूको लागि |
 | Contact Us | हामीलाई सम्पर्क गर्नुहोस् |

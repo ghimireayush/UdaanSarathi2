@@ -1,11 +1,45 @@
 import React, { useState, useEffect } from 'react'
-import { Search, MapPin, Star, Briefcase, ArrowRight } from 'lucide-react'
+import { Search, MapPin, Briefcase, ArrowRight } from 'lucide-react'
 
 const AgencySearch = ({ t }) => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [locationQuery, setLocationQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [debouncedLocation, setDebouncedLocation] = useState('')
   const [agencies, setAgencies] = useState([])
   const [isSearching, setIsSearching] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
+
+  // Mock job suggestions
+  const jobSuggestions = [
+    'Software Developer',
+    'Data Analyst', 
+    'Marketing Manager',
+    'Graphic Designer',
+    'Project Manager',
+    'Sales Executive',
+    'HR Manager',
+    'Accountant',
+    'Civil Engineer',
+    'Nurse',
+    'Teacher',
+    'Digital Marketing'
+  ]
+
+  // Mock location suggestions
+  const locationSuggestions = [
+    'Kathmandu',
+    'Pokhara', 
+    'Lalitpur',
+    'Bhaktapur',
+    'Biratnagar',
+    'Chitwan',
+    'Butwal',
+    'Dharan',
+    'Nepalgunj',
+    'Janakpur'
+  ]
 
   // Debounce search query
   useEffect(() => {
@@ -15,46 +49,86 @@ const AgencySearch = ({ t }) => {
     return () => clearTimeout(timer)
   }, [searchQuery])
 
+  // Debounce location query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedLocation(locationQuery)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [locationQuery])
+
   // Perform search
   useEffect(() => {
-    if (debouncedQuery) {
-      handleSearch(debouncedQuery)
+    if (debouncedQuery || debouncedLocation) {
+      handleSearch(debouncedQuery, debouncedLocation)
     } else {
       setAgencies([])
     }
-  }, [debouncedQuery])
+  }, [debouncedQuery, debouncedLocation])
 
-  const handleSearch = async (query) => {
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowSuggestions(false)
+      setShowLocationSuggestions(false)
+    }
+    
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
+  const handleSearch = async (query, location) => {
     setIsSearching(true)
     try {
-      const response = await fetch(`/api/public/agencies/search?q=${query}`)
+      const params = new URLSearchParams()
+      if (query) params.append('q', query)
+      if (location) params.append('location', location)
+      
+      const response = await fetch(`/api/public/agencies/search?${params.toString()}`)
       if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
         const data = await response.json()
         setAgencies(data)
       } else {
-        // API not available, use mock data
-        setAgencies([
-        {
-          id: 1,
-          name: 'TechHire Solutions',
-          location: 'Kathmandu, Nepal',
-          specializations: ['IT', 'Software Development'],
-          rating: 4.5,
-          activeJobs: 45
-        },
-        {
-          id: 2,
-          name: 'Career Builders Nepal',
-          location: 'Pokhara, Nepal',
-          specializations: ['Engineering', 'Manufacturing'],
-          rating: 4.8,
-          activeJobs: 32
+        // API not available, use mock data filtered by location if provided
+        let mockData = [
+          {
+            id: 1,
+            name: 'TechHire Solutions',
+            location: 'Kathmandu, Nepal',
+            specializations: ['IT', 'Software Development'],
+            rating: 4.5,
+            activeJobs: 45
+          },
+          {
+            id: 2,
+            name: 'Career Builders Nepal',
+            location: 'Pokhara, Nepal',
+            specializations: ['Engineering', 'Manufacturing'],
+            rating: 4.8,
+            activeJobs: 32
+          },
+          {
+            id: 3,
+            name: 'Himalayan Recruitment',
+            location: 'Lalitpur, Nepal',
+            specializations: ['Healthcare', 'Education'],
+            rating: 4.6,
+            activeJobs: 28
+          }
+        ]
+        
+        // Filter by location if provided
+        if (location) {
+          mockData = mockData.filter(agency => 
+            agency.location.toLowerCase().includes(location.toLowerCase())
+          )
         }
-      ])
+        
+        setAgencies(mockData)
       }
     } catch (error) {
       // Silently use mock data when API is not available
-      setAgencies([
+      let mockData = [
         {
           id: 1,
           name: 'TechHire Solutions',
@@ -70,8 +144,25 @@ const AgencySearch = ({ t }) => {
           specializations: ['Engineering', 'Manufacturing'],
           rating: 4.8,
           activeJobs: 32
+        },
+        {
+          id: 3,
+          name: 'Himalayan Recruitment',
+          location: 'Lalitpur, Nepal',
+          specializations: ['Healthcare', 'Education'],
+          rating: 4.6,
+          activeJobs: 28
         }
-      ])
+      ]
+      
+      // Filter by location if provided
+      if (location) {
+        mockData = mockData.filter(agency => 
+          agency.location.toLowerCase().includes(location.toLowerCase())
+        )
+      }
+      
+      setAgencies(mockData)
     } finally {
       setIsSearching(false)
     }
@@ -212,27 +303,120 @@ const AgencySearch = ({ t }) => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 border-2 border-gray-200 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Job Title/Keywords */}
-              <div className="flex-1 relative">
+              <div className="flex-[3] relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <input
                   type="text"
                   placeholder={t('search.placeholder')}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setShowSuggestions(e.target.value.length > 0)
+                  }}
+                  onFocus={() => setShowSuggestions(searchQuery.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery) {
-                      handleSearch(searchQuery)
+                    if (e.key === 'Enter' && (searchQuery || locationQuery)) {
+                      handleSearch(searchQuery, locationQuery)
+                      setShowSuggestions(false)
+                    }
+                    if (e.key === 'Escape') {
+                      setShowSuggestions(false)
                     }
                   }}
                   className="w-full pl-12 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all"
                 />
+                
+                {/* Job Suggestions Dropdown */}
+                {showSuggestions && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                    <div className="p-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">SUGGESTIONS</span>
+                      </div>
+                      {jobSuggestions
+                        .filter(suggestion => 
+                          suggestion.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .slice(0, 6)
+                        .map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              setSearchQuery(suggestion)
+                              setShowSuggestions(false)
+                              setShowDownloadModal(true)
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Location */}
+              <div className="flex-[1] relative">
+                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder={t('search.locationPlaceholder') || 'Location (e.g., Kathmandu, Pokhara)'}
+                  value={locationQuery}
+                  onChange={(e) => {
+                    setLocationQuery(e.target.value)
+                    setShowLocationSuggestions(e.target.value.length > 0)
+                  }}
+                  onFocus={() => setShowLocationSuggestions(locationQuery.length > 0)}
+                  onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (searchQuery || locationQuery)) {
+                      handleSearch(searchQuery, locationQuery)
+                      setShowLocationSuggestions(false)
+                    }
+                    if (e.key === 'Escape') {
+                      setShowLocationSuggestions(false)
+                    }
+                  }}
+                  className="w-full pl-12 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all"
+                />
+                
+                {/* Location Suggestions Dropdown */}
+                {showLocationSuggestions && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                    <div className="p-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">LOCATIONS</span>
+                      </div>
+                      {locationSuggestions
+                        .filter(suggestion => 
+                          suggestion.toLowerCase().includes(locationQuery.toLowerCase())
+                        )
+                        .slice(0, 6)
+                        .map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              setLocationQuery(suggestion)
+                              setShowLocationSuggestions(false)
+                              setShowDownloadModal(true)
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Search Button */}
               <button 
                 onClick={() => {
-                  if (searchQuery) {
-                    handleSearch(searchQuery)
+                  if (searchQuery || locationQuery) {
+                    handleSearch(searchQuery, locationQuery)
                   }
                 }}
                 className="px-8 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-2"
@@ -516,6 +700,15 @@ const AgencySearch = ({ t }) => {
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                     {t('search.modal.title')}
                   </h3>
+                  {(searchQuery || locationQuery) && (
+                    <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                        {searchQuery && `"${searchQuery}"`}
+                        {searchQuery && locationQuery && " in "}
+                        {locationQuery && `${locationQuery}`}
+                      </p>
+                    </div>
+                  )}
                   <p className="text-gray-600 dark:text-gray-400">
                     {t('search.modal.subtitle')}
                   </p>
