@@ -7,6 +7,7 @@ import {
   Globe,
   FileText,
   ArrowLeft,
+  Map,
 } from "lucide-react";
 import {
   Card,
@@ -49,6 +50,39 @@ const CompanySetup = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleChooseOnMap = () => {
+    // Get current address or default to Nepal
+    const searchQuery = formData.address || "Nepal";
+    
+    // Create Google Maps URL for place search with better parameters
+    const googleMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}/@27.7172,85.3240,11z/data=!3m1!4b1`;
+    
+    // Open Google Maps in a popup window with optimal size
+    const popup = window.open(
+      googleMapsUrl,
+      'googleMapsPopup',
+      'width=1000,height=700,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=yes,status=no,left=200,top=100'
+    );
+
+    // Focus the popup window
+    if (popup) {
+      popup.focus();
+      
+      // Show user-friendly instructions
+      setTimeout(() => {
+        if (confirm('Google Maps has opened in a new window.\n\n1. Search for your exact location\n2. Right-click on the location pin\n3. Copy the address from the popup\n4. Come back and paste it in the address field\n\nClick OK to continue, or Cancel to close the map.')) {
+          // User clicked OK, keep the popup open
+        } else {
+          // User clicked Cancel, close the popup
+          popup.close();
+        }
+      }, 1000);
+    } else {
+      // Popup was blocked
+      alert('Popup blocked! Please allow popups for this site and try again.\n\nAlternatively, you can manually enter your address in the field above.');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -152,10 +186,22 @@ const CompanySetup = () => {
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
+                    className="block w-full pl-10 pr-24 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter company address"
                   />
+                  <button
+                    type="button"
+                    onClick={handleChooseOnMap}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-blue-300 transition-colors"
+                    title="Open Google Maps to find your exact location"
+                  >
+                    <Map className="h-4 w-4 mr-1" />
+                    Choose on Map
+                  </button>
                 </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Click "Choose on Map" to find your exact location using Google Maps
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -328,6 +374,7 @@ const CompanySetup = () => {
           </CardContent>
         </Card>
       </div>
+
     </div>
   );
 };
