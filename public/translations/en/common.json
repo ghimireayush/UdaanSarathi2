@@ -46,5 +46,37 @@
     "interviews": "Interviews",
     "settings": "Settings",
     "logout": "Logout"
+  },
+  "page": {
+    "navigation": {
+      "items": {
+        "dashboard": "Dashboard",
+        "jobs": "Jobs",
+        "drafts": "Drafts",
+        "applications": "Applications",
+        "interviews": "Interviews",
+        "workflow": "Workflow",
+        "teamMembers": "Team Members",
+        "auditLog": "Audit Log",
+        "agencySettings": "Agency Settings"
+      },
+      "userMenu": {
+        "logout": "Logout"
+      }
+    }
+  },
+  "items": {
+    "dashboard": "Dashboard",
+    "jobs": "Jobs",
+    "drafts": "Drafts",
+    "applications": "Applications",
+    "interviews": "Interviews",
+    "workflow": "Workflow",
+    "teamMembers": "Team Members",
+    "auditLog": "Audit Log",
+    "agencySettings": "Agency Settings"
+  },
+  "userMenu": {
+    "logout": "Logout"
   }
 }

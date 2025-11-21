@@ -6,9 +6,23 @@ const AISchedulingAssistant = ({
   existingMeetings = [],
   participants = [],
   onScheduleSelect,
+  onAutoSchedule,
   constraints = {},
   className = ''
 }) => {
+  // Validate and sanitize constraints prop
+  const sanitizedConstraints = {
+    ...constraints,
+    dateRange: {
+      start: constraints.dateRange?.start && !isNaN(new Date(constraints.dateRange.start)) 
+        ? new Date(constraints.dateRange.start) 
+        : new Date(),
+      end: constraints.dateRange?.end && !isNaN(new Date(constraints.dateRange.end)) 
+        ? new Date(constraints.dateRange.end) 
+        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    }
+  }
+
   const [suggestions, setSuggestions] = useState([])
   const [recommendations, setRecommendations] = useState([])
   const [analytics, setAnalytics] = useState(null)
@@ -16,15 +30,18 @@ const AISchedulingAssistant = ({
   const [error, setError] = useState(null)
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [autoScheduleMode, setAutoScheduleMode] = useState(false)
-  const [schedulingConstraints, setSchedulingConstraints] = useState({
-    duration: 60,
-    priority: 'medium',
-    meetingType: 'interview',
-    dateRange: {
-      start: new Date(),
-      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    },
-    ...constraints
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [schedulingConstraints, setSchedulingConstraints] = useState(() => {
+    return {
+      duration: 60,
+      priority: 'medium',
+      meetingType: 'interview',
+      dateRange: {
+        start: sanitizedConstraints.dateRange.start,
+        end: sanitizedConstraints.dateRange.end
+      },
+      ...sanitizedConstraints
+    }
   })
 
   // Generate AI scheduling suggestions
@@ -35,57 +52,469 @@ const AISchedulingAssistant = ({
     setError(null)
 
     try {
+      console.log('Generating suggestions with:', { existingMeetings, participants, schedulingConstraints })
       const result = await aiSchedulingService.generateSchedulingSuggestions(
         existingMeetings,
         participants,
         schedulingConstraints
       )
+      console.log('AI service result:', result)
 
       setSuggestions(result.suggestions)
       setRecommendations(result.recommendations)
       setAnalytics(result.analytics)
+      
+      console.log('Set suggestions:', result.suggestions.length)
+      console.log('Set recommendations:', result.recommendations.length)
     } catch (err) {
+      console.error('Error generating suggestions:', err)
       setError(err.message)
     } finally {
       setLoading(false)
     }
   }, [existingMeetings, participants, schedulingConstraints])
 
-  // Auto-schedule multiple meetings
-  const handleAutoSchedule = useCallback(async (meetings) => {
-    setLoading(true)
-    setError(null)
 
-    try {
-      const result = await aiSchedulingService.autoScheduleMeetings(
-        meetings,
-        { existingMeetings, ...schedulingConstraints }
-      )
-
-      // Handle results
-      if (result.scheduled.length > 0) {
-        result.scheduled.forEach(meeting => {
-          onScheduleSelect?.(meeting)
-        })
-      }
-
-      return result
-    } catch (err) {
-      setError(err.message)
-      return null
-    } finally {
-      setLoading(false)
-    }
-  }, [existingMeetings, schedulingConstraints, onScheduleSelect])
 
   // Handle slot selection
   const handleSlotSelect = (slot) => {
+    console.log('Slot selected:', slot)
     setSelectedSlot(slot)
     onScheduleSelect?.(slot)
   }
 
+  // Handle applying AI schedule
+  const handleApplyAISchedule = useCallback(async () => {
+    if (!onAutoSchedule) {
+      setError('Auto-schedule function not available')
+      return
+    }
+
+    if (!selectedSlot) {
+      setError('Please select a time slot before applying AI schedule')
+      return
+    }
+
+    if (participants.length === 0) {
+      setError('No participants available for scheduling')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Validate the selected slot
+      if (!selectedSlot.start || !selectedSlot.end) {
+        throw new Error('Invalid time slot selected - missing start or end time')
+      }
+
+      // Check if the slot is in the past
+      const slotStart = new Date(selectedSlot.start)
+      const now = new Date()
+      console.log('Selected slot start:', slotStart)
+      console.log('Current time:', now)
+      if (slotStart <= now) {
+        throw new Error('Cannot schedule interviews in the past. Please select a future time slot.')
+      }
+
+      // Check for conflicts with existing meetings
+      const conflictingMeetings = existingMeetings.filter(meeting => {
+        const meetingStart = new Date(meeting.scheduled_at)
+        const meetingEnd = new Date(meetingStart.getTime() + (meeting.duration || 60) * 60000)
+        const slotEnd = new Date(selectedSlot.end)
+        
+        return (slotStart < meetingEnd && slotEnd > meetingStart)
+      })
+
+      console.log('Checking conflicts for AI schedule:')
+      console.log('Selected slot time:', slotStart.toISOString(), 'to', new Date(selectedSlot.end).toISOString())
+      console.log('Existing meetings:', existingMeetings.length)
+      console.log('Conflicting meetings:', conflictingMeetings.length)
+
+      if (conflictingMeetings.length > 0) {
+        console.log('Conflicts found:', conflictingMeetings)
+        throw new Error(`Selected time slot conflicts with ${conflictingMeetings.length} existing meeting(s). Please select a different time slot.`)
+      }
+
+      // Prepare meetings data for auto-scheduling
+      const meetingsToSchedule = participants.map(participant => ({
+        participant_id: participant.id,
+        participant_name: participant.name,
+        participant_email: participant.email,
+        scheduled_at: selectedSlot.start,
+        duration: schedulingConstraints.duration,
+        meeting_type: schedulingConstraints.meetingType,
+        priority: schedulingConstraints.priority,
+        notes: `AI-scheduled interview - Score: ${selectedSlot.score}`
+      }))
+
+      // Apply the AI schedule
+      console.log('Calling onAutoSchedule with:', meetingsToSchedule)
+      const result = await onAutoSchedule(meetingsToSchedule)
+      console.log('onAutoSchedule result:', result)
+
+      if (!result) {
+        throw new Error('Failed to apply AI schedule - no result returned')
+      }
+
+      if (result.failed && result.failed.length > 0) {
+        const failedNames = result.failed.map(f => f.participant_name || 'Unknown').join(', ')
+        throw new Error(`Failed to schedule interviews for: ${failedNames}`)
+      }
+
+      if (result.scheduled && result.scheduled.length > 0) {
+        // Success - clear selection and show success message
+        setSelectedSlot(null)
+        setError(null)
+        setSuccessMessage(`Successfully scheduled ${result.scheduled.length} interview${result.scheduled.length > 1 ? 's' : ''} using AI recommendations`)
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000)
+      } else {
+        throw new Error('No interviews were scheduled successfully')
+      }
+
+    } catch (err) {
+      console.error('AI Schedule application failed:', err)
+      setError(`Failed to apply AI schedule: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [selectedSlot, participants, existingMeetings, schedulingConstraints, onAutoSchedule])
+
+  // Handle applying suggested schedule from recommendations
+  const handleApplySuggestedSchedule = useCallback(async () => {
+    if (!onAutoSchedule) {
+      setError('Auto-schedule function not available')
+      return
+    }
+
+    if (recommendations.length === 0) {
+      setError('No AI recommendations available to apply')
+      return
+    }
+
+    if (participants.length === 0) {
+      setError('No participants available for scheduling')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Find the best recommendations with slots
+      const recommendationsWithSlots = recommendations.filter(rec => rec.slots && rec.slots.length > 0)
+      
+      if (recommendationsWithSlots.length === 0) {
+        throw new Error('No recommended time slots available to apply')
+      }
+
+      // Get the highest priority (lowest number) recommendation with slots
+      const bestRecommendation = recommendationsWithSlots
+        .sort((a, b) => (a.priority || 0) - (b.priority || 0))[0]
+
+      if (!bestRecommendation.slots || bestRecommendation.slots.length === 0) {
+        throw new Error('Selected recommendation has no available time slots')
+      }
+
+      // Use the best slot from the recommendation
+      const bestSlot = bestRecommendation.slots
+        .sort((a, b) => (b.score || 0) - (a.score || 0))[0]
+
+      // Validate the slot
+      if (!bestSlot.start || !bestSlot.end) {
+        throw new Error('Invalid recommended time slot - missing start or end time')
+      }
+
+      // Check if the slot is in the past
+      const slotStart = new Date(bestSlot.start)
+      const now = new Date()
+      console.log('Best slot start:', slotStart)
+      console.log('Current time:', now)
+      if (slotStart <= now) {
+        throw new Error('Cannot schedule interviews in the past. Please adjust the date range.')
+      }
+
+      // Check for conflicts with existing meetings
+      const conflictingMeetings = existingMeetings.filter(meeting => {
+        const meetingStart = new Date(meeting.scheduled_at)
+        const meetingEnd = new Date(meetingStart.getTime() + (meeting.duration || 60) * 60000)
+        const slotEnd = new Date(bestSlot.end)
+        
+        return (slotStart < meetingEnd && slotEnd > meetingStart)
+      })
+
+      console.log('Checking conflicts for suggested schedule:')
+      console.log('Slot time:', slotStart.toISOString(), 'to', new Date(bestSlot.end).toISOString())
+      console.log('Existing meetings:', existingMeetings?.length || 0)
+      console.log('Conflicting meetings:', conflictingMeetings.length)
+
+      // Handle case where existingMeetings might be undefined or empty
+      if (!existingMeetings || existingMeetings.length === 0) {
+        console.log('No existing meetings to check conflicts against')
+        // No conflicts possible if no existing meetings
+      }
+
+      if (conflictingMeetings.length > 0) {
+        console.log('Conflicts found:', conflictingMeetings)
+        // Try to find an alternative slot from recommendations
+        const alternativeSlots = bestRecommendation.slots
+          .filter(slot => {
+            const altStart = new Date(slot.start)
+            const altEnd = new Date(slot.end)
+            return !existingMeetings.some(meeting => {
+              const meetingStart = new Date(meeting.scheduled_at)
+              const meetingEnd = new Date(meetingStart.getTime() + (meeting.duration || 60) * 60000)
+              return (altStart < meetingEnd && altEnd > meetingStart)
+            })
+          })
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+
+        if (alternativeSlots.length > 0) {
+          console.log('Using alternative slot:', alternativeSlots[0])
+          // Use the best alternative slot
+          const altSlot = alternativeSlots[0]
+          bestSlot.start = altSlot.start
+          bestSlot.end = altSlot.end
+        } else {
+          throw new Error('All recommended time slots conflict with existing meetings. Please try a different date range.')
+        }
+      }
+
+      // Prepare meetings data for auto-scheduling based on recommendation
+      const meetingsToSchedule = participants.map(participant => ({
+        participant_id: participant.id,
+        participant_name: participant.name,
+        participant_email: participant.email,
+        scheduled_at: bestSlot.start,
+        duration: schedulingConstraints.duration,
+        meeting_type: schedulingConstraints.meetingType,
+        priority: schedulingConstraints.priority,
+        notes: `AI-suggested schedule - ${bestRecommendation.title} (Score: ${bestSlot.score})`
+      }))
+
+      // Apply the suggested schedule
+      console.log('Calling onAutoSchedule for suggested schedule with:', meetingsToSchedule)
+      const result = await onAutoSchedule(meetingsToSchedule)
+      console.log('Suggested schedule result:', result)
+
+      if (!result) {
+        throw new Error('Failed to apply suggested schedule - no result returned')
+      }
+
+      if (result.failed && result.failed.length > 0) {
+        const failedNames = result.failed.map(f => f.participant_name || 'Unknown').join(', ')
+        throw new Error(`Failed to schedule interviews for: ${failedNames}`)
+      }
+
+      if (result.scheduled && result.scheduled.length > 0) {
+        // Success - clear states and show success message
+        setSelectedSlot(null)
+        setError(null)
+        setSuccessMessage(`Successfully applied AI suggestions and scheduled ${result.scheduled.length} interview${result.scheduled.length > 1 ? 's' : ''} based on: ${bestRecommendation.title}`)
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000)
+      } else {
+        throw new Error('No interviews were scheduled successfully')
+      }
+
+    } catch (err) {
+      console.error('Suggested schedule application failed:', err)
+      setError(`Failed to apply suggested schedule: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [recommendations, participants, existingMeetings, schedulingConstraints, onAutoSchedule])
+
+  // Handle batch scheduling
+  const handleScheduleBatch = useCallback(async () => {
+    if (!onAutoSchedule) {
+      setError('Auto-schedule function not available')
+      return
+    }
+
+    if (participants.length === 0) {
+      setError('No participants available for batch scheduling')
+      return
+    }
+
+    if (suggestions.length === 0) {
+      console.log('No AI suggestions available, will use fallback slots for all participants')
+      // Don't return error, let the batch scheduling create fallback slots
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Get the best available time slot for batch scheduling
+      const now = new Date()
+      const futureSlots = suggestions
+        .filter(slot => {
+          if (!slot.start || !slot.end) return false
+          const slotStart = new Date(slot.start)
+          return slotStart > now // Only future slots
+        })
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+
+      if (futureSlots.length === 0) {
+        // Try to generate a default future slot
+        const tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        tomorrow.setHours(10, 0, 0, 0) // 10 AM tomorrow
+        
+        console.log('No AI suggestions available, using default slot:', tomorrow.toISOString())
+        
+        const defaultSlot = {
+          start: tomorrow,
+          end: new Date(tomorrow.getTime() + (schedulingConstraints.duration || 60) * 60 * 1000),
+          score: 75,
+          time: '10:00'
+        }
+        
+        futureSlots.push(defaultSlot)
+      }
+
+      const bestSlot = futureSlots[0]
+      const slotStart = new Date(bestSlot.start)
+      
+      console.log('Selected slot for batch:', bestSlot)
+      console.log('Slot start time:', slotStart.toISOString())
+      console.log('Current time:', now.toISOString())
+      console.log('Time difference (minutes):', (slotStart - now) / (1000 * 60))
+
+      // Calculate batch scheduling parameters
+      const batchSize = Math.min(participants.length, 5) // Limit batch size to 5
+      const interviewDuration = schedulingConstraints.duration || 60
+
+      // Create batch schedule using different available slots for each participant
+      const batchSchedule = []
+      const usedSlots = [] // Track used slots to avoid double booking within batch
+      
+      for (let i = 0; i < batchSize; i++) {
+        const participant = participants[i]
+        
+        // Find an available slot for this participant
+        let selectedSlot = null
+        
+        // Try to use available future slots first (if any)
+        for (const slot of (futureSlots || [])) {
+          const slotStart = new Date(slot.start)
+          const slotEnd = new Date(slot.end)
+          
+          // Check if this slot is already used in this batch
+          const slotUsed = usedSlots.some(usedSlot => {
+            const usedStart = new Date(usedSlot.start)
+            const usedEnd = new Date(usedSlot.end)
+            return (slotStart < usedEnd && slotEnd > usedStart)
+          })
+          
+          if (slotUsed) continue
+          
+          // Check for conflicts with existing meetings
+          const conflictingMeetings = existingMeetings.filter(meeting => {
+            const meetingStart = new Date(meeting.scheduled_at)
+            const meetingEnd = new Date(meetingStart.getTime() + (meeting.duration || 60) * 60000)
+            
+            return (slotStart < meetingEnd && slotEnd > meetingStart)
+          })
+
+          if (conflictingMeetings.length === 0) {
+            selectedSlot = slot
+            usedSlots.push(slot)
+            break
+          }
+        }
+        
+        // If no slot found in suggestions, create a new slot for tomorrow
+        if (!selectedSlot) {
+          const tomorrow = new Date()
+          tomorrow.setDate(tomorrow.getDate() + 1 + i) // Different day for each participant
+          tomorrow.setHours(10 + (i * 2), 0, 0, 0) // 10 AM, 12 PM, 2 PM, etc.
+          
+          selectedSlot = {
+            start: tomorrow,
+            end: new Date(tomorrow.getTime() + interviewDuration * 60000),
+            score: 70
+          }
+          
+          console.log(`Created fallback slot for ${participant.name}:`, selectedSlot.start.toISOString())
+        }
+
+        batchSchedule.push({
+          participant_id: participant.id,
+          participant_name: participant.name,
+          participant_email: participant.email,
+          scheduled_at: selectedSlot.start.toISOString(),
+          duration: interviewDuration,
+          meeting_type: schedulingConstraints.meetingType,
+          priority: schedulingConstraints.priority,
+          notes: `Batch scheduled interview - Batch 1, Position ${i + 1}/${batchSize} (Score: ${selectedSlot.score})`
+        })
+        
+        console.log(`Scheduled ${participant.name} for ${selectedSlot.start.toISOString()}`)
+      }
+
+      if (batchSchedule.length === 0) {
+        throw new Error('No interviews could be scheduled in the batch due to conflicts. Please try a different time or date range.')
+      }
+
+      console.log(`Created batch schedule for ${batchSchedule.length} participants:`, batchSchedule)
+
+      // Apply the batch schedule
+      console.log('Calling onAutoSchedule for batch schedule with:', batchSchedule)
+      const result = await onAutoSchedule(batchSchedule)
+      console.log('Batch schedule result:', result)
+
+      if (!result) {
+        throw new Error('Failed to schedule batch - no result returned')
+      }
+
+      if (result.failed && result.failed.length > 0) {
+        const failedNames = result.failed.map(f => f.participant_name || 'Unknown').join(', ')
+        throw new Error(`Failed to schedule batch interviews for: ${failedNames}`)
+      }
+
+      if (result.scheduled && result.scheduled.length > 0) {
+        // Success - clear states and show success message
+        setSelectedSlot(null)
+        setError(null)
+        
+        const scheduledCount = result.scheduled.length
+        const startTime = new Date(batchSchedule[0].scheduled_at).toLocaleTimeString()
+        const endTime = new Date(batchSchedule[scheduledCount - 1].scheduled_at).toLocaleTimeString()
+        
+        setSuccessMessage(`Successfully scheduled batch of ${scheduledCount} interview${scheduledCount > 1 ? 's' : ''} from ${startTime} to ${endTime}`)
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000)
+      } else {
+        throw new Error('No interviews were scheduled successfully in the batch')
+      }
+
+    } catch (err) {
+      console.error('Batch scheduling failed:', err)
+      setError(`Failed to schedule batch: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [participants, suggestions, existingMeetings, schedulingConstraints, onAutoSchedule])
+
   // Update constraints
   const updateConstraints = (newConstraints) => {
+    // Validate dates if they're being updated
+    if (newConstraints.dateRange) {
+      const { start, end } = newConstraints.dateRange
+      if (start && (isNaN(start) || !(start instanceof Date))) {
+        newConstraints.dateRange.start = new Date()
+      }
+      if (end && (isNaN(end) || !(end instanceof Date))) {
+        newConstraints.dateRange.end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      }
+    }
     setSchedulingConstraints(prev => ({ ...prev, ...newConstraints }))
   }
 
@@ -137,7 +566,11 @@ const AISchedulingAssistant = ({
             ? 'border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-600' 
             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
         }`}
-        onClick={() => onSelect(slot)}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onSelect(slot)
+        }}
       >
         <div className="flex justify-between items-start mb-3">
           <div>
@@ -288,31 +721,49 @@ const AISchedulingAssistant = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="date"
-              value={schedulingConstraints.dateRange.start.toISOString().split('T')[0]}
-              onChange={(e) => updateConstraints({
-                dateRange: {
-                  ...schedulingConstraints.dateRange,
-                  start: new Date(e.target.value)
-                }
-              })}
-              className="form-input flex-1"
-            />
-            <span className="text-gray-500 dark:text-gray-400 text-sm">to</span>
-            <input
-              type="date"
-              value={schedulingConstraints.dateRange.end.toISOString().split('T')[0]}
-              onChange={(e) => updateConstraints({
-                dateRange: {
-                  ...schedulingConstraints.dateRange,
-                  end: new Date(e.target.value)
-                }
-              })}
-              className="form-input flex-1"
-            />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Date Range
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(Click calendar icon to select)</span>
+          </label>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Start Date</label>
+              <input
+                type="date"
+                value={schedulingConstraints.dateRange.start && !isNaN(schedulingConstraints.dateRange.start) 
+                  ? schedulingConstraints.dateRange.start.toISOString().split('T')[0] 
+                  : new Date().toISOString().split('T')[0]}
+                onChange={(e) => updateConstraints({
+                  dateRange: {
+                    ...schedulingConstraints.dateRange,
+                    start: new Date(e.target.value)
+                  }
+                })}
+                className="form-input w-full cursor-pointer"
+                min={new Date().toISOString().split('T')[0]}
+                title="Click to open calendar picker"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">End Date</label>
+              <input
+                type="date"
+                value={schedulingConstraints.dateRange.end && !isNaN(schedulingConstraints.dateRange.end) 
+                  ? schedulingConstraints.dateRange.end.toISOString().split('T')[0] 
+                  : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                onChange={(e) => updateConstraints({
+                  dateRange: {
+                    ...schedulingConstraints.dateRange,
+                    end: new Date(e.target.value)
+                  }
+                })}
+                className="form-input w-full cursor-pointer"
+                min={schedulingConstraints.dateRange.start && !isNaN(schedulingConstraints.dateRange.start) 
+                  ? schedulingConstraints.dateRange.start.toISOString().split('T')[0] 
+                  : new Date().toISOString().split('T')[0]}
+                title="Click to open calendar picker"
+              />
+            </div>
           </div>
         </div>
 
@@ -405,6 +856,17 @@ const AISchedulingAssistant = ({
         </div>
       )}
 
+      {successMessage && (
+        <div className="mx-6 mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-green-800 dark:text-green-200">{successMessage}</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row min-h-[600px]">
         {/* Left Panel - Constraints */}
         <div className="w-full lg:w-80 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
@@ -423,12 +885,28 @@ const AISchedulingAssistant = ({
 
           {recommendations.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                <svg className="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                AI Recommendations
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                  <svg className="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  AI Recommendations
+                </h3>
+                <button
+                  onClick={() => handleApplySuggestedSchedule()}
+                  disabled={loading || recommendations.length === 0}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  title="Apply all AI recommendations automatically"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  {loading ? 'Applying...' : 'Apply Suggested Schedule'}
+                </button>
+              </div>
               <div className="space-y-4">
                 {recommendations
                   .sort((a, b) => a.priority - b.priority)
@@ -441,7 +919,52 @@ const AISchedulingAssistant = ({
 
           {suggestions.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Alternative Time Slots</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Alternative Time Slots</h3>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => handleScheduleBatch()}
+                    disabled={loading || participants.length === 0}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    title="Schedule interviews in batches for better organization"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    {loading ? 'Scheduling...' : 'Schedule 1 Batch'}
+                  </button>
+                  {autoScheduleMode && (
+                    <button
+                      onClick={() => handleApplyAISchedule()}
+                      disabled={loading || !selectedSlot}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                      title={!selectedSlot ? "Please select a time slot first" : "Apply the selected AI schedule"}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                        <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+                      </svg>
+                      {loading ? 'Applying...' : 'Apply AI Schedule'}
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {autoScheduleMode && !selectedSlot && (
+                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm text-blue-800 dark:text-blue-200">
+                      Auto-schedule mode is enabled. Select a time slot below to apply AI scheduling.
+                    </span>
+                  </div>
+                </div>
+              )}
+              
               <div className="space-y-4">
                 {suggestions.map((slot, index) => (
                   <TimeSlotCard

@@ -201,10 +201,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     }).join('\n\n')
   }
 
-  // Debug: Monitor actionType and selectedCandidate changes
-  useEffect(() => {
-    console.log('State changed - actionType:', actionType, 'selectedCandidate:', selectedCandidate?.name)
-  }, [actionType, selectedCandidate])
+
 
   const loadInterviews = async () => {
     try {
@@ -449,6 +446,12 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
   const handleAction = async (candidate, action, additionalData = null) => {
     try {
+      // Early return if candidate is null or undefined
+      if (!candidate) {
+        console.warn('handleAction called with null/undefined candidate')
+        return
+      }
+      
       setIsProcessing(true)
       
       // Get the new note content and trim to max length
@@ -539,10 +542,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
       )
       
       // Update selected candidate to show new notes immediately
-      setSelectedCandidate(prev => ({
+      setSelectedCandidate(prev => prev ? ({
         ...prev,
         interview: { ...prev.interview, ...updateData }
-      }))
+      }) : null)
 
       // Only close sidebar for non-note actions
       if (action !== 'take_notes') {
@@ -952,10 +955,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                                             )
                                             
                                             // Update selected candidate
-                                            setSelectedCandidate(prev => ({
+                                            setSelectedCandidate(prev => prev ? ({
                                               ...prev,
                                               interview: { ...prev.interview, notes: updatedNotes }
-                                            }))
+                                            }) : null)
                                             
                                             alert('Note deleted successfully!')
                                           } catch (error) {
@@ -1572,12 +1575,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
         )}
       </div>
 
-      {/* Debug: Show actionType state */}
-      {actionType && (
-        <div className="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg" style={{ zIndex: 10000 }}>
-          Debug: actionType = {actionType}, candidate = {selectedCandidate?.name}
-        </div>
-      )}
+
 
       {/* Action Modals */}
       {actionType === 'reject' && selectedCandidate && (

@@ -489,15 +489,67 @@ const Interviews = () => {
                     availability: [] // Would be populated from candidate availability data
                   }))}
                   onScheduleSelect={(slot) => {
-                    // Handle AI-suggested schedule selection
-                    console.log('AI suggested slot:', slot)
+                    // Handle AI-suggested schedule selection (just selection, not scheduling)
+                    console.log('AI suggested slot selected:', slot)
+                    // This should only select the slot, actual scheduling happens when buttons are clicked
+                  }}
+                  onAutoSchedule={async (meetings) => {
+                    // Handle batch/auto scheduling
+                    try {
+                      console.log('Auto-scheduling meetings:', meetings)
+                      
+                      const results = {
+                        scheduled: [],
+                        failed: []
+                      }
+                      
+                      // Schedule each meeting
+                      for (const meeting of meetings) {
+                        try {
+                          const result = await interviewService.scheduleInterview({
+                            candidate_id: meeting.participant_id,
+                            job_id: selectedJob,
+                            scheduled_at: meeting.scheduled_at,
+                            duration: meeting.duration || 60,
+                            interviewer: meeting.interviewer || '',
+                            location: meeting.location || 'Office',
+                            notes: meeting.notes || 'Auto-scheduled interview',
+                            status: 'scheduled'
+                          })
+                          
+                          if (result) {
+                            results.scheduled.push({
+                              ...result,
+                              participant_name: meeting.participant_name
+                            })
+                          }
+                        } catch (error) {
+                          console.error(`Failed to schedule interview for ${meeting.participant_name}:`, error)
+                          results.failed.push({
+                            participant_id: meeting.participant_id,
+                            participant_name: meeting.participant_name,
+                            error: error.message
+                          })
+                        }
+                      }
+                      
+                      // Refresh interviews data if any were scheduled
+                      if (results.scheduled.length > 0) {
+                        await loadData()
+                      }
+                      
+                      return results
+                    } catch (error) {
+                      console.error('Auto-scheduling failed:', error)
+                      throw error
+                    }
                   }}
                   constraints={{
                     duration: 60,
                     priority: 'high',
                     meetingType: 'interview',
                     dateRange: {
-                      start: new Date(),
+                      start: new Date(Date.now() + 60 * 60 * 1000), // Start 1 hour from now
                       end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 2 weeks
                     }
                   }}
