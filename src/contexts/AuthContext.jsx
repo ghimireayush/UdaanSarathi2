@@ -61,6 +61,95 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const loginStart = async ({ phone }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.loginStartWithBackend({ phone })
+      return result
+    } catch (error) {
+      console.error('Login start (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const loginVerify = async ({ phone, otp }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.loginVerifyWithBackend({ phone, otp })
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      localStorage.setItem('login_portal', 'admin')
+      return result
+    } catch (error) {
+      console.error('Login verify (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const registerOwnerWithBackend = async ({ fullName, phone }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.registerOwnerWithBackend({ fullName, phone })
+      return result
+    } catch (error) {
+      console.error('Owner registration (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const ownerLoginStart = async ({ phone }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.loginStartOwnerWithBackend({ phone })
+      return result
+    } catch (error) {
+      console.error('Owner login start (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const ownerLoginVerify = async ({ phone, otp }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.loginVerifyOwnerWithBackend({ phone, otp })
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      localStorage.setItem('login_portal', 'owner')
+      return result
+    } catch (error) {
+      console.error('Owner login verify (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const verifyOwnerWithBackend = async ({ phone, otp }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.verifyOwnerWithBackend({ phone, otp })
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      return result
+    } catch (error) {
+      console.error('Owner verification (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const login = async (username, password) => {
     try {
       setIsLoading(true)
@@ -262,10 +351,16 @@ export const AuthProvider = ({ children }) => {
     permissions,
     
     // Actions
-    login,
+    login, // legacy mock admin login
+    loginStart,
+    loginVerify,
     ownerLogin,
+    ownerLoginStart,
+    ownerLoginVerify,
     memberLogin,
     register,
+    registerOwnerWithBackend,
+    verifyOwnerWithBackend,
     createCompany,
     logout,
     updateUser,

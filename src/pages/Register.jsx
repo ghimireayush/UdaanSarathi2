@@ -20,10 +20,11 @@ const Register = () => {
   const [otp, setOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [registrationData, setRegistrationData] = useState(null)
+  const [devOtp, setDevOtp] = useState('')
   const [showContent, setShowContent] = useState(false)
   
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const { registerOwnerWithBackend, verifyOwnerWithBackend } = useAuth()
   const { tPageSync, isLoading: languageLoading } = useLanguage({ 
     pageName: 'register', 
     autoLoad: true 
@@ -66,22 +67,15 @@ const Register = () => {
     setLoading(true)
     
     try {
-      // Simulate sending OTP to phone number
-      // In real implementation, this would call an API to send OTP
-      console.log(`Sending OTP to ${formData.phone}`)
-      
-      // Store registration data for later use
+      const result = await registerOwnerWithBackend({
+        fullName: formData.fullName,
+        phone: formData.phone
+      })
+
       setRegistrationData(formData)
-      
-      // Show OTP field
       setShowOtpField(true)
+      setDevOtp(result?.dev_otp || '')
       setError('')
-      
-      // Simulate OTP sent success message
-      setTimeout(() => {
-        setError('')
-      }, 100)
-      
     } catch (err) {
       setError(err.message || tPage('messages.failedToSendOtp'))
     } finally {
@@ -101,17 +95,14 @@ const Register = () => {
     setOtpLoading(true)
     
     try {
-      // Simulate OTP verification
-      // In real implementation, this would verify OTP with backend
-      if (otp === '123456') { // Mock OTP for demo
-        const result = await register(registrationData)
-        // After successful OTP verification, redirect to company setup
-        navigate('/setup-company', { 
-          state: { userId: result.user.id }
-        })
-      } else {
-        setError(tPage('messages.incorrectOtp'))
-      }
+      const verifyResult = await verifyOwnerWithBackend({
+        phone: registrationData.phone,
+        otp
+      })
+
+      navigate('/setup-company', { 
+        state: { userId: verifyResult.user.id }
+      })
     } catch (err) {
       setError(err.message || tPage('messages.failedToVerifyOtp'))
     } finally {
@@ -119,11 +110,22 @@ const Register = () => {
     }
   }
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
+    if (!registrationData?.phone || !registrationData?.fullName) return
     setError('')
-    console.log(`Resending OTP to ${registrationData.phone}`)
-    // In real implementation, this would call API to resend OTP
-    setError('')
+    setOtp('')
+    setOtpLoading(true)
+    try {
+      const result = await registerOwnerWithBackend({
+        fullName: registrationData.fullName,
+        phone: registrationData.phone
+      })
+      setDevOtp(result?.dev_otp || '')
+    } catch (err) {
+      setError(err.message || tPage('messages.failedToSendOtp'))
+    } finally {
+      setOtpLoading(false)
+    }
   }
 
   // Show loading screen while translations are loading or minimum time hasn't passed
@@ -280,6 +282,11 @@ const Register = () => {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 mb-4 dark:bg-green-900/20 dark:border-green-700 dark:text-green-200">
                     {tPage('messages.otpSent', { phone: registrationData?.phone })}
                   </div>
+                  {devOtp && (
+                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      Dev OTP: <span className="font-mono font-semibold">{devOtp}</span>
+                    </div>
+                  )}
                   <p className="text-gray-600 text-sm dark:text-gray-400">
                     {tPage('messages.enterOtp')}
                   </p>

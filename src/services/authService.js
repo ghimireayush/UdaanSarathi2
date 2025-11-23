@@ -2,6 +2,9 @@
 import { delay } from '../utils/helpers.js'
 import auditService from './auditService.js'
 
+// Backend API base URL. Update if backend is on a different host or port.
+const API_BASE_URL = 'http://localhost:3000'
+
 // Role definitions with permissions
 export const ROLES = {
   ADMIN: 'admin',
@@ -229,6 +232,190 @@ class AuthService {
     }
   }
 
+  // --- Backend-integrated Owner OTP registration & verification ---
+
+  async registerOwnerWithBackend({ fullName, phone }) {
+    const response = await fetch(`${API_BASE_URL}/agency/register-owner`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        full_name: fullName,
+        phone
+      })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to start registration')
+    }
+
+    const data = await response.json()
+    // Expected: { dev_otp: string }
+    return data
+  }
+
+  async verifyOwnerWithBackend({ phone, otp }) {
+    const response = await fetch(`${API_BASE_URL}/agency/verify-owner`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, otp })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to verify OTP')
+    }
+
+    const data = await response.json()
+    // Expected: { token: string, user_id: string }
+
+    const backendUser = {
+      id: data.user_id,
+      phone,
+      role: ROLES.AGENCY_OWNER,
+      name: 'Agency Owner',
+      isActive: true
+    }
+
+    const permissions = this.getUserPermissions(backendUser.role)
+
+    localStorage.setItem('udaan_token', data.token)
+    localStorage.setItem('udaan_user', JSON.stringify(backendUser))
+    localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+
+    this.currentUser = backendUser
+    this.isAuthenticated = true
+
+    return {
+      token: data.token,
+      user: backendUser,
+      permissions
+    }
+  }
+
+  // --- Backend main login OTP flow (admin portal) ---
+
+  async loginStartWithBackend({ phone }) {
+    const response = await fetch(`${API_BASE_URL}/login/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to start login')
+    }
+
+    const data = await response.json() // { dev_otp }
+    return data
+  }
+
+  async loginVerifyWithBackend({ phone, otp }) {
+    const response = await fetch(`${API_BASE_URL}/login/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, otp })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to verify login')
+    }
+
+    const data = await response.json() // { token, user_id, candidate_id, candidate }
+
+    const backendUser = {
+      id: data.user_id,
+      phone,
+      role: ROLES.ADMIN, // adjust when backend has real roles for this portal
+      isActive: true
+    }
+
+    const permissions = this.getUserPermissions(backendUser.role)
+
+    localStorage.setItem('udaan_token', data.token)
+    localStorage.setItem('udaan_user', JSON.stringify(backendUser))
+    localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+
+    this.currentUser = backendUser
+    this.isAuthenticated = true
+
+    return {
+      token: data.token,
+      user: backendUser,
+      permissions
+    }
+  }
+
+  // --- Backend Owner Login OTP flow ---
+
+  async loginStartOwnerWithBackend({ phone }) {
+    const response = await fetch(`${API_BASE_URL}/agency/login/start-owner`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to start owner login')
+    }
+
+    const data = await response.json() // { dev_otp }
+    return data
+  }
+
+  async loginVerifyOwnerWithBackend({ phone, otp }) {
+    const response = await fetch(`${API_BASE_URL}/agency/login/verify-owner`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, otp })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to verify owner login')
+    }
+
+    const data = await response.json() // { token, user_id }
+
+    const backendUser = {
+      id: data.user_id,
+      phone,
+      role: ROLES.AGENCY_OWNER,
+      name: 'Agency Owner',
+      isActive: true
+    }
+
+    const permissions = this.getUserPermissions(backendUser.role)
+
+    localStorage.setItem('udaan_token', data.token)
+    localStorage.setItem('udaan_user', JSON.stringify(backendUser))
+    localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+
+    this.currentUser = backendUser
+    this.isAuthenticated = true
+
+    return {
+      token: data.token,
+      user: backendUser,
+      permissions
+    }
+  }
+
   /**
    * Login user
    * @param {string} username - Username or email
@@ -277,39 +464,50 @@ class AuthService {
   }
 
   async createCompany(companyData) {
-    await delay(1000) // Simulate API call
-    
     if (!this.currentUser) {
       throw new Error('Not authenticated')
     }
 
-    // Create company
-    const company = {
-      id: `company_${Date.now()}`,
-      ...companyData,
-      ownerId: this.currentUser.id,
-      createdAt: new Date().toISOString(),
-      status: 'active'
+    const token = localStorage.getItem('udaan_token')
+    if (!token) {
+      throw new Error('Missing auth token')
     }
 
-    // In a real app, store this in your backend
-    localStorage.setItem('company_data', JSON.stringify(company))
+    const payload = {
+      name: companyData.companyName,
+      license_number: companyData.registrationNumber,
+      address: companyData.address,
+      city: companyData.city,
+      country: companyData.country,
+      phone: companyData.phone,
+      website: companyData.website,
+      description: companyData.description,
+    }
 
-    // Update user with company reference
-    const updatedUser = {
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to create agency')
+    }
+
+    const data = await response.json() // { id, license_number }
+
+    // Update current user with agency reference (backend also binds user -> agency)
+    this.currentUser = {
       ...this.currentUser,
-      companyId: company.id
+      agency_id: data.id
     }
+    localStorage.setItem('udaan_user', JSON.stringify(this.currentUser))
 
-    const userIndex = MOCK_USERS.findIndex(u => u.id === this.currentUser.id)
-    if (userIndex !== -1) {
-      MOCK_USERS[userIndex] = updatedUser
-    }
-
-    localStorage.setItem('udaan_user', JSON.stringify(updatedUser))
-    this.currentUser = updatedUser
-
-    return company
+    return data
   }
 
   // Agency portal login - Only for ADMIN role (not for owners)

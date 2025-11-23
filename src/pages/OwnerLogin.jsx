@@ -20,7 +20,8 @@ const OwnerLogin = () => {
   const [otpSent, setOtpSent] = useState(false)
   const [sendingOtp, setSendingOtp] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
-  const { ownerLogin, isAuthenticated, user } = useAuth()
+  const [devOtp, setDevOtp] = useState('')
+  const { ownerLoginStart, ownerLoginVerify, isAuthenticated, user } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -131,13 +132,13 @@ const OwnerLogin = () => {
     setError('')
 
     try {
-      // Simulate OTP sending (in production, this would call your backend)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await ownerLoginStart({ phone: username })
       setOtpSent(true)
-      setResendTimer(30) // 30 seconds cooldown
+      setResendTimer(30)
+      setDevOtp(result?.dev_otp || '')
       setError('')
     } catch (err) {
-      setError('Failed to send OTP. Please try again.')
+      setError(err?.message || 'Failed to send OTP. Please try again.')
     } finally {
       setSendingOtp(false)
     }
@@ -162,8 +163,7 @@ const OwnerLogin = () => {
     }
 
     try {
-      // Use ownerLogin method specifically for owner portal (using OTP as password for now)
-      const result = await ownerLogin(username, otp)
+      const result = await ownerLoginVerify({ phone: username, otp })
 
       // Handle "Remember Me"
       if (rememberMe) {
@@ -303,9 +303,14 @@ const OwnerLogin = () => {
                   </button>
                 </div>
                 {otpSent && (
-                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                    ✓ OTP sent successfully! Check your phone.
-                  </p>
+                  <div className="mt-1 text-xs text-green-600 dark:text-green-400">
+                    <p>✓ OTP sent successfully! Check your phone.</p>
+                    {devOtp && (
+                      <p className="mt-1 text-gray-500 dark:text-gray-300">
+                        Dev OTP: <span className="font-mono font-semibold">{devOtp}</span>
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 

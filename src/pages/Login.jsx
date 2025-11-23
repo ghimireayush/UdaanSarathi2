@@ -20,7 +20,8 @@ const Login = () => {
   const [otpSent, setOtpSent] = useState(false)
   const [sendingOtp, setSendingOtp] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
-  const { login, isAuthenticated } = useAuth()
+  const [devOtp, setDevOtp] = useState('')
+  const { ownerLoginStart, ownerLoginVerify, isAuthenticated } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -86,13 +87,13 @@ const Login = () => {
     setError('')
 
     try {
-      // Simulate OTP sending (in production, this would call your backend)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await ownerLoginStart({ phone: username })
       setOtpSent(true)
-      setResendTimer(30) // 30 seconds cooldown
+      setResendTimer(30)
+      setDevOtp(result?.dev_otp || '')
       setError('')
     } catch (err) {
-      setError('Failed to send OTP. Please try again.')
+      setError(err?.message || 'Failed to send OTP. Please try again.')
     } finally {
       setSendingOtp(false)
     }
@@ -118,17 +119,11 @@ const Login = () => {
     }
 
     try {
-      // For now, using OTP as password until backend is updated
-      const result = await login(username, otp)
-      if (result.success) {
-        const from = location.state?.from?.pathname || '/dashboard'
-        navigate(from, { replace: true })
-      } else {
-        setError(result.error)
-      }
+      const result = await ownerLoginVerify({ phone: username, otp })
+      const from = location.state?.from?.pathname || '/dashboard'
+      navigate(from, { replace: true })
     } catch (err) {
       const msg = err?.message || tPage('messages.unexpectedError')
-      // If a non-admin tries to log in on /login, show a popup
       if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {
         window.alert(tPage('messages.accessDenied'))
       }
@@ -247,9 +242,14 @@ const Login = () => {
                   </button>
                 </div>
                 {otpSent && (
-                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                    ✓ OTP sent successfully! Check your phone.
-                  </p>
+                  <div className="mt-1 text-xs text-green-600 dark:text-green-400">
+                    <p>✓ OTP sent successfully! Check your phone.</p>
+                    {devOtp && (
+                      <p className="mt-1 text-gray-500 dark:text-gray-300">
+                        Dev OTP: <span className="font-mono font-semibold">{devOtp}</span>
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 
