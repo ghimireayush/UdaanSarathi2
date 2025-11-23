@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import Loading from './Loading'
 
-const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null, requiredPermissions = [] }) => {
-  const { isAuthenticated, isLoading, hasRole, hasPermission, hasAnyPermission } = useAuth()
+const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null, requiredPermissions = [], requiresAgency = true }) => {
+  const { isAuthenticated, isLoading, hasRole, hasPermission, hasAnyPermission, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -27,6 +27,12 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
       return
     }
     
+    // Check if agency is required and user doesn't have one
+    if (requiresAgency && user?.role === 'agency_owner' && !user?.agencyId) {
+      navigate('/setup-company', { replace: true })
+      return
+    }
+    
     // Check role-based access
     if (requiredRole && !hasRole(requiredRole)) {
       navigate('/dashboard', { replace: true })
@@ -44,7 +50,7 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
       navigate('/dashboard', { replace: true })
       return
     }
-  }, [isAuthenticated, hasRole, hasPermission, hasAnyPermission, requiredRole, requiredPermission, requiredPermissions, isLoading, navigate, location])
+  }, [isAuthenticated, hasRole, hasPermission, hasAnyPermission, requiredRole, requiredPermission, requiredPermissions, isLoading, navigate, location, user, requiresAgency])
 
   if (isLoading) {
     return (
@@ -60,6 +66,8 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
 
   // Check access permissions
   const hasAccess = () => {
+    // Check if agency is required
+    if (requiresAgency && user?.role === 'agency_owner' && !user?.agencyId) return false
     if (requiredRole && !hasRole(requiredRole)) return false
     if (requiredPermission && !hasPermission(requiredPermission)) return false
     if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) return false

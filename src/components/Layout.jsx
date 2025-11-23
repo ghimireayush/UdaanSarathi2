@@ -398,7 +398,27 @@ const Layout = ({ children }) => {
 
       {/* Main content */}
       <main id="main-content" className="flex-1 md:pl-64" role="main">
-        {children}
+        {/* Check if owner without agency */}
+        {user?.role === 'agency_owner' && !user?.agencyId && (
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">
+                Welcome! Let's Set Up Your Agency
+              </h2>
+              <p className="text-blue-800 dark:text-blue-300 mb-4">
+                To access the full dashboard and manage your agency, you need to create an agency first.
+              </p>
+              <button
+                onClick={() => navigate('/setup-company')}
+                className="btn-primary"
+              >
+                Create Agency
+              </button>
+            </div>
+          </div>
+        )}
+        {/* Render children only if user has agency or is not an owner */}
+        {!(user?.role === 'agency_owner' && !user?.agencyId) && children}
       </main>
     </div>
   );

@@ -177,9 +177,15 @@ const OwnerLogin = () => {
       // Store session start time
       localStorage.setItem('session_start', Date.now().toString())
 
-      // Redirect to owner dashboard
-      const from = location.state?.from?.pathname || '/owner/dashboard'
-      navigate(from, { replace: true })
+      // Redirect based on whether user has an agency
+      if (result.hasAgency) {
+        // User has agency, go to dashboard
+        const from = location.state?.from?.pathname || '/owner/dashboard'
+        navigate(from, { replace: true })
+      } else {
+        // User doesn't have agency, go to setup
+        navigate('/setup-company', { replace: true })
+      }
     } catch (err) {
       const msg = err?.message || tPage('messages.unexpectedError')
       setError(msg)

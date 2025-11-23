@@ -18,6 +18,9 @@ const API_BASE_URL = 'http://localhost:3000'
 // Helper to build auth headers from stored token
 const buildAuthHeaders = (extraHeaders = {}) => {
   const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+  if (!token) {
+    console.warn('[agencyService] No auth token found in localStorage. User may not be authenticated.')
+  }
   return {
     ...extraHeaders,
     ...(token ? { Authorization: `Bearer ${token}` } : {}),

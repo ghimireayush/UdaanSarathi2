@@ -125,7 +125,10 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true)
       setPermissions(result.permissions)
       localStorage.setItem('login_portal', 'owner')
-      return result
+      return {
+        ...result,
+        hasAgency: result.hasAgency
+      }
     } catch (error) {
       console.error('Owner login verify (backend) error:', error)
       throw error
@@ -141,7 +144,10 @@ export const AuthProvider = ({ children }) => {
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
-      return result
+      return {
+        ...result,
+        hasAgency: result.hasAgency
+      }
     } catch (error) {
       console.error('Owner verification (backend) error:', error)
       throw error
@@ -247,6 +253,27 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Member login error:', error)
       return { success: false, error: error.message || 'Login failed' }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const memberLoginWithBackend = async ({ phone, password }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.memberLoginWithBackend({ phone, password })
+      
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      
+      // Store login portal for logout redirect
+      localStorage.setItem('login_portal', 'member')
+      
+      return result
+    } catch (error) {
+      console.error('Member login (backend) error:', error)
+      throw error
     } finally {
       setIsLoading(false)
     }
@@ -358,6 +385,7 @@ export const AuthProvider = ({ children }) => {
     ownerLoginStart,
     ownerLoginVerify,
     memberLogin,
+    memberLoginWithBackend,
     register,
     registerOwnerWithBackend,
     verifyOwnerWithBackend,

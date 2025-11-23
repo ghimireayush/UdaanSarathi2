@@ -24,7 +24,7 @@ import LanguageSwitch from './LanguageSwitch'
 import { resolveImageUrl } from '../utils/imageHelpers'
 
 const AgencySettings = () => {
-  const { agencyData, updateAgencyData, updateAgencyLogo, updateAgencyName, isLoading: contextLoading } = useAgency()
+  const { agencyData, updateAgencyData, updateAgencyLogo, updateAgencyName, isLoading: contextLoading, error: contextError } = useAgency()
   const { tPageSync } = useLanguage({ 
     pageName: 'agency-settings', 
     autoLoad: true 
@@ -305,6 +305,60 @@ const AgencySettings = () => {
     )
   }
 
+  // Show error if data failed to load
+  if (!agencyData && !contextLoading) {
+    const isAuthError = contextError?.includes('Bearer') || contextError?.includes('Unauthorized') || contextError?.includes('401')
+    
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-6">
+          <div className="flex items-start">
+            <AlertCircle className="w-6 h-6 text-red-500 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0" />
+            <div>
+              <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Unable to Load Settings</h3>
+              <p className="text-red-700 dark:text-red-300 mb-2">
+                {contextError || 'Failed to fetch agency data'}
+              </p>
+              {isAuthError && (
+                <p className="text-red-600 dark:text-red-300 text-sm mb-4">
+                  💡 <strong>Authentication Issue:</strong> Please log in again to refresh your session.
+                </p>
+              )}
+              <p className="text-red-600 dark:text-red-300 text-sm mb-4">
+                <strong>Troubleshooting:</strong>
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Ensure the backend server is running at http://localhost:3000</li>
+                  <li>Check your internet connection</li>
+                  <li>Try logging in again</li>
+                  <li>Check browser console for more details</li>
+                </ul>
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="btn-primary text-sm"
+                >
+                  Retry
+                </button>
+                {isAuthError && (
+                  <button
+                    onClick={() => window.location.href = '/owner/login'}
+                    className="btn-secondary text-sm"
+                  >
+                    Log In Again
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const tabs = [
     { id: 'basic', label: tPage('tabs.basicInfo'), icon: Building2 },
     { id: 'contact', label: tPage('tabs.contact'), icon: Phone },
@@ -500,6 +554,9 @@ const AgencySettings = () => {
 
 // Basic Information Section
 const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
+  if (!data) {
+    return null
+  }
   if (isEditing) {
     return (
       <div className="card p-6">
@@ -628,6 +685,9 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
 // Contact Information Section
 const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
+  if (!data) {
+    return null
+  }
   if (isEditing) {
     return (
       <div className="card p-6">
@@ -759,6 +819,9 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
 
 // Location Section
 const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
+  if (!data) {
+    return null
+  }
   const [showMapModal, setShowMapModal] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState(null)
 
@@ -1637,6 +1700,9 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
 // Agency Preview Sidebar
 const AgencyPreview = ({ data }) => {
+  if (!data) {
+    return null
+  }
   return (
     <div className="card p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Agency Preview</h3>

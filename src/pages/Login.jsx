@@ -57,16 +57,8 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      // Check if user is an owner - redirect to owner portal
-      const storedUser = localStorage.getItem('udaan_user')
-      if (storedUser) {
-        const userData = JSON.parse(storedUser)
-        if (userData.isOwner || userData.id === 'user_owner' || userData.email === 'owner@udaan.com') {
-          navigate('/owner/dashboard', { replace: true })
-          return
-        }
-      }
-      
+      // All agency owners and members go to /dashboard
+      // (Platform admins use /owner/login instead)
       const from = location.state?.from?.pathname || '/dashboard'
       navigate(from, { replace: true })
     }
@@ -120,8 +112,19 @@ const Login = () => {
 
     try {
       const result = await ownerLoginVerify({ phone: username, otp })
-      const from = location.state?.from?.pathname || '/dashboard'
-      navigate(from, { replace: true })
+
+      // Store session start time
+      localStorage.setItem('session_start', Date.now().toString())
+
+      // Check if user has agency
+      if (result.hasAgency) {
+        // User has agency, go to dashboard
+        const from = location.state?.from?.pathname || '/dashboard'
+        navigate(from, { replace: true })
+      } else {
+        // User doesn't have agency, go to setup
+        navigate('/setup-company', { replace: true })
+      }
     } catch (err) {
       const msg = err?.message || tPage('messages.unexpectedError')
       if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {

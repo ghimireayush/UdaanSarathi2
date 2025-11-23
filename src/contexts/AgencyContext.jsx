@@ -22,10 +22,17 @@ export const AgencyProvider = ({ children }) => {
       setIsLoading(true)
       setError(null)
       const data = await agencyService.getAgencyProfile()
-      setAgencyData(data)
+      if (data) {
+        setAgencyData(data)
+      } else {
+        throw new Error('No data returned from server')
+      }
     } catch (err) {
       console.error('Failed to fetch agency data:', err)
-      setError(err.message || 'Failed to load agency data')
+      const errorMessage = err.message || 'Failed to load agency data'
+      setError(errorMessage)
+      // Don't set agencyData to null, keep it as is to show error state
+      setAgencyData(null)
     } finally {
       setIsLoading(false)
     }
@@ -88,6 +95,7 @@ export const AgencyProvider = ({ children }) => {
     updateAgencyLogo,
     updateAgencyName,
     refreshAgencyData,
+    fetchAgencyData,
     
     // Helpers
     agencyName: agencyData?.name || 'Inspire International Employment Pvt. Ltd',

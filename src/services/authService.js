@@ -271,14 +271,18 @@ class AuthService {
     }
 
     const data = await response.json()
-    // Expected: { token: string, user_id: string }
+    // Expected: { token: string, user_id: string, agency_id?: string | null, user_type, phone, full_name? }
 
     const backendUser = {
       id: data.user_id,
-      phone,
+      phone: data.phone || phone,
       role: ROLES.AGENCY_OWNER,
-      name: 'Agency Owner',
-      isActive: true
+      userType: data.user_type || 'owner',
+      name: data.full_name || 'Agency Owner', // Use actual name from backend
+      fullName: data.full_name || null,
+      isActive: true,
+      agencyId: data.agency_id || null,
+      hasAgency: !!data.agency_id
     }
 
     const permissions = this.getUserPermissions(backendUser.role)
@@ -286,6 +290,13 @@ class AuthService {
     localStorage.setItem('udaan_token', data.token)
     localStorage.setItem('udaan_user', JSON.stringify(backendUser))
     localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+    localStorage.setItem('udaan_user_type', data.user_type || 'owner')
+    if (data.full_name) {
+      localStorage.setItem('udaan_user_name', data.full_name)
+    }
+    if (data.agency_id) {
+      localStorage.setItem('udaan_agency_id', data.agency_id)
+    }
 
     this.currentUser = backendUser
     this.isAuthenticated = true
@@ -293,7 +304,8 @@ class AuthService {
     return {
       token: data.token,
       user: backendUser,
-      permissions
+      permissions,
+      hasAgency: !!data.agency_id
     }
   }
 
@@ -390,14 +402,18 @@ class AuthService {
       throw new Error(errorText || 'Failed to verify owner login')
     }
 
-    const data = await response.json() // { token, user_id }
+    const data = await response.json() // { token, user_id, agency_id?, user_type, phone, full_name? }
 
     const backendUser = {
       id: data.user_id,
-      phone,
+      phone: data.phone || phone,
       role: ROLES.AGENCY_OWNER,
-      name: 'Agency Owner',
-      isActive: true
+      userType: data.user_type || 'owner',
+      name: data.full_name || 'Agency Owner', // Use actual name from backend
+      fullName: data.full_name || null,
+      isActive: true,
+      agencyId: data.agency_id || null, // Store agency_id to check if user has agency
+      hasAgency: !!data.agency_id
     }
 
     const permissions = this.getUserPermissions(backendUser.role)
@@ -405,6 +421,13 @@ class AuthService {
     localStorage.setItem('udaan_token', data.token)
     localStorage.setItem('udaan_user', JSON.stringify(backendUser))
     localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+    localStorage.setItem('udaan_user_type', data.user_type || 'owner')
+    if (data.full_name) {
+      localStorage.setItem('udaan_user_name', data.full_name)
+    }
+    if (data.agency_id) {
+      localStorage.setItem('udaan_agency_id', data.agency_id)
+    }
 
     this.currentUser = backendUser
     this.isAuthenticated = true
@@ -412,7 +435,58 @@ class AuthService {
     return {
       token: data.token,
       user: backendUser,
-      permissions
+      permissions,
+      hasAgency: !!data.agency_id
+    }
+  }
+
+  /**
+   * Member login with backend
+   * @param {string} phone - Phone number
+   * @param {string} password - Password
+   * @returns {Promise<Object>} Login result with user_type
+   */
+  async memberLoginWithBackend({ phone, password }) {
+    const response = await fetch(`${API_BASE_URL}/member/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, password })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to login as member')
+    }
+
+    const data = await response.json() // { token, user_id, agency_id, user_type: 'member' }
+
+    const backendUser = {
+      id: data.user_id,
+      phone,
+      role: ROLES.AGENCY_MEMBER,
+      name: 'Agency Member',
+      isActive: true,
+      agencyId: data.agency_id,
+      userType: data.user_type || 'member'
+    }
+
+    const permissions = this.getUserPermissions(backendUser.role)
+
+    localStorage.setItem('udaan_token', data.token)
+    localStorage.setItem('udaan_user', JSON.stringify(backendUser))
+    localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+    localStorage.setItem('udaan_agency_id', data.agency_id)
+
+    this.currentUser = backendUser
+    this.isAuthenticated = true
+
+    return {
+      token: data.token,
+      user: backendUser,
+      permissions,
+      userType: 'member'
     }
   }
 
@@ -729,8 +803,16 @@ class AuthService {
     // Snapshot current user for audit before clearing
     const prevUser = this.currentUser
 
+    // Clear all authentication and user data from localStorage
     localStorage.removeItem('udaan_user')
     localStorage.removeItem('udaan_token')
+    localStorage.removeItem('udaan_permissions')
+    localStorage.removeItem('udaan_user_type')
+    localStorage.removeItem('udaan_user_name')
+    localStorage.removeItem('udaan_agency_id')
+    localStorage.removeItem('login_portal')
+    localStorage.removeItem('session_start')
+    
     this.currentUser = null
     this.isAuthenticated = false
 
