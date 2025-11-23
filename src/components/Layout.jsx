@@ -23,6 +23,7 @@ import { PERMISSIONS } from "../services/authService.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/inspire-agency-logo.svg";
+import { resolveImageUrl } from "../utils/imageHelpers";
 
 const Layout = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -181,7 +182,7 @@ const Layout = ({ children }) => {
               className="w-full flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300"
             >
               <img
-                src={agencyLogo || logo}
+                src={resolveImageUrl(agencyLogo) || logo}
                 alt={`${agencyName} Logo`}
                 className="w-20 h-20 object-contain drop-shadow-md"
               />
@@ -295,7 +296,7 @@ const Layout = ({ children }) => {
               className="ml-2 flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded py-2 px-3"
             >
               <img
-                src={agencyLogo || logo}
+                src={resolveImageUrl(agencyLogo) || logo}
                 alt={`${agencyName} Logo`}
                 className="w-12 h-12 object-contain drop-shadow-md"
               />

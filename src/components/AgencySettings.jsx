@@ -21,7 +21,7 @@ import { agencyService } from '../services/index.js'
 import { useAgency } from '../contexts/AgencyContext'
 import { useLanguage } from '../hooks/useLanguage'
 import LanguageSwitch from './LanguageSwitch'
-
+import { resolveImageUrl } from '../utils/imageHelpers'
 
 const AgencySettings = () => {
   const { agencyData, updateAgencyData, updateAgencyLogo, updateAgencyName, isLoading: contextLoading } = useAgency()
@@ -144,7 +144,7 @@ const AgencySettings = () => {
           if (!formData.address?.trim()) {
             throw new Error('Address is required')
           }
-          updatedData = await agencyService.updateAgencyProfile({
+          updatedData = await agencyService.updateLocation({
             address: formData.address,
             latitude: formData.latitude,
             longitude: formData.longitude
@@ -1025,6 +1025,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
   
   // Determine which logo URL to display
   const displayLogoUrl = currentLogoPreview || data.logo_url
+  const resolvedLogoSrc = displayLogoUrl ? resolveImageUrl(displayLogoUrl) : null
 
   return (
     <div className="space-y-6">
@@ -1040,9 +1041,9 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                 </div>
               )}
-              {displayLogoUrl ? (
+              {resolvedLogoSrc ? (
                 <img
-                  src={displayLogoUrl}
+                  src={resolvedLogoSrc}
                   alt="Agency Logo"
                   className="w-full h-full object-cover"
                 />
@@ -1105,7 +1106,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
             )}
             {data.banner_url ? (
               <img
-                src={data.banner_url}
+                src={resolveImageUrl(data.banner_url)}
                 alt="Agency Banner"
                 className="w-full h-full object-cover"
               />
@@ -1644,7 +1645,7 @@ const AgencyPreview = ({ data }) => {
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg mx-auto mb-3 flex items-center justify-center overflow-hidden">
           {data.logo_url ? (
             <img
-              src={data.logo_url}
+              src={resolveImageUrl(data.logo_url)}
               alt="Agency Logo"
               className="w-full h-full object-cover"
             />

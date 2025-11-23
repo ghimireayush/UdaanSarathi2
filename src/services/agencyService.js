@@ -3,7 +3,7 @@ import agencyData from '../data/agency.json'
 import agenciesData from '../data/agencies.json'
 import auditService from './auditService.js'
 
-// Utility function to simulate API delay
+// Utility function to simulate API delay (still used for some mock flows)
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
 // Error simulation (0.1% chance - reduced for better development experience)
@@ -12,7 +12,21 @@ const shouldSimulateError = () => Math.random() < 0.001
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
 
-let agencyCache = deepClone(agencyData)
+// Backend API base URL for real profile integration (owner agency)
+const API_BASE_URL = 'http://localhost:3000'
+
+// Helper to build auth headers from stored token
+const buildAuthHeaders = (extraHeaders = {}) => {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+  return {
+    ...extraHeaders,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+}
+
+// Local caches remain for multi-agency mock flows; single-agency profile will
+// now be sourced from the backend and hydrated into this cache.
+let agencyCache = null
 let agenciesCache = deepClone(agenciesData.agencies)
 
 class AgencyService {
@@ -279,13 +293,64 @@ class AgencyService {
    * @returns {Promise<Object>} Agency profile data
    */
   async getAgencyProfile() {
-    await delay()
-    
-    // Reduced error simulation for better development experience
-    if (shouldSimulateError()) {
-      console.warn('Agency service: Simulated error occurred, using fallback data')
-      // Return fallback data instead of throwing error
-      return deepClone(agencyData)
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency`, {
+      method: 'GET',
+      headers: buildAuthHeaders({ 'Accept': 'application/json' })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to load agency profile')
+    }
+
+    const data = await response.json()
+
+    // Keep a local cache for subsequent calls
+    agencyCache = {
+      ...data,
+      // Provide flattened fields for UI compatibility
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
+  }
+
+  /**
+   * Update location information (address and optional coordinates)
+   * @param {Object} locationInfo - Location information to update
+   * @param {Object} auditInfo - Audit information
+   * @returns {Promise<Object>} Updated profile
+   */
+  async updateLocation(locationInfo, auditInfo = {}) {
+    const payload = {
+      address: locationInfo.address,
+      latitude: locationInfo.latitude,
+      longitude: locationInfo.longitude
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/location`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update location')
+    }
+
+    const data = await response.json()
+
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
     }
 
     return deepClone(agencyCache)
@@ -298,22 +363,21 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateAgencyProfile(updateData, auditInfo = {}) {
-    await delay(500)
-    if (shouldSimulateError()) {
-      throw new Error('Failed to update agency profile')
-    }
+    // This generic helper is now only used by flows that still rely on the
+    // local mock cache (e.g. certifications/contact persons). For the main
+    // profile tabs we call specific backend endpoints instead.
+    await delay(200)
 
-    const oldData = deepClone(agencyCache)
-    
+    const oldData = deepClone(agencyCache || agencyData)
+
     agencyCache = {
-      ...agencyCache,
+      ...(agencyCache || agencyData),
       ...updateData,
       updated_at: new Date().toISOString()
     }
 
     const newData = deepClone(agencyCache)
 
-    // Log the audit event
     if (auditInfo.user) {
       await auditService.logAgencyUpdate({
         user: auditInfo.user,
@@ -355,8 +419,38 @@ class AgencyService {
    * @returns {Promise<Object>} Updated basic information
    */
   async updateBasicInfo(basicInfo, auditInfo = {}) {
-    await delay(400)
-    return this.updateAgencyProfile(basicInfo, { ...auditInfo, section: 'basic' })
+    const payload = {
+      name: basicInfo.name,
+      description: basicInfo.description,
+      established_year: basicInfo.established_year,
+      license_number: basicInfo.license_number
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/basic`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update basic information')
+    }
+
+    const data = await response.json()
+
+    // Normalize and cache updated profile
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -384,8 +478,38 @@ class AgencyService {
    * @returns {Promise<Object>} Updated contact information
    */
   async updateContactInfo(contactInfo, auditInfo = {}) {
-    await delay(400)
-    return this.updateAgencyProfile(contactInfo, { ...auditInfo, section: 'contact' })
+    const payload = {
+      phone: contactInfo.phone,
+      mobile: contactInfo.mobile,
+      email: contactInfo.email,
+      website: contactInfo.website,
+      contact_persons: contactInfo.contact_persons
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/contact`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update contact information')
+    }
+
+    const data = await response.json()
+
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -476,10 +600,34 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateSocialMedia(socialMedia, auditInfo = {}) {
-    await delay(300)
-    return this.updateAgencyProfile({
+    const payload = {
       social_media: socialMedia
-    }, { ...auditInfo, section: 'social' })
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/social-media`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update social media')
+    }
+
+    const data = await response.json()
+
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -592,17 +740,41 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateSettings(settings, auditInfo = {}) {
-    await delay(300)
-    const profile = await this.getAgencyProfile()
-    
-    const updatedSettings = {
-      ...profile.settings,
+    // Merge with current settings client-side to send full object to backend
+    const currentProfile = await this.getAgencyProfile()
+    const mergedSettings = {
+      ...(currentProfile.settings || {}),
       ...settings
     }
 
-    return this.updateAgencyProfile({
-      settings: updatedSettings
-    }, { ...auditInfo, section: 'settings' })
+    const payload = {
+      settings: mergedSettings
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/settings`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update settings')
+    }
+
+    const data = await response.json()
+
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -641,38 +813,30 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile with new logo URL
    */
   async uploadLogo(logoFile, auditInfo = {}) {
-    await delay(800)
-    // Disable error simulation for file uploads to ensure better UX
-    // if (Math.random() < 0.001) { // 0.1% chance instead of 5%
-    //   throw new Error('Failed to upload logo')
-    // }
+    const profile = await this.getAgencyProfile()
+    const license = profile.license_number
 
-    const oldData = await this.getAgencyProfile()
-    const oldLogoUrl = oldData.logo_url
+    if (!license) {
+      throw new Error('Agency license number not available for logo upload')
+    }
 
-    // Create a blob URL for realistic simulation
-    const logoUrl = URL.createObjectURL(logoFile)
-    
-    // Store the blob URL for cleanup later if needed
-    if (oldData.logo_url && oldData.logo_url.startsWith('blob:')) {
-      URL.revokeObjectURL(oldData.logo_url)
+    const formData = new FormData()
+    formData.append('file', logoFile)
+
+    const response = await fetch(`${API_BASE_URL}/agencies/${encodeURIComponent(license)}/logo`, {
+      method: 'POST',
+      headers: buildAuthHeaders(),
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to upload logo')
     }
-    
-    // Log file upload audit
-    if (auditInfo.user) {
-      await auditService.logFileUpload({
-        user: auditInfo.user,
-        fileType: 'logo',
-        fileName: logoFile.name,
-        fileSize: logoFile.size,
-        oldUrl: oldLogoUrl,
-        newUrl: logoUrl
-      })
-    }
-    
-    return this.updateAgencyProfile({
-      logo_url: logoUrl
-    }, { ...auditInfo, section: 'media' })
+
+    // Backend returns upload result; fetch the updated profile for UI
+    const updatedProfile = await this.getAgencyProfile()
+    return updatedProfile
   }
 
   /**
@@ -682,38 +846,29 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile with new banner URL
    */
   async uploadBanner(bannerFile, auditInfo = {}) {
-    await delay(800)
-    // Disable error simulation for file uploads to ensure better UX
-    // if (Math.random() < 0.001) { // 0.1% chance instead of 5%
-    //   throw new Error('Failed to upload banner')
-    // }
+    const profile = await this.getAgencyProfile()
+    const license = profile.license_number
 
-    const oldData = await this.getAgencyProfile()
-    const oldBannerUrl = oldData.banner_url
+    if (!license) {
+      throw new Error('Agency license number not available for banner upload')
+    }
 
-    // Create a blob URL for realistic simulation
-    const bannerUrl = URL.createObjectURL(bannerFile)
-    
-    // Store the blob URL for cleanup later if needed
-    if (oldData.banner_url && oldData.banner_url.startsWith('blob:')) {
-      URL.revokeObjectURL(oldData.banner_url)
+    const formData = new FormData()
+    formData.append('file', bannerFile)
+
+    const response = await fetch(`${API_BASE_URL}/agencies/${encodeURIComponent(license)}/banner`, {
+      method: 'POST',
+      headers: buildAuthHeaders(),
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to upload banner')
     }
-    
-    // Log file upload audit
-    if (auditInfo.user) {
-      await auditService.logFileUpload({
-        user: auditInfo.user,
-        fileType: 'banner',
-        fileName: bannerFile.name,
-        fileSize: bannerFile.size,
-        oldUrl: oldBannerUrl,
-        newUrl: bannerUrl
-      })
-    }
-    
-    return this.updateAgencyProfile({
-      banner_url: bannerUrl
-    }, { ...auditInfo, section: 'media' })
+
+    const updatedProfile = await this.getAgencyProfile()
+    return updatedProfile
   }
 
   /**
@@ -733,10 +888,36 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateSpecializations(specializations, auditInfo = {}) {
-    await delay(300)
-    return this.updateAgencyProfile({
-      specializations
-    }, { ...auditInfo, section: 'services' })
+    const currentProfile = await this.getAgencyProfile()
+    const payload = {
+      services: currentProfile.services || [],
+      specializations,
+      target_countries: currentProfile.target_countries || []
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update specializations')
+    }
+
+    const data = await response.json()
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -756,10 +937,36 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateTargetCountries(countries, auditInfo = {}) {
-    await delay(300)
-    return this.updateAgencyProfile({
+    const currentProfile = await this.getAgencyProfile()
+    const payload = {
+      services: currentProfile.services || [],
+      specializations: currentProfile.specializations || [],
       target_countries: countries
-    }, { ...auditInfo, section: 'services' })
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update target countries')
+    }
+
+    const data = await response.json()
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
@@ -779,10 +986,36 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateServices(services, auditInfo = {}) {
-    await delay(300)
-    return this.updateAgencyProfile({
-      services
-    }, { ...auditInfo, section: 'services' })
+    const currentProfile = await this.getAgencyProfile()
+    const payload = {
+      services,
+      specializations: currentProfile.specializations || [],
+      target_countries: currentProfile.target_countries || []
+    }
+
+    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }),
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to update services')
+    }
+
+    const data = await response.json()
+    agencyCache = {
+      ...data,
+      phone: data.phones?.[0] || null,
+      mobile: data.phones?.[1] || null,
+      email: data.emails?.[0] || null,
+    }
+
+    return deepClone(agencyCache)
   }
 
   /**
