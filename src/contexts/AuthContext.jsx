@@ -279,6 +279,36 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const memberLoginStart = async ({ phone }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.memberLoginStartWithBackend({ phone })
+      return result
+    } catch (error) {
+      console.error('Member login start (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const memberLoginVerify = async ({ phone, otp }) => {
+    try {
+      setIsLoading(true)
+      const result = await authService.memberLoginVerifyWithBackend({ phone, otp })
+      setUser(result.user)
+      setIsAuthenticated(true)
+      setPermissions(result.permissions)
+      localStorage.setItem('login_portal', 'member')
+      return result
+    } catch (error) {
+      console.error('Member login verify (backend) error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const register = async (userData) => {
     try {
       setIsLoading(true)
@@ -386,6 +416,8 @@ export const AuthProvider = ({ children }) => {
     ownerLoginVerify,
     memberLogin,
     memberLoginWithBackend,
+    memberLoginStart,
+    memberLoginVerify,
     register,
     registerOwnerWithBackend,
     verifyOwnerWithBackend,

@@ -21,7 +21,7 @@ const MemberLogin = () => {
   const [otpSent, setOtpSent] = useState(false)
   const [sendingOtp, setSendingOtp] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
-  const { memberLogin, isAuthenticated } = useAuth()
+  const { memberLoginStart, memberLoginVerify, isAuthenticated } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -92,13 +92,18 @@ const MemberLogin = () => {
     setError('')
 
     try {
-      // Simulate OTP sending (in production, this would call your backend)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Call backend to start OTP flow
+      const result = await memberLoginStart({ phone: username })
       setOtpSent(true)
       setResendTimer(30) // 30 seconds cooldown
       setError('')
+      
+      // In dev, show the OTP in console
+      if (result.dev_otp) {
+        console.log('Dev OTP:', result.dev_otp)
+      }
     } catch (err) {
-      setError('Failed to send OTP. Please try again.')
+      setError(err.message || 'Failed to send OTP. Please try again.')
     } finally {
       setSendingOtp(false)
     }
@@ -124,17 +129,13 @@ const MemberLogin = () => {
     }
     
     try {
-      // For now, using OTP as password until backend is updated
-      const result = await memberLogin(username, otp, invitationToken)
-      if (result.success) {
-        // Redirect to agency management dashboard
+      // Call backend to verify OTP
+      const result = await memberLoginVerify({ phone: username, otp })
+      if (result.token) {
+        // Redirect to member dashboard
         navigate('/dashboard', { replace: true })
       } else {
-        const msg = result.error || tPage('messages.loginFailed')
-        if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
-          window.alert(tPage('messages.unauthorizedAccess'))
-        }
-        setError(msg)
+        setError(tPage('messages.loginFailed'))
       }
     } catch (err) {
       const msg = err?.message || tPage('messages.unexpectedError')

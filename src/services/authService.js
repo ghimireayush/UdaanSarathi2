@@ -67,6 +67,33 @@ const ROLE_PERMISSIONS = {
     ...Object.values(PERMISSIONS)
   ],
   
+  'owner': [
+    // Agency management
+    PERMISSIONS.MANAGE_MEMBERS,
+    PERMISSIONS.MANAGE_SETTINGS,
+    PERMISSIONS.VIEW_AUDIT_LOGS,
+    // Job management
+    PERMISSIONS.CREATE_JOB,
+    PERMISSIONS.EDIT_JOB,
+    PERMISSIONS.DELETE_JOB,
+    PERMISSIONS.PUBLISH_JOB,
+    PERMISSIONS.VIEW_JOBS,
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    PERMISSIONS.SHORTLIST_CANDIDATE,
+    PERMISSIONS.REJECT_APPLICATION,
+    // Interview management
+    PERMISSIONS.SCHEDULE_INTERVIEW,
+    PERMISSIONS.CONDUCT_INTERVIEW,
+    PERMISSIONS.EDIT_INTERVIEW,
+    PERMISSIONS.VIEW_INTERVIEWS,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    PERMISSIONS.MANAGE_DOCUMENTS
+  ],
+  
   [ROLES.AGENCY_OWNER]: [
     // Agency management
     PERMISSIONS.MANAGE_MEMBERS,
@@ -402,12 +429,13 @@ class AuthService {
       throw new Error(errorText || 'Failed to verify owner login')
     }
 
-    const data = await response.json() // { token, user_id, agency_id?, user_type, phone, full_name? }
+    const data = await response.json() // { token, user_id, agency_id?, user_type, phone, full_name?, role }
 
     const backendUser = {
       id: data.user_id,
       phone: data.phone || phone,
-      role: ROLES.AGENCY_OWNER,
+      role: data.role || 'owner', // Use role from backend response
+      specificRole: data.role || 'owner', // Store as specificRole for RBAC
       userType: data.user_type || 'owner',
       name: data.full_name || 'Agency Owner', // Use actual name from backend
       fullName: data.full_name || null,
@@ -478,6 +506,84 @@ class AuthService {
     localStorage.setItem('udaan_user', JSON.stringify(backendUser))
     localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
     localStorage.setItem('udaan_agency_id', data.agency_id)
+
+    this.currentUser = backendUser
+    this.isAuthenticated = true
+
+    return {
+      token: data.token,
+      user: backendUser,
+      permissions,
+      userType: 'member'
+    }
+  }
+
+  /**
+   * Start member login OTP flow
+   * @param {string} phone - Phone number
+   * @returns {Promise<Object>} OTP response
+   */
+  async memberLoginStartWithBackend({ phone }) {
+    const response = await fetch(`${API_BASE_URL}/member/login/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to start member login')
+    }
+
+    const data = await response.json() // { dev_otp }
+    return data
+  }
+
+  /**
+   * Verify member login OTP
+   * @param {string} phone - Phone number
+   * @param {string} otp - OTP code
+   * @returns {Promise<Object>} Login result with user_type
+   */
+  async memberLoginVerifyWithBackend({ phone, otp }) {
+    const response = await fetch(`${API_BASE_URL}/member/login/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, otp })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '')
+      throw new Error(errorText || 'Failed to verify member login')
+    }
+
+    const data = await response.json() // { token, user_id, agency_id, user_type, phone, full_name }
+
+    const backendUser = {
+      id: data.user_id,
+      phone: data.phone || phone,
+      role: ROLES.AGENCY_MEMBER,
+      name: data.full_name || 'Agency Member',
+      fullName: data.full_name || null,
+      isActive: true,
+      agencyId: data.agency_id,
+      userType: data.user_type || 'member'
+    }
+
+    const permissions = this.getUserPermissions(backendUser.role)
+
+    localStorage.setItem('udaan_token', data.token)
+    localStorage.setItem('udaan_user', JSON.stringify(backendUser))
+    localStorage.setItem('udaan_permissions', JSON.stringify(permissions))
+    localStorage.setItem('udaan_agency_id', data.agency_id)
+    localStorage.setItem('udaan_user_type', data.user_type || 'member')
+    if (data.full_name) {
+      localStorage.setItem('udaan_user_name', data.full_name)
+    }
 
     this.currentUser = backendUser
     this.isAuthenticated = true

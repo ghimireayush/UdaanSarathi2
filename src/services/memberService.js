@@ -2,8 +2,8 @@ import { handleServiceError } from '../utils/errorHandler';
 import auditService from './auditService';
 
 // API Configuration
-const API_BASE_URL = 'https://dev.kaha.com.np';
-const MEMBERS_INVITE_ENDPOINT = '/job-portal/agencies/owner/members/invite';
+const API_BASE_URL = 'http://localhost:3000';
+const MEMBERS_INVITE_ENDPOINT = '/agencies/owner/members/invite';
 
 // Mock data for development
 const mockMembers = [
@@ -125,14 +125,19 @@ export const inviteMember = async (memberData) => {
     }
 
     try {
+      // Get JWT token from localStorage
+      const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+      if (!token) {
+        throw new Error('Not authenticated. Please log in first.')
+      }
+
       // Real API call implementation
       const response = await fetch(`${API_BASE_URL}${MEMBERS_INVITE_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // Add authorization header when auth is implemented
-          // 'Authorization': `Bearer ${getAuthToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           full_name: memberData.full_name,
@@ -156,9 +161,9 @@ export const inviteMember = async (memberData) => {
         phone: apiResult.phone,
         mobileNumber: apiResult.phone, // Keep internal mobileNumber for compatibility
         role: apiResult.role,
-        status: 'pending',
+        status: apiResult.status || 'pending',
         dev_password: apiResult.dev_password,
-        createdAt: new Date().toISOString()
+        createdAt: apiResult.created_at || new Date().toISOString()
       };
 
       // Add to mock data for development
@@ -239,94 +244,166 @@ export const inviteMember = async (memberData) => {
   });
 };
 
-export const getMembersList = async () => {
+export const getMembersList = async (filters = {}) => {
   return handleServiceError(async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+    if (!token) {
+      throw new Error('Not authenticated. Please log in first.')
+    }
 
-    return {
-      success: true,
-      data: mockMembers
-    };
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (filters.search) queryParams.append('search', filters.search);
+      if (filters.role) queryParams.append('role', filters.role);
+      if (filters.status) queryParams.append('status', filters.status);
+      
+      const queryString = queryParams.toString();
+      const url = queryString 
+        ? `${API_BASE_URL}/agencies/owner/members?${queryString}`
+        : `${API_BASE_URL}/agencies/owner/members`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      // Transform API response to match internal format
+      const transformedData = Array.isArray(data) ? data.map(member => ({
+        id: member.id,
+        name: member.full_name,
+        full_name: member.full_name,
+        phone: member.phone,
+        mobileNumber: member.phone,
+        role: member.role,
+        status: member.status || 'active',
+        createdAt: member.created_at
+      })) : [];
+      
+      return {
+        success: true,
+        data: transformedData
+      }
+    } catch (error) {
+      console.warn('API call failed, using mock implementation:', error.message)
+      // Fallback to mock data for development
+      await new Promise(resolve => setTimeout(resolve, 500))
+      return {
+        success: true,
+        data: mockMembers
+      }
+    }
   });
 };
 
 export const deleteMember = async (memberId) => {
   return handleServiceError(async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    const index = mockMembers.findIndex(m => m.id === memberId);
-    if (index === -1) {
-      throw new Error('Member not found');
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+    if (!token) {
+      throw new Error('Not authenticated. Please log in first.')
     }
 
-    const deletedMember = mockMembers[index];
-    mockMembers.splice(index, 1);
-
-    // Audit: member deletion
     try {
-      await auditService.logEvent({
-        user_id: 'current_user', // In real app, get from auth context
-        user_name: 'Current User',
-        action: 'DELETE',
-        resource_type: 'MEMBER',
-        resource_id: memberId,
-        old_values: deletedMember,
-        metadata: {
-          member_name: deletedMember.name,
-          member_role: deletedMember.role
+      const response = await fetch(`${API_BASE_URL}/agencies/owner/members/${memberId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
-      });
-    } catch (e) {
-      console.warn('Audit logging (DELETE MEMBER) failed:', e);
-    }
+      })
 
-    return {
-      success: true,
-      message: 'Member deleted successfully'
-    };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+      }
+
+      // Remove from mock data as well
+      const index = mockMembers.findIndex(m => m.id === memberId)
+      if (index !== -1) {
+        mockMembers.splice(index, 1)
+      }
+
+      return {
+        success: true,
+        message: 'Member deleted successfully'
+      }
+    } catch (error) {
+      console.warn('API call failed, using mock implementation:', error.message)
+      // Fallback to mock deletion
+      const index = mockMembers.findIndex(m => m.id === memberId)
+      if (index === -1) {
+        throw new Error('Member not found')
+      }
+      mockMembers.splice(index, 1)
+      return {
+        success: true,
+        message: 'Member deleted successfully (Mock)'
+      }
+    }
   });
 };
 
 export const updateMemberStatus = async (memberId, status) => {
   return handleServiceError(async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    const member = mockMembers.find(m => m.id === memberId);
-    if (!member) {
-      throw new Error('Member not found');
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+    if (!token) {
+      throw new Error('Not authenticated. Please log in first.')
     }
 
-    const oldStatus = member.status;
-    member.status = status;
-
-    // Audit: member status update
     try {
-      await auditService.logEvent({
-        user_id: 'current_user', // In real app, get from auth context
-        user_name: 'Current User',
-        action: 'UPDATE',
-        resource_type: 'MEMBER',
-        resource_id: memberId,
-        changes: { status: status },
-        old_values: { status: oldStatus },
-        new_values: { status: status },
-        metadata: {
-          member_name: member.name,
-          old_status: oldStatus,
-          new_status: status
-        }
-      });
-    } catch (e) {
-      console.warn('Audit logging (UPDATE MEMBER STATUS) failed:', e);
-    }
+      const response = await fetch(`${API_BASE_URL}/agencies/owner/members/${memberId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      })
 
-    return {
-      success: true,
-      message: 'Member status updated successfully',
-      data: member
-    };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Update mock data as well
+      const member = mockMembers.find(m => m.id === memberId)
+      if (member) {
+        member.status = status
+      }
+
+      return {
+        success: true,
+        message: 'Member status updated successfully',
+        data: data
+      }
+    } catch (error) {
+      console.warn('API call failed, using mock implementation:', error.message)
+      // Fallback to mock update
+      const member = mockMembers.find(m => m.id === memberId)
+      if (!member) {
+        throw new Error('Member not found')
+      }
+      member.status = status
+      return {
+        success: true,
+        message: 'Member status updated successfully (Mock)',
+        data: member
+      }
+    }
   });
 };

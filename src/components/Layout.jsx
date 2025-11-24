@@ -20,6 +20,8 @@ import { useAuth } from "../contexts/AuthContext.jsx";
 import { useAgency } from "../contexts/AgencyContext.jsx";
 import { ROLES } from "../services/authService.js";
 import { PERMISSIONS } from "../services/authService.js";
+import { useRoleBasedAccess } from "../hooks/useRoleBasedAccess.js";
+import { getAccessibleNavItems } from "../config/roleBasedAccess.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/inspire-agency-logo.svg";
@@ -76,6 +78,8 @@ const Layout = ({ children }) => {
     }
   };
 
+  const { userRole, hasFeatureAccess } = useRoleBasedAccess();
+
   const handleLogout = async () => {
     // Get the portal they logged in from
     const loginPortal = localStorage.getItem('login_portal') || 'admin';
@@ -90,65 +94,29 @@ const Layout = ({ children }) => {
     navigate(redirectPath, { replace: true });
   };
 
-  const navItems = [
-    {
-      path: "/dashboard",
-      label: tNav("items.dashboard"),
-      icon: BarChart3,
-      show: true, // Dashboard is always accessible
-    },
-    {
-      path: "/jobs",
-      label: tNav("items.jobs"),
-      icon: Briefcase,
-      show: hasPermission(PERMISSIONS.VIEW_JOBS),
-    },
-    {
-      path: "/drafts",
-      label: tNav("items.drafts"),
-      icon: FileEdit,
-      show: hasAnyPermission([PERMISSIONS.CREATE_JOB, PERMISSIONS.EDIT_JOB]),
-    },
-    {
-      path: "/applications",
-      label: tNav("items.applications"),
-      icon: Users,
-      show: hasPermission(PERMISSIONS.VIEW_APPLICATIONS),
-    },
-    {
-      path: "/interviews",
-      label: tNav("items.interviews"),
-      icon: Calendar,
-      show: hasAnyPermission([
-        PERMISSIONS.VIEW_INTERVIEWS,
-        PERMISSIONS.SCHEDULE_INTERVIEW,
-      ]),
-    },
-    {
-      path: "/workflow",
-      label: tNav("items.workflow"),
-      icon: GitBranch,
-      show: hasPermission(PERMISSIONS.VIEW_WORKFLOW),
-    },
-    {
-      path: "/teammembers",
-      label: tNav("items.teamMembers"),
-      icon: UsersRound,
-      show: hasPermission(PERMISSIONS.MANAGE_MEMBERS),
-    },
-    {
-      path: "/auditlog",
-      label: tNav("items.auditLog"),
-      icon: History,
-      show: hasPermission(PERMISSIONS.VIEW_AUDIT_LOGS), // Only show to users with audit log permission (admins)
-    },
-    {
-      path: "/settings",
-      label: tNav("items.agencySettings"),
-      icon: Settings,
-      show: hasPermission(PERMISSIONS.MANAGE_SETTINGS),
-    },
-  ].filter((item) => item.show);
+  // Get accessible navigation items based on user role
+  const accessibleNavItems = getAccessibleNavItems(userRole);
+
+  // Map icon names to actual icon components
+  const iconMap = {
+    BarChart3,
+    Briefcase,
+    Users,
+    UsersRound,
+    Calendar,
+    GitBranch,
+    FileEdit,
+    Settings,
+    History,
+  };
+
+  // Build navigation items from accessible items
+  const navItems = accessibleNavItems.map(item => ({
+    path: item.path,
+    label: tNav(`items.${item.label.toLowerCase().replace(/\s+/g, '')}`),
+    icon: iconMap[item.icon] || BarChart3,
+    show: true,
+  })).filter((item) => item.show);
 
   const isActive = (path) => {
     if (path === "/dashboard" && location.pathname === "/") return true;
