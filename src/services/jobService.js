@@ -5,6 +5,8 @@ import performanceService from './performanceService.js'
 import { handleServiceError } from '../utils/errorHandler.js'
 import auditService from './auditService.js'
 import authService from './authService.js'
+import draftJobApiClient from './draftJobApiClient.js'
+import { mapFrontendToBackend, mapBackendToFrontend, mapBackendArrayToFrontend } from './draftJobMapper.js'
 
 // Utility function to simulate API delay (reduced for performance)
 const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
@@ -172,17 +174,34 @@ class JobService {
    * @returns {Promise<Object>} Created draft job
    */
   async createDraftJob(draftData) {
-    const result = await handleServiceError(async () => {
-      await delay(80)
-      // Removed random error simulation for 100% reliability
-
-      // Basic validation
-      if (!draftData.title || !draftData.company) {
-        throw new Error('Job title and company are required fields')
-      }
-
-      const constants = await constantsService.getJobStatuses()
+    try {
+      // Map frontend data to backend format
+      const backendData = mapFrontendToBackend(draftData);
       
+      // Use real API
+      const backendDraft = await draftJobApiClient.createDraftJob(backendData);
+      const frontendDraft = mapBackendToFrontend(backendDraft);
+      
+      // Audit: draft job created
+      try {
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+        await auditService.logEvent({
+          user_id: actor.id,
+          user_name: actor.name,
+          action: 'CREATE',
+          resource_type: 'DRAFT_JOB',
+          resource_id: frontendDraft.id,
+          new_values: frontendDraft,
+        });
+      } catch (e) {
+        console.warn('Audit logging (CREATE DRAFT JOB) failed:', e);
+      }
+      
+      return frontendDraft;
+    } catch (error) {
+      console.error('Failed to create draft job via API:', error);
+      // Fallback to mock implementation
+      const constants = await constantsService.getJobStatuses();
       const newDraft = {
         id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         ...draftData,
@@ -194,34 +213,13 @@ class JobService {
         interviews_today: 0,
         total_interviews: 0,
         view_count: 0,
-        // Ensure salary_amount is a number
         salary_amount: Number(draftData.salary_amount) || 0,
-        // Ensure requirements is an array
         requirements: Array.isArray(draftData.requirements) ? draftData.requirements : [],
-        // Ensure tags is an array
         tags: Array.isArray(draftData.tags) ? draftData.tags : []
-      }
-
-      jobsCache.push(newDraft)
-      // Audit: draft job created
-      try {
-        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
-        await auditService.logEvent({
-          user_id: actor.id,
-          user_name: actor.name,
-          action: 'CREATE',
-          resource_type: 'JOB_POSTING',
-          resource_id: newDraft.id,
-          new_values: newDraft,
-          metadata: { status: constants.DRAFT }
-        })
-      } catch (e) {
-        console.warn('Audit logging (CREATE DRAFT JOB) failed:', e)
-      }
-      return deepClone(newDraft)
-    }, 3, 500);
-    
-    return result;
+      };
+      jobsCache.push(newDraft);
+      return deepClone(newDraft);
+    }
   }
 
 
@@ -456,14 +454,32 @@ class JobService {
    * @returns {Promise<Array>} Array of draft jobs
    */
   async getDraftJobs() {
-    const result = await handleServiceError(async () => {
-      await delay(200)
-      const constants = await constantsService.getJobStatuses()
+    try {
+      // Use real API
+      const backendDrafts = await draftJobApiClient.getDraftJobs();
+      const frontendDrafts = mapBackendArrayToFrontend(backendDrafts);
       
-      return jobsCache.filter(job => job.status === constants.DRAFT)
-    }, 3, 500);
-    
-    return result;
+      // Audit: fetched draft jobs
+      try {
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+        await auditService.logEvent({
+          user_id: actor.id,
+          user_name: actor.name,
+          action: 'READ',
+          resource_type: 'DRAFT_JOBS',
+          metadata: { count: frontendDrafts.length }
+        });
+      } catch (e) {
+        console.warn('Audit logging (GET DRAFT JOBS) failed:', e);
+      }
+      
+      return frontendDrafts;
+    } catch (error) {
+      console.error('Failed to fetch draft jobs from API:', error);
+      // Fallback to mock data if API fails
+      const constants = await constantsService.getJobStatuses();
+      return jobsCache.filter(job => job.status === constants.DRAFT);
+    }
   }
 
   /**
