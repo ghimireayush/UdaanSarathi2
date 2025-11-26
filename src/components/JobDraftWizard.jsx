@@ -27,6 +27,7 @@ import {
   Send,
   Edit,
 } from "lucide-react";
+import countryService from "../services/countryService";
 
 /*
  * JobDraftWizard Component
@@ -84,6 +85,8 @@ const JobDraftWizard = ({
   const [currentFlow, setCurrentFlow] = useState("selection"); // 'selection', 'single', 'bulk'
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState({});
+  const [countries, setCountries] = useState([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
   const [formData, setFormData] = useState({
     // Single draft data
     posting_title: "",
@@ -487,6 +490,22 @@ const JobDraftWizard = ({
     }
   }, [editingDraft, isOpen, initialStep]);
 
+  // Fetch countries on mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true);
+        const countryNames = await countryService.getCountryNames();
+        setCountries(countryNames);
+      } catch (error) {
+        console.error('[JobDraftWizard] Failed to fetch countries:', error);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+    fetchCountries();
+  }, []);
+
   // Clear errors when changing steps
   useEffect(() => {
     setErrors({});
@@ -543,54 +562,8 @@ const JobDraftWizard = ({
     },
   ];
 
-  const countries = [
-    "UAE",
-    "Saudi Arabia",
-    "Qatar",
-    "Kuwait",
-    "Oman",
-    "Bahrain",
-    "Malaysia",
-  ];
-
-  const citiesByCountry = {
-    UAE: [
-      "Dubai",
-      "Abu Dhabi",
-      "Sharjah",
-      "Ajman",
-      "Fujairah",
-      "Ras Al Khaimah",
-      "Umm Al Quwain",
-    ],
-    "Saudi Arabia": [
-      "Riyadh",
-      "Jeddah",
-      "Mecca",
-      "Medina",
-      "Dammam",
-      "Khobar",
-      "Taif",
-    ],
-    Qatar: ["Doha", "Al Rayyan", "Al Wakrah", "Al Khor", "Umm Salal"],
-    Kuwait: [
-      "Kuwait City",
-      "Hawalli",
-      "Farwaniya",
-      "Ahmadi",
-      "Jahra",
-      "Mubarak Al-Kabeer",
-    ],
-    Oman: ["Muscat", "Sohar", "Nizwa", "Sur", "Salalah", "Ibri"],
-    Bahrain: ["Manama", "Muharraq", "Riffa", "Hamad Town", "Isa Town"],
-    Malaysia: [
-      "Kuala Lumpur",
-      "Petaling Jaya",
-      "Shah Alam",
-      "Subang Jaya",
-      "Johor Bahru",
-    ],
-  };
+  // Countries are now fetched from API via useEffect
+  // Cities are free text input since backend stores them as strings
 
   const announcementTypes = [
     { value: "newspaper", label: "Newspaper" },
@@ -2513,32 +2486,64 @@ const JobDraftWizard = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Country */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Country <span className="text-red-500 dark:text-red-400">*</span>
+                  <HelpCircle
+                    className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
+                    title="Select the country where the job will be located"
+                  />
+                </label>
+                <select
+                  value={formData.country}
+                  onChange={(e) => handleInputChange("country", e.target.value)}
+                  disabled={loadingCountries}
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                    errors.country
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}
+                >
+                  <option value="">
+                    {loadingCountries ? "Loading countries..." : "Select a country"}
+                  </option>
+                  {countries.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+                {errors.country && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1">
+                    {errors.country}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  e.g., United Arab Emirates
+                </p>
+              </div>
+
               {/* City */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   City <span className="text-red-500 dark:text-red-400">*</span>
                   <HelpCircle
                     className="inline w-4 h-4 ml-1 text-gray-400 dark:text-gray-500 cursor-help"
-                    title="Select the city where the job will be located"
+                    title="Enter the city where the job will be located"
                   />
                 </label>
-                <select
+                <input
+                  type="text"
                   value={formData.city}
                   onChange={(e) => handleInputChange("city", e.target.value)}
-                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                  placeholder="Enter city name"
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
                     errors.city
                       ? "border-red-500"
                       : "border-gray-300 dark:border-gray-600"
                   }`}
-                >
-                  <option value="">Select a city</option>
-                  {formData.country &&
-                    citiesByCountry[formData.country]?.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                </select>
+                />
                 {errors.city && (
                   <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                     {errors.city}

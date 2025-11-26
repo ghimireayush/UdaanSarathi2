@@ -32,12 +32,10 @@ const Jobs = () => {
   const [filters, setFilters] = useState({
     search: '',
     country: 'All Countries',
-    status: 'published',
     sortBy: 'published_date'
   })
   const [jobs, setJobs] = useState([])
   const [allJobs, setAllJobs] = useState([]) // Store all jobs for client-side pagination
-  const [jobStatuses, setJobStatuses] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [countryDistribution, setCountryDistribution] = useState({})
 
@@ -64,15 +62,13 @@ const Jobs = () => {
         setIsLoading(true)
         clearError()
         
-        const [jobsData, statusesData, statsData] = await Promise.all([
+        const [jobsData, statsData] = await Promise.all([
           jobService.getJobs(filters),
-          constantsService.getJobStatuses(),
           jobService.getJobStatistics()
         ])
         
         setAllJobs(jobsData)
         setJobs(jobsData)
-        setJobStatuses(statusesData)
         setCountryDistribution(statsData.byCountry || {})
       } catch (err) {
         handleError(err, 'fetch jobs data');
@@ -119,14 +115,12 @@ const Jobs = () => {
                   const fetchJobsData = async () => {
                     try {
                       setIsLoading(true)
-                      const [jobsData, statusesData, statsData] = await Promise.all([
+                      const [jobsData, statsData] = await Promise.all([
                         jobService.getJobs(filters),
-                        constantsService.getJobStatuses(),
                         jobService.getJobStatistics()
                       ])
                       
                       setJobs(jobsData)
-                      setJobStatuses(statusesData)
                       setCountryDistribution(statsData.byCountry || {})
                       clearError()
                     } catch (err) {
@@ -196,22 +190,11 @@ const Jobs = () => {
           {/* Filters */}
           <div className="flex flex-wrap gap-3">
             <select 
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            >
-              <option value={jobStatuses.PUBLISHED}>{tPageSync('filters.status.published')}</option>
-              <option value={jobStatuses.DRAFT}>{tPageSync('filters.status.draft')}</option>
-              <option value={jobStatuses.CLOSED}>{tPageSync('filters.status.closed')}</option>
-              <option value={jobStatuses.PAUSED}>{tPageSync('filters.status.paused')}</option>
-            </select>
-            
-            <select 
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option>{tPageSync('filters.allCountries')}</option>
+              <option value="All Countries">{tPageSync('filters.allCountries')}</option>
               {Object.keys(countryDistribution).map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}

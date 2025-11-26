@@ -7,6 +7,7 @@ import auditService from './auditService.js'
 import authService from './authService.js'
 import draftJobApiClient from './draftJobApiClient.js'
 import { mapFrontendToBackend, mapBackendToFrontend, mapBackendArrayToFrontend } from './draftJobMapper.js'
+import adminJobApiClient from './adminJobApiClient.js'
 
 // Utility function to simulate API delay (reduced for performance)
 const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
@@ -39,12 +40,31 @@ class JobService {
   }
 
   /**
-   * Get all jobs with optional filtering
+   * Get all jobs with optional filtering (ADMIN API VERSION)
+   * Uses the dedicated admin API endpoint with real statistics
    * @param {Object} filters - Filter options
    * @returns {Promise<Array>} Array of jobs
    */
   async getJobs(filters = {}) {
-    const cacheKey = `jobs_${JSON.stringify(filters)}`
+    const cacheKey = `admin_jobs_${JSON.stringify(filters)}`
+    
+    return await performanceService.getCachedData(cacheKey, async () => {
+      return handleServiceError(async () => {
+        // Use admin API client to fetch jobs with statistics
+        const jobs = await adminJobApiClient.getAdminJobs(filters);
+        return jobs;
+      }, 3, 500);
+    }, 'jobs', 60000); // Cache for 1 minute
+  }
+
+  /**
+   * Get all jobs with optional filtering (LEGACY MOCK VERSION)
+   * Kept for backward compatibility if needed
+   * @param {Object} filters - Filter options
+   * @returns {Promise<Array>} Array of jobs
+   */
+  async getJobsMock(filters = {}) {
+    const cacheKey = `jobs_mock_${JSON.stringify(filters)}`
     
     return await performanceService.getCachedData(cacheKey, async () => {
       return handleServiceError(async () => {
@@ -676,37 +696,15 @@ class JobService {
   }
 
   /**
-   * Get job statistics
+   * Get job statistics (ADMIN API VERSION)
+   * Uses the dedicated admin API endpoint
    * @returns {Promise<Object>} Job statistics
    */
   async getJobStatistics() {
     const result = await handleServiceError(async () => {
-      await delay(200)
-      const constants = await constantsService.getJobStatuses()
-      
-      const stats = {
-        total: jobsCache.length,
-        published: jobsCache.filter(job => job.status === constants.PUBLISHED).length,
-        draft: jobsCache.filter(job => job.status === constants.DRAFT).length,
-        closed: jobsCache.filter(job => job.status === constants.CLOSED).length,
-        paused: jobsCache.filter(job => job.status === constants.PAUSED).length,
-        byCountry: {},
-        byCategory: {},
-        totalApplications: jobsCache.reduce((sum, job) => sum + job.applications_count, 0),
-        totalViews: jobsCache.reduce((sum, job) => sum + job.view_count, 0)
-      }
-
-      // Group by country
-      jobsCache.forEach(job => {
-        stats.byCountry[job.country] = (stats.byCountry[job.country] || 0) + 1
-      })
-
-      // Group by category
-      jobsCache.forEach(job => {
-        stats.byCategory[job.category] = (stats.byCategory[job.category] || 0) + 1
-      })
-
-      return stats
+      // Use admin API client to fetch statistics
+      const stats = await adminJobApiClient.getJobStatistics();
+      return stats;
     }, 3, 500);
     
     return result;
