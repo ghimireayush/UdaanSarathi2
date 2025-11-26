@@ -69,10 +69,10 @@ Base URL: `http://localhost:3000`
 
 ## Next Steps
 
-1. **Complete Job Service Integration**
-   - Update `updateJob()` to detect drafts and use API
-   - Update `deleteJob()` to detect drafts and use API
-   - Update `publishJob()` to use draft API's publish endpoint
+1. **Complete Job Service Integration** ✅
+   - ✅ Update `updateJob()` to detect drafts and use API
+   - ✅ Update `deleteJob()` to detect drafts and use API
+   - ✅ Update `publishJob()` to use draft API's publish endpoint
 
 2. **Test Full Workflow**
    - Create draft via wizard

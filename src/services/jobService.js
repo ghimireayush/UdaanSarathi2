@@ -231,26 +231,66 @@ class JobService {
    * @returns {Promise<Object|null>} Updated job or null if not found
    */
   async updateJob(jobId, updateData) {
-    const result = await handleServiceError(async () => {
-      await delay(80)
-      // Removed random error simulation for 100% reliability
+    // Check if this is a draft by looking at the job in cache first
+    const existingJob = jobsCache.find(job => job.id === jobId);
+    const constants = await constantsService.getJobStatuses();
+    const isDraft = existingJob && existingJob.status === constants.DRAFT;
 
-      const jobIndex = jobsCache.findIndex(job => job.id === jobId)
+    // If it's a draft, use the API
+    if (isDraft) {
+      try {
+        const backendData = mapFrontendToBackend(updateData);
+        const backendDraft = await draftJobApiClient.updateDraftJob(jobId, backendData);
+        const frontendDraft = mapBackendToFrontend(backendDraft);
+
+        // Update local cache
+        const jobIndex = jobsCache.findIndex(job => job.id === jobId);
+        if (jobIndex !== -1) {
+          jobsCache[jobIndex] = frontendDraft;
+        }
+
+        // Audit: draft updated
+        try {
+          const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+          await auditService.logEvent({
+            user_id: actor.id,
+            user_name: actor.name,
+            action: 'UPDATE',
+            resource_type: 'DRAFT_JOB',
+            resource_id: jobId,
+            changes: updateData,
+          });
+        } catch (e) {
+          console.warn('Audit logging (UPDATE DRAFT) failed:', e);
+        }
+
+        return frontendDraft;
+      } catch (error) {
+        console.error('Failed to update draft via API:', error);
+        // Fall through to mock implementation
+      }
+    }
+
+    // Regular job update (mock implementation)
+    const result = await handleServiceError(async () => {
+      await delay(80);
+
+      const jobIndex = jobsCache.findIndex(job => job.id === jobId);
       if (jobIndex === -1) {
-        return null
+        return null;
       }
 
-      const before = deepClone(jobsCache[jobIndex])
+      const before = deepClone(jobsCache[jobIndex]);
       jobsCache[jobIndex] = {
         ...jobsCache[jobIndex],
         ...updateData,
         updated_at: new Date().toISOString()
-      }
+      };
 
-      const updated = deepClone(jobsCache[jobIndex])
+      const updated = deepClone(jobsCache[jobIndex]);
       // Audit: job updated
       try {
-        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
         await auditService.logEvent({
           user_id: actor.id,
           user_name: actor.name,
@@ -260,11 +300,11 @@ class JobService {
           changes: updateData,
           old_values: before,
           new_values: updated
-        })
+        });
       } catch (e) {
-        console.warn('Audit logging (UPDATE JOB) failed:', e)
+        console.warn('Audit logging (UPDATE JOB) failed:', e);
       }
-      return updated
+      return updated;
     }, 3, 500);
     
     return result;
@@ -276,17 +316,54 @@ class JobService {
    * @returns {Promise<boolean>} Success status
    */
   async deleteJob(jobId) {
-    const result = await handleServiceError(async () => {
-      await delay(80)
-      // Removed random error simulation for 100% reliability
+    // Check if this is a draft
+    const existingJob = jobsCache.find(job => job.id === jobId);
+    const constants = await constantsService.getJobStatuses();
+    const isDraft = existingJob && existingJob.status === constants.DRAFT;
 
-      const jobIndex = jobsCache.findIndex(job => job.id === jobId)
+    // If it's a draft, use the API
+    if (isDraft) {
+      try {
+        await draftJobApiClient.deleteDraftJob(jobId);
+
+        // Remove from local cache
+        const jobIndex = jobsCache.findIndex(job => job.id === jobId);
+        if (jobIndex !== -1) {
+          jobsCache.splice(jobIndex, 1);
+        }
+
+        // Audit: draft deleted
+        try {
+          const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+          await auditService.logEvent({
+            user_id: actor.id,
+            user_name: actor.name,
+            action: 'DELETE',
+            resource_type: 'DRAFT_JOB',
+            resource_id: jobId,
+          });
+        } catch (e) {
+          console.warn('Audit logging (DELETE DRAFT) failed:', e);
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Failed to delete draft via API:', error);
+        return false;
+      }
+    }
+
+    // Regular job delete (mock implementation)
+    const result = await handleServiceError(async () => {
+      await delay(80);
+
+      const jobIndex = jobsCache.findIndex(job => job.id === jobId);
       if (jobIndex === -1) {
-        return false
+        return false;
       }
 
-      const removed = deepClone(jobsCache[jobIndex])
-      jobsCache.splice(jobIndex, 1)
+      const removed = deepClone(jobsCache[jobIndex]);
+      jobsCache.splice(jobIndex, 1);
       // Audit: job deleted
       try {
         const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
@@ -356,17 +433,68 @@ class JobService {
    * @returns {Promise<Object|null>} Updated job or null if not found
    */
   async publishJob(jobId) {
+    // Check if this is a draft
+    const existingJob = jobsCache.find(job => job.id === jobId);
+    const constants = await constantsService.getJobStatuses();
+    const isDraft = existingJob && existingJob.status === constants.DRAFT;
+
+    // If it's a draft, use the draft API's publish endpoint
+    if (isDraft) {
+      try {
+        const publishResult = await draftJobApiClient.publishDraftJob(jobId);
+
+        // Remove draft from cache and add published job
+        const draftIndex = jobsCache.findIndex(job => job.id === jobId);
+        if (draftIndex !== -1) {
+          jobsCache.splice(draftIndex, 1);
+        }
+
+        // The published job should be fetched from the jobs API
+        // For now, we'll create a placeholder in cache
+        const publishedJob = {
+          ...existingJob,
+          id: publishResult.job_posting_id,
+          status: constants.PUBLISHED,
+          published_at: new Date().toISOString(),
+        };
+        jobsCache.push(publishedJob);
+
+        // Audit: draft published
+        try {
+          const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+          await auditService.logEvent({
+            user_id: actor.id,
+            user_name: actor.name,
+            action: 'PUBLISH',
+            resource_type: 'DRAFT_JOB',
+            resource_id: jobId,
+            metadata: { 
+              action: 'PUBLISH',
+              job_posting_id: publishResult.job_posting_id 
+            }
+          });
+        } catch (e) {
+          console.warn('Audit logging (PUBLISH DRAFT) failed:', e);
+        }
+
+        return publishedJob;
+      } catch (error) {
+        console.error('Failed to publish draft via API:', error);
+        throw error; // Re-throw to let caller handle
+      }
+    }
+
+    // Regular job publish (mock implementation)
     const result = await handleServiceError(async () => {
-      await delay(80)
-      const constants = await constantsService.getJobStatuses()
+      await delay(80);
       
       const updateData = {
         status: constants.PUBLISHED,
         published_at: new Date().toISOString()
-      }
-      const res = await this.updateJob(jobId, updateData)
+      };
+      const res = await this.updateJob(jobId, updateData);
       try {
-        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
         await auditService.logEvent({
           user_id: actor.id,
           user_name: actor.name,
@@ -375,11 +503,11 @@ class JobService {
           resource_id: jobId,
           changes: updateData,
           metadata: { action: 'PUBLISH' }
-        })
+        });
       } catch (e) {
-        console.warn('Audit logging (PUBLISH JOB) failed:', e)
+        console.warn('Audit logging (PUBLISH JOB) failed:', e);
       }
-      return res
+      return res;
     }, 3, 500);
     
     return result;
