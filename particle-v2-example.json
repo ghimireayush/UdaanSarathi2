@@ -1,0 +1,209 @@
+{
+  "example_enhanced_particle": {
+    "domainName": "skyrim",
+    "namedPosition": "bottomLeft",
+    "title": "Member Invite - Team Management Use Case",
+    "status": "committed",
+    "weitage": 1,
+    "evidence": {
+      "filePath": "src/services/memberService.js",
+      "lineRange": {
+        "start": 70,
+        "end": 150
+      },
+      "codeSnippet": "export const inviteMember = async (memberData) => {\n  return handleServiceError(async () => {\n    // Validate required fields\n    if (!memberData.full_name || !memberData.role || !memberData.phone) {\n      throw new Error('Invalid member data');\n    }\n    ...\n  });\n};",
+      "description": "inviteMember function with audit logging integration",
+      "commitHash": "abc123def456",
+      "capturedAt": "2025-11-30T10:00:00Z"
+    },
+    "apiMetadata": {
+      "endpoint": "/agencies/owner/members/invite",
+      "method": "POST",
+      "statusCode": 201,
+      "durationMs": 245,
+      "requestParams": {
+        "full_name": "[REDACTED]",
+        "role": "staff",
+        "phone": "[REDACTED]"
+      },
+      "responseData": {
+        "success": true,
+        "id": "member_xyz"
+      },
+      "errorMessage": null
+    },
+    "temporal": {
+      "createdAt": "2025-11-30T10:00:00Z",
+      "updatedAt": "2025-11-30T14:30:00Z",
+      "lastTriggeredAt": "2025-11-30T14:30:00Z",
+      "triggerCount": 47,
+      "averageDuration": "230ms",
+      "triggerHistory": [
+        "2025-11-30T14:30:00Z",
+        "2025-11-30T14:15:00Z",
+        "2025-11-30T14:00:00Z",
+        "2025-11-30T13:45:00Z",
+        "2025-11-30T13:30:00Z"
+      ]
+    },
+    "agent": {
+      "agentId": "agency_001",
+      "agentName": "Test Agency",
+      "agentRole": "owner",
+      "sessionId": "session_abc123",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+    },
+    "relatedParticleIds": [
+      "particle_member_list",
+      "particle_member_delete",
+      "particle_member_status_update"
+    ],
+    "parentParticleId": "particle_team_management_domain",
+    "metadata": {
+      "auditTracked": true,
+      "category": "team_management",
+      "priority": "high",
+      "tags": ["member", "invite", "team", "admin"],
+      "service": "memberService.js",
+      "controller": "MemberController",
+      "requiresAuth": true,
+      "requiresRole": ["owner", "admin"]
+    }
+  },
+  "example_api_call_trigger": {
+    "description": "When the API is called, send this to increment the particle",
+    "endpoint": "POST /particle/trigger",
+    "payload": {
+      "domainName": "skyrim",
+      "particleId": "particle_member_invite_xyz",
+      "apiMetadata": {
+        "statusCode": 201,
+        "durationMs": 180
+      },
+      "agent": {
+        "agentId": "agency_002",
+        "agentName": "Another Agency",
+        "agentRole": "owner"
+      }
+    },
+    "result": {
+      "triggerCount": 48,
+      "lastTriggeredAt": "2025-11-30T15:00:00Z",
+      "averageDuration": "228ms",
+      "candleFlickering": false
+    }
+  },
+  "example_bulk_creation": {
+    "description": "Create multiple particles at once from code analysis",
+    "endpoint": "POST /particles/bulk",
+    "payload": {
+      "domainName": "skyrim",
+      "particles": [
+        {
+          "namedPosition": "bottomLeft",
+          "title": "Draft Job Creation",
+          "status": "committed",
+          "evidence": {
+            "filePath": "src/services/draftJobApiClient.js",
+            "lineRange": {"start": 124, "end": 148}
+          },
+          "apiMetadata": {
+            "endpoint": "/agencies/{license}/draft-jobs",
+            "method": "POST"
+          }
+        },
+        {
+          "namedPosition": "midLeft",
+          "title": "Application Shortlist",
+          "status": "committed",
+          "evidence": {
+            "filePath": "src/services/applicationApiClient.js",
+            "lineRange": {"start": 21, "end": 40}
+          },
+          "apiMetadata": {
+            "endpoint": "/applications/{id}/shortlist",
+            "method": "POST"
+          }
+        },
+        {
+          "namedPosition": "bottomRight",
+          "title": "Member Deletion",
+          "status": "committed",
+          "evidence": {
+            "filePath": "src/services/memberService.js",
+            "lineRange": {"start": 234, "end": 275}
+          },
+          "apiMetadata": {
+            "endpoint": "/agencies/owner/members/{id}",
+            "method": "DELETE"
+          }
+        }
+      ]
+    }
+  },
+  "example_queries": {
+    "by_file": {
+      "url": "GET /particles/by-file?filePath=src/services/memberService.js",
+      "description": "Find all particles with evidence in this file"
+    },
+    "by_api": {
+      "url": "GET /particles/by-api?endpoint=/agencies/owner/members/invite&method=POST",
+      "description": "Find particles for specific API endpoint"
+    },
+    "by_agent": {
+      "url": "GET /particles/by-agent?agentRole=owner",
+      "description": "Find all particles triggered by owners"
+    },
+    "recent": {
+      "url": "GET /particles/recent?hours=24",
+      "description": "Find particles triggered in last 24 hours"
+    },
+    "frequent": {
+      "url": "GET /particles/frequent?minTriggers=100",
+      "description": "Find high-frequency use cases"
+    },
+    "slow": {
+      "url": "GET /particles/slow?minDurationMs=1000",
+      "description": "Find slow API calls (>1 second)"
+    },
+    "by_status": {
+      "url": "GET /particles?status=flickering",
+      "description": "Find particles that need attention"
+    }
+  },
+  "migration_example": {
+    "description": "How existing simple particles will be migrated",
+    "before": {
+      "id": "particle_old_123",
+      "essence": {
+        "title": "Old Particle",
+        "status": "committed",
+        "school": "restoration",
+        "weitage": 5
+      }
+    },
+    "after": {
+      "id": "particle_old_123",
+      "essence": {
+        "title": "Old Particle",
+        "status": "committed",
+        "school": "restoration",
+        "weitage": 5,
+        "evidence": null,
+        "apiMetadata": null,
+        "temporal": {
+          "createdAt": "2025-11-30T00:00:00Z",
+          "triggerCount": 0
+        },
+        "agent": null,
+        "relatedParticleIds": null,
+        "parentParticleId": null,
+        "metadata": {
+          "migrated": true,
+          "originalVersion": "v1"
+        }
+      }
+    }
+  }
+}

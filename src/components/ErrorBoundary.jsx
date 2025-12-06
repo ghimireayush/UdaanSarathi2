@@ -1,6 +1,7 @@
 // Error Boundary Component for Better Error Handling
 import { Component } from 'react'
 import ErrorPage from '../pages/ErrorPage.jsx'
+import ErrorLoggingDataSource from '../api/datasources/ErrorLoggingDataSource.js'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -18,9 +19,29 @@ class ErrorBoundary extends Component {
       errorInfo: errorInfo
     })
     
-    // Log error to monitoring service in production
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Error Boundary caught an error:', error, errorInfo)
+    // Log error to console
+    console.error('Error Boundary caught an error:', error, errorInfo)
+    
+    // Send error to logging server
+    this.logErrorToServer(error, errorInfo)
+  }
+
+  logErrorToServer = async (error, errorInfo) => {
+    try {
+      const errorPayload = {
+        error: error.name || 'Error',
+        message: error.message || 'Unknown error',
+        stack: error.stack || '',
+        componentStack: errorInfo?.componentStack || '',
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString()
+      }
+
+      await ErrorLoggingDataSource.logError(errorPayload)
+    } catch (logError) {
+      // Silently fail if logging server is not available
+      console.warn('Failed to send error to logging server:', logError)
     }
   }
 

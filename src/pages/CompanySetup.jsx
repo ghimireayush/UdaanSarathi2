@@ -7,7 +7,7 @@ import {
   Globe,
   FileText,
   ArrowLeft,
-  Map,
+  LogOut,
 } from "lucide-react";
 import {
   Card,
@@ -35,12 +35,14 @@ const CompanySetup = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { createCompany } = useAuth();
+  const { createCompany, user, isAuthenticated, logout } = useAuth();
 
-  const userId = location.state?.userId;
+  // Use userId from location state (for registration flow) or from authenticated user
+  const userId = location.state?.userId || user?.id;
 
-  if (!userId) {
-    navigate("/register", { replace: true });
+  // Redirect to login if not authenticated
+  if (!isAuthenticated || !userId) {
+    navigate("/login", { replace: true });
     return null;
   }
 
@@ -50,39 +52,6 @@ const CompanySetup = () => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleChooseOnMap = () => {
-    // Get current address or default to Nepal
-    const searchQuery = formData.address || "Nepal";
-    
-    // Create Google Maps URL for place search with better parameters
-    const googleMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}/@27.7172,85.3240,11z/data=!3m1!4b1`;
-    
-    // Open Google Maps in a popup window with optimal size
-    const popup = window.open(
-      googleMapsUrl,
-      'googleMapsPopup',
-      'width=1000,height=700,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=yes,status=no,left=200,top=100'
-    );
-
-    // Focus the popup window
-    if (popup) {
-      popup.focus();
-      
-      // Show user-friendly instructions
-      setTimeout(() => {
-        if (confirm('Google Maps has opened in a new window.\n\n1. Search for your exact location\n2. Right-click on the location pin\n3. Copy the address from the popup\n4. Come back and paste it in the address field\n\nClick OK to continue, or Cancel to close the map.')) {
-          // User clicked OK, keep the popup open
-        } else {
-          // User clicked Cancel, close the popup
-          popup.close();
-        }
-      }, 1000);
-    } else {
-      // Popup was blocked
-      alert('Popup blocked! Please allow popups for this site and try again.\n\nAlternatively, you can manually enter your address in the field above.');
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -104,6 +73,11 @@ const CompanySetup = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/', { replace: true });
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-navy/10 via-brand-blue-bright/5 to-brand-green-vibrant/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
@@ -113,6 +87,16 @@ const CompanySetup = () => {
             className="absolute top-4 left-4 p-2 text-gray-600 hover:text-brand-navy transition-colors dark:text-gray-400 dark:hover:text-brand-blue-bright"
           >
             <ArrowLeft className="h-6 w-6" />
+          </button>
+
+          {/* Logout button - Top Right */}
+          <button
+            onClick={handleLogout}
+            className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-600 transition-colors dark:text-gray-400 dark:hover:text-red-400 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
+            title="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="text-sm font-medium">Logout</span>
           </button>
 
           <div className="flex flex-col items-center mb-4">
@@ -127,6 +111,11 @@ const CompanySetup = () => {
             <p className="text-gray-600 dark:text-gray-400">
               Tell us about your manpower agency
             </p>
+            {user && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                Logged in as: <span className="font-medium">{user.name || user.phone}</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -186,22 +175,10 @@ const CompanySetup = () => {
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-24 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
                     placeholder="Enter company address"
                   />
-                  <button
-                    type="button"
-                    onClick={handleChooseOnMap}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-brand-blue-bright hover:text-brand-navy dark:text-brand-blue-bright dark:hover:text-blue-300 transition-colors"
-                    title="Open Google Maps to find your exact location"
-                  >
-                    <Map className="h-4 w-4 mr-1" />
-                    Choose on Map
-                  </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Click "Choose on Map" to find your exact location using Google Maps
-                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

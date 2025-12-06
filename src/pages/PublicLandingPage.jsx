@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 import Navbar from "../components/public/Navbar";
 import HeroSection from "../components/public/HeroSection";
 import StatsSection from "../components/public/StatsSection";
-import AgencySearch from "../components/public/AgencySearch";
+import AgencySearch from "../components/public/AgencySearchNew";
 import HowItWorks from "../components/public/HowItWorks";
 import Features from "../components/public/Features";
 import Footer from "../components/public/Footer";
 import LoadingScreen from "../components/LoadingScreen";
 
 const PublicLandingPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem("landing-language") || "en";
@@ -18,26 +22,53 @@ const PublicLandingPage = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
+  const [stats, setStats] = useState(null);
+
+  // Redirect logged-in users to their appropriate dashboard
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Check if user is an owner
+      const isOwner = user.role === 'agency_owner' || user.role === 'owner' || user.userType === 'owner'
+      if (isOwner) {
+        // Check if they have an agency
+        if (user.agencyId || user.agency_id) {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/setup-company', { replace: true });
+        }
+      } else {
+        // Member or other user types go to dashboard
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
-    // Load translations
-    const loadTranslations = async () => {
+    // Load translations and stats
+    const loadData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `/translations/${language}/pages/landing.json`
-        );
-        if (response.ok) {
-          const data = await response.json();
+        const [translationsRes, statsRes] = await Promise.all([
+          fetch(`/translations/${language}/pages/landing.json`),
+          fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/analytics/landing-stats`)
+        ]);
+        
+        if (translationsRes.ok) {
+          const data = await translationsRes.json();
           setTranslations(data);
         }
+        
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          setStats(data);
+        }
       } catch (error) {
-        console.error("Failed to load translations:", error);
+        console.error("Failed to load data:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    loadTranslations();
+    loadData();
   }, [language]);
 
   // Minimum loading screen display time
@@ -107,8 +138,8 @@ const PublicLandingPage = () => {
       />
 
       {/* Page Sections */}
-      <HeroSection onSearchClick={scrollToSearch} t={t} />
-      <StatsSection t={t} />
+      <HeroSection onSearchClick={scrollToSearch} t={t} stats={stats} />
+      <StatsSection t={t} stats={stats} />
       <AgencySearch t={t} />
       <HowItWorks t={t} />
       <Features t={t} />

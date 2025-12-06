@@ -29,12 +29,21 @@ import {
   Plus
 } from 'lucide-react'
 import { interviewService } from '../services/index.js'
+import CandidateDataSource from '../api/datasources/CandidateDataSource.js'
+import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
+import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
+import { useAgency } from '../contexts/AgencyContext.jsx'
 import { format, isToday, isTomorrow, isPast, addMinutes, parseISO } from 'date-fns'
+import CandidateSummaryS2 from './CandidateSummaryS2.jsx'
+import { formatTime12Hour } from '../utils/helpers.js'
 
-const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) => {
-  const [activeSubtab, setActiveSubtab] = useState('today')
+const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, currentFilter, onFilterChange, onDataReload, showFilters = true }) => {
+  const { agencyData } = useAgency()
+  // Use parent's currentFilter directly, no local state
+  const activeSubtab = currentFilter || 'all'
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isLoadingFiltered, setIsLoadingFiltered] = useState(false)
   const notesRef = useRef(null)
   const charCountRef = useRef(null)
   const [actionType, setActionType] = useState('')
@@ -52,100 +61,67 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
   // Check if an interview is unattended (past scheduled time + grace period)
   const isUnattended = (interview) => {
-    if (!interview || interview.status !== 'scheduled') return false
-    const interviewEnd = addMinutes(parseISO(interview.scheduled_at), (interview.duration || 60) + gracePeriod)
-    return isPast(interviewEnd)
+    if (!interview || interview.status !== 'scheduled' || !interview.scheduled_at) return false
+    
+    try {
+      const interviewEnd = addMinutes(parseISO(interview.scheduled_at), (interview.duration || 60) + gracePeriod)
+      return isPast(interviewEnd)
+    } catch (error) {
+      console.error('Error parsing interview date:', error, interview)
+      return false
+    }
   }
 
   // Calculate counts for each subtab
+  // Note: With server-side filtering, we only have the filtered results
+  // So we show the count of what's currently loaded
   const getSubtabCounts = () => {
+    // Since we're using server-side filtering, we only have the current filter's results
+    // Show the count for the active filter, others will be fetched when clicked
     const counts = {
-      today: 0,
-      tomorrow: 0,
-      unattended: 0,
-      all: interviews.length
+      today: activeSubtab === 'today' ? interviews.length : 0,
+      tomorrow: activeSubtab === 'tomorrow' ? interviews.length : 0,
+      unattended: activeSubtab === 'unattended' ? interviews.length : 0,
+      all: activeSubtab === 'all' ? interviews.length : 0
     }
-
-    interviews.forEach(candidate => {
-      if (!candidate.interview) return
-
-      const interviewDate = parseISO(candidate.interview.scheduled_at)
-      const interview = candidate.interview
-      
-      // Count today's interviews (scheduled or unattended, but not completed/cancelled)
-      if (isToday(interviewDate) && (interview.status === 'scheduled' || isUnattended(interview))) {
-        counts.today++
-      }
-      
-      // Count tomorrow's scheduled interviews
-      if (isTomorrow(interviewDate) && interview.status === 'scheduled') {
-        counts.tomorrow++
-      }
-      
-      // Count truly unattended interviews
-      if (isUnattended(interview)) {
-        counts.unattended++
-      }
-    })
 
     return counts
   }
 
   // Handle candidate click to open sidebar
   const handleCandidateClick = (candidate) => {
-    // Add sample documents if none exist (for testing purposes)
-    if (!candidate.documents || candidate.documents.length === 0) {
-      candidate.documents = [
-        {
-          name: `${candidate.name || 'Candidate'}_CV.pdf`,
-          size: 2400000, // 2.4 MB
-          type: 'application/pdf',
-          stage: 'applied',
-          uploaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
-          uploaded_by: 'candidate',
-          file_extension: 'pdf'
-        },
-        {
-          name: `${candidate.name || 'Candidate'}_Passport.jpg`,
-          size: 1800000, // 1.8 MB
-          type: 'image/jpeg',
-          stage: 'shortlisted',
-          uploaded_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-          uploaded_by: 'hr_team',
-          file_extension: 'jpg'
-        },
-        {
-          name: `${candidate.name || 'Candidate'}_Certificate.pdf`,
-          size: 950000, // 0.95 MB
-          type: 'application/pdf',
-          stage: 'interview-scheduled',
-          uploaded_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-          uploaded_by: 'candidate',
-          file_extension: 'pdf'
-        }
-      ]
-    }
-    
+    // Use real candidate data from API
+    // Documents will be loaded by CandidateSummaryS2 or document API if needed
     setSelectedCandidate(candidate)
     setIsSidebarOpen(true)
   }
 
   useEffect(() => {
-    if (propInterviews) {
+    console.log('🔍 ScheduledInterviews useEffect:', {
+      propInterviews: propInterviews?.length,
+      candidates: candidates?.length,
+      willUse: (propInterviews && propInterviews.length > 0) ? 'propInterviews' : 'candidates'
+    })
+    
+    // Priority: use propInterviews if it has data, otherwise use candidates
+    if (propInterviews && propInterviews.length > 0) {
       // Use interviews passed as props (from calendar view)
-      setInterviews(propInterviews.map(interview => ({
+      const mapped = propInterviews.map(interview => ({
         id: interview.candidate_id || interview.id,
         name: interview.candidate_name || interview.name || 'Unknown Candidate',
         phone: interview.candidate_phone || interview.phone || '',
         email: interview.candidate_email || interview.email || '',
         interview: interview
-      })))
+      }))
+      console.log('✅ Setting interviews from propInterviews:', mapped.length)
+      setInterviews(mapped)
     } else {
-      // Load interviews from candidates
-      loadInterviews()
+      // Use candidates passed from parent (already filtered by server)
+      console.log('✅ Setting interviews from candidates:', candidates?.length || 0)
+      setInterviews(candidates || [])
     }
   }, [candidates, jobId, propInterviews])
-
+  
   // Handle ESC key to close sidebar
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -203,72 +179,17 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
 
 
 
-  const loadInterviews = async () => {
-    try {
-      console.log('Loading interviews for candidates:', candidates?.length, 'jobId:', jobId)
-      const interviewData = []
-      
-      if (!candidates || candidates.length === 0) {
-        console.warn('No candidates available for loading interviews')
-        setInterviews([])
-        return
-      }
-      
-      for (const candidate of candidates) {
-        const candidateInterviews = await interviewService.getInterviewsByCandidateId(candidate.id)
-        const jobInterview = candidateInterviews.find(interview => interview.job_id === jobId)
-        if (jobInterview) {
-          interviewData.push({
-            ...candidate,
-            interview: jobInterview
-          })
-        }
-      }
-      
-      console.log('Loaded interview data:', interviewData.length, 'interviews')
-      setInterviews(interviewData)
-    } catch (error) {
-      console.error('Failed to load interviews:', error)
-      setInterviews([]) // Set empty array on error to prevent undefined issues
-    }
-  }
+  // Removed loadInterviews - now using real API data from parent component
 
-  // Filter candidates based on active subtab
-  const filteredCandidates = interviews.filter(candidate => {
-    if (!candidate.interview) return false
-
-    const interviewDate = parseISO(candidate.interview.scheduled_at)
-    const interview = candidate.interview
-
-    switch (activeSubtab) {
-      case 'today':
-        // Show today's interviews that are scheduled or unattended, but not completed/cancelled
-        const isTodayResult = isToday(interviewDate) && (interview.status === 'scheduled' || isUnattended(interview))
-        return isTodayResult
-      case 'tomorrow':
-        // Show tomorrow's scheduled interviews
-        const isTomorrowResult = isTomorrow(interviewDate) && interview.status === 'scheduled'
-        return isTomorrowResult
-      case 'unattended':
-        // Show only truly unattended interviews (scheduled but past grace period)
-        const isUnattendedResult = isUnattended(interview)
-        return isUnattendedResult
-      case 'all':
-      default:
-        // Show all interviews regardless of status
-        return true
-    }
-  })
-
-  // Debug: Log filtering results
-  console.log(`Filtering for ${activeSubtab}:`, {
-    totalInterviews: interviews.length,
-    filteredCount: filteredCandidates.length,
-    interviews: interviews.map(c => ({ 
-      name: c.name, 
-      status: c.interview?.status, 
-      date: c.interview?.scheduled_at 
-    }))
+  // Candidates are already filtered by server based on activeSubtab
+  // No client-side filtering needed
+  const filteredCandidates = interviews
+  
+  console.log('📊 ScheduledInterviews render:', {
+    interviews: interviews.length,
+    filteredCandidates: filteredCandidates.length,
+    activeSubtab,
+    sample: filteredCandidates[0]
   })
 
 
@@ -530,40 +451,95 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
           break
       }
 
-      await interviewService.updateInterview(candidate.interview.id, updateData)
-
-      // Update local state immediately
-      setInterviews(prevInterviews => 
-        prevInterviews.map(item => 
-          item.interview.id === candidate.interview.id 
-            ? { ...item, interview: { ...item.interview, ...updateData } }
-            : item
-        )
-      )
-      
-      // Update selected candidate to show new notes immediately
-      setSelectedCandidate(prev => prev ? ({
-        ...prev,
-        interview: { ...prev.interview, ...updateData }
-      }) : null)
-
-      // Only close sidebar for non-note actions
-      if (action !== 'take_notes') {
-        handleCloseSidebar()
+      // ✅ Use real API instead of mock
+      switch (action) {
+        case 'mark_pass':
+        case 'mark_fail':
+          // Complete interview with pass/fail result
+          await InterviewDataSource.completeInterview(
+            candidate.application_id,
+            action === 'mark_pass' ? 'passed' : 'failed',
+            notesContent || ''
+          )
+          break
+          
+        case 'reject':
+          // Update application status to withdrawn
+          await ApplicationDataSource.updateApplicationStatus(
+            candidate.application_id,
+            'withdrawn',
+            rejectionReason || 'Rejected from scheduled interviews'
+          )
+          break
+          
+        case 'reschedule':
+          // Reschedule interview
+          await InterviewDataSource.rescheduleInterview(
+            candidate.application_id,
+            candidate.interview.id,
+            {
+              date: rescheduleData.date,
+              time: rescheduleData.time,
+              duration: candidate.interview.duration || 60,
+              location: candidate.interview.location || 'Office',
+              interviewer: candidate.interview.interviewer || '',
+              notes: notesContent || 'Rescheduled'
+            }
+          )
+          break
+          
+        case 'take_notes':
+        case 'send_reminder':
+        case 'mark_interviewed':
+          // These actions might not have dedicated APIs yet
+          // Fall back to mock for now, or implement when APIs are available
+          console.warn(`Action '${action}' using mock service - real API not yet implemented`)
+          await interviewService.updateInterview(candidate.interview.id, updateData)
+          break
+          
+        default:
+          console.warn(`Unknown action: ${action}`)
+          return
       }
+
+      // Reload data from server after successful action
+      if (action !== 'take_notes') {
+        // Notify parent to reload data
+        if (onDataReload) {
+          await onDataReload()
+        }
+        handleCloseSidebar()
+      } else {
+        // For notes, update local state immediately
+        setSelectedCandidate(prev => prev ? ({
+          ...prev,
+          interview: { ...prev.interview, notes: notesContent }
+        }) : null)
+      }
+      
+      console.log(`✅ Successfully completed action: ${action}`)
+      
     } catch (error) {
-      console.error('Failed to update interview:', error)
+      console.error(`❌ Failed to ${action}:`, error)
+      alert(`Failed to ${action.replace('_', ' ')}: ${error.message}`)
     } finally {
       setIsProcessing(false)
+      setActionType('')
+      setRejectionReason('')
+      setRescheduleData({ date: '', time: '' })
     }
   }
 
   const getStatusBadge = (interview) => {
-    const interviewDate = parseISO(interview.scheduled_at)
     const isUnattendedInterview = isUnattended(interview)
 
     if (isUnattendedInterview) {
       return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Unattended</span>
+    }
+    
+    // ✅ Check rescheduled_at timestamp for rescheduled status
+    if (interview.rescheduled_at && interview.status === 'scheduled') {
+      return <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">Rescheduled</span>
     }
 
     switch (interview.status) {
@@ -578,15 +554,29 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">Completed</span>
       case 'cancelled':
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Cancelled</span>
-      case 'rescheduled':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">Rescheduled</span>
       default:
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">Scheduled</span>
+    }
+  }
+  
+  const getInterviewTypeIcon = (type) => {
+    switch (type) {
+      case 'Online':
+        return '💻'
+      case 'Phone':
+        return '📞'
+      case 'In-person':
+      default:
+        return '🏢'
     }
   }
 
   const getActionButtons = (candidate) => {
     const interview = candidate.interview
+    if (!interview?.scheduled_at) {
+      return <div className="text-sm text-gray-600 dark:text-gray-400">No interview scheduled</div>
+    }
+    
     const interviewDate = parseISO(interview.scheduled_at)
     const isUpcoming = isToday(interviewDate) || isTomorrow(interviewDate)
     const isUnattendedCandidate = isUnattended(interview)
@@ -731,762 +721,89 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
     return <MapPin className="w-4 h-4" />
   }
 
-  const CandidateSidebar = React.memo(({ candidate, isOpen, onClose }) => {
-    if (!isOpen || !candidate) return null
-
-    return (
-      <div className="fixed inset-0 z-50 overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
-        <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
-          <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Candidate Summary</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-
-              {/* Success Message */}
-              {showSuccessMessage && (
-                <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 flex items-center justify-between animate-fade-in">
-                  <div className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
-                    <span className="text-green-800 dark:text-green-300 font-medium">
-                      Notes updated successfully!
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setShowSuccessMessage(false)}
-                    className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Profile Section */}
-              <div className="mb-8">
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-medium text-gray-600 dark:text-gray-300">
-                      {candidate.name?.charAt(0) || '?'}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{candidate.name || 'Unknown Candidate'}</h3>
-                    {candidate.priority_score && (
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Star className="w-5 h-5 text-yellow-500" />
-                        <span className="text-lg font-medium text-gray-700 dark:text-gray-300">Priority Score: {candidate.priority_score}</span>
-                      </div>
-                    )}
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                      Applied {candidate.applied_at ? format(new Date(candidate.applied_at), 'MMM dd, yyyy') : 'Date unknown'}
-                    </div>
-                    
-                    {/* Current Stage */}
-                    {candidate.application?.stage && (
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="chip chip-blue text-xs">
-                          {candidate.application.stage.charAt(0).toUpperCase() + candidate.application.stage.slice(1).replace('-', ' ')}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Current Stage</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Phone</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.phone || 'Not provided'}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.email || 'Not provided'}</div>
-                    </div>
-                  </div>
-                  {candidate.passport_number && (
-                    <div className="flex items-center space-x-3">
-                      <CreditCard className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Passport</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.passport_number}</div>
-                      </div>
-                    </div>
-                  )}
-                  {candidate.job_title && (
-                    <div className="flex items-center space-x-3">
-                      <Briefcase className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Applied For</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.job_title}</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Interview Details */}
-              {candidate.interview && (
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <Calendar className="w-5 h-5 mr-2" />
-                    Interview Details
-                  </h4>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Date & Time</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {format(parseISO(candidate.interview.scheduled_at), 'MMM dd, yyyy h:mm a')}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Duration</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.duration || 60} minutes</div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Location</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.location || 'Not specified'}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Interviewer</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{candidate.interview.interviewer || 'Not assigned'}</div>
-                      </div>
-                      {candidate.interview.status && (
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Status</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 capitalize">{candidate.interview.status}</div>
-                        </div>
-                      )}
-                      {candidate.interview.result && (
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Result</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 capitalize">{candidate.interview.result}</div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Interview Feedback/Remarks */}
-                    {(candidate.interview.notes || candidate.interview_remarks || candidate.interview.feedback) && (
-                      <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
-                        <div className="flex items-center justify-between mb-4">
-                          <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                            <MessageSquare className="w-4 h-4 mr-2 text-blue-600" />
-                            Interview Feedback & Remarks
-                          </h5>
-                        </div>
-                        <div className="space-y-3">
-                          {(() => {
-                            const noteEntries = parseNotes(candidate.interview.notes || candidate.interview_remarks || candidate.interview.feedback)
-                            
-                            return noteEntries.length > 0 ? noteEntries.map((entry, index) => (
-                              <div 
-                                key={index} 
-                                className="group bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
-                              >
-                                <div className="flex items-start justify-between mb-2">
-                                  <div className="flex-1">
-                                    {entry.timestamp && (
-                                      <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">
-                                        📝 {entry.timestamp}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        setIsEditingNotes(true)
-                                        setEditingNoteIndex(index)
-                                        if (notesRef.current && charCountRef.current) {
-                                          notesRef.current.value = entry.content
-                                          // Update character count display
-                                          const length = entry.content.length
-                                          charCountRef.current.textContent = `${length}/${MAX_NOTE_LENGTH}`
-                                          charCountRef.current.className = `text-xs font-medium ${
-                                            length >= MAX_NOTE_LENGTH 
-                                              ? 'text-red-600 dark:text-red-400' 
-                                              : length >= MAX_NOTE_LENGTH * 0.8
-                                                ? 'text-yellow-600 dark:text-yellow-400'
-                                                : 'text-gray-500 dark:text-gray-400'
-                                          }`
-                                          notesRef.current.focus()
-                                          notesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                        }
-                                      }}
-                                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                                      title="Edit this note"
-                                    >
-                                      <FileText className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      onClick={async (e) => {
-                                        e.stopPropagation()
-                                        if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
-                                          try {
-                                            // Remove this specific note
-                                            const updatedEntries = noteEntries.filter((_, i) => i !== index)
-                                            const updatedNotes = reconstructNotes(updatedEntries)
-                                            
-                                            await interviewService.updateInterview(candidate.interview.id, {
-                                              notes: updatedNotes,
-                                              updated_at: new Date().toISOString()
-                                            })
-                                            
-                                            // Update local state
-                                            setInterviews(prevInterviews => 
-                                              prevInterviews.map(item => 
-                                                item.interview.id === candidate.interview.id 
-                                                  ? { ...item, interview: { ...item.interview, notes: updatedNotes } }
-                                                  : item
-                                              )
-                                            )
-                                            
-                                            // Update selected candidate
-                                            setSelectedCandidate(prev => prev ? ({
-                                              ...prev,
-                                              interview: { ...prev.interview, notes: updatedNotes }
-                                            }) : null)
-                                            
-                                            alert('Note deleted successfully!')
-                                          } catch (error) {
-                                            console.error('Failed to delete note:', error)
-                                            alert('Failed to delete note. Please try again.')
-                                          }
-                                        }
-                                      }}
-                                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                      title="Delete this note"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </div>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
-                                  {entry.content}
-                                </p>
-                              </div>
-                            )) : (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 italic">No feedback recorded yet.</p>
-                            )
-                          })()}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Interview History */}
-              {candidate.interviewed_at && (
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <Clock className="w-5 h-5 mr-2" />
-                    Interview History
-                  </h4>
-                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
-                    <div className="flex items-center text-sm mb-2">
-                      <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
-                      <span className="font-medium text-gray-700 dark:text-gray-300">Interview Completed</span>
-                    </div>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">
-                      {format(new Date(candidate.interviewed_at), 'EEEE, MMM dd, yyyy')}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {format(new Date(candidate.interviewed_at), 'HH:mm')}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Notes Field */}
-              <div className="mb-8" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-2" />
-                    {isEditingNotes && editingNoteIndex !== null 
-                      ? `Edit Note #${editingNoteIndex + 1}` 
-                      : isEditingNotes 
-                        ? 'Edit All Interview Notes' 
-                        : 'Add New Interview Note'}
-                  </h4>
-                  {!isEditingNotes && candidate.interview?.notes && (
-                    <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">
-                      New note will be appended
-                    </span>
-                  )}
-                </div>
-                {isEditingNotes && editingNoteIndex !== null && (
-                  <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
-                    ℹ️ Editing note #{editingNoteIndex + 1}. The timestamp will be preserved.
-                  </div>
-                )}
-                {isEditingNotes && editingNoteIndex === null && (
-                  <div className="mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-300">
-                    ⚠️ You are editing all notes. Changes will replace the entire note history.
-                  </div>
-                )}
-                <div className="relative">
-                  <textarea
-                    ref={notesRef}
-                    key={`notes-${candidate.id}-${isEditingNotes}-${editingNoteIndex}`}
-                    defaultValue=""
-                    placeholder={isEditingNotes ? "Edit note (max 300 characters)..." : "Add a new note (max 300 characters). Press Enter for line breaks..."}
-                    rows={isEditingNotes ? 8 : 4}
-                    maxLength={MAX_NOTE_LENGTH}
-                    onInput={(e) => {
-                      // Update character count display directly in DOM (no React state update)
-                      const length = e.target.value.length
-                      if (charCountRef.current) {
-                        charCountRef.current.textContent = `${length}/${MAX_NOTE_LENGTH}`
-                        
-                        // Update color classes
-                        charCountRef.current.className = `text-xs font-medium ${
-                          length >= MAX_NOTE_LENGTH 
-                            ? 'text-red-600 dark:text-red-400' 
-                            : length >= MAX_NOTE_LENGTH * 0.8
-                              ? 'text-yellow-600 dark:text-yellow-400'
-                              : 'text-gray-500 dark:text-gray-400'
-                        }`
-                      }
-                      
-                      // Visual feedback on textarea border
-                      if (length >= MAX_NOTE_LENGTH) {
-                        e.target.classList.add('border-red-500', 'dark:border-red-400')
-                      } else {
-                        e.target.classList.remove('border-red-500', 'dark:border-red-400')
-                      }
-                    }}
-                    className="w-full px-3 py-2 pb-8 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                  />
-                  <div className="absolute bottom-2 right-2 flex items-center space-x-2">
-                    <span ref={charCountRef} className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                      0/{MAX_NOTE_LENGTH}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  💡 Tip: Character limit will turn red when reached.
-                </div>
-                <div className="flex items-center space-x-2 mt-2">
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      const notesValue = notesRef.current?.value || ''
-                      
-                      if (!notesValue.trim()) {
-                        alert('Please enter some notes before saving.')
-                        return
-                      }
-                      
-                      try {
-                        setIsProcessing(true)
-                        await handleAction(candidate, 'take_notes', notesValue)
-                        
-                        // Clear the textarea and reset character count
-                        if (notesRef.current) {
-                          notesRef.current.value = ''
-                        }
-                        if (charCountRef.current) {
-                          charCountRef.current.textContent = `0/${MAX_NOTE_LENGTH}`
-                          charCountRef.current.className = 'text-xs font-medium text-gray-500 dark:text-gray-400'
-                        }
-                        
-                        // Reset editing mode
-                        setIsEditingNotes(false)
-                        setEditingNoteIndex(null)
-                        
-                        // Show success message
-                        setShowSuccessMessage(true)
-                        setTimeout(() => setShowSuccessMessage(false), 3000)
-                      } catch (error) {
-                        console.error('Failed to save notes:', error)
-                        alert('Failed to save notes. Please try again.')
-                      } finally {
-                        setIsProcessing(false)
-                      }
-                    }}
-                    disabled={isProcessing}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50"
-                  >
-                    {isProcessing ? 'Saving...' : 'Save Notes'}
-                  </button>
-                  {isEditingNotes && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setIsEditingNotes(false)
-                        setEditingNoteIndex(null)
-                        if (notesRef.current) {
-                          notesRef.current.value = ''
-                        }
-                        if (charCountRef.current) {
-                          charCountRef.current.textContent = `0/${MAX_NOTE_LENGTH}`
-                          charCountRef.current.className = 'text-xs font-medium text-gray-500 dark:text-gray-400'
-                        }
-                      }}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Additional Details */}
-              <div className="space-y-6">
-                {/* Address */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <Home className="w-5 h-5 mr-2" />
-                    Address
-                  </h4>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <p className="text-gray-700 dark:text-gray-300">{candidate.address || 'Not provided'}</p>
-                  </div>
-                </div>
-
-                {/* Skills */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2" />
-                    Skills
-                  </h4>
-                  {(candidate.skills && candidate.skills.length > 0) ? (
-                    <div className="flex flex-wrap gap-2">
-                      {candidate.skills.map((skill, index) => (
-                        <span key={index} className="chip chip-blue">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                      <p className="text-gray-700 dark:text-gray-300">No skills specified</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Education */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <GraduationCap className="w-5 h-5 mr-2" />
-                    Education
-                  </h4>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <p className="text-gray-700 dark:text-gray-300">{candidate.education || 'Not specified'}</p>
-                  </div>
-                </div>
-
-                {/* Experience */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Experience
-                  </h4>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <p className="text-gray-700 dark:text-gray-300">{candidate.experience || 'Not provided'}</p>
-                  </div>
-                </div>
-
-                {/* Documents Section */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                        <Paperclip className="w-5 h-5 mr-2" />
-                        Documents & Attachments
-                        {candidate.documents && candidate.documents.length > 0 && (
-                          <span className="ml-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                            {candidate.documents.length} file{candidate.documents.length !== 1 ? 's' : ''}
-                          </span>
-                        )}
-                      </h4>
-                      {candidate.documents && candidate.documents.length > 0 && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Manage and organize candidate documents by workflow stage
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => setShowUploadSection(!showUploadSection)}
-                      className={`btn-primary flex items-center space-x-2 text-sm ${showUploadSection ? 'bg-gray-600 hover:bg-gray-700' : ''}`}
-                      disabled={isUploading}
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>{showUploadSection ? 'Cancel' : 'Add Document'}</span>
-                    </button>
-                  </div>
-                  
-                  {/* Advanced Dynamic Upload Section */}
-                  {showUploadSection && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-600 shadow-sm">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <label className="text-sm font-medium text-blue-900 dark:text-blue-100 flex items-center">
-                            <Paperclip className="w-4 h-4 mr-2" />
-                            Upload documents for: {candidate.application?.stage || 'General'}
-                          </label>
-                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                            Documents will be organized by workflow stage automatically
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setShowUploadSection(false)}
-                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                      
-                      <label className="block">
-                        <input
-                          type="file"
-                          multiple
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.xlsx,.xls,.ppt,.pptx"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                          disabled={isUploading}
-                        />
-                        <div className="border-2 border-dashed border-blue-300 dark:border-blue-500 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-400 cursor-pointer transition-all duration-200 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:shadow-md">
-                          {isUploading ? (
-                            <div className="flex flex-col items-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-3"></div>
-                              <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                                Uploading documents...
-                              </p>
-                              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                Please wait while we process your files
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center">
-                              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-3">
-                                <Upload className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                              </div>
-                              <p className="text-sm text-blue-700 dark:text-blue-300 font-medium mb-1">
-                                Click to select documents or drag & drop
-                              </p>
-                              <p className="text-xs text-blue-600 dark:text-blue-400 mb-3">
-                                Multiple files supported • Max 10MB each
-                              </p>
-                              <div className="flex flex-wrap gap-1 justify-center">
-                                {['PDF', 'DOC', 'DOCX', 'JPG', 'PNG', 'TXT', 'XLSX', 'PPT'].map(format => (
-                                  <span key={format} className="text-xs bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
-                                    {format}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </label>
-                      
-                      {/* Quick Actions */}
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-xs text-blue-600 dark:text-blue-400">
-                          <FileText className="w-3 h-3" />
-                          <span>Auto-categorized by stage</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => setShowUploadSection(false)}
-                            className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Documents List by Stage */}
-                  <div className="space-y-4">
-                    {candidate.documents && candidate.documents.length > 0 ? (
-                      (() => {
-                        // Group documents by stage while preserving global indices
-                        const documentsByStage = {}
-                        candidate.documents.forEach((doc, globalIndex) => {
-                          const stage = doc.stage || 'general'
-                          if (!documentsByStage[stage]) documentsByStage[stage] = []
-                          documentsByStage[stage].push({ doc, globalIndex })
-                        })
-                        
-                        return Object.entries(documentsByStage).map(([stage, docsWithIndices]) => (
-                          <div key={stage} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                            <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                              <FileText className="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400" />
-                              {stage === 'general' ? 'General Documents' : `${stage.charAt(0).toUpperCase() + stage.slice(1)} Stage`}
-                              <span className="ml-2 text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
-                                {docsWithIndices.length} file{docsWithIndices.length !== 1 ? 's' : ''}
-                              </span>
-                            </h5>
-                            
-                            <div className="space-y-3">
-                              {docsWithIndices.map(({ doc, globalIndex }) => {
-                                const getFileIcon = (type, extension) => {
-                                  if (type?.includes('pdf')) return '📄'
-                                  if (type?.includes('image')) return '🖼️'
-                                  if (type?.includes('word') || extension === 'doc' || extension === 'docx') return '📝'
-                                  if (type?.includes('excel') || extension === 'xlsx' || extension === 'xls') return '📊'
-                                  if (type?.includes('powerpoint') || extension === 'ppt' || extension === 'pptx') return '📋'
-                                  return '📎'
-                                }
-
-                                return (
-                                  <div key={globalIndex} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all duration-200 group">
-                                    <div className="flex items-center space-x-4 flex-1">
-                                      <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg flex items-center justify-center border border-blue-200 dark:border-blue-600">
-                                        <span className="text-lg">
-                                          {getFileIcon(doc.type, doc.file_extension)}
-                                        </span>
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-center space-x-2 mb-1">
-                                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate" title={doc.name}>
-                                            {doc.name}
-                                          </p>
-                                          {doc.file_extension && (
-                                            <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full font-medium uppercase">
-                                              {doc.file_extension}
-                                            </span>
-                                          )}
-                                        </div>
-                                        <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                                          <span>{doc.size ? `${(doc.size / 1024 / 1024).toFixed(2)} MB` : 'Unknown size'}</span>
-                                          {doc.uploaded_at && (
-                                            <span>Uploaded {format(new Date(doc.uploaded_at), 'MMM dd, yyyy')}</span>
-                                          )}
-                                          {doc.uploaded_by && (
-                                            <span>by {doc.uploaded_by}</span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button 
-                                        onClick={() => handleViewDocument(doc)}
-                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                                        title="View Document"
-                                      >
-                                        <Eye className="w-4 h-4" />
-                                      </button>
-                                      <button 
-                                        onClick={() => handleDownloadDocument(doc)}
-                                        className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors"
-                                        title="Download Document"
-                                      >
-                                        <Download className="w-4 h-4" />
-                                      </button>
-                                      <button 
-                                        onClick={() => handleRemoveDocument(globalIndex)}
-                                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                        title="Remove Document"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </button>
-                                    </div>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        ))
-                      })()
-                    ) : (
-                      // Default CV section if no documents
-                      <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg flex items-center justify-center border border-blue-200 dark:border-blue-600">
-                              <span className="text-lg">📄</span>
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {candidate.name || 'Unknown'}_CV.pdf
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">PDF • 2.3 MB • Default CV</div>
-                            </div>
-                          </div>
-                          <button className="btn-secondary text-sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            Download
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  })
-
   return (
     <div className="space-y-6">
-      {/* Candidate Sidebar */}
-      <CandidateSidebar
+      {/* Candidate Sidebar - Unified Component */}
+      <CandidateSummaryS2
         key={selectedCandidate?.id || 'sidebar'}
         candidate={selectedCandidate}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
+        isInterviewContext={true}
+        onMarkPass={async (candidateId) => {
+          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
+          await handleAction({ id: candidateId }, 'pass')
+        }}
+        onMarkFail={async (candidateId) => {
+          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
+          await handleAction({ id: candidateId }, 'fail')
+        }}
+        onReject={async (candidateId) => {
+          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
+          setActionType('reject')
+        }}
+        onReschedule={async (candidateId) => {
+          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
+          setActionType('reschedule')
+        }}
+        onSendReminder={async (candidateId) => {
+          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
+          await handleAction({ id: candidateId }, 'reminder')
+        }}
       />
 
-      {/* Subtabs/Chips */}
-      <div className="flex flex-wrap gap-2">
-        {[
-          { id: 'today', label: 'Today', count: getSubtabCounts().today },
-          { id: 'tomorrow', label: 'Tomorrow', count: getSubtabCounts().tomorrow },
-          { id: 'unattended', label: 'Unattended', count: getSubtabCounts().unattended },
-          { id: 'all', label: 'All', count: getSubtabCounts().all }
-        ].map(subtab => (
-          <button
-            key={subtab.id}
-            onClick={() => setActiveSubtab(subtab.id)}
-            className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeSubtab === subtab.id
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-          >
-            {subtab.label}
-            {subtab.count > 0 && (
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeSubtab === subtab.id
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
-                }`}>
-                {subtab.count}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Subtabs/Chips - Only show in Contemporary mode */}
+      {showFilters && (
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: 'today', label: 'Today', count: getSubtabCounts().today },
+            { id: 'tomorrow', label: 'Tomorrow', count: getSubtabCounts().tomorrow },
+            { id: 'unattended', label: 'Unattended', count: getSubtabCounts().unattended },
+            { id: 'all', label: 'All', count: getSubtabCounts().all }
+          ].map(subtab => (
+            <button
+              key={subtab.id}
+              onClick={() => {
+                console.log('🔘 Tab clicked:', subtab.id, 'onFilterChange exists:', !!onFilterChange)
+                if (onFilterChange) {
+                  console.log('📞 Calling onFilterChange with:', subtab.id)
+                  onFilterChange(subtab.id)
+                } else {
+                  console.warn('⚠️ onFilterChange is not defined!')
+                }
+              }}
+              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeSubtab === subtab.id
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+            >
+              {subtab.label}
+              {subtab.count > 0 && (
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeSubtab === subtab.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                  }`}>
+                  {subtab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Interviews List */}
       <div className="space-y-4">
         {filteredCandidates.length > 0 ? (
-          filteredCandidates.map(candidate => {
+          filteredCandidates.map((candidate, index) => {
             const interview = candidate.interview
+            if (!interview?.scheduled_at) return null
+            
             const interviewDate = parseISO(interview.scheduled_at)
             const isUnattendedCandidate = isUnattended(interview)
 
             return (
               <div
-                key={candidate.id}
+                key={`${candidate.id}-${candidate.application_id || index}`}
                 className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer bg-white dark:bg-gray-800"
                 onClick={() => handleCandidateClick(candidate)}
               >
@@ -1511,7 +828,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                         </div>
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 mr-2" />
-                          <span>{format(interviewDate, 'h:mm a')} ({interview.duration || 60} min)</span>
+                          <span>{interview.time ? formatTime12Hour(interview.time) : format(interviewDate, 'h:mm a')} ({interview.duration || 60} min)</span>
                         </div>
                         <div className="flex items-center">
                           {getLocationIcon(interview.location)}
@@ -1523,6 +840,22 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                         <User className="w-4 h-4 mr-2" />
                         <span>Interviewer: {interview.interviewer || 'Not assigned'}</span>
                       </div>
+
+                      {/* Interview Type */}
+                      {interview.type && (
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          <span className="mr-2">{getInterviewTypeIcon(interview.type)}</span>
+                          <span>{interview.type}</span>
+                        </div>
+                      )}
+
+                      {/* Rescheduled Indicator */}
+                      {interview.rescheduled_at && (
+                        <div className="flex items-center text-xs text-purple-600 dark:text-purple-400 mb-3">
+                          <RotateCcw className="w-3 h-3 mr-1" />
+                          Rescheduled on {format(new Date(interview.rescheduled_at), 'MMM dd, yyyy')}
+                        </div>
+                      )}
 
                       {interview.notes && (
                         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-3">
@@ -1657,19 +990,47 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews }) 
                   New Date & Time
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    value={rescheduleData.date}
-                    onChange={(e) => setRescheduleData(prev => ({ ...prev, date: e.target.value }))}
-                    min={format(new Date(), 'yyyy-MM-dd')}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
-                  <input
-                    type="time"
-                    value={rescheduleData.time}
-                    onChange={(e) => setRescheduleData(prev => ({ ...prev, time: e.target.value }))}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
+                  <div>
+                    <input
+                      type="date"
+                      value={rescheduleData.date}
+                      onChange={(e) => setRescheduleData(prev => ({ ...prev, date: e.target.value }))}
+                      min={format(new Date(), 'yyyy-MM-dd')}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                        rescheduleData.date
+                          ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                      }`}
+                      style={!rescheduleData.date ? { opacity: 0.6 } : {}}
+                    />
+                    {!rescheduleData.date && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
+                        Select new date
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="time"
+                      value={rescheduleData.time}
+                      onChange={(e) => setRescheduleData(prev => ({ ...prev, time: e.target.value }))}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                        rescheduleData.time
+                          ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                      }`}
+                      style={!rescheduleData.time ? { opacity: 0.6 } : {}}
+                    />
+                    {rescheduleData.time ? (
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
+                        {formatTime12Hour(rescheduleData.time + ':00')}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
+                        Select new time
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end space-x-3">

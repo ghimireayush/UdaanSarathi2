@@ -8,8 +8,11 @@
   "applicationStages": {
     "APPLIED": "applied",
     "SHORTLISTED": "shortlisted",
-    "INTERVIEW_SCHEDULED": "interview-scheduled",
-    "INTERVIEW_PASSED": "interview-passed"
+    "INTERVIEW_SCHEDULED": "interview_scheduled",
+    "INTERVIEW_RESCHEDULED": "interview_rescheduled",
+    "INTERVIEW_PASSED": "interview_passed",
+    "INTERVIEW_FAILED": "interview_failed",
+    "WITHDRAWN": "withdrawn"
   },
   "workflowStages": {
     "APPLIED": "applied",

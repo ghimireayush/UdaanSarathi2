@@ -1,6 +1,7 @@
 // Constants Service - System constants and enums
 import constantsData from '../data/constants.json'
 import performanceService from './performanceService.js'
+import i18nService from './i18nService.js'
 
 // Utility function to simulate API delay (reduced for performance)
 const delay = (ms = 20) => new Promise(resolve => setTimeout(resolve, ms))
@@ -143,33 +144,112 @@ class ConstantsService {
   }
 
   /**
-   * Get label for application stage
+   * Get label for application stage (i18n-aware)
    * @param {string} stage - Stage key
+   * @param {Function} t - Translation function (optional, will use i18nService if not provided)
    * @returns {string} Formatted stage label
    */
-  getApplicationStageLabel(stage) {
-    const labels = {
-      [constantsData.applicationStages.APPLIED]: 'Applied',
-      [constantsData.applicationStages.SHORTLISTED]: 'Shortlisted',
-      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'Interview Scheduled',
-      [constantsData.applicationStages.INTERVIEW_PASSED]: 'Interview Passed'
+  getApplicationStageLabel(stage, t = null) {
+    // Map stage values to translation keys
+    const translationKeys = {
+      [constantsData.applicationStages.APPLIED]: 'applied',
+      [constantsData.applicationStages.SHORTLISTED]: 'shortlisted',
+      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'interviewScheduled',
+      [constantsData.applicationStages.INTERVIEW_PASSED]: 'interviewPassed',
+      'rejected': 'rejected' // Also support rejected status
     }
-    return labels[stage] || stage
+    
+    const key = translationKeys[stage]
+    if (!key) return stage
+    
+    // If translation function provided, use it
+    if (t) {
+      return t(`applicationStatus.${key}`)
+    }
+    
+    // Otherwise, use i18nService directly
+    try {
+      // Try to get from applications page translations
+      const translated = i18nService.t(`applications.applicationStatus.${key}`)
+      // If translation key is returned as-is, fall back to English
+      if (translated === `applications.applicationStatus.${key}`) {
+        const fallbackLabels = {
+          'applied': 'Applied',
+          'shortlisted': 'Shortlisted',
+          'interviewScheduled': 'Interview Scheduled',
+          'interviewPassed': 'Interview Passed',
+          'rejected': 'Rejected'
+        }
+        return fallbackLabels[key] || stage
+      }
+      return translated
+    } catch (error) {
+      // Fallback to English if translation fails
+      const fallbackLabels = {
+        'applied': 'Applied',
+        'shortlisted': 'Shortlisted',
+        'interviewScheduled': 'Interview Scheduled',
+        'interviewPassed': 'Interview Passed',
+        'rejected': 'Rejected'
+      }
+      return fallbackLabels[key] || stage
+    }
   }
 
   /**
-   * Get label for interview status
+   * Get label for interview status (i18n-aware)
    * @param {string} status - Status key
+   * @param {Function} t - Translation function (optional, will use i18nService if not provided)
    * @returns {string} Formatted status label
    */
-  getInterviewStatusLabel(status) {
-    const labels = {
-      [constantsData.interviewStatuses.SCHEDULED]: 'Scheduled',
-      [constantsData.interviewStatuses.COMPLETED]: 'Completed',
-      [constantsData.interviewStatuses.CANCELLED]: 'Cancelled',
-      [constantsData.interviewStatuses.NO_SHOW]: 'No Show'
+  getInterviewStatusLabel(status, t = null) {
+    // Map status values to translation keys
+    const translationKeys = {
+      [constantsData.interviewStatuses.SCHEDULED]: 'scheduled',
+      [constantsData.interviewStatuses.COMPLETED]: 'completed',
+      [constantsData.interviewStatuses.CANCELLED]: 'cancelled',
+      [constantsData.interviewStatuses.NO_SHOW]: 'noShow',
+      'rescheduled': 'rescheduled', // Also support rescheduled
+      'not_scheduled': 'notScheduled'
     }
-    return labels[status] || status
+    
+    const key = translationKeys[status]
+    if (!key) return status
+    
+    // If translation function provided, use it
+    if (t) {
+      return t(`status.${key}`)
+    }
+    
+    // Otherwise, use i18nService directly
+    try {
+      // Try to get from interviews page translations
+      const translated = i18nService.t(`interviews.status.${key}`)
+      // If translation key is returned as-is, fall back to English
+      if (translated === `interviews.status.${key}`) {
+        const fallbackLabels = {
+          'scheduled': 'Scheduled',
+          'completed': 'Completed',
+          'cancelled': 'Cancelled',
+          'noShow': 'No Show',
+          'rescheduled': 'Rescheduled',
+          'notScheduled': 'Not Scheduled'
+        }
+        return fallbackLabels[key] || status
+      }
+      return translated
+    } catch (error) {
+      // Fallback to English if translation fails
+      const fallbackLabels = {
+        'scheduled': 'Scheduled',
+        'completed': 'Completed',
+        'cancelled': 'Cancelled',
+        'noShow': 'No Show',
+        'rescheduled': 'Rescheduled',
+        'notScheduled': 'Not Scheduled'
+      }
+      return fallbackLabels[key] || status
+    }
   }
 
   /**

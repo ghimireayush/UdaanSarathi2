@@ -27,8 +27,15 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
       return
     }
     
+    // Wait for user object to be loaded
+    if (!user) {
+      return
+    }
+    
     // Check if agency is required and user doesn't have one
-    if (requiresAgency && user?.role === 'agency_owner' && !user?.agencyId) {
+    const isOwner = user.role === 'agency_owner' || user.role === 'owner' || user.userType === 'owner'
+    if (requiresAgency && isOwner && !user.agencyId && !user.agency_id) {
+      console.log('PrivateRoute: Redirecting owner without agency to setup-company')
       navigate('/setup-company', { replace: true })
       return
     }
@@ -67,7 +74,8 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
   // Check access permissions
   const hasAccess = () => {
     // Check if agency is required
-    if (requiresAgency && user?.role === 'agency_owner' && !user?.agencyId) return false
+    const isOwner = user?.role === 'agency_owner' || user?.role === 'owner' || user?.userType === 'owner'
+    if (requiresAgency && isOwner && !user?.agencyId && !user?.agency_id) return false
     if (requiredRole && !hasRole(requiredRole)) return false
     if (requiredPermission && !hasPermission(requiredPermission)) return false
     if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) return false

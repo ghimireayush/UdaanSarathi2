@@ -772,12 +772,15 @@ const FunnelBar = ({ stage, isFirst }) => {
 
 const JobBreakdownSection = ({ jobs, onJobSelect, tPage, pagination, onPaginationChange }) => {
   const paginatedJobs = useMemo(() => {
+    // Ensure jobs is always an array
+    const safeJobs = Array.isArray(jobs) ? jobs : []
     const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
     const endIndex = startIndex + pagination.itemsPerPage;
-    return jobs.slice(startIndex, endIndex);
+    return safeJobs.slice(startIndex, endIndex);
   }, [jobs, pagination]);
 
-  const totalPages = Math.ceil(jobs.length / pagination.itemsPerPage);
+  const safeJobs = Array.isArray(jobs) ? jobs : []
+  const totalPages = Math.ceil(safeJobs.length / pagination.itemsPerPage);
 
   return (
     <Card>

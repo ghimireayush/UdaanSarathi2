@@ -1,5 +1,5 @@
 // Interview Service - Handles all interview-related operations
-import interviewsData from '../data/interviews.json'
+// NOTE: This is a MOCK service - use interviewApiClient.js for real API calls
 import candidateService from './candidateService.js'
 import jobService from './jobService.js'
 import applicationService from './applicationService.js'
@@ -17,7 +17,8 @@ const shouldSimulateError = () => Math.random() < 0.05
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
 
-let interviewsCache = deepClone(interviewsData)
+// ⚠️ MOCK DATA - Empty array (use interviewApiClient for real data)
+let interviewsCache = []
 
 class InterviewService {
   /**

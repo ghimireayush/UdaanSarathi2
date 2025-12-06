@@ -1,11 +1,11 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2025-12-03",
     "page": "jobs"
   },
   "title": "Jobs",
-  "subtitle": "Manage job postings, applications, and candidate pipeline",
+  "subtitle": "Live job postings for your agency with applications and interviews status",
   "actions": {
     "createJob": "Create Job"
   },

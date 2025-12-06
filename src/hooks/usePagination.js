@@ -16,12 +16,15 @@ export const usePagination = (data = [], options = {}) => {
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
 
+  // Ensure data is always an array
+  const safeData = Array.isArray(data) ? data : []
+
   // Calculate pagination values
-  const totalItems = data.length
+  const totalItems = safeData.length
   const totalPages = Math.ceil(totalItems / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentData = data.slice(startIndex, endIndex)
+  const currentData = safeData.slice(startIndex, endIndex)
 
   // Pagination methods
   const goToPage = (page) => {

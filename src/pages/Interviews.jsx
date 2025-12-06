@@ -1,218 +1,258 @@
-import React, { useState, useEffect } from 'react'
-import { Calendar, List, Clock, Users, Zap, Plus, Filter, Search, AlertTriangle, CheckCircle, Bot } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Search, Calendar } from 'lucide-react'
+import { format, addDays, subDays, addWeeks, subWeeks, startOfWeek, endOfWeek } from 'date-fns'
 import ScheduledInterviews from '../components/ScheduledInterviews'
-import EnhancedInterviewScheduling from '../components/EnhancedInterviewScheduling'
-import InterviewCalendarView from '../components/InterviewCalendarView'
-import AISchedulingAssistant from '../components/AISchedulingAssistant'
-import { candidateService, jobService, interviewService } from '../services/index.js'
-import { format, startOfWeek, endOfWeek, startOfDay, endOfDay, addMinutes, isPast } from 'date-fns'
+import InterviewDateNavigation from '../components/InterviewDateNavigation'
+import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
+import { jobService } from '../services/index.js'
 import { useLanguage } from '../hooks/useLanguage'
+import { useAgency } from '../contexts/AgencyContext.jsx'
 import LanguageSwitch from '../components/LanguageSwitch'
-import { usePagination } from '../hooks/usePagination.js'
-import PaginationWrapper from '../components/PaginationWrapper.jsx'
 
 const Interviews = () => {
   const { tPageSync } = useLanguage({ 
     pageName: 'interviews', 
     autoLoad: true 
   })
+  const { agencyData } = useAgency()
 
-  // Helper function to get page translations
   const tPage = (key, params = {}) => {
     return tPageSync(key, params)
   }
 
-  const [activeTab, setActiveTab] = useState('scheduled') // 'scheduled', 'schedule', 'calendar', 'ai-assistant'
-  const [viewMode, setViewMode] = useState('calendar') // 'list', 'calendar'
-  const [timeRange, setTimeRange] = useState('week') // 'day', 'week'
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  // Core state
   const [selectedJob, setSelectedJob] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  
-  const [candidates, setCandidates] = useState([])
   const [jobs, setJobs] = useState([])
   const [interviews, setInterviews] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [batchScheduleMode, setBatchScheduleMode] = useState(false)
-  const [selectedCandidatesForBatch, setSelectedCandidatesForBatch] = useState(new Set())
-  const [batchScheduleData, setBatchScheduleData] = useState([])
-  const [gracePeriod] = useState(30) // 30 minutes grace period for unattended flagging
+  const [isLoading, setIsLoading] = useState(false)
+  
+  // Mode state
+  const [mode, setMode] = useState('contemporary') // 'contemporary' | 'calendar'
+  
+  // Filter state
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  // Contemporary mode filters
+  const [contemporaryFilter, setContemporaryFilter] = useState('all') // 'today', 'tomorrow', 'unattended', 'all'
+  
+  // Calendar mode filters
+  const [calendarViewMode, setCalendarViewMode] = useState('week') // 'week', 'custom'
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [isDaySelected, setIsDaySelected] = useState(false) // Track if a specific day is selected
+  const [customDateRange, setCustomDateRange] = useState({ from: '', to: '' })
 
-  // Pagination for interviews
-  const {
-    currentData: paginatedInterviews,
-    currentPage,
-    totalPages,
-    totalItems,
-    itemsPerPage,
-    itemsPerPageOptions,
-    goToPage,
-    changeItemsPerPage,
-    resetPagination
-  } = usePagination(interviews, {
-    initialItemsPerPage: 20,
-    itemsPerPageOptions: [10, 20, 50, 100]
+  // Stats
+  const [stats, setStats] = useState({
+    scheduled: 0,
+    today: 0,
+    unattended: 0,
+    completed: 0
   })
 
+  // Track scroll position to prevent jump on data reload
+  const scrollPositionRef = useRef(0)
+  const shouldPreserveScrollRef = useRef(false)
+
+  // Load jobs on mount
   useEffect(() => {
-    loadData()
+    loadJobs()
   }, [])
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true)
-      const [jobsData, interviewsData] = await Promise.all([
-        jobService.getJobs({ status: 'published' }),
-        interviewService.getAllInterviews()
-      ])
-      
-      setJobs(jobsData)
-      setInterviews(interviewsData)
-      
-      // Load candidates for the selected job if any
-      if (selectedJob) {
-        const candidatesData = await candidateService.getCandidatesByJobId(selectedJob)
-        setCandidates(candidatesData)
+  // Load interviews when job, mode, or filters change
+  // Note: selectedDate is converted to string for proper dependency comparison
+  useEffect(() => {
+    console.log('🔄 Interviews useEffect triggered:', {
+      selectedJob,
+      mode,
+      contemporaryFilter,
+      calendarViewMode,
+      selectedDate: format(selectedDate, 'yyyy-MM-dd'),
+      isDaySelected,
+      customDateRange
+    })
+    loadInterviews()
+  }, [selectedJob, mode, contemporaryFilter, calendarViewMode, format(selectedDate, 'yyyy-MM-dd'), isDaySelected, customDateRange.from, customDateRange.to])
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery !== undefined) {
+        loadInterviews()
       }
+    }, 500)
+    
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
+
+  const loadJobs = async () => {
+    try {
+      const jobsData = await jobService.getJobs({ status: 'published' })
+      // Ensure jobsData is always an array
+      const safeJobsData = Array.isArray(jobsData) ? jobsData : []
+      setJobs(safeJobsData)
     } catch (error) {
-      console.error('Failed to load interviews data:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Failed to load jobs:', error)
+      setJobs([])
     }
   }
 
-  const handleJobSelect = async (jobId) => {
-    setSelectedJob(jobId)
-    if (jobId) {
-      try {
-        const candidatesData = await candidateService.getCandidatesByJobId(jobId)
-        setCandidates(candidatesData)
-      } catch (error) {
-        console.error('Failed to load candidates:', error)
-      }
-    } else {
-      setCandidates([])
-    }
-  }
-
-  const handleInterviewScheduled = () => {
-    loadData() // Refresh data after scheduling
-    setActiveTab('scheduled') // Switch to scheduled view
-  }
-
-  const getFilteredInterviews = () => {
-    let filtered = interviews
-
-    // Filter by job if selected
-    if (selectedJob) {
-      filtered = filtered.filter(interview => interview.job_id === selectedJob)
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      filtered = filtered.filter(interview => 
-        interview.candidate_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        interview.interviewer?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    // Filter by date range
-    const startDate = timeRange === 'day' 
-      ? startOfDay(selectedDate)
-      : startOfWeek(selectedDate)
-    const endDate = timeRange === 'day'
-      ? endOfDay(selectedDate)
-      : endOfWeek(selectedDate)
-
-    filtered = filtered.filter(interview => {
-      const interviewDate = new Date(interview.scheduled_at)
-      return interviewDate >= startDate && interviewDate <= endDate
-    })
-
-    return filtered
-  }
-
-  const getTabCounts = () => {
-    const today = new Date()
-    const todayInterviews = interviews.filter(interview => {
-      const interviewDate = new Date(interview.scheduled_at)
-      return format(interviewDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd')
-    })
-
-    // Check for unattended interviews (past scheduled time + grace period)
-    const unattendedInterviews = interviews.filter(interview => {
-      if (interview.status !== 'scheduled') return false
-      const interviewEnd = addMinutes(new Date(interview.scheduled_at), (interview.duration || 60) + gracePeriod)
-      return isPast(interviewEnd)
-    })
-
-    return {
-      scheduled: interviews.filter(i => i.status === 'scheduled').length,
-      today: todayInterviews.length,
-      unattended: unattendedInterviews.length,
-      completed: interviews.filter(i => i.status === 'completed').length
-    }
-  }
-
-  const handleBatchSchedule = async (scheduleData) => {
+  const loadInterviews = async () => {
+    if (!agencyData?.license_number) return
+    
     try {
-      setIsLoading(true)
-      const results = []
+      // Save current scroll position before loading
+      if (shouldPreserveScrollRef.current) {
+        scrollPositionRef.current = window.scrollY
+      }
       
-      for (const batch of scheduleData) {
-        const candidatesToSchedule = Array.from(selectedCandidatesForBatch).slice(0, batch.candidateCount)
+      setIsLoading(true)
+      
+      // Build filter params based on mode
+      const filterParams = {
+        search: searchQuery,
+        page: 1,
+        limit: 100
+      }
         
-        for (let i = 0; i < candidatesToSchedule.length; i++) {
-          const candidateId = candidatesToSchedule[i]
-          const timeSlot = new Date(`${batch.date}T${batch.startTime}:00`)
-          timeSlot.setMinutes(timeSlot.getMinutes() + (i * (batch.duration || 60)))
-          
-          const result = await interviewService.scheduleInterview({
-            candidate_id: candidateId,
-            job_id: selectedJob,
-            scheduled_at: timeSlot.toISOString(),
-            duration: batch.duration || 60,
-            interviewer: batch.interviewer || '',
-            location: batch.location || 'Office',
-            notes: `Batch scheduled - ${batch.notes || ''}`,
-            status: 'scheduled'
-          })
-          
-          results.push(result)
+      if (mode === 'contemporary') {
+        // Contemporary mode: use interview_filter (today, tomorrow, unattended, all)
+        filterParams.interview_filter = contemporaryFilter
+      } else if (mode === 'calendar') {
+        // Calendar mode: use date ranges
+        if (calendarViewMode === 'week') {
+          if (isDaySelected) {
+            // A specific day is selected: show only that day
+            const dayStr = format(selectedDate, 'yyyy-MM-dd')
+            filterParams.date_from = dayStr
+            filterParams.date_to = dayStr
+          } else {
+            // No specific day selected: show the entire week
+            const weekStart = startOfWeek(selectedDate)
+            const weekEnd = endOfWeek(selectedDate)
+            filterParams.date_from = format(weekStart, 'yyyy-MM-dd')
+            filterParams.date_to = format(weekEnd, 'yyyy-MM-dd')
+          }
+        } else if (calendarViewMode === 'custom' && customDateRange.from && customDateRange.to) {
+          // Custom range: use user-selected dates
+          filterParams.date_from = customDateRange.from
+          filterParams.date_to = customDateRange.to
         }
       }
       
-      // Reset batch mode and reload data
-      setBatchScheduleMode(false)
-      setSelectedCandidatesForBatch(new Set())
-      setBatchScheduleData([])
-      await loadData()
+      console.log('Loading interviews with filters:', filterParams)
       
-      return results
+      // ✅ Use new agency-level endpoint (works with or without job selection)
+      const response = await InterviewDataSource.getInterviewsForAgency(
+        agencyData.license_number,
+        {
+          ...filterParams,
+          job_id: selectedJob || undefined // Optional: filter by job if selected
+        }
+      )
+      
+      const interviewsData = (response.candidates || []).map(candidate => ({
+        ...candidate,
+        interview: candidate.interview || null
+      }))
+      
+      console.log('✅ Received interviews:', {
+        count: interviewsData.length,
+        dateRange: filterParams.date_from && filterParams.date_to 
+          ? `${filterParams.date_from} to ${filterParams.date_to}`
+          : 'No date filter',
+        sampleDates: interviewsData.slice(0, 3).map(c => c.interview?.scheduled_at)
+      })
+      
+      setInterviews(interviewsData)
+      
+      // Load stats
+      await loadStats()
+      
+      // Restore scroll position after data loads
+      if (shouldPreserveScrollRef.current) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPositionRef.current)
+          shouldPreserveScrollRef.current = false
+        })
+      }
     } catch (error) {
-      console.error('Failed to batch schedule interviews:', error)
-      throw error
+      console.error('Failed to load interviews:', error)
+      alert(`Failed to load interviews: ${error.message}`)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const checkForDoubleBooking = (candidateId, proposedDateTime, duration) => {
-    const proposedStart = new Date(proposedDateTime)
-    const proposedEnd = addMinutes(proposedStart, duration)
+  const loadStats = async () => {
+    if (!agencyData?.license_number) return
     
-    return interviews.some(interview => {
-      if (interview.candidate_id !== candidateId || interview.status === 'cancelled') return false
+    try {
+      // ✅ Use new agency-level stats endpoint (aggregates across all jobs)
+      const response = await InterviewDataSource.getAgencyInterviewStats(
+        agencyData.license_number,
+        'all'
+      )
       
-      const existingStart = new Date(interview.scheduled_at)
-      const existingEnd = addMinutes(existingStart, interview.duration || 60)
-      
-      // Check for time overlap
-      return (proposedStart < existingEnd && proposedEnd > existingStart)
-    })
+      setStats({
+        scheduled: response.total_scheduled || 0,
+        today: response.today || 0,
+        unattended: response.unattended || 0,
+        completed: response.completed || 0
+      })
+    } catch (error) {
+      console.error('Failed to load stats:', error)
+    }
   }
 
-  if (isLoading) {
+  const handleJobSelect = (jobId) => {
+    setSelectedJob(jobId)
+    // Don't reset filters when job changes - keep them active
+  }
+
+  const handleFilterChange = (filter) => {
+    setCurrentFilter(filter)
+  }
+
+  // Date navigation handlers
+  const handleDateChange = (newDate) => {
+    console.log('📅 Date clicked:', format(newDate, 'yyyy-MM-dd'))
+    setSelectedDate(newDate)
+    setIsDaySelected(true) // Mark that a specific day is selected
+  }
+
+  const handlePrevious = () => {
+    console.log('⬅️ Previous week clicked')
+    if (calendarViewMode === 'week') {
+      shouldPreserveScrollRef.current = true // Preserve scroll on week change
+      setSelectedDate(prev => {
+        const newDate = subWeeks(prev, 1)
+        console.log('📅 Moving to previous week:', format(newDate, 'yyyy-MM-dd'))
+        return newDate
+      })
+      setIsDaySelected(false) // Clear day selection, show whole week
+    }
+  }
+
+  const handleNext = () => {
+    console.log('➡️ Next week clicked')
+    if (calendarViewMode === 'week') {
+      shouldPreserveScrollRef.current = true // Preserve scroll on week change
+      setSelectedDate(prev => {
+        const newDate = addWeeks(prev, 1)
+        console.log('📅 Moving to next week:', format(newDate, 'yyyy-MM-dd'))
+        return newDate
+      })
+      setIsDaySelected(false) // Clear day selection, show whole week
+    }
+  }
+
+  const clearDateFilter = () => {
+    setCalendarViewMode('week')
+    setSelectedDate(new Date())
+    setCustomDateRange({ from: '', to: '' })
+  }
+
+  if (isLoading && interviews.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse">
@@ -223,88 +263,74 @@ const Interviews = () => {
     )
   }
 
-  const tabCounts = getTabCounts()
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {tPage('title') || 'Interview Management'}
+          </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-{tPage('subtitle')}
+            {tPage('subtitle') || 'Manage and schedule candidate interviews'}
           </p>
         </div>
-        
-        <div className="mt-4 sm:mt-0 flex items-center space-x-4">
-          <LanguageSwitch />
-          {/* View Mode Toggle */}
-          {activeTab === 'scheduled' && (
-            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  viewMode === 'list'
-                    ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                <List className="w-4 h-4 mr-1" />
-{tPage('viewModes.list')}
-              </button>
-              <button
-                onClick={() => setViewMode('calendar')}
-                className={`flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  viewMode === 'calendar'
-                    ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                <Calendar className="w-4 h-4 mr-1" />
-{tPage('viewModes.calendar')}
-              </button>
-            </div>
-          )}
+        <LanguageSwitch />
+      </div>
 
-          {/* Time Range Toggle */}
-          {activeTab === 'scheduled' && viewMode === 'calendar' && (
-            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-              <button
-                onClick={() => setTimeRange('day')}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  timeRange === 'day'
-                    ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                {tPage('timeRanges.day')}
-              </button>
-              <button
-                onClick={() => setTimeRange('week')}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                  timeRange === 'week'
-                    ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                {tPage('timeRanges.week')}
-              </button>
+      {/* Stats - At the top */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="card p-4">
+          <div className="flex items-center">
+            <Calendar className="w-8 h-8 text-blue-600 mr-3" />
+            <div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Today</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.today}</div>
             </div>
-          )}
+          </div>
+        </div>
+        <div className="card p-4">
+          <div className="flex items-center">
+            <Calendar className="w-8 h-8 text-green-600 mr-3" />
+            <div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Scheduled</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.scheduled}</div>
+            </div>
+          </div>
+        </div>
+        <div className="card p-4">
+          <div className="flex items-center">
+            <Calendar className="w-8 h-8 text-red-600 mr-3" />
+            <div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Unattended</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.unattended}</div>
+            </div>
+          </div>
+        </div>
+        <div className="card p-4">
+          <div className="flex items-center">
+            <Calendar className="w-8 h-8 text-purple-600 mr-3" />
+            <div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.completed}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Common Filters: Job and Search - Above tabs */}
       <div className="card p-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* Job Filter */}
-          <div className="flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Filter by Job
+            </label>
             <select
               value={selectedJob}
               onChange={(e) => handleJobSelect(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="">{tPage('filters.allJobs')}</option>
+              <option value="">All Jobs</option>
               {jobs.map(job => (
                 <option key={job.id} value={job.id}>
                   {job.title} - {job.company}
@@ -313,312 +339,173 @@ const Interviews = () => {
             </select>
           </div>
 
-          {/* Search */}
-          <div className="flex-1">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Search Candidate
+            </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder={tPage('filters.searchPlaceholder')}
+                placeholder="Search by name, email, phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Date Picker for Calendar View */}
-          {activeTab === 'scheduled' && viewMode === 'calendar' && (
+      {/* Tabs: Contemporary | Calendar */}
+      <div className="card mb-6">
+        {/* Tab Headers */}
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="flex">
+            <button
+              onClick={() => setMode('contemporary')}
+              className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+                mode === 'contemporary'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}
+            >
+              Contemporary
+            </button>
+            <button
+              onClick={() => setMode('calendar')}
+              className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+                mode === 'calendar'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}
+            >
+              Calendar
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Body */}
+        <div className="p-4">
+          {/* Contemporary Mode Content */}
+          {mode === 'contemporary' && (
             <div>
-              <input
-                type="date"
-                value={format(selectedDate, 'yyyy-MM-dd')}
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
+              {/* Contemporary filters are in ScheduledInterviews component */}
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews.
+              </p>
             </div>
+          )}
+
+          {/* Calendar Mode Content */}
+          {mode === 'calendar' && (
+        <div className="card p-4 mb-6">
+          <div className="space-y-4">
+            {/* Calendar View Mode Selector */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Date Range
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setCalendarViewMode('week')
+                    setCustomDateRange({ from: '', to: '' })
+                  }}
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                    calendarViewMode === 'week'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Week View
+                </button>
+                <button
+                  onClick={() => {
+                    // Prefill custom range with current week's dates
+                    const weekStart = startOfWeek(selectedDate)
+                    const weekEnd = endOfWeek(selectedDate)
+                    setCustomDateRange({
+                      from: format(weekStart, 'yyyy-MM-dd'),
+                      to: format(weekEnd, 'yyyy-MM-dd')
+                    })
+                    setCalendarViewMode('custom')
+                    setIsDaySelected(false) // Clear day selection
+                  }}
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                    calendarViewMode === 'custom'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Custom Range
+                </button>
+              </div>
+            </div>
+
+            {/* Week Navigation (only shown in week mode) */}
+            {calendarViewMode === 'week' && (
+              <div>
+                <InterviewDateNavigation
+                  viewMode="week"
+                  selectedDate={selectedDate}
+                  onDateChange={handleDateChange}
+                  onPrevious={handlePrevious}
+                  onNext={handleNext}
+                />
+              </div>
+            )}
+
+            {/* Custom Date Range Inputs (only shown in custom mode) */}
+            {calendarViewMode === 'custom' && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={customDateRange.from}
+                  onChange={(e) => setCustomDateRange(prev => ({ ...prev, from: e.target.value }))}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+                <span className="text-gray-500 dark:text-gray-400">to</span>
+                <input
+                  type="date"
+                  value={customDateRange.to}
+                  onChange={(e) => setCustomDateRange(prev => ({ ...prev, to: e.target.value }))}
+                  min={customDateRange.from}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+                {customDateRange.from && customDateRange.to && (
+                  <button
+                    onClick={() => setCustomDateRange({ from: '', to: '' })}
+                    className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
           )}
         </div>
       </div>
 
-      {/* Main Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('scheduled')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'scheduled'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <Calendar className="w-4 h-4 mr-2 inline" />
-{tPage('tabs.scheduled')}
-              {tabCounts.scheduled > 0 && (
-                <span className="ml-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 py-0.5 px-2 rounded-full text-xs">
-                  {tabCounts.scheduled}
-                </span>
-              )}
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('schedule')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'schedule'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <Plus className="w-4 h-4 mr-2 inline" />
-              {tPage('tabs.scheduleNew')}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('ai-assistant')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'ai-assistant'
-                  ? 'border-purple-500 text-purple-600 dark:text-purple-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <Bot className="w-4 h-4 mr-2 inline" />
-              {tPage('tabs.aiAssistant')}
-              <span className="ml-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 py-0.5 px-2 rounded-full text-xs">
-                {tPage('aiAssistant.phase2Feature')}
-              </span>
-            </button>
-          </nav>
-        </div>
-      </div>
-      {/* Tab Content */}
-      <div className="space-y-6">
-        {activeTab === 'scheduled' && (
-          <>
-            {viewMode === 'list' ? (
-              <div>
-                <ScheduledInterviews 
-                  candidates={candidates}
-                  jobId={selectedJob}
-                  interviews={paginatedInterviews}
-                />
-                
-                {/* Pagination for interviews */}
-                {interviews.length > 0 && (
-                  <div className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <PaginationWrapper
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      totalItems={totalItems}
-                      itemsPerPage={itemsPerPage}
-                      itemsPerPageOptions={itemsPerPageOptions}
-                      onPageChange={goToPage}
-                      onItemsPerPageChange={changeItemsPerPage}
-                      showInfo={true}
-                      showItemsPerPageSelector={true}
-                    />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <InterviewCalendarView
-                interviews={getFilteredInterviews()}
-                selectedDate={selectedDate}
-                timeRange={timeRange}
-                onDateChange={setSelectedDate}
-              />
-            )}
-          </>
-        )}
-
-        {activeTab === 'schedule' && (
-          <div className="space-y-6">
-            {!selectedJob ? (
-              <div className="card p-8 text-center">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.selectJobToSchedule')}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  {tPage('messages.selectJobMessage')}
-                </p>
-              </div>
-            ) : candidates.length === 0 ? (
-              <div className="card p-8 text-center">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.noShortlistedCandidates')}</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {tPage('messages.noShortlistedMessage')}
-                </p>
-              </div>
-            ) : (
-              <EnhancedInterviewScheduling
-                candidates={candidates}
-                jobId={selectedJob}
-                onScheduled={handleInterviewScheduled}
-                onBatchSchedule={handleBatchSchedule}
-                checkForDoubleBooking={checkForDoubleBooking}
-              />
-            )}
-          </div>
-        )}
-
-        {activeTab === 'ai-assistant' && (
-          <div className="space-y-6">
-            <div className="card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    <Bot className="w-5 h-5 mr-2 text-purple-600" />
-                    {tPage('aiAssistant.title')}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {tPage('aiAssistant.subtitle')}
-                  </p>
-                </div>
-                <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {tPage('aiAssistant.phase2Feature')}
-                </span>
-              </div>
-              
-              {selectedJob && candidates.length > 0 ? (
-                <AISchedulingAssistant
-                  existingMeetings={interviews}
-                  participants={candidates.map(c => ({
-                    id: c.id,
-                    name: c.name,
-                    email: c.email,
-                    availability: [] // Would be populated from candidate availability data
-                  }))}
-                  onScheduleSelect={(slot) => {
-                    // Handle AI-suggested schedule selection (just selection, not scheduling)
-                    console.log('AI suggested slot selected:', slot)
-                    // This should only select the slot, actual scheduling happens when buttons are clicked
-                  }}
-                  onAutoSchedule={async (meetings) => {
-                    // Handle batch/auto scheduling
-                    try {
-                      console.log('Auto-scheduling meetings:', meetings)
-                      
-                      const results = {
-                        scheduled: [],
-                        failed: []
-                      }
-                      
-                      // Schedule each meeting
-                      for (const meeting of meetings) {
-                        try {
-                          const result = await interviewService.scheduleInterview({
-                            candidate_id: meeting.participant_id,
-                            job_id: selectedJob,
-                            scheduled_at: meeting.scheduled_at,
-                            duration: meeting.duration || 60,
-                            interviewer: meeting.interviewer || '',
-                            location: meeting.location || 'Office',
-                            notes: meeting.notes || 'Auto-scheduled interview',
-                            status: 'scheduled'
-                          })
-                          
-                          if (result) {
-                            results.scheduled.push({
-                              ...result,
-                              participant_name: meeting.participant_name
-                            })
-                          }
-                        } catch (error) {
-                          console.error(`Failed to schedule interview for ${meeting.participant_name}:`, error)
-                          results.failed.push({
-                            participant_id: meeting.participant_id,
-                            participant_name: meeting.participant_name,
-                            error: error.message
-                          })
-                        }
-                      }
-                      
-                      // Refresh interviews data if any were scheduled
-                      if (results.scheduled.length > 0) {
-                        await loadData()
-                      }
-                      
-                      return results
-                    } catch (error) {
-                      console.error('Auto-scheduling failed:', error)
-                      throw error
-                    }
-                  }}
-                  constraints={{
-                    duration: 60,
-                    priority: 'high',
-                    meetingType: 'interview',
-                    dateRange: {
-                      start: new Date(Date.now() + 60 * 60 * 1000), // Start 1 hour from now
-                      end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 2 weeks
-                    }
-                  }}
-                />
-              ) : (
-                <div className="text-center py-8">
-                  <Bot className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('messages.aiAssistantReady')}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {tPage('messages.aiAssistantMessage')}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Quick Stats */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Calendar className="w-8 h-8 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.todaysInterviews')}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.today}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Clock className="w-8 h-8 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.totalScheduled')}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.scheduled}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.unattended')}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.unattended}</div>
-              <div className="text-xs text-red-600 mt-1">{tPage('stats.autoFlagged', { minutes: gracePeriod })}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <CheckCircle className="w-8 h-8 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.completed')}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tabCounts.completed}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Interviews List */}
+      <ScheduledInterviews
+        candidates={interviews}
+        jobId={selectedJob}
+        currentFilter={mode === 'contemporary' ? contemporaryFilter : 'all'}
+        onFilterChange={(filter) => {
+          console.log('📍 onFilterChange called:', { mode, filter, currentFilter: contemporaryFilter })
+          if (mode === 'contemporary') {
+            console.log('✅ Setting contemporaryFilter to:', filter)
+            setContemporaryFilter(filter)
+          } else {
+            console.log('⚠️ Not in contemporary mode, ignoring filter change')
+          }
+        }}
+        onDataReload={loadInterviews}
+        showFilters={mode === 'contemporary'}
+      />
     </div>
   )
 }

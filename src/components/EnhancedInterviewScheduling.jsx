@@ -1,21 +1,28 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, AlertTriangle, CheckCircle, X, Users, Zap, FileText, User, GraduationCap, Camera, Clipboard, Plus } from 'lucide-react'
 import { interviewService, candidateService } from '../services/index.js'
+import InterviewDataSource from '../api/datasources/InterviewDataSource.js' // ✅ Phase 2: Real API client
+import CandidateDataSource from '../api/datasources/CandidateDataSource.js' // ✅ Phase 2: Bulk scheduling
+import { getMembersList } from '../services/memberService.js' // ✅ Get team members
+import { useAgency } from '../contexts/AgencyContext.jsx' // ✅ Phase 2: Get agency license
 import { format, addMinutes, isSameMinute, parseISO, addDays, startOfDay } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
+import { formatTime12Hour } from '../utils/helpers.js'
 
 const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
   const navigate = useNavigate()
+  const { agencyData } = useAgency() // ✅ Phase 2: Get agency context
   const [selectedCandidates, setSelectedCandidates] = useState(new Set())
   const [schedulingMode, setSchedulingMode] = useState('individual') // 'individual', 'batch', 'suggested', 'ai'
   const [schedulingData, setSchedulingData] = useState({
-    date: '',
-    time: '',
+    date: format(addDays(new Date(), 1), 'yyyy-MM-dd'), // Tomorrow by default
+    time: '10:00', // 10 AM by default
     duration: 60,
     interviewer: '',
     location: 'Office',
     notes: ''
   })
+  const [teamMembers, setTeamMembers] = useState([])
   const [batchScheduling, setBatchScheduling] = useState([])
   const [suggestedScheduling, setSuggestedScheduling] = useState({
     duration: '2 weeks',
@@ -37,7 +44,19 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
   useEffect(() => {
     loadExistingInterviews()
     loadCandidateStatuses()
+    loadTeamMembers()
   }, [])
+
+  const loadTeamMembers = async () => {
+    try {
+      const response = await getMembersList()
+      if (response.success && response.data) {
+        setTeamMembers(response.data)
+      }
+    } catch (error) {
+      console.error('Failed to load team members:', error)
+    }
+  }
 
   const loadExistingInterviews = async () => {
     try {
@@ -142,11 +161,25 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
 
   const handleCandidateSelect = (candidateId) => {
     const newSelected = new Set(selectedCandidates)
-    if (newSelected.has(candidateId)) {
-      newSelected.delete(candidateId)
+    
+    // In Individual mode, only allow single selection
+    if (schedulingMode === 'individual') {
+      if (newSelected.has(candidateId)) {
+        newSelected.delete(candidateId)
+      } else {
+        // Clear all previous selections and select only this one
+        newSelected.clear()
+        newSelected.add(candidateId)
+      }
     } else {
-      newSelected.add(candidateId)
+      // In other modes (batch, suggested, ai), allow multiple selection
+      if (newSelected.has(candidateId)) {
+        newSelected.delete(candidateId)
+      } else {
+        newSelected.add(candidateId)
+      }
     }
+    
     setSelectedCandidates(newSelected)
     
     // Check for conflicts when candidates are selected
@@ -176,9 +209,91 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
     setConflicts(allConflicts)
   }
 
+  // ✅ Phase 2: Batch scheduling handler
+  const handleBatchSchedule = async () => {
+    if (batchScheduling.length === 0) return
+
+    try {
+      setIsScheduling(true)
+      
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
+
+      // Get selected requirements
+      const selectedRequirements = requirements
+        .filter(req => req.selected)
+        .map(req => req.id)
+
+      // Filter out incomplete batches
+      const validBatches = batchScheduling.filter(batch => 
+        batch.date && batch.time && batch.candidates.length > 0
+      )
+
+      if (validBatches.length === 0) {
+        alert('No valid batches to schedule. Please ensure all batches have date, time, and at least one candidate.')
+        return
+      }
+
+      // Prepare batches with requirements
+      const batchesWithRequirements = validBatches.map(batch => ({
+        ...batch,
+        requirements: selectedRequirements,
+        interviewer: batch.interviewer || schedulingData.interviewer || 'HR Manager'
+      }))
+
+      // Single API call for all batches
+      const result = await CandidateDataSource.multiBatchScheduleInterviews(
+        license,
+        jobId,
+        batchesWithRequirements
+      )
+
+      const totalScheduled = result.updated_count || 0
+      const totalFailed = result.failed?.length || 0
+
+      // Show results
+      if (totalFailed === 0) {
+        console.log(`✅ Successfully scheduled ${totalScheduled} interview(s) across ${validBatches.length} batch(es)`)
+        alert(`Successfully scheduled ${totalScheduled} interviews!`)
+      } else {
+        console.warn(
+          `⚠️ Scheduled ${totalScheduled} interviews. ${totalFailed} failed.`,
+          result.errors
+        )
+        alert(`Scheduled ${totalScheduled} interviews. ${totalFailed} failed. Check console for details.`)
+      }
+
+      // Reset form
+      setBatchScheduling([])
+      setConflicts([])
+      
+      // Reload existing interviews
+      await loadExistingInterviews()
+      
+      // Notify parent component
+      if (onScheduled) {
+        onScheduled()
+      }
+      
+      // Redirect to scheduled tab
+      navigate(`/jobs/${jobId}?tab=scheduled`)
+
+    } catch (error) {
+      console.error('❌ Failed to schedule batch interviews:', error)
+      alert(`Failed to schedule batch interviews: ${error.message}`)
+    } finally {
+      setIsScheduling(false)
+    }
+  }
+
   const handleSchedulingDataChange = (field, value) => {
+    console.log(`Scheduling data change: ${field} = "${value}"`)
     const newData = { ...schedulingData, [field]: value }
     setSchedulingData(newData)
+    console.log('New scheduling data:', newData)
     
     // Check for conflicts when date/time changes
     if (field === 'date' || field === 'time' || field === 'duration') {
@@ -191,31 +306,54 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
 
     try {
       setIsScheduling(true)
-      const proposedDateTime = `${schedulingData.date}T${schedulingData.time}:00`
       
-      const schedulePromises = Array.from(selectedCandidates).map(async (candidateId) => {
-        const candidate = candidates.find(c => c.id === candidateId)
-        if (!candidate) return null
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
 
-        return await interviewService.scheduleInterview({
-          candidate_id: candidateId,
-          job_id: jobId,
-          scheduled_at: proposedDateTime,
-          duration: schedulingData.duration,
-          interviewer: schedulingData.interviewer,
+      // Get selected requirements
+      const selectedRequirements = requirements
+        .filter(req => req.selected)
+        .map(req => req.id)
+
+      // ✅ Phase 2: Use bulk scheduling API instead of looping
+      const candidateIds = Array.from(selectedCandidates)
+      
+      const result = await CandidateDataSource.bulkScheduleInterviews(
+        agencyData.license_number,
+        jobId,
+        candidateIds,
+        {
+          date: schedulingData.date,
+          time: schedulingData.time,
+          duration: schedulingData.duration, // ✅ Phase 2: Duration field
           location: schedulingData.location,
-          notes: schedulingData.notes,
-          status: 'scheduled'
-        })
-      })
+          interviewer: schedulingData.interviewer,
+          requirements: selectedRequirements,
+          notes: schedulingData.notes
+        },
+        license
+      )
 
-      await Promise.all(schedulePromises)
+      // ✅ Phase 2: Handle partial failures
+      if (result.success) {
+        console.log(`✅ Successfully scheduled ${result.updated_count} interview(s)`)
+      } else {
+        const succeeded = result.updated_count || 0
+        const failed = result.failed?.length || 0
+        console.warn(
+          `⚠️ Scheduled ${succeeded} of ${candidateIds.length} interviews. ${failed} failed.`,
+          result.errors
+        )
+      }
       
       // Reset form
       setSelectedCandidates(new Set())
       setSchedulingData({
-        date: '',
-        time: '',
+        date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+        time: '10:00',
         duration: 60,
         interviewer: '',
         location: 'Office',
@@ -231,11 +369,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
         onScheduled()
       }
       
-      // Redirect to the job details page with shortlisted tab
-      navigate(`/jobs/${jobId}?tab=shortlisted`)
+      // Redirect to the job details page with scheduled tab
+      navigate(`/jobs/${jobId}?tab=scheduled`)
 
     } catch (error) {
-      console.error('Failed to schedule interviews:', error)
+      console.error('❌ Failed to schedule interviews:', error)
+      alert(`Failed to schedule interviews: ${error.message}`)
     } finally {
       setIsScheduling(false)
     }
@@ -337,7 +476,13 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
         <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Scheduling Options</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
-            onClick={() => setSchedulingMode('individual')}
+            onClick={() => {
+              setSchedulingMode('individual')
+              // Clear selection when switching to individual mode
+              if (selectedCandidates.size > 1) {
+                setSelectedCandidates(new Set())
+              }
+            }}
             className={`p-4 rounded-lg border-2 transition-colors ${
               schedulingMode === 'individual'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
@@ -397,7 +542,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
           
           {/* Candidate Selection */}
           <div className="mb-6">
-            <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Select Candidates</h5>
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">Select Candidate</h5>
+              <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                Select one candidate at a time
+              </span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {candidates.map(candidate => (
                 <div
@@ -438,23 +588,51 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Schedule Details</h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Date {!schedulingData.date && <span className="text-red-500">*</span>}
+                  </label>
                   <input
                     type="date"
                     value={schedulingData.date}
                     onChange={(e) => handleSchedulingDataChange('date', e.target.value)}
                     min={format(new Date(), 'yyyy-MM-dd')}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      schedulingData.date
+                        ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                    }`}
+                    style={!schedulingData.date ? { opacity: 0.6 } : {}}
                   />
+                  {!schedulingData.date && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
+                      Click to select interview date
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Time {!schedulingData.time && <span className="text-red-500">*</span>}
+                  </label>
                   <input
                     type="time"
                     value={schedulingData.time}
                     onChange={(e) => handleSchedulingDataChange('time', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      schedulingData.time
+                        ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                    }`}
+                    style={!schedulingData.time ? { opacity: 0.6 } : {}}
                   />
+                  {schedulingData.time ? (
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
+                      {formatTime12Hour(schedulingData.time + ':00')}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
+                      Click to select interview time
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (minutes)</label>
@@ -472,13 +650,18 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Interviewer</label>
-                  <input
-                    type="text"
+                  <select
                     value={schedulingData.interviewer}
                     onChange={(e) => handleSchedulingDataChange('interviewer', e.target.value)}
-                    placeholder="Enter interviewer name"
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
+                  >
+                    <option value="">Select interviewer</option>
+                    {teamMembers.map((member) => (
+                      <option key={member.id} value={member.name}>
+                        {member.name} ({member.role})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
@@ -556,9 +739,11 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                       </button>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Date {!batch.date && <span className="text-red-500">*</span>}
+                        </label>
                         <input
                           type="date"
                           value={batch.date}
@@ -567,11 +752,18 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                             setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
                           }}
                           min={format(new Date(), 'yyyy-MM-dd')}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          className={`w-full px-2 py-1 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            batch.date
+                              ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                              : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                          }`}
+                          style={!batch.date ? { opacity: 0.6 } : {}}
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Time {!batch.time && <span className="text-red-500">*</span>}
+                        </label>
                         <input
                           type="time"
                           value={batch.time}
@@ -579,13 +771,45 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                             const updatedBatch = { ...batch, time: e.target.value }
                             setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
                           }}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          className={`w-full px-2 py-1 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            batch.time
+                              ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                              : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
+                          }`}
+                          style={!batch.time ? { opacity: 0.6 } : {}}
                         />
+                        {batch.time && (
+                          <p className="text-xs text-green-600 dark:text-green-400 mt-0.5 font-medium">
+                            {formatTime12Hour(batch.time + ':00')}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (min)</label>
+                        <select
+                          value={batch.duration || 60}
+                          onChange={(e) => {
+                            const updatedBatch = { ...batch, duration: parseInt(e.target.value) }
+                            setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
+                          }}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        >
+                          <option value={15}>15 min</option>
+                          <option value={30}>30 min</option>
+                          <option value={45}>45 min</option>
+                          <option value={60}>60 min</option>
+                          <option value={90}>90 min</option>
+                          <option value={120}>120 min</option>
+                        </select>
                       </div>
                     </div>
                     
                     <div className="flex flex-wrap gap-2">
-                      {candidates.filter(c => !batch.candidates.includes(c.id)).map(candidate => (
+                      {candidates.filter(c => {
+                        // Check if candidate is already in ANY batch (not just current batch)
+                        const isInAnyBatch = batchScheduling.some(b => b.candidates.includes(c.id))
+                        return !isInAnyBatch
+                      }).map(candidate => (
                         <button
                           key={candidate.id}
                           onClick={() => {
@@ -597,6 +821,11 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                           {candidate.name}
                         </button>
                       ))}
+                      {candidates.every(c => batchScheduling.some(b => b.candidates.includes(c.id))) && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 italic">
+                          All candidates have been assigned to batches
+                        </div>
+                      )}
                     </div>
                     
                     {batch.candidates.length > 0 && (
@@ -773,6 +1002,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
         (schedulingMode === 'suggested') ||
         (schedulingMode === 'ai')) && (
         <div className="flex justify-end space-x-3">
+          {/* Debug info */}
+          {schedulingMode === 'individual' && (
+            <div className="text-xs text-gray-500 mr-4 self-center">
+              Debug: Candidates={selectedCandidates.size}, Date={schedulingData.date ? '✓' : '✗'}, Time={schedulingData.time ? '✓' : '✗'}, Interviewer={schedulingData.interviewer ? '✓' : '✗'}, Conflicts={conflicts.length}
+            </div>
+          )}
           {schedulingMode === 'suggested' && (
             <button
               onClick={() => {
@@ -805,10 +1040,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
           
           {schedulingMode === 'batch' && (
             <button
-              onClick={() => {
-                // Handle batch scheduling implementation
-                console.log('Implementing batch schedule:', batchScheduling)
-              }}
+              onClick={handleBatchSchedule}
               disabled={isScheduling || batchScheduling.length === 0}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
@@ -820,7 +1052,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
           {schedulingMode === 'individual' && (
             <button
               onClick={handleScheduleInterviews}
-              disabled={isScheduling || conflicts.length > 0 || !schedulingData.date || !schedulingData.time}
+              disabled={
+                isScheduling || 
+                conflicts.length > 0 || 
+                selectedCandidates.size === 0 ||
+                !schedulingData.date || 
+                !schedulingData.time ||
+                !schedulingData.interviewer
+              }
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Calendar className="w-4 h-4 mr-2" />

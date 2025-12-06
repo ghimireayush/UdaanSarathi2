@@ -103,7 +103,20 @@ const MemberLogin = () => {
         console.log('Dev OTP:', result.dev_otp)
       }
     } catch (err) {
-      setError(err.message || 'Failed to send OTP. Please try again.')
+      // Extract just the message from error response
+      let errorMessage = 'Failed to send OTP. Please try again.'
+      if (err?.message) {
+        try {
+          const parsed = JSON.parse(err.message)
+          errorMessage = parsed.message || 'An error occurred. Please try again.'
+        } catch {
+          // If it's not JSON, check if it's a readable string
+          errorMessage = typeof err.message === 'string' && err.message.length > 0 
+            ? err.message 
+            : 'An error occurred. Please try again.'
+        }
+      }
+      setError(errorMessage)
     } finally {
       setSendingOtp(false)
     }
@@ -138,7 +151,20 @@ const MemberLogin = () => {
         setError(tPage('messages.loginFailed'))
       }
     } catch (err) {
-      const msg = err?.message || tPage('messages.unexpectedError')
+      // Extract just the message from error response
+      let msg = tPage('messages.unexpectedError')
+      if (err?.message) {
+        try {
+          const parsed = JSON.parse(err.message)
+          msg = parsed.message || 'An error occurred. Please try again.'
+        } catch {
+          // If it's not JSON, check if it's a readable string
+          msg = typeof err.message === 'string' && err.message.length > 0 
+            ? err.message 
+            : 'An error occurred. Please try again.'
+        }
+      }
+      
       if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
         window.alert(tPage('messages.unauthorizedAccess'))
       }

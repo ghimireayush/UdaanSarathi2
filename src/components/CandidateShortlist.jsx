@@ -210,9 +210,9 @@ const CandidateShortlist = ({
   }
 
   const validateStageTransition = (currentStage, targetStage) => {
-    // Allow any valid stage transition in shortlist view for flexibility
-    const validStages = ['applied', 'shortlisted', 'interview-scheduled', 'interview-passed']
-    return validStages.includes(targetStage)
+    // Strict next-step-only transitions
+    const nextAllowed = getNextAllowedStage(currentStage)
+    return targetStage === nextAllowed
   }
 
   const handleUpdateStatus = async (candidateId, newStage) => {
@@ -595,17 +595,83 @@ const CandidateShortlist = ({
                           <button
                             onClick={() => handleCandidateClick(candidate)}
                             className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 shadow-sm hover:shadow-md"
+                            title="View candidate"
                           >
                             <Eye className="w-4 h-4 mr-1" />
                             {tPage('candidateList.table.actions.view')}
                           </button>
-                          <button
-                            onClick={() => onScheduleInterview && onScheduleInterview(candidate.id)}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 shadow-sm hover:shadow-md"
-                          >
-                            <MessageSquare className="w-4 h-4 mr-1" />
-                            {tPage('candidateList.table.actions.schedule')}
-                          </button>
+
+                          {/* Applied -> Shortlist */}
+                          {candidate.stage === 'applied' && (
+                            <button
+                              onClick={() => handleUpdateStatus(candidate.id, 'shortlisted')}
+                              className="text-xs px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                              title="Shortlist candidate"
+                            >
+                              Shortlist
+                            </button>
+                          )}
+
+                          {/* Shortlisted -> Schedule Interview */}
+                          {candidate.stage === 'shortlisted' && (
+                            <button
+                              onClick={() => onScheduleInterview ? onScheduleInterview(candidate.id) : handleUpdateStatus(candidate.id, 'interview-scheduled')}
+                              className="text-xs px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+                              title="Schedule interview"
+                            >
+                              Schedule Interview
+                            </button>
+                          )}
+
+                          {/* Interview Scheduled -> Pass / Fail (+Reschedule when elapsed) */}
+                          {candidate.stage === 'interview-scheduled' && (
+                            <>
+                              <button
+                                onClick={() => handleUpdateStatus(candidate.id, 'interview-passed')}
+                                className="text-xs px-3 py-2 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                                title="Mark interview as passed"
+                              >
+                                Pass
+                              </button>
+                              <button
+                                onClick={() => handleUpdateStatus(candidate.id, 'shortlisted')}
+                                className="text-xs px-3 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50"
+                                title="Mark interview as failed"
+                              >
+                                Fail
+                              </button>
+                              {(() => {
+                                const scheduledAtStr = candidate?.interview?.scheduled_at || candidate?.application?.interview_scheduled_at
+                                if (!scheduledAtStr) return (
+                                  <button
+                                    onClick={() => onScheduleInterview ? onScheduleInterview(candidate.id) : handleCandidateClick(candidate)}
+                                    className="text-xs px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    title="Open reschedule dialog"
+                                  >
+                                    Reschedule
+                                  </button>
+                                )
+                                try {
+                                  const scheduledAt = new Date(scheduledAtStr)
+                                  const durationMin = 60
+                                  const endTime = new Date(scheduledAt.getTime() + durationMin * 60000)
+                                  const now = new Date()
+                                  if (now > endTime) {
+                                    return (
+                                      <button
+                                        onClick={() => onScheduleInterview ? onScheduleInterview(candidate.id) : handleCandidateClick(candidate)}
+                                        className="text-xs px-3 py-2 rounded border border-amber-400 text-amber-700 hover:bg-amber-50"
+                                        title="Interview time elapsed — reschedule"
+                                      >
+                                        Reschedule
+                                      </button>
+                                    )
+                                  }
+                                } catch (_) {}
+                                return null
+                              })()}
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

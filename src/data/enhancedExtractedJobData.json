@@ -1,0 +1,86 @@
+{
+  "basicInfo": {
+    "posting_title": "यूएईमा वैदेशिक रोजगारको अवसर - HIT Facility Management",
+    "country": "United Arab Emirates",
+    "city": "Dubai",
+    "lt_number": "298629",
+    "chalani_number": "६०२१३६३६",
+    "approval_date_ad": "2024-01-23",
+    "posting_date_ad": "2024-01-23",
+    "announcement_type": "full_ad",
+    "notes": "अन्तर्वार्ता मेनपावर कार्यालय काठमाडौंमा २०८० माघ १८ गते (1 February 2024) मा हुनेछ। सम्पर्क: NMS Recruitment Service Pvt. Ltd., Boudhha-06, Kathmandu. Ph: 01-5914535, 5914536"
+  },
+  "employer": {
+    "company_name": "HIT FACILITY MANAGEMENT SERVICES L.L.C",
+    "country": "United Arab Emirates",
+    "city": "Dubai"
+  },
+  "contract": {
+    "period_years": 2,
+    "renewable": true,
+    "hours_per_day": 8,
+    "days_per_week": 6,
+    "overtime_policy": "as_per_company_policy",
+    "weekly_off_days": 1,
+    "food": "free",
+    "accommodation": "free",
+    "transport": "free",
+    "annual_leave_days": 30
+  },
+  "positions": [
+    { "title": "Administrative Manager", "male_vacancies": 0, "female_vacancies": 1, "monthly_salary_amount": 2000, "salary_currency": "AED", "position_notes": "NPR 72,280 equivalent" },
+    { "title": "Administrative Supervisor", "male_vacancies": 1, "female_vacancies": 0, "monthly_salary_amount": 2000, "salary_currency": "AED", "position_notes": "NPR 72,280 equivalent" },
+    { "title": "Cleaner", "male_vacancies": 10, "female_vacancies": 7, "monthly_salary_amount": 1000, "salary_currency": "AED", "position_notes": "NPR 36,140 equivalent" },
+    { "title": "Commercial Sales Representative", "male_vacancies": 1, "female_vacancies": 0, "monthly_salary_amount": 1500, "salary_currency": "AED", "position_notes": "NPR 54,210 equivalent" },
+    { "title": "Electrician", "male_vacancies": 10, "female_vacancies": 0, "monthly_salary_amount": 1000, "salary_currency": "AED", "position_notes": "NPR 36,140 equivalent" },
+    { "title": "HR Manager", "male_vacancies": 1, "female_vacancies": 0, "monthly_salary_amount": 2000, "salary_currency": "AED", "position_notes": "NPR 72,280 equivalent" },
+    { "title": "Kitchen Helper", "male_vacancies": 10, "female_vacancies": 0, "monthly_salary_amount": 1000, "salary_currency": "AED", "position_notes": "NPR 36,140 equivalent" },
+    { "title": "Marketing Specialist", "male_vacancies": 0, "female_vacancies": 1, "monthly_salary_amount": 2000, "salary_currency": "AED", "position_notes": "NPR 72,280 equivalent" },
+    { "title": "Waitress", "male_vacancies": 0, "female_vacancies": 10, "monthly_salary_amount": 1000, "salary_currency": "AED", "position_notes": "NPR 36,140 equivalent" }
+  ],
+  "tags": {
+    "skills": ["सम्बन्धित कामामा दक्ष", "Communication", "Teamwork", "Time Management"],
+    "education_requirements": ["SLC Pass", "Plus 2 preferred"],
+    "experience_requirements": {
+      "min_years": 1,
+      "max_years": 5,
+      "level": "junior"
+    }
+  },
+  "expenses": {
+    "medical": {
+      "domestic": { "who_pays": "worker", "amount": 2500, "currency": "NPR" },
+      "foreign": { "who_pays": "company", "amount": 500, "currency": "AED" }
+    },
+    "insurance": { 
+      "who_pays": "shared", 
+      "amount": 1500, 
+      "currency": "NPR", 
+      "coverage_amount": 500000, 
+      "coverage_currency": "NPR" 
+    },
+    "travel": { 
+      "who_provides": "company", 
+      "ticket_type": "round_trip", 
+      "amount": 45000, 
+      "currency": "NPR" 
+    },
+    "visa_permit": { 
+      "who_pays": "company", 
+      "amount": 15000, 
+      "currency": "NPR", 
+      "refundable": false 
+    },
+    "training": { 
+      "who_pays": "worker", 
+      "amount": 5000, 
+      "currency": "NPR", 
+      "duration_days": 7, 
+      "mandatory": true 
+    },
+    "welfare_service": {
+      "welfare": { "who_pays": "worker", "amount": 500, "currency": "NPR" },
+      "service": { "who_pays": "worker", "amount": 9500, "currency": "NPR" }
+    }
+  }
+}

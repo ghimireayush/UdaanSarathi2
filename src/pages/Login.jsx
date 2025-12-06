@@ -85,7 +85,20 @@ const Login = () => {
       setDevOtp(result?.dev_otp || '')
       setError('')
     } catch (err) {
-      setError(err?.message || 'Failed to send OTP. Please try again.')
+      // Extract just the message from error response
+      let errorMessage = 'Failed to send OTP. Please try again.'
+      if (err?.message) {
+        try {
+          const parsed = JSON.parse(err.message)
+          errorMessage = parsed.message || 'An error occurred. Please try again.'
+        } catch {
+          // If it's not JSON, check if it's a readable string
+          errorMessage = typeof err.message === 'string' && err.message.length > 0 
+            ? err.message 
+            : 'An error occurred. Please try again.'
+        }
+      }
+      setError(errorMessage)
     } finally {
       setSendingOtp(false)
     }
@@ -116,8 +129,10 @@ const Login = () => {
       // Store session start time
       localStorage.setItem('session_start', Date.now().toString())
 
-      // Check if user has agency
-      if (result.hasAgency) {
+      // Check if user has agency (check both hasAgency flag and user object)
+      const hasAgency = result.hasAgency || result.user?.agencyId || result.user?.agency_id
+      
+      if (hasAgency) {
         // User has agency, go to dashboard
         const from = location.state?.from?.pathname || '/dashboard'
         navigate(from, { replace: true })
@@ -126,7 +141,20 @@ const Login = () => {
         navigate('/setup-company', { replace: true })
       }
     } catch (err) {
-      const msg = err?.message || tPage('messages.unexpectedError')
+      // Extract just the message from error response
+      let msg = tPage('messages.unexpectedError')
+      if (err?.message) {
+        try {
+          const parsed = JSON.parse(err.message)
+          msg = parsed.message || 'An error occurred. Please try again.'
+        } catch {
+          // If it's not JSON, check if it's a readable string
+          msg = typeof err.message === 'string' && err.message.length > 0 
+            ? err.message 
+            : 'An error occurred. Please try again.'
+        }
+      }
+      
       if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {
         window.alert(tPage('messages.accessDenied'))
       }

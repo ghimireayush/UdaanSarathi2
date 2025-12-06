@@ -7,6 +7,21 @@ import performanceService from './performanceService.js'
 import { handleServiceError, createError } from '../utils/errorHandler.js'
 import auditService from './auditService.js'
 import authService from './authService.js'
+import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
+import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
+
+// API Configuration
+const API_BASE_URL = 'http://localhost:3000'
+
+// Get agency license from localStorage (set during login)
+const getAgencyLicense = () => {
+  const license = localStorage.getItem('udaan_agency_license')
+  if (!license) {
+    console.warn('[ApplicationService] No agency license found in localStorage')
+    return null
+  }
+  return license
+}
 
 // Utility function to simulate API delay (reduced for performance)
 const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
@@ -321,44 +336,49 @@ class ApplicationService {
 
   /**
    * Update application stage
+   * @deprecated Use stageTransitionService.updateStage() instead for better validation
    * @param {string} applicationId - Application ID
    * @param {string} newStage - New application stage
    * @returns {Promise<Object|null>} Updated application or null if not found
    */
   async updateApplicationStage(applicationId, newStage) {
     await delay(300)
-    const constants = await constantsService.getApplicationStages()
-    const updateData = { stage: newStage }
     
-    // Add appropriate timestamp based on stage
-    switch (newStage) {
-      case constants.SHORTLISTED:
-        updateData.shortlisted_at = new Date().toISOString()
-        break
-      case constants.INTERVIEW_SCHEDULED:
-        updateData.interview_scheduled_at = new Date().toISOString()
-        break
-      case constants.INTERVIEW_PASSED:
-        updateData.interviewed_at = new Date().toISOString()
-        break
-    }
-    const result = await this.updateApplication(applicationId, updateData)
-    // Audit: Stage change
+    // Import stageTransitionService dynamically to avoid circular dependency
+    const { default: stageTransitionService } = await import('./stageTransitionService.js')
+    
+    const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
+    
     try {
-      const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
-      await auditService.logEvent({
-        user_id: actor.id,
-        user_name: actor.name,
-        action: 'UPDATE',
-        resource_type: 'APPLICATION',
-        resource_id: applicationId,
-        changes: updateData,
-        metadata: { stage_change: true }
-      })
-    } catch (e) {
-      console.warn('Audit logging (STAGE UPDATE APPLICATION) failed:', e)
+      // Delegate to unified stage transition service
+      // Note: We don't have current stage here, so validation will be limited
+      const result = await stageTransitionService.updateStage(
+        applicationId,
+        'unknown', // Current stage unknown in this context
+        newStage,
+        { note: 'Updated via application service' }
+      )
+      
+      // Audit: Stage change
+      try {
+        await auditService.logEvent({
+          user_id: actor.id,
+          user_name: actor.name,
+          action: 'UPDATE',
+          resource_type: 'APPLICATION',
+          resource_id: applicationId,
+          changes: { stage: newStage },
+          metadata: { stage_change: true }
+        })
+      } catch (e) {
+        console.warn('Audit logging (STAGE UPDATE APPLICATION) failed:', e)
+      }
+      
+      return result
+    } catch (error) {
+      console.error('Stage update failed:', error)
+      throw error
     }
-    return result
   }
 
   /**
@@ -395,21 +415,26 @@ class ApplicationService {
   }
 
   /**
-   * Reject application
+   * Reject application with reason (required)
    * @param {string} applicationId - Application ID
-   * @param {string} reason - Rejection reason
+   * @param {string} reason - Rejection reason (required)
    * @returns {Promise<Object|null>} Updated application or null if not found
    */
-  async rejectApplication(applicationId, reason = '') {
+  async rejectApplication(applicationId, reason) {
+    if (!reason || reason.trim().length === 0) {
+      throw new Error('Rejection reason is required')
+    }
+
     await delay(300)
-    // Since we only have 4 stages, rejection is handled by not progressing further
-    // We'll keep the application at its current stage but mark it as rejected in status
+    
     const updateData = {
-      notes: reason,
+      notes: `REJECTED: ${reason}`,
       status: 'rejected',
       decision_at: new Date().toISOString()
     }
+    
     const res = await this.updateApplication(applicationId, updateData)
+    
     try {
       const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
       await auditService.logEvent({
@@ -419,12 +444,70 @@ class ApplicationService {
         resource_type: 'APPLICATION',
         resource_id: applicationId,
         changes: updateData,
-        metadata: { action: 'REJECT' }
+        metadata: { action: 'REJECT', reason }
       })
     } catch (e) {
       console.warn('Audit logging (REJECT APPLICATION) failed:', e)
     }
+    
     return res
+  }
+
+  /**
+   * Bulk reject all "applied" applications for a job posting
+   * Used when closing a job posting
+   * @param {string} jobId - Job posting ID
+   * @param {string} reason - Rejection reason (required)
+   * @returns {Promise<Object>} Result with count of rejected applications
+   */
+  async bulkRejectApplicationsForJob(jobId, reason) {
+    if (!reason || reason.trim().length === 0) {
+      throw new Error('Rejection reason is required')
+    }
+
+    await delay(500)
+    
+    // Find all applications with status "applied" for this job
+    const applicationsToReject = applicationsCache.filter(
+      app => app.job_id === jobId && app.stage === 'applied'
+    )
+    
+    const rejectedIds = []
+    
+    // Reject each application
+    for (const app of applicationsToReject) {
+      try {
+        await this.rejectApplication(app.id, reason)
+        rejectedIds.push(app.id)
+      } catch (error) {
+        console.error(`Failed to reject application ${app.id}:`, error)
+        // Continue with other applications
+      }
+    }
+    
+    try {
+      const actor = authService.getCurrentUser() || { id: 'system', name: 'System' }
+      await auditService.logEvent({
+        user_id: actor.id,
+        user_name: actor.name,
+        action: 'BULK_UPDATE',
+        resource_type: 'APPLICATION',
+        resource_id: jobId,
+        metadata: { 
+          action: 'BULK_REJECT',
+          reason,
+          rejected_count: rejectedIds.length,
+          application_ids: rejectedIds
+        }
+      })
+    } catch (e) {
+      console.warn('Audit logging (BULK REJECT) failed:', e)
+    }
+    
+    return {
+      rejected: rejectedIds.length,
+      applicationIds: rejectedIds
+    }
   }
 
   /**
@@ -794,12 +877,115 @@ class ApplicationService {
   }
 
   /**
-   * Get applications with server-side pagination and performance optimization
+   * Get applications from backend API with optimized data structure
+   * @param {Object} options - Query options
+   * @returns {Promise<Object>} Applications with optimized structure
+   */
+  async getApplicationsFromAPI(options = {}) {
+    const startTime = performance.now()
+    
+    try {
+      const agencyLicense = getAgencyLicense()
+      
+      if (!agencyLicense) {
+        throw new Error('Agency license not found. Please log in again.')
+      }
+      
+      const params = new URLSearchParams()
+      
+      // Add query parameters
+      if (options.page) params.append('page', options.page)
+      if (options.limit) params.append('limit', options.limit)
+      if (options.search) params.append('search', options.search)
+      if (options.stage) params.append('stage', options.stage) // Backend uses 'stage' query param
+      if (options.country) params.append('country', options.country)
+      if (options.jobId) params.append('job', options.jobId) // Backend uses 'job'
+      
+      const url = `${API_BASE_URL}/agencies/${agencyLicense}/applications?${params.toString()}`
+      console.log('Fetching from API:', url)
+      
+      const response = await fetch(url)
+      
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      
+      // Transform backend response to match frontend expectations
+      const transformedApplications = data.applications.map(app => {
+        const candidate = data.candidates[app.candidate_id]
+        const job = data.jobs[app.job_posting_id]
+        const position = data.positions[app.position_id]
+        
+        return {
+          id: app.id,
+          candidate_id: app.candidate_id,
+          job_id: app.job_posting_id,
+          position_id: app.position_id,
+          stage: app.status, // Backend uses 'status', frontend uses 'stage'
+          status: 'active',
+          priority_score: app.priority_score,
+          applied_at: app.created_at,
+          updated_at: app.updated_at,
+          withdrawn_at: app.withdrawn_at,
+          documents: [], // Documents not in current API response
+          candidate: candidate ? {
+            id: candidate.id,
+            name: candidate.full_name,
+            phone: candidate.phone,
+            email: candidate.email,
+            skills: candidate.skills || [],
+            age: candidate.age,
+            gender: candidate.gender,
+            documents: []
+          } : null,
+          job: job ? {
+            id: job.id,
+            title: position?.title || job.posting_title,
+            company: job.company_name,
+            country: job.country,
+            city: job.city,
+            salary: position?.monthly_salary_amount,
+            currency: position?.salary_currency,
+            vacancies: position?.total_vacancies
+          } : null
+        }
+      })
+      
+      const endTime = performance.now()
+      
+      return {
+        data: transformedApplications,
+        pagination: {
+          page: data.pagination.page,
+          limit: data.pagination.limit,
+          total: data.pagination.total,
+          totalPages: data.pagination.totalPages,
+          hasNext: data.pagination.hasNext,
+          hasPrev: data.pagination.hasPrev
+        },
+        performance: {
+          loadTime: Math.round(endTime - startTime),
+          apiLoadTime: data.performance?.loadTime,
+          cached: false
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching from API:', error)
+      // Fallback to local data if API fails
+      console.log('Falling back to local data')
+      return this.getApplicationsPaginatedLocal(options)
+    }
+  }
+
+  /**
+   * Get applications with server-side pagination and performance optimization (Local fallback)
    * Optimized for handling 10k+ records with <1.5s load time
    * @param {Object} options - Pagination and filter options
    * @returns {Promise<Object>} Paginated results with metadata
    */
-  async getApplicationsPaginated(options = {}) {
+  async getApplicationsPaginatedLocal(options = {}) {
     const startTime = performance.now()
     
     const {
@@ -904,10 +1090,20 @@ class ApplicationService {
         }
       })
     } catch (error) {
-      console.error('Error in getApplicationsPaginated:', error)
+      console.error('Error in getApplicationsPaginatedLocal:', error)
       // Preserve original error details so the UI can make better decisions
-      throw createError(error, 'getApplicationsPaginated')
+      throw createError(error, 'getApplicationsPaginatedLocal')
     }
+  }
+
+  /**
+   * Get applications with server-side pagination (Main method - tries API first, falls back to local)
+   * @param {Object} options - Pagination and filter options
+   * @returns {Promise<Object>} Paginated results with metadata
+   */
+  async getApplicationsPaginated(options = {}) {
+    // Try API first, fallback to local if it fails
+    return this.getApplicationsFromAPI(options)
   }
 
   /**

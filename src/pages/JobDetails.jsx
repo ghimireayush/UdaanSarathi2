@@ -24,6 +24,11 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import { jobService, applicationService, candidateService, constantsService } from '../services/index.js'
+import CandidateDataSource from '../api/datasources/CandidateDataSource.js'
+import stageTransitionService from '../services/stageTransitionService.js'
+import InterviewScheduleDialog from '../components/InterviewScheduleDialog.jsx'
+import { useAgency } from '../contexts/AgencyContext.jsx'
+import { formatExperience, formatLocation } from '../utils/candidateFormatter.js'
 import { format } from 'date-fns'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
 import EnhancedInterviewScheduling from '../components/EnhancedInterviewScheduling.jsx'
@@ -37,6 +42,7 @@ const JobDetails = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { confirm } = useConfirm()
+  const { agencyData } = useAgency()
   const { tPageSync } = useLanguage({ 
     pageName: 'job-details', 
     autoLoad: true 
@@ -70,6 +76,7 @@ const JobDetails = () => {
   const [isBulkRejecting, setIsBulkRejecting] = useState(false)
   const [isCompletingShortlisting, setIsCompletingShortlisting] = useState(false)
   const [showCompletionDialog, setShowCompletionDialog] = useState(false)
+  const [scheduledFilter, setScheduledFilter] = useState('all') // today, tomorrow, unattended, all - default to 'all'
 
   // Workflow stages configuration - consistent with Workflow page
   const workflowStages = [
@@ -84,7 +91,7 @@ const JobDetails = () => {
   // Load data on mount and when filters change
   useEffect(() => {
     loadAllData()
-  }, [id, activeTab, topNFilter, selectedTags])
+  }, [id, activeTab, topNFilter, selectedTags, scheduledFilter])
 
   // Handle ESC key to close sidebar
   useEffect(() => {
@@ -103,74 +110,105 @@ const JobDetails = () => {
       setIsLoading(true)
       setError(null)
 
+      // Check if agency license is available
+      const license = agencyData?.license_number
+      if (!license) {
+        console.warn('Agency license not available yet, waiting...')
+        // Don't set error, just wait for AgencyContext to load
+        setIsLoading(false)
+        return
+      }
+
       // Load constants first
       const stages = await constantsService.getApplicationStages()
       setApplicationStages(stages)
 
-      // Load job details
-      const jobData = await jobService.getJobById(id)
+      // ✅ NEW: Single API call for job details + analytics
+      const jobData = await CandidateDataSource.getJobDetails(license, id)
       if (!jobData) {
         setError(new Error('Job not found'))
         return
       }
+      
       setJob(jobData)
-
-      // Set available tags from job tags
+      
+      // Set available tags from job tags (for skill filtering)
       if (jobData.tags && jobData.tags.length > 0) {
-        setAvailableTags(jobData.tags);
+        setAvailableTags(jobData.tags)
+      }
+      
+      // Set analytics from the job details response
+      if (jobData.analytics) {
+        setAnalytics(jobData.analytics)
       }
 
-      // Load analytics data
-      const analyticsData = {
-        view_count: jobData.view_count || 0,
-        total_applicants: jobData.applications_count || 0,
-        shortlisted_count: jobData.shortlisted_count || 0,
-        passed_count: jobData.passed_count || 0
+      // ✅ NEW: Load candidates for each tab using optimized endpoint
+      // Load applied candidates with filtering and pagination
+      const appliedOptions = {
+        stage: 'applied',
+        limit: topNFilter === 'all' ? 100 : topNFilter, // Use 100 for "all", will paginate if needed
+        offset: 0,
+        skills: selectedTags.length > 0 ? selectedTags : undefined,
+        sortBy: 'priority_score',
+        sortOrder: 'desc'
       }
-      setAnalytics(analyticsData)
-
-      // Load all applications for this job
-      const allJobApplications = await applicationService.getApplicationsByJobId(id)
-
-      // Get detailed applications with candidate data
-      const detailedApplications = await Promise.all(
-        allJobApplications.map(async (app) => {
-          const candidate = await candidateService.getCandidateById(app.candidate_id)
-          return {
-            ...candidate,
-            application: app,
-            documents: app.documents || []
-          }
-        })
-      )
-
-      // Filter by stage
-      let applied = detailedApplications.filter(item => item.application.stage === stages.APPLIED)
-
-      // Apply skill-based filtering if tags are selected
-      if (selectedTags.length > 0) {
-        applied = applied.filter(candidate => {
-          // Check if candidate has ALL selected tags (AND semantics)
-          return selectedTags.every(tag =>
-            candidate.skills.includes(tag) ||
-            (job && job.tags && job.tags.includes(tag))
-          );
-        });
+      
+      let appliedData
+      if (topNFilter === 'all') {
+        // For "all", load all candidates with pagination
+        appliedData = await CandidateDataSource.getAllCandidates(
+          license,
+          id,
+          appliedOptions,
+          (current, total) => {
+            console.log(`Loading candidates: ${current}/${total}`)
+          },
+          license
+        )
+        setAppliedCandidates(appliedData)
+      } else {
+        // For limited results, single API call
+        const response = await CandidateDataSource.getCandidates(license, id, appliedOptions)
+        setAppliedCandidates(response.candidates)
       }
 
-      // Sort by priority score (highest first)
-      // Note: Backend handles all ranking algorithms based on skill matching criteria
-      // Priority scores are calculated server-side using sophisticated matching algorithms
-      applied.sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
+      // Load shortlisted candidates
+      if (activeTab === 'shortlisted' || true) { // Always load for counts
+        const shortlistedResponse = await CandidateDataSource.getCandidates(
+          license,
+          id,
+          {
+            stage: 'shortlisted',
+            limit: 100,
+            offset: 0,
+            sortBy: 'priority_score',
+            sortOrder: 'desc'
+          },
+          license
+        )
+        setShortlistedCandidates(shortlistedResponse.candidates)
+      }
 
-      const shortlisted = detailedApplications.filter(item => item.application.stage === stages.SHORTLISTED)
-      const scheduled = detailedApplications.filter(item => item.application.stage === stages.SCHEDULED)
-
-      setAppliedCandidates(applied.slice(0, activeTab === 'applied' ? topNFilter : applied.length))
-      setShortlistedCandidates(shortlisted)
-      setScheduledCandidates(scheduled)
+      // Load scheduled candidates with filter
+      if (activeTab === 'scheduled' || true) { // Always load for counts
+        const scheduledResponse = await CandidateDataSource.getCandidates(
+          license,
+          id,
+          {
+            stage: 'interview-scheduled', // ✅ FIXED: Use frontend format, will be mapped to 'interview_scheduled'
+            limit: 100,
+            offset: 0,
+            sortBy: 'priority_score',
+            sortOrder: 'desc',
+            interviewFilter: scheduledFilter // today, tomorrow, unattended, all
+          },
+          license
+        )
+        setScheduledCandidates(scheduledResponse.candidates)
+      }
 
     } catch (err) {
+      console.error('Error loading job details:', err)
       setError(err)
     } finally {
       setIsLoading(false)
@@ -214,34 +252,88 @@ const JobDetails = () => {
   }
 
   const handleTabChange = (tabId) => {
+    // Save current scroll position
+    const scrollY = window.scrollY
+    
     setActiveTab(tabId)
     updateUrlParams({ tab: tabId })
+    
+    // Restore scroll position after state update
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY)
+    })
   }
 
   const handleTopNFilterChange = (value) => {
+    // Save current scroll position
+    const scrollY = window.scrollY
+    
     setTopNFilter(value)
     updateUrlParams({ limit: value === 10 ? null : value })
+    
+    // Restore scroll position after state update
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY)
+    })
   }
 
   const handleShowShortlistPoolChange = (show) => {
+    // Save current scroll position
+    const scrollY = window.scrollY
+    
     setShowShortlistPool(show)
     updateUrlParams({ view: show ? 'shortlist' : null })
+    
+    // Restore scroll position after state update
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY)
+    })
+  }
+
+  const handleScheduledFilterChange = (filter) => {
+    // Save current scroll position
+    const scrollY = window.scrollY
+    
+    setScheduledFilter(filter)
+    
+    // Restore scroll position after state update
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY)
+    })
   }
 
   const handleShortlist = async (candidateId) => {
     try {
       setIsShortlisting(true)
       const candidate = appliedCandidates.find(c => c.id === candidateId)
-      if (candidate && candidate.application) {
-        await applicationService.updateApplicationStage(
-          candidate.application.id,
-          applicationStages.SHORTLISTED
-        )
-        loadAllData() // Reload data
+      
+      if (!candidate) {
+        throw new Error('Candidate not found')
       }
+      
+      // Get application ID from either structure
+      const applicationId = candidate.application?.id || candidate.application_id
+      
+      if (!applicationId) {
+        console.error('Candidate data:', candidate)
+        throw new Error('Application ID not found for candidate')
+      }
+      
+      // ✅ NEW: Use real API instead of mock
+      await ApplicationDataSource.shortlistApplication(
+        applicationId,
+        'Shortlisted from job details',
+        'agency'
+      )
+      
+      console.log('✅ Candidate shortlisted successfully')
+      
+      // Reload data to reflect changes
+      await loadAllData()
+      
     } catch (error) {
-      console.error('Failed to shortlist candidate:', error)
-      setError(error)
+      console.error('❌ Failed to shortlist candidate:', error)
+      alert(error.message || 'Failed to shortlist candidate')
     } finally {
       setIsShortlisting(false)
     }
@@ -252,19 +344,42 @@ const JobDetails = () => {
 
     try {
       setIsBulkRejecting(true)
-      const applicationIds = Array.from(selectedCandidates).map(candidateId => {
-        const candidate = appliedCandidates.find(c => c.id === candidateId)
-        return candidate?.application?.id
-      }).filter(Boolean)
+      
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
 
-      await Promise.all(
-        applicationIds.map(appId =>
-          applicationService.updateApplicationStage(
-            appId,
-            applicationStages.REJECTED
-          )
-        )
+      // Convert Set to Array of candidate IDs
+      const candidateIds = Array.from(selectedCandidates)
+      
+      // ✅ NEW: Use bulk reject API
+      const result = await CandidateDataSource.bulkRejectCandidates(
+        license,
+        id,
+        candidateIds,
+        'Does not meet requirements', // Optional reason
+        license
       )
+
+      // Show summary message
+      if (result.success) {
+        const total = candidateIds.length
+        const failed = result.failed?.length || 0
+        const succeeded = result.updated_count || 0
+        
+        if (failed === 0) {
+          // All succeeded
+          console.log(`✅ Successfully rejected ${succeeded} candidate(s)`)
+        } else {
+          // Partial success
+          console.warn(
+            `⚠️ Rejected ${succeeded} of ${total} candidates. ${failed} failed.`,
+            result.errors
+          )
+        }
+      }
 
       setSelectedCandidates(new Set())
       loadAllData() // Reload data
@@ -281,19 +396,41 @@ const JobDetails = () => {
 
     try {
       setIsShortlisting(true)
-      const applicationIds = Array.from(selectedCandidates).map(candidateId => {
-        const candidate = appliedCandidates.find(c => c.id === candidateId)
-        return candidate?.application?.id
-      }).filter(Boolean)
+      
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
 
-      await Promise.all(
-        applicationIds.map(appId =>
-          applicationService.updateApplicationStage(
-            appId,
-            applicationStages.SHORTLISTED
-          )
-        )
+      // Convert Set to Array of candidate IDs
+      const candidateIds = Array.from(selectedCandidates)
+      
+      // ✅ NEW: Use bulk shortlist API
+      const result = await CandidateDataSource.bulkShortlistCandidates(
+        license,
+        id,
+        candidateIds,
+        license
       )
+
+      // Show summary message
+      if (result.success) {
+        const total = candidateIds.length
+        const failed = result.failed?.length || 0
+        const succeeded = result.updated_count || 0
+        
+        if (failed === 0) {
+          // All succeeded
+          console.log(`✅ Successfully shortlisted ${succeeded} candidate(s)`)
+        } else {
+          // Partial success
+          console.warn(
+            `⚠️ Shortlisted ${succeeded} of ${total} candidates. ${failed} failed.`,
+            result.errors
+          )
+        }
+      }
 
       setSelectedCandidates(new Set())
       loadAllData() // Reload data
@@ -316,9 +453,38 @@ const JobDetails = () => {
     setSelectedCandidates(new Set())
   }
 
-  const handleCandidateClick = (candidate) => {
-    setSelectedCandidate(candidate)
-    setIsSidebarOpen(true)
+  const handleCandidateClick = async (candidate) => {
+    try {
+      setIsLoading(true)
+      
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
+      
+      // Fetch complete candidate details from unified endpoint
+      const candidateDetails = await CandidateDataSource.getCandidateDetails(
+        license,
+        id, // jobId
+        candidate.id
+      )
+      
+      console.log('✅ Loaded candidate details:', candidateDetails)
+      
+      setSelectedCandidate(candidateDetails)
+      setIsSidebarOpen(true)
+      
+    } catch (error) {
+      console.error('❌ Failed to load candidate details:', error)
+      setError(error.message || 'Failed to load candidate details')
+      
+      // Fallback: use the candidate data we already have
+      setSelectedCandidate(candidate)
+      setIsSidebarOpen(true)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleCloseSidebar = () => {
@@ -343,44 +509,14 @@ const JobDetails = () => {
     return targetStage === nextAllowed
   }
 
-  const handleUpdateStatus = async (candidateId, newStage) => {
+  const handleUpdateStatus = async (applicationId, newStage) => {
+    console.log('🎯 JobDetails.handleUpdateStatus called:', { applicationId, newStage })
     try {
-      const candidate = [
-        ...appliedCandidates,
-        ...shortlistedCandidates,
-        ...scheduledCandidates
-      ].find(c => c.id === candidateId)
-      if (!candidate) return
-
-      const currentStage = candidate.application.stage
-
-      // Prevent any backward flow or skipping stages
-      if (!validateStageTransition(currentStage, newStage)) {
-        await confirm({
-          title: 'Invalid Stage Transition',
-          message: `You cannot move directly from "${workflowStages.find(s => s.id === currentStage)?.label}" to "${workflowStages.find(s => s.id === newStage)?.label}". Please follow the proper workflow sequence.`,
-          confirmText: 'Okay',
-          type: 'warning'
-        })
-        return
-      }
-
-      // Show confirmation dialog for valid transitions
-      const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label
-      const newStageLabel = workflowStages.find(s => s.id === newStage)?.label
-
-      const confirmed = await confirm({
-        title: 'Confirm Stage Update',
-        message: `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"? This action cannot be undone.`,
-        confirmText: 'Yes, Update Stage',
-        cancelText: 'Cancel',
-        type: 'warning'
-      })
-
-      if (confirmed) {
-        await applicationService.updateApplicationStage(candidate.application.id, newStage)
-        await loadAllData() // Reload data
-      }
+      console.log('✅ Calling API directly...')
+      await applicationService.updateApplicationStage(applicationId, newStage)
+      console.log('✅ API call completed, reloading data...')
+      await loadAllData() // Reload data
+      handleCloseSidebar() // Close sidebar after successful update
     } catch (error) {
       console.error('Failed to update status:', error)
       await confirm({
@@ -490,24 +626,20 @@ const JobDetails = () => {
       setIsCompletingShortlisting(true)
       setShowCompletionDialog(false)
 
-      // Get all non-shortlisted applications for this job
-      const allJobApplications = await applicationService.getApplicationsByJobId(id)
-      const nonShortlistedApplications = allJobApplications.filter(
-        app => app.stage === applicationStages.APPLIED
-      )
-
-      // Bulk reject all non-shortlisted applications
-      await Promise.all(
-        nonShortlistedApplications.map(app =>
-          applicationService.updateApplicationStage(app.id, applicationStages.REJECTED)
-        )
-      )
+      // Use new toggle API to close job posting (automatically rejects all "applied" candidates)
+      const result = await jobService.toggleJobStatus(id, false)
 
       // Reload data to reflect changes
       loadAllData()
 
-      // Show success message or notification here if you have a toast system
-      console.log(`Successfully rejected ${nonShortlistedApplications.length} non-shortlisted candidates`)
+      // Show success message with rejection count
+      const rejectedCount = result.rejected_count || 0
+      console.log(`✅ Job posting closed successfully. ${rejectedCount} candidates with "applied" status were automatically rejected.`)
+      
+      // Optional: Show user-friendly notification if you have a toast system
+      if (rejectedCount > 0) {
+        alert(`Job posting closed. ${rejectedCount} pending applications were automatically rejected.`)
+      }
 
     } catch (error) {
       console.error('Failed to complete shortlisting:', error)
@@ -593,15 +725,21 @@ const JobDetails = () => {
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
         <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 flex-1">
           {showSelectCheckbox && (
-            <input
-              type="checkbox"
-              checked={selectedCandidates.has(candidate.id)}
-              onChange={(e) => {
-                e.stopPropagation()
-                handleCandidateSelect(candidate.id)
-              }}
-              className="mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500 self-start h-5 w-5"
-            />
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-start"
+            >
+              <input
+                type="checkbox"
+                checked={selectedCandidates.has(candidate.id)}
+                onChange={(e) => {
+                  e.stopPropagation()
+                  handleCandidateSelect(candidate.id)
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500 self-start h-5 w-5"
+              />
+            </div>
           )}
 
           <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -624,15 +762,17 @@ const JobDetails = () => {
             <div className="mt-4 space-y-2">
               <div className="flex items-start text-base text-gray-600 dark:text-gray-400">
                 <MapPin className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
-                <span className="truncate">{candidate.address}</span>
+                <span className="truncate">
+                  {candidate.location ? formatLocation(candidate.location) : (candidate.address || 'Location not specified')}
+                </span>
               </div>
               <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
                 <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{candidate.phone}</span>
+                <span>{candidate.phone || 'No phone'}</span>
               </div>
               <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
                 <FileText className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{candidate.experience} experience</span>
+                <span>{formatExperience(candidate.experience)} experience</span>
               </div>
               {candidate.documents && candidate.documents.length > 0 && (
                 <div className="flex items-center text-base text-blue-600 dark:text-blue-400">
@@ -659,7 +799,10 @@ const JobDetails = () => {
 
         <div className="flex flex-col items-start sm:items-end space-y-3 min-w-max">
           <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-{tPage('labels.appliedOn', { date: format(new Date(candidate.applied_at), 'MMM dd, yyyy') })}
+            {candidate.applied_at 
+              ? tPage('labels.appliedOn', { date: format(new Date(candidate.applied_at), 'MMM dd, yyyy') })
+              : 'Applied recently'
+            }
           </span>
 
           {showShortlistButton && (
@@ -904,7 +1047,42 @@ const JobDetails = () => {
             {!showShortlistPool && (
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
-                  {shortlistedCandidates.length > 0 && (
+                  {job.is_active === false ? (
+                    <button
+                      onClick={async () => {
+                        const confirmed = await confirm({
+                          title: 'Reopen Job Posting',
+                          message: 'Are you sure you want to reopen this job posting?\n\nThis will allow new candidates to apply. Previously rejected candidates will NOT be automatically restored.',
+                          confirmText: 'Yes, Reopen Posting',
+                          cancelText: 'Cancel',
+                          type: 'info'
+                        })
+                        
+                        if (confirmed) {
+                          try {
+                            setIsLoading(true)
+                            
+                            // Use new toggle API to reopen
+                            const result = await jobService.toggleJobStatus(id, true)
+                            
+                            // Reload data
+                            await loadAllData()
+                            
+                            console.log('✅ Job posting reopened successfully')
+                          } catch (error) {
+                            console.error('❌ Failed to reopen job posting:', error)
+                            alert(error.message || 'Failed to reopen job posting')
+                          } finally {
+                            setIsLoading(false)
+                          }
+                        }
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center text-base font-medium"
+                    >
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Reopen Job Posting
+                    </button>
+                  ) : (
                     <button
                       onClick={handleCompleteShortlisting}
                       className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-base font-medium"
@@ -916,7 +1094,7 @@ const JobDetails = () => {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {selectedCandidates.size > 0 && (
+                  {selectedCandidates.size > 0 && activeTab === 'applied' && (
                     <>
                       <button
                         onClick={handleBulkShortlist}
@@ -925,21 +1103,6 @@ const JobDetails = () => {
                       >
                         <UserCheck className="w-5 h-5 mr-2" />
                         {isShortlisting ? 'Shortlisting...' : `Shortlist (${selectedCandidates.size})`}
-                      </button>
-                      <button
-                        onClick={handleBulkSchedule}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center whitespace-nowrap text-base font-medium"
-                      >
-                        <Calendar className="w-5 h-5 mr-2" />
-                        Schedule ({selectedCandidates.size})
-                      </button>
-                      <button
-                        onClick={handleBulkReject}
-                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center whitespace-nowrap text-base font-medium"
-                        disabled={isBulkRejecting}
-                      >
-                        <X className="w-5 h-5 mr-2" />
-                        {isBulkRejecting ? 'Rejecting...' : `Reject (${selectedCandidates.size})`}
                       </button>
                     </>
                   )}
@@ -1050,18 +1213,14 @@ const JobDetails = () => {
       case 'scheduled':
         return (
           <div className="space-y-4">
-            {scheduledCandidates.length > 0 ? (
-              <ScheduledInterviews
-                candidates={scheduledCandidates}
-                jobId={id}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPage('labels.noScheduledInterviews')}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{tPage('labels.scheduleFromShortlisted')}</p>
-              </div>
-            )}
+            <ScheduledInterviews
+              key={`scheduled-${id}`}
+              candidates={scheduledCandidates}
+              jobId={id}
+              currentFilter={scheduledFilter}
+              onFilterChange={handleScheduledFilterChange}
+              onDataReload={loadAllData}
+            />
           </div>
         )
 
@@ -1092,6 +1251,10 @@ const JobDetails = () => {
         workflowStages={workflowStages}
         isFromJobsPage={true}
         jobId={id}
+        isInterviewContext={true}
+        onMarkPass={(candidateId) => handleUpdateStatus(candidateId, 'interview-passed')}
+        onMarkFail={(candidateId) => handleUpdateStatus(candidateId, 'interview-failed')}
+        onReschedule={(candidateId) => console.log('Reschedule interview for:', candidateId)}
       />
 
       {/* Breadcrumb */}
@@ -1108,25 +1271,49 @@ const JobDetails = () => {
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1">
             <div className="flex items-start justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{job.title}</h1>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{job.title}</h1>
+                  {job.is_active === false && (
+                    <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm font-medium rounded-full">
+                      Closed
+                    </span>
+                  )}
+                  {job.is_active === true && (
+                    <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium rounded-full">
+                      Active
+                    </span>
+                  )}
+                </div>
                 <p className="text-lg text-gray-600 dark:text-gray-400">{job.company}</p>
                 <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
-                    <span>{job.city}, {job.country}</span>
+                    <span>
+                      {job.location 
+                        ? `${job.location.city || ''}, ${job.location.country || ''}`.replace(/^, |, $/g, '')
+                        : `${job.city || ''}, ${job.country || ''}`.replace(/^, |, $/g, '') || 'Location not specified'
+                      }
+                    </span>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    <span>Posted {format(new Date(job.created_at), 'MMM dd, yyyy')}</span>
+                    <span>
+                      Posted {job.created_at || job.posted_date 
+                        ? format(new Date(job.created_at || job.posted_date), 'MMM dd, yyyy')
+                        : 'Recently'
+                      }
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <Link to="/jobs" className="btn-secondary flex items-center">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Jobs
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link to="/jobs" className="btn-secondary flex items-center">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Jobs
+                </Link>
+              </div>
             </div>
 
             {/* Analytics Section */}

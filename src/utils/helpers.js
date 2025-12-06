@@ -214,6 +214,39 @@ export const filterBySearch = (array, searchTerm, searchKeys) => {
   )
 }
 
+/**
+ * Format time from 24-hour format to 12-hour format with AM/PM
+ * @param {string} time24 - Time in 24-hour format (HH:mm:ss or HH:mm)
+ * @returns {string} Time in 12-hour format with AM/PM (h:mm AM/PM)
+ * @example
+ * formatTime12Hour('14:30:00') // returns '2:30 PM'
+ * formatTime12Hour('06:00:00') // returns '6:00 AM'
+ * formatTime12Hour('12:30:00') // returns '12:30 PM'
+ * formatTime12Hour('00:00:00') // returns '12:00 AM'
+ */
+export const formatTime12Hour = (time24) => {
+  if (!time24) return ''
+  
+  // Extract hours and minutes from time string (HH:mm:ss or HH:mm)
+  const timeParts = time24.split(':')
+  if (timeParts.length < 2) return time24
+  
+  let hours = parseInt(timeParts[0], 10)
+  const minutes = timeParts[1]
+  
+  // Determine AM/PM
+  const period = hours >= 12 ? 'PM' : 'AM'
+  
+  // Convert to 12-hour format
+  if (hours === 0) {
+    hours = 12 // Midnight
+  } else if (hours > 12) {
+    hours = hours - 12
+  }
+  
+  return `${hours}:${minutes} ${period}`
+}
+
 export default {
   delay,
   deepClone,
@@ -231,5 +264,6 @@ export default {
   isValidPhone,
   sortBy,
   groupBy,
-  filterBySearch
+  filterBySearch,
+  formatTime12Hour
 }

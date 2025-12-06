@@ -3,7 +3,9 @@ import { ArrowRight, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import AnimatedCounter from './AnimatedCounter'
 
-const HeroSection = ({ onSearchClick, t }) => {
+const HeroSection = ({ onSearchClick, t, stats }) => {
+  const placementCount = stats?.successful_placements ?? 0;
+  
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -39,7 +41,11 @@ const HeroSection = ({ onSearchClick, t }) => {
             <div className="text-blue-100 text-sm md:text-base mb-2 uppercase tracking-wide">
               {t('hero.metricLabel')}
             </div>
-            <AnimatedCounter end={12547} duration={2500} suffix="+" className="text-5xl md:text-6xl font-bold text-white" />
+            {stats ? (
+              <AnimatedCounter end={placementCount} duration={2500} suffix="+" className="text-5xl md:text-6xl font-bold text-white" />
+            ) : (
+              <div className="text-5xl md:text-6xl font-bold text-white">-</div>
+            )}
             <div className="text-blue-200 text-sm md:text-base mt-2">
               {t('hero.livesTransformed')}
             </div>

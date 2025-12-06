@@ -9,10 +9,13 @@ import {
   Eye,
   AlertCircle,
   UserCheck,
-  Clock
+  Clock,
+  Bug
 } from 'lucide-react'
 import { jobService, constantsService, PERMISSIONS } from '../services/index.js'
-import { format, formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
+import { getRelativeTime } from '../utils/nepaliDate.js'
+import i18nService from '../services/i18nService.js'
 import PermissionGuard from '../components/PermissionGuard.jsx'
 import useErrorHandler from '../hooks/useErrorHandler.js'
 import { useLanguage } from '../hooks/useLanguage.js'
@@ -67,11 +70,17 @@ const Jobs = () => {
           jobService.getJobStatistics()
         ])
         
-        setAllJobs(jobsData)
-        setJobs(jobsData)
+        // Ensure jobsData is always an array
+        const safeJobsData = Array.isArray(jobsData) ? jobsData : []
+        
+        setAllJobs(safeJobsData)
+        setJobs(safeJobsData)
         setCountryDistribution(statsData.byCountry || {})
       } catch (err) {
         handleError(err, 'fetch jobs data');
+        // Set empty arrays on error to prevent crashes
+        setAllJobs([])
+        setJobs([])
       } finally {
         setIsLoading(false)
       }
@@ -261,7 +270,9 @@ const Jobs = () => {
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {paginatedJobs.map(job => {
                     const publishedDate = job.published_at || job.created_at
-                    const relativeDate = formatDistanceToNow(new Date(publishedDate), { addSuffix: true })
+                    const currentLocale = i18nService.getLocale()
+                    const useNepali = currentLocale === 'ne'
+                    const relativeDate = getRelativeTime(publishedDate, useNepali)
                     const absoluteDate = format(new Date(publishedDate), 'MMM d, yyyy HH:mm')
                     
                     return (
@@ -269,10 +280,10 @@ const Jobs = () => {
                         <td className="px-6 py-4">
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{job.title}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 font-mono">{tPageSync('table.jobDetails.reference', { id: job.id })}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">{job.company}</div>
                             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
                               <MapPin className="w-4 h-4 mr-1" />
-                              <span>{job.country}</span>
+                              <span>{job.city ? `${job.city}, ${job.country}` : job.country}</span>
                             </div>
                           </div>
                         </td>
@@ -294,7 +305,7 @@ const Jobs = () => {
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                           <div title={absoluteDate}>
-                            <div className="font-medium">{relativeDate.replace(' ago', 'd ago').replace('about ', '')}</div>
+                            <div className="font-medium">{relativeDate}</div>
                             <div className="text-xs text-gray-400 dark:text-gray-500">{format(new Date(publishedDate), 'MMM d, yyyy')}</div>
                           </div>
                         </td>
@@ -336,6 +347,15 @@ const Jobs = () => {
                                 {tPageSync('table.actions.schedule')}
                               </Link>
                             </PermissionGuard>
+                            {/* Dev Navigation - Always navigate to job_001 for testing */}
+                            <Link 
+                              to="/jobs/job_001"
+                              className="text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 flex items-center"
+                              title="Dev: Navigate to job_001 (has populated candidate data)"
+                            >
+                              <Bug className="w-4 h-4 mr-1" />
+                              Dev Navigate
+                            </Link>
                           </div>
                         </td>
                       </tr>

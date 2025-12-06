@@ -54,11 +54,16 @@ const InterviewCalendarView = ({ interviews, selectedDate, timeRange, onDateChan
   }
 
   const getInterviewsForDate = (date) => {
-    return interviews.filter(interview => 
-      isSameDay(parseISO(interview.scheduled_at), date)
-    ).sort((a, b) => 
-      new Date(a.scheduled_at) - new Date(b.scheduled_at)
-    )
+    return interviews.filter(interview => {
+      // Handle both data structures: interview.scheduled_at or interview.interview.scheduled_at
+      const scheduledAt = interview.interview?.scheduled_at || interview.scheduled_at
+      if (!scheduledAt) return false
+      return isSameDay(parseISO(scheduledAt), date)
+    }).sort((a, b) => {
+      const aDate = a.interview?.scheduled_at || a.scheduled_at
+      const bDate = b.interview?.scheduled_at || b.scheduled_at
+      return new Date(aDate) - new Date(bDate)
+    })
   }
 
   const getStatusColor = (interview) => {

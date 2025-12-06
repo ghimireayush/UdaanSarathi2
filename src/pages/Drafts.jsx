@@ -248,13 +248,8 @@ const Drafts = () => {
         total: updatedDrafts.length,
       }));
 
-      // Navigate to wizard page with converted draft
-      navigate("/draftwizard", {
-        state: {
-          draft: convertedDraft,
-          step: 0,
-        },
-      });
+      // Navigate to Job Management edit page with converted draft
+      navigate(`/job-management/${bulkDraft.id}/edit`);
 
       showToast(tPage("toast.bulkExpanded"), "success");
     } catch (error) {
@@ -494,13 +489,8 @@ const Drafts = () => {
         ? Math.min(progress.currentStep - 1, 7)
         : targetStep;
 
-    // Navigate to wizard page with draft data
-    navigate("/draftwizard", {
-      state: {
-        draft: draft,
-        step: editStep,
-      },
-    });
+    // Navigate to Job Management edit page
+    navigate(`/job-management/${draft.id}/edit`);
 
     if (!isDraftComplete(draft)) {
       showToast(
@@ -516,13 +506,8 @@ const Drafts = () => {
       if (confirmAction === "delete") {
         await executeDelete(confirmData.id);
       } else if (confirmAction === "edit") {
-        // Navigate to wizard page
-        navigate("/draftwizard", {
-          state: {
-            draft: confirmData.draft,
-            step: confirmData.targetStep || 0,
-          },
-        });
+        // Navigate to Job Management edit page
+        navigate(`/job-management/${confirmData.draft.id}/edit`);
       }
     } catch (error) {
       console.error("Action failed:", error);
@@ -703,7 +688,7 @@ const Drafts = () => {
         <div className="flex items-center space-x-3">
           <LanguageSwitch />
           <InteractiveButton
-            onClick={() => navigate("/draftwizard")}
+            onClick={() => navigate("/job-management")}
             variant="primary"
             icon={Plus}
           >
@@ -764,7 +749,7 @@ const Drafts = () => {
               {tPage("messages.noDraftsMessage")}
             </p>
             <InteractiveButton
-              onClick={() => navigate("/draftwizard")}
+              onClick={() => navigate("/job-management")}
               variant="primary"
               icon={Plus}
               className="mx-auto"

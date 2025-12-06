@@ -1,9 +1,7 @@
 // Authentication and Authorization Service
 import { delay } from '../utils/helpers.js'
 import auditService from './auditService.js'
-
-// Backend API base URL. Update if backend is on a different host or port.
-const API_BASE_URL = 'http://localhost:3000'
+import AuthDataSource from '../api/datasources/AuthDataSource.js'
 
 // Role definitions with permissions
 export const ROLES = {
@@ -168,60 +166,101 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_JOBS,
     PERMISSIONS.VIEW_APPLICATIONS,
     PERMISSIONS.VIEW_INTERVIEWS
+  ],
+  
+  // New RBAC roles
+  'manager': [
+    // Job management
+    PERMISSIONS.CREATE_JOB,
+    PERMISSIONS.EDIT_JOB,
+    PERMISSIONS.PUBLISH_JOB,
+    PERMISSIONS.VIEW_JOBS,
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    PERMISSIONS.SHORTLIST_CANDIDATE,
+    PERMISSIONS.REJECT_APPLICATION,
+    // Interview management
+    PERMISSIONS.SCHEDULE_INTERVIEW,
+    PERMISSIONS.CONDUCT_INTERVIEW,
+    PERMISSIONS.EDIT_INTERVIEW,
+    PERMISSIONS.VIEW_INTERVIEWS,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    PERMISSIONS.MANAGE_DOCUMENTS,
+    PERMISSIONS.UPLOAD_DOCUMENTS,
+    PERMISSIONS.EDIT_DOCUMENTS
+  ],
+  
+  'staff': [
+    // Job management
+    PERMISSIONS.VIEW_JOBS,
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    PERMISSIONS.MANAGE_DOCUMENTS,
+    PERMISSIONS.UPLOAD_DOCUMENTS,
+    PERMISSIONS.EDIT_DOCUMENTS
+  ],
+  
+  'recruiter': [
+    // Job management
+    PERMISSIONS.VIEW_JOBS,
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    PERMISSIONS.SHORTLIST_CANDIDATE,
+    PERMISSIONS.REJECT_APPLICATION,
+    // Interview management
+    PERMISSIONS.SCHEDULE_INTERVIEW,
+    PERMISSIONS.CONDUCT_INTERVIEW,
+    PERMISSIONS.EDIT_INTERVIEW,
+    PERMISSIONS.VIEW_INTERVIEWS,
+    // Documents
+    PERMISSIONS.MANAGE_DOCUMENTS,
+    PERMISSIONS.UPLOAD_DOCUMENTS,
+    PERMISSIONS.EDIT_DOCUMENTS
+  ],
+  
+  'coordinator': [
+    // Scheduling
+    PERMISSIONS.SCHEDULE_INTERVIEW,
+    PERMISSIONS.MANAGE_CALENDAR,
+    PERMISSIONS.SCHEDULE_EVENTS,
+    PERMISSIONS.VIEW_INTERVIEWS,
+    PERMISSIONS.EDIT_INTERVIEW,
+    // Notifications
+    PERMISSIONS.SEND_NOTIFICATIONS,
+    // View permissions
+    PERMISSIONS.VIEW_APPLICATIONS
+  ],
+  
+  'visaOfficer': [
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    // Documents
+    PERMISSIONS.MANAGE_DOCUMENTS,
+    PERMISSIONS.UPLOAD_DOCUMENTS,
+    PERMISSIONS.EDIT_DOCUMENTS,
+    PERMISSIONS.DELETE_DOCUMENTS
+  ],
+  
+  'accountant': [
+    // View permissions
+    PERMISSIONS.VIEW_APPLICATIONS,
+    // No workflow or job permissions
   ]
 }
 
-// Mock user data - Phone-based authentication only
-const MOCK_USERS = [
-  {
-    id: 'user_1',
-    phone: '9801234567',
-    email: 'admin@udaan.com',
-    password: '123456',
-    name: 'System Administrator',
-    role: ROLES.ADMIN,
-    avatar: '/avatars/admin.jpg',
-    isActive: true,
-    lastLogin: '2025-01-15T10:30:00Z',
-    createdAt: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: 'user_owner',
-    phone: '9809999999',
-    email: 'owner@udaan.com',
-    password: '123456',
-    name: 'Platform Owner',
-    role: ROLES.ADMIN,
-    avatar: '/avatars/owner.jpg',
-    isActive: true,
-    lastLogin: '2025-01-15T10:30:00Z',
-    createdAt: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: 'user_2',
-    phone: '9801111111',
-    email: 'recipient@udaan.com',
-    password: '123456',
-    name: 'Recipient',
-    role: ROLES.RECIPIENT,
-    avatar: '/avatars/recipient.jpg',
-    isActive: true,
-    lastLogin: '2025-01-15T09:15:00Z',
-    createdAt: '2024-02-01T00:00:00Z'
-  },
-  {
-    id: 'user_3',
-    phone: '9802222222',
-    email: 'coordinator@udaan.com',
-    password: '123456',
-    name: 'Interview Coordinator',
-    role: ROLES.COORDINATOR,
-    avatar: '/avatars/coordinator.jpg',
-    isActive: true,
-    lastLogin: '2025-01-15T08:45:00Z',
-    createdAt: '2024-03-01T00:00:00Z'
-  }
-]
+
 
 class AuthService {
   constructor() {
@@ -262,42 +301,13 @@ class AuthService {
   // --- Backend-integrated Owner OTP registration & verification ---
 
   async registerOwnerWithBackend({ fullName, phone }) {
-    const response = await fetch(`${API_BASE_URL}/agency/register-owner`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        full_name: fullName,
-        phone
-      })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to start registration')
-    }
-
-    const data = await response.json()
+    const data = await AuthDataSource.registerOwner({ fullName, phone })
     // Expected: { dev_otp: string }
     return data
   }
 
   async verifyOwnerWithBackend({ phone, otp }) {
-    const response = await fetch(`${API_BASE_URL}/agency/verify-owner`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone, otp })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to verify OTP')
-    }
-
-    const data = await response.json()
+    const data = await AuthDataSource.verifyOwner({ phone, otp })
     // Expected: { token: string, user_id: string, agency_id?: string | null, user_type, phone, full_name? }
 
     const backendUser = {
@@ -309,6 +319,7 @@ class AuthService {
       fullName: data.full_name || null,
       isActive: true,
       agencyId: data.agency_id || null,
+      agency_id: data.agency_id || null,
       hasAgency: !!data.agency_id
     }
 
@@ -339,38 +350,14 @@ class AuthService {
   // --- Backend main login OTP flow (admin portal) ---
 
   async loginStartWithBackend({ phone }) {
-    const response = await fetch(`${API_BASE_URL}/login/start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to start login')
-    }
-
-    const data = await response.json() // { dev_otp }
+    const data = await AuthDataSource.loginStart({ phone })
+    // { dev_otp }
     return data
   }
 
   async loginVerifyWithBackend({ phone, otp }) {
-    const response = await fetch(`${API_BASE_URL}/login/verify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone, otp })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to verify login')
-    }
-
-    const data = await response.json() // { token, user_id, candidate_id, candidate }
+    const data = await AuthDataSource.loginVerify({ phone, otp })
+    // { token, user_id, candidate_id, candidate }
 
     const backendUser = {
       id: data.user_id,
@@ -398,38 +385,14 @@ class AuthService {
   // --- Backend Owner Login OTP flow ---
 
   async loginStartOwnerWithBackend({ phone }) {
-    const response = await fetch(`${API_BASE_URL}/agency/login/start-owner`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to start owner login')
-    }
-
-    const data = await response.json() // { dev_otp }
+    const data = await AuthDataSource.loginStartOwner({ phone })
+    // { dev_otp }
     return data
   }
 
   async loginVerifyOwnerWithBackend({ phone, otp }) {
-    const response = await fetch(`${API_BASE_URL}/agency/login/verify-owner`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone, otp })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to verify owner login')
-    }
-
-    const data = await response.json() // { token, user_id, agency_id?, user_type, phone, full_name?, role }
+    const data = await AuthDataSource.loginVerifyOwner({ phone, otp })
+    // { token, user_id, agency_id?, user_type, phone, full_name?, role }
 
     const backendUser = {
       id: data.user_id,
@@ -440,7 +403,8 @@ class AuthService {
       name: data.full_name || 'Agency Owner', // Use actual name from backend
       fullName: data.full_name || null,
       isActive: true,
-      agencyId: data.agency_id || null, // Store agency_id to check if user has agency
+      agencyId: data.agency_id || null,
+      agency_id: data.agency_id || null,
       hasAgency: !!data.agency_id
     }
 
@@ -475,20 +439,8 @@ class AuthService {
    * @returns {Promise<Object>} Login result with user_type
    */
   async memberLoginWithBackend({ phone, password }) {
-    const response = await fetch(`${API_BASE_URL}/member/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone, password })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to login as member')
-    }
-
-    const data = await response.json() // { token, user_id, agency_id, user_type: 'member' }
+    const data = await AuthDataSource.memberLogin({ phone, password })
+    // { token, user_id, agency_id, user_type: 'member' }
 
     const backendUser = {
       id: data.user_id,
@@ -497,6 +449,7 @@ class AuthService {
       name: 'Agency Member',
       isActive: true,
       agencyId: data.agency_id,
+      agency_id: data.agency_id,
       userType: data.user_type || 'member'
     }
 
@@ -524,20 +477,8 @@ class AuthService {
    * @returns {Promise<Object>} OTP response
    */
   async memberLoginStartWithBackend({ phone }) {
-    const response = await fetch(`${API_BASE_URL}/member/login/start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to start member login')
-    }
-
-    const data = await response.json() // { dev_otp }
+    const data = await AuthDataSource.memberLoginStart({ phone })
+    // { dev_otp }
     return data
   }
 
@@ -548,20 +489,8 @@ class AuthService {
    * @returns {Promise<Object>} Login result with user_type
    */
   async memberLoginVerifyWithBackend({ phone, otp }) {
-    const response = await fetch(`${API_BASE_URL}/member/login/verify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone, otp })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to verify member login')
-    }
-
-    const data = await response.json() // { token, user_id, agency_id, user_type, phone, full_name }
+    const data = await AuthDataSource.memberLoginVerify({ phone, otp })
+    // { token, user_id, agency_id, user_type, phone, full_name }
 
     const backendUser = {
       id: data.user_id,
@@ -571,6 +500,7 @@ class AuthService {
       fullName: data.full_name || null,
       isActive: true,
       agencyId: data.agency_id,
+      agency_id: data.agency_id,
       userType: data.user_type || 'member'
     }
 
@@ -653,39 +583,18 @@ class AuthService {
       throw new Error('Missing auth token')
     }
 
-    const payload = {
-      name: companyData.companyName,
-      license_number: companyData.registrationNumber,
-      address: companyData.address,
-      city: companyData.city,
-      country: companyData.country,
-      phone: companyData.phone,
-      website: companyData.website,
-      description: companyData.description,
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to create agency')
-    }
-
-    const data = await response.json() // { id, license_number }
+    const data = await AuthDataSource.createAgency(companyData)
+    // { id, license_number }
 
     // Update current user with agency reference (backend also binds user -> agency)
     this.currentUser = {
       ...this.currentUser,
-      agency_id: data.id
+      agency_id: data.id,
+      agencyId: data.id,
+      hasAgency: true
     }
     localStorage.setItem('udaan_user', JSON.stringify(this.currentUser))
+    localStorage.setItem('udaan_agency_id', data.id)
 
     return data
   }

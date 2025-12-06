@@ -2,32 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { TrendingUp, Users, Briefcase, MapPin } from 'lucide-react'
 import AnimatedCounter from './AnimatedCounter'
 
-const StatsSection = ({ t }) => {
-  const [stats, setStats] = useState({
-    totalPlacements: 12547,
-    totalAgencies: 234,
-    activeJobs: 1892,
-    citiesCovered: 50
-  })
-
-  useEffect(() => {
-    // Fetch stats from backend
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/public/stats')
-        if (response.ok) {
-          const data = await response.json()
-          setStats(data)
-        }
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-        // Use default values on error
-      }
-    }
-    
-    // Uncomment when API is ready
-    // fetchStats()
-  }, [])
+const StatsSection = ({ t, stats: apiStats }) => {
+  const stats = {
+    totalPlacements: apiStats?.successful_placements || 0,
+    totalAgencies: apiStats?.registered_agencies || 0,
+    activeJobs: apiStats?.active_job_openings || 0,
+    citiesCovered: apiStats?.cities_covered || 0
+  }
 
   const statItems = [
     {

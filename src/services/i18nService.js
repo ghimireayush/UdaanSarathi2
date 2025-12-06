@@ -138,6 +138,11 @@ class I18nService {
         updatesEvery: 'Updates every 5 mins',
         lastRefresh: 'Last refresh'
       },
+      jobs: {
+        title: 'Jobs',
+        // Live job postings for your agency with applications and interviews status
+        subtitle: 'Live job postings for your agency with applications and interviews status'
+      },
       applications: {
         title: 'Applications',
         candidate: 'Candidate',
@@ -233,6 +238,11 @@ class I18nService {
         liveData: 'प्रत्यक्ष डेटा',
         updatesEvery: 'प्रत्येक ५ मिनेटमा अपडेट हुन्छ',
         lastRefresh: 'अन्तिम रिफ्रेस'
+      },
+      jobs: {
+        title: 'कामहरू',
+        // तपाईंको एजेन्सीका लाइभ रोजगारीहरू, दरखास्त र अन्तर्वार्ता स्थितिसहित
+        subtitle: 'तपाईंको एजेन्सीका लाइभ रोजगारीहरू, दरखास्त र अन्तर्वार्ता स्थितिसहित'
       },
       applications: {
         title: 'आवेदनहरू',

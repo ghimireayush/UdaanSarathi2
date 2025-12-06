@@ -4,15 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
 import { useNotificationContext } from '../contexts/NotificationContext'
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService'
+import { getAssignableRoles, getRoleLabel } from '../config/roles'
 
 const MemberManagement = () => {
   const [members, setMembers] = useState([])
   const [showInviteForm, setShowInviteForm] = useState(false)
   const [loading, setLoading] = useState(false)
+  // Get assignable roles from central configuration
+  const assignableRoles = getAssignableRoles();
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    role: 'interview-coordinator'
+    role: assignableRoles[0]?.value || 'staff' // Default to first assignable role
   })
 
   const { user } = useAuth()
@@ -57,7 +61,7 @@ const MemberManagement = () => {
       setFormData({
         name: '',
         phone: '',
-        role: 'interview-coordinator'
+        role: assignableRoles[0]?.value || 'staff'
       })
       fetchMembers()
     } catch (err) {
@@ -172,8 +176,11 @@ const MemberManagement = () => {
                     onChange={handleInputChange}
                     className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
                   >
-                    <option value="interview-coordinator">Interview Coordinator</option>
-                    <option value="recipient">Recipient</option>
+                    {assignableRoles.map(role => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -247,7 +254,7 @@ const MemberManagement = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {member.role}
+                    {getRoleLabel(member.role)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

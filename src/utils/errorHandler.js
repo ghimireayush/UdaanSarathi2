@@ -7,8 +7,27 @@ export class ServiceError extends Error {
     this.status = status;
     this.details = details;
     this.timestamp = new Date().toISOString();
+    this.isAuthError = status === 401;
   }
 }
+
+// Global 401 handler callback - can be set by the app
+let unauthorizedHandler = null;
+
+export const setUnauthorizedHandler = (handler) => {
+  unauthorizedHandler = handler;
+};
+
+// Check if error is 401 and trigger handler
+export const handleUnauthorizedError = (error) => {
+  if (error.status === 401 || error.isAuthError) {
+    if (unauthorizedHandler) {
+      unauthorizedHandler();
+    }
+    return true;
+  }
+  return false;
+};
 
 // Enhanced error handler with retry logic
 export const handleServiceError = async (operation, retries = 3, delayMs = 1000) => {
@@ -114,5 +133,7 @@ export const createError = (error, context = '') => {
 export default {
   ServiceError,
   handleServiceError,
-  createError
+  createError,
+  setUnauthorizedHandler,
+  handleUnauthorizedError
 };

@@ -792,20 +792,79 @@ const CandidateWorkflowCard = ({
               <Eye className="w-4 h-4" />
             </button>
 
-            <select
-              value={candidate.application?.stage || ''}
-              onChange={(e) => handleStatusUpdate(e.target.value)}
-              disabled={isUpdating}
-              className="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-w-[120px] focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              onClick={(e) => e.stopPropagation()}
-              title="Update candidate status"
-            >
-              {availableStages.map((stage) => (
-                <option key={stage.id} value={stage.id}>
-                  {stage.label}
-                </option>
-              ))}
-            </select>
+            {/* Stage-specific action buttons (no dropdown) */}
+            {candidate.application?.stage === 'applied' && (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleStatusUpdate('shortlisted') }}
+                disabled={isUpdating}
+                className="text-xs px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                title="Shortlist candidate"
+              >
+                Shortlist
+              </button>
+            )}
+
+            {candidate.application?.stage === 'shortlisted' && (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleStatusUpdate('interview-scheduled') }}
+                disabled={isUpdating}
+                className="text-xs px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+                title="Schedule interview"
+              >
+                Schedule Interview
+              </button>
+            )}
+
+            {candidate.application?.stage === 'interview-scheduled' && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleStatusUpdate('interview-passed') }}
+                  disabled={isUpdating}
+                  className="text-xs px-2 py-1 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                  title="Mark interview as passed"
+                >
+                  Pass
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); /* fallback: send back to shortlisted */ handleStatusUpdate('shortlisted') }}
+                  disabled={isUpdating}
+                  className="text-xs px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50"
+                  title="Mark interview as failed"
+                >
+                  Fail
+                </button>
+                {(() => {
+                  const scheduledAtStr = candidate.application?.interview_scheduled_at
+                  if (!scheduledAtStr) return (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onCandidateClick(candidate) }}
+                      className="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      title="Open details to reschedule interview"
+                    >
+                      Reschedule
+                    </button>
+                  )
+                  try {
+                    const scheduledAt = new Date(scheduledAtStr)
+                    const durationMin = 60
+                    const endTime = new Date(scheduledAt.getTime() + durationMin * 60000)
+                    const now = new Date()
+                    if (now > endTime) {
+                      return (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onCandidateClick(candidate) }}
+                          className="text-xs px-2 py-1 rounded border border-amber-400 text-amber-700 hover:bg-amber-50"
+                          title="Interview time elapsed — open to reschedule"
+                        >
+                          Reschedule
+                        </button>
+                      )
+                    }
+                  } catch (_) {}
+                  return null
+                })()}
+              </>
+            )}
           </div>
         </div>
       </div>

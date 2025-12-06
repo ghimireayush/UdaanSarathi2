@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import OwnerLayout from "./components/OwnerLayout";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +13,7 @@ import MemberManagement from "./pages/MemberManagement";
 import Applications from "./pages/Applications";
 import Interviews from "./pages/Interviews";
 import Workflow from "./pages/Workflow";
+import WorkflowV2 from "./pages/WorkflowV2";
 import Drafts from "./pages/Drafts";
 import DraftWizard from "./pages/DraftWizard";
 import AgencySettings from "./pages/AgencySettings";
@@ -27,6 +28,8 @@ import OwnerContentManagement from "./pages/OwnerContentManagement";
 
 import AuditLogPage from "./pages/AuditLog";
 import Members from "./pages/Members";
+import JobManagement from "./pages/JobManagement";
+import JobManagementEdit from "./pages/JobManagementEdit";
 import MemberLogin from "./pages/MemberLogin";
 import PublicLandingPage from "./pages/PublicLandingPage";
 import AboutPage from "./pages/AboutPage";
@@ -43,12 +46,26 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import { AgencyProvider } from "./contexts/AgencyContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { useAuth } from "./contexts/AuthContext";
 import { PERMISSIONS } from "./services/authService.js";
 import i18nService from "./services/i18nService";
 import accessibilityService from "./services/accessibilityService";
+import { setUnauthorizedHandler } from "./utils/errorHandler";
 import { Suspense } from "react";
 
 function App() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  // Set up global 401 unauthorized handler
+  useEffect(() => {
+    setUnauthorizedHandler(async () => {
+      console.log('Global 401 handler: Logging out user...');
+      await logout();
+      navigate('/', { replace: true });
+    });
+  }, [logout, navigate]);
+
   // Initialize i18n service
   useEffect(() => {
     // Cleanup on unmount
@@ -225,6 +242,18 @@ function App() {
                           <PrivateRoute
                             requiredPermission={PERMISSIONS.VIEW_WORKFLOW}
                           >
+                            <WorkflowV2 />
+                          </PrivateRoute>
+                        </Layout>
+                      }
+                    />
+                    <Route
+                      path="/workflow-old"
+                      element={
+                        <Layout>
+                          <PrivateRoute
+                            requiredPermission={PERMISSIONS.VIEW_WORKFLOW}
+                          >
                             <Workflow />
                           </PrivateRoute>
                         </Layout>
@@ -260,6 +289,7 @@ function App() {
                         </Layout>
                       }
                     />
+
                     <Route
                       path="/settings"
                       element={
@@ -304,6 +334,36 @@ function App() {
                             requiredPermission={PERMISSIONS.MANAGE_SETTINGS}
                           >
                             <MVPTestingDashboard />
+                          </PrivateRoute>
+                        </Layout>
+                      }
+                    />
+                    <Route
+                      path="/job-management"
+                      element={
+                        <Layout>
+                          <PrivateRoute
+                            requiredPermissions={[
+                              PERMISSIONS.CREATE_JOB,
+                              PERMISSIONS.EDIT_JOB,
+                            ]}
+                          >
+                            <JobManagement />
+                          </PrivateRoute>
+                        </Layout>
+                      }
+                    />
+                    <Route
+                      path="/job-management/:id/edit"
+                      element={
+                        <Layout>
+                          <PrivateRoute
+                            requiredPermissions={[
+                              PERMISSIONS.CREATE_JOB,
+                              PERMISSIONS.EDIT_JOB,
+                            ]}
+                          >
+                            <JobManagementEdit />
                           </PrivateRoute>
                         </Layout>
                       }

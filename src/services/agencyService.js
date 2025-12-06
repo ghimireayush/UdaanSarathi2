@@ -2,6 +2,7 @@
 import agencyData from '../data/agency.json'
 import agenciesData from '../data/agencies.json'
 import auditService from './auditService.js'
+import AgencyDataSource from '../api/datasources/AgencyDataSource.js'
 
 // Utility function to simulate API delay (still used for some mock flows)
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
@@ -11,21 +12,6 @@ const shouldSimulateError = () => Math.random() < 0.001
 
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
-
-// Backend API base URL for real profile integration (owner agency)
-const API_BASE_URL = 'http://localhost:3000'
-
-// Helper to build auth headers from stored token
-const buildAuthHeaders = (extraHeaders = {}) => {
-  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
-  if (!token) {
-    console.warn('[agencyService] No auth token found in localStorage. User may not be authenticated.')
-  }
-  return {
-    ...extraHeaders,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  }
-}
 
 // Local caches remain for multi-agency mock flows; single-agency profile will
 // now be sourced from the backend and hydrated into this cache.
@@ -296,28 +282,36 @@ class AgencyService {
    * @returns {Promise<Object>} Agency profile data
    */
   async getAgencyProfile() {
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency`, {
-      method: 'GET',
-      headers: buildAuthHeaders({ 'Accept': 'application/json' })
-    })
+    try {
+      const data = await AgencyDataSource.getAgencyProfile()
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to load agency profile')
+      // Keep a local cache for subsequent calls
+      agencyCache = {
+        ...data,
+        // Provide flattened fields for UI compatibility
+        phone: data.phones?.[0] || null,
+        mobile: data.phones?.[1] || null,
+        email: data.emails?.[0] || null,
+      }
+
+      return deepClone(agencyCache)
+    } catch (error) {
+      // Handle specific error statuses
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        const authError = new Error(error.message)
+        authError.status = 401
+        authError.isAuthError = true
+        throw authError
+      }
+      
+      if (error.message.includes('403') || error.message.includes('No agency found')) {
+        const forbiddenError = new Error(error.message)
+        forbiddenError.status = 403
+        throw forbiddenError
+      }
+      
+      throw error
     }
-
-    const data = await response.json()
-
-    // Keep a local cache for subsequent calls
-    agencyCache = {
-      ...data,
-      // Provide flattened fields for UI compatibility
-      phone: data.phones?.[0] || null,
-      mobile: data.phones?.[1] || null,
-      email: data.emails?.[0] || null,
-    }
-
-    return deepClone(agencyCache)
   }
 
   /**
@@ -327,27 +321,7 @@ class AgencyService {
    * @returns {Promise<Object>} Updated profile
    */
   async updateLocation(locationInfo, auditInfo = {}) {
-    const payload = {
-      address: locationInfo.address,
-      latitude: locationInfo.latitude,
-      longitude: locationInfo.longitude
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/location`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update location')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateLocation(locationInfo)
 
     agencyCache = {
       ...data,
@@ -422,28 +396,7 @@ class AgencyService {
    * @returns {Promise<Object>} Updated basic information
    */
   async updateBasicInfo(basicInfo, auditInfo = {}) {
-    const payload = {
-      name: basicInfo.name,
-      description: basicInfo.description,
-      established_year: basicInfo.established_year,
-      license_number: basicInfo.license_number
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/basic`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update basic information')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateBasicInfo(basicInfo)
 
     // Normalize and cache updated profile
     agencyCache = {
@@ -481,29 +434,7 @@ class AgencyService {
    * @returns {Promise<Object>} Updated contact information
    */
   async updateContactInfo(contactInfo, auditInfo = {}) {
-    const payload = {
-      phone: contactInfo.phone,
-      mobile: contactInfo.mobile,
-      email: contactInfo.email,
-      website: contactInfo.website,
-      contact_persons: contactInfo.contact_persons
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/contact`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update contact information')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateContactInfo(contactInfo)
 
     agencyCache = {
       ...data,
@@ -603,25 +534,7 @@ class AgencyService {
    * @returns {Promise<Object>} Updated agency profile
    */
   async updateSocialMedia(socialMedia, auditInfo = {}) {
-    const payload = {
-      social_media: socialMedia
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/social-media`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update social media')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateSocialMedia(socialMedia)
 
     agencyCache = {
       ...data,
@@ -750,25 +663,7 @@ class AgencyService {
       ...settings
     }
 
-    const payload = {
-      settings: mergedSettings
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/settings`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update settings')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateSettings(mergedSettings)
 
     agencyCache = {
       ...data,
@@ -823,19 +718,7 @@ class AgencyService {
       throw new Error('Agency license number not available for logo upload')
     }
 
-    const formData = new FormData()
-    formData.append('file', logoFile)
-
-    const response = await fetch(`${API_BASE_URL}/agencies/${encodeURIComponent(license)}/logo`, {
-      method: 'POST',
-      headers: buildAuthHeaders(),
-      body: formData
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to upload logo')
-    }
+    await AgencyDataSource.uploadLogo(license, logoFile)
 
     // Backend returns upload result; fetch the updated profile for UI
     const updatedProfile = await this.getAgencyProfile()
@@ -856,19 +739,7 @@ class AgencyService {
       throw new Error('Agency license number not available for banner upload')
     }
 
-    const formData = new FormData()
-    formData.append('file', bannerFile)
-
-    const response = await fetch(`${API_BASE_URL}/agencies/${encodeURIComponent(license)}/banner`, {
-      method: 'POST',
-      headers: buildAuthHeaders(),
-      body: formData
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to upload banner')
-    }
+    await AgencyDataSource.uploadBanner(license, bannerFile)
 
     const updatedProfile = await this.getAgencyProfile()
     return updatedProfile
@@ -892,27 +763,11 @@ class AgencyService {
    */
   async updateSpecializations(specializations, auditInfo = {}) {
     const currentProfile = await this.getAgencyProfile()
-    const payload = {
-      services: currentProfile.services || [],
+    const data = await AgencyDataSource.updateSpecializations(
       specializations,
-      target_countries: currentProfile.target_countries || []
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update specializations')
-    }
-
-    const data = await response.json()
+      currentProfile.services || [],
+      currentProfile.target_countries || []
+    )
     agencyCache = {
       ...data,
       phone: data.phones?.[0] || null,
@@ -941,27 +796,11 @@ class AgencyService {
    */
   async updateTargetCountries(countries, auditInfo = {}) {
     const currentProfile = await this.getAgencyProfile()
-    const payload = {
-      services: currentProfile.services || [],
-      specializations: currentProfile.specializations || [],
-      target_countries: countries
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update target countries')
-    }
-
-    const data = await response.json()
+    const data = await AgencyDataSource.updateTargetCountries(
+      countries,
+      currentProfile.services || [],
+      currentProfile.specializations || []
+    )
     agencyCache = {
       ...data,
       phone: data.phones?.[0] || null,
@@ -990,27 +829,11 @@ class AgencyService {
    */
   async updateServices(services, auditInfo = {}) {
     const currentProfile = await this.getAgencyProfile()
-    const payload = {
+    const data = await AgencyDataSource.updateServices(
       services,
-      specializations: currentProfile.specializations || [],
-      target_countries: currentProfile.target_countries || []
-    }
-
-    const response = await fetch(`${API_BASE_URL}/agencies/owner/agency/services`, {
-      method: 'PATCH',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }),
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      throw new Error(errorText || 'Failed to update services')
-    }
-
-    const data = await response.json()
+      currentProfile.specializations || [],
+      currentProfile.target_countries || []
+    )
     agencyCache = {
       ...data,
       phone: data.phones?.[0] || null,

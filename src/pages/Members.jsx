@@ -7,6 +7,7 @@ import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '
 import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
 import { usePagination } from '../hooks/usePagination.js';
 import PaginationWrapper from '../components/PaginationWrapper.jsx';
+import { getAssignableRoles, getRoleLabel } from '../config/roles';
 
 const Members = () => {
   const [formData, setFormData] = useState({
@@ -152,18 +153,21 @@ const Members = () => {
     }
   };
 
+  // Get assignable roles from central configuration
+  const assignableRoles = getAssignableRoles();
+
   const getRoleDisplayName = (role) => {
-    const roleNames = {
-      'staff': tPage('roles.staff'),
-      'admin': tPage('roles.admin'),
-      'manager': tPage('roles.manager'),
-      // Legacy roles for backward compatibility
-      'recruiter': tPage('roles.recruiter'),
-      'coordinator': tPage('roles.coordinator'),
-      'interview-coordinator': tPage('roles.interviewCoordinator'),
-      'recipient': tPage('roles.recipient')
-    };
-    return roleNames[role] || role;
+    // Try to get translation first, fallback to role label from config
+    const translationKey = `roles.${role}`;
+    const translated = tPage(translationKey);
+    
+    // If translation exists and is different from the key, use it
+    if (translated && translated !== translationKey) {
+      return translated;
+    }
+    
+    // Otherwise use the label from role configuration
+    return getRoleLabel(role);
   };
 
   const getStatusBadgeClass = (status) => {
@@ -238,9 +242,11 @@ const Members = () => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               >
-                <option value="staff">{tPage('form.role.options.staff')}</option>
-                <option value="admin">{tPage('form.role.options.admin')}</option>
-                <option value="manager">{tPage('form.role.options.manager')}</option>
+                {assignableRoles.map(role => (
+                  <option key={role.value} value={role.value}>
+                    {getRoleDisplayName(role.value)}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -308,14 +314,11 @@ const Members = () => {
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="all">{tPage('search.filters.allRoles')}</option>
-                <option value="staff">{tPage('roles.staff')}</option>
-                <option value="admin">{tPage('roles.admin')}</option>
-                <option value="manager">{tPage('roles.manager')}</option>
-                {/* Legacy roles for backward compatibility */}
-                <option value="recruiter">{tPage('roles.recruiter')}</option>
-                <option value="coordinator">{tPage('roles.coordinator')}</option>
-                <option value="interview-coordinator">{tPage('roles.interviewCoordinator')}</option>
-                <option value="recipient">{tPage('roles.recipient')}</option>
+                {assignableRoles.map(role => (
+                  <option key={role.value} value={role.value}>
+                    {getRoleDisplayName(role.value)}
+                  </option>
+                ))}
               </select>
               
               <select

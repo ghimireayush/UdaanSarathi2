@@ -1,0 +1,37 @@
+import React from 'react';
+import { FileText, Building2, ScrollText, Users, Tags, DollarSign } from 'lucide-react';
+
+const sections = [
+  { key: 'basic', label: 'Basic Info', icon: FileText },
+  { key: 'employer', label: 'Employer', icon: Building2 },
+  { key: 'contract', label: 'Contract', icon: ScrollText },
+  { key: 'positions', label: 'Positions', icon: Users },
+  { key: 'tags', label: 'Tags', icon: Tags },
+  { key: 'expenses', label: 'Expenses', icon: DollarSign }
+];
+
+const SectionNavigation = ({ activeSection, onSectionClick }) => {
+  return (
+    <nav className="sticky top-8">
+      <ul className="space-y-1">
+        {sections.map(({ key, label, icon: Icon }) => (
+          <li key={key}>
+            <button
+              onClick={() => onSectionClick(key)}
+              className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                activeSection === key
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+              }`}
+            >
+              <Icon className="w-4 h-4 mr-2" />
+              {label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
+export default SectionNavigation;

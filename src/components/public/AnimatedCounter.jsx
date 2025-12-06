@@ -6,9 +6,15 @@ const AnimatedCounter = ({ end, duration = 2000, suffix = '+', className = '' })
   const counterRef = useRef(null)
 
   useEffect(() => {
+    // Reset animation when end value changes
+    setHasAnimated(false)
+    setCount(0)
+  }, [end])
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
+        if (entry.isIntersecting && !hasAnimated && end > 0) {
           setHasAnimated(true)
           
           const startTime = Date.now()

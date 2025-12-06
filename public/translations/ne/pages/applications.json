@@ -24,6 +24,7 @@
   },
   "applicationStatus": {
     "applied": "आवेदन दिएको",
+    "shortlisted": "छनोट सूचीमा",
     "interviewScheduled": "अन्तर्वार्ता निर्धारित",
     "interviewPassed": "अन्तर्वार्ता उत्तीर्ण",
     "rejected": "अस्वीकृत"

@@ -3,14 +3,19 @@
  * For Nepali Foreign Employment Manpower Agency
  * 
  * Defines what features/routes are available to each role
+ * 
+ * IMPORTANT: Role definitions come from src/config/roles.js
+ * This file only defines permissions for each role.
  */
+
+import ROLES from './roles';
 
 export const ROLE_FEATURES = {
   // Agency Owner - Full access to everything
-  owner: {
-    label: 'Agency Owner',
-    description: 'Full access to all features',
-    color: 'bg-purple-100 text-purple-800',
+  [ROLES.OWNER.value]: {
+    label: ROLES.OWNER.label,
+    description: ROLES.OWNER.description,
+    color: ROLES.OWNER.color,
     features: {
       dashboard: true,
       jobs: true,
@@ -31,10 +36,10 @@ export const ROLE_FEATURES = {
   },
 
   // Admin - Manages operations, team, and most features
-  admin: {
-    label: 'Administrator',
-    description: 'Manages operations, team, and most features',
-    color: 'bg-blue-100 text-blue-800',
+  [ROLES.ADMIN.value]: {
+    label: ROLES.ADMIN.label,
+    description: ROLES.ADMIN.description,
+    color: ROLES.ADMIN.color,
     features: {
       dashboard: true,
       jobs: true,
@@ -55,10 +60,10 @@ export const ROLE_FEATURES = {
   },
 
   // Manager - Manages recruitment process and team
-  manager: {
-    label: 'Manager',
-    description: 'Manages recruitment process and team coordination',
-    color: 'bg-green-100 text-green-800',
+  [ROLES.MANAGER.value]: {
+    label: ROLES.MANAGER.label,
+    description: ROLES.MANAGER.description,
+    color: ROLES.MANAGER.color,
     features: {
       dashboard: true,
       jobs: true,
@@ -79,10 +84,10 @@ export const ROLE_FEATURES = {
   },
 
   // Staff - Basic access to job and application management
-  staff: {
-    label: 'Staff',
-    description: 'Handles job postings and candidate applications',
-    color: 'bg-yellow-100 text-yellow-800',
+  [ROLES.STAFF.value]: {
+    label: ROLES.STAFF.label,
+    description: ROLES.STAFF.description,
+    color: ROLES.STAFF.color,
     features: {
       dashboard: true,
       jobs: true,
@@ -103,10 +108,10 @@ export const ROLE_FEATURES = {
   },
 
   // Recruiter - Focuses on candidate sourcing and screening
-  recruiter: {
-    label: 'Recruiter',
-    description: 'Focuses on candidate sourcing and screening',
-    color: 'bg-indigo-100 text-indigo-800',
+  [ROLES.RECRUITER.value]: {
+    label: ROLES.RECRUITER.label,
+    description: ROLES.RECRUITER.description,
+    color: ROLES.RECRUITER.color,
     features: {
       dashboard: true,
       jobs: true,
@@ -127,10 +132,10 @@ export const ROLE_FEATURES = {
   },
 
   // Interview Coordinator - Manages interview scheduling
-  coordinator: {
-    label: 'Interview Coordinator',
-    description: 'Manages interview scheduling and coordination',
-    color: 'bg-pink-100 text-pink-800',
+  [ROLES.COORDINATOR.value]: {
+    label: ROLES.COORDINATOR.label,
+    description: ROLES.COORDINATOR.description,
+    color: ROLES.COORDINATOR.color,
     features: {
       dashboard: true,
       jobs: false,
@@ -151,10 +156,10 @@ export const ROLE_FEATURES = {
   },
 
   // Visa Officer - Handles visa and document processing
-  visaOfficer: {
-    label: 'Visa Officer',
-    description: 'Handles visa processing and documentation',
-    color: 'bg-cyan-100 text-cyan-800',
+  [ROLES.VISA_OFFICER.value]: {
+    label: ROLES.VISA_OFFICER.label,
+    description: ROLES.VISA_OFFICER.description,
+    color: ROLES.VISA_OFFICER.color,
     features: {
       dashboard: true,
       jobs: false,
@@ -175,10 +180,10 @@ export const ROLE_FEATURES = {
   },
 
   // Accountant - Handles payments and financial tracking
-  accountant: {
-    label: 'Accountant',
-    description: 'Manages payments and financial tracking',
-    color: 'bg-orange-100 text-orange-800',
+  [ROLES.ACCOUNTANT.value]: {
+    label: ROLES.ACCOUNTANT.label,
+    description: ROLES.ACCOUNTANT.description,
+    color: ROLES.ACCOUNTANT.color,
     features: {
       dashboard: true,
       jobs: false,
@@ -218,13 +223,7 @@ export const NAVIGATION_ITEMS = {
     description: 'Manage job postings',
     roles: ['owner', 'admin', 'manager', 'staff', 'recruiter'],
   },
-  drafts: {
-    path: '/drafts',
-    label: 'Drafts',
-    icon: 'FileEdit',
-    description: 'Create and manage job drafts',
-    roles: ['owner', 'admin', 'manager'],
-  },
+
   applications: {
     path: '/applications',
     label: 'Applications',
@@ -266,6 +265,13 @@ export const NAVIGATION_ITEMS = {
     icon: 'Settings',
     description: 'Configure agency settings',
     roles: ['owner'],
+  },
+  jobManagement: {
+    path: '/job-management',
+    label: 'Job Management',
+    icon: 'Briefcase',
+    description: 'Create and edit job postings',
+    roles: ['owner', 'admin', 'manager'],
   },
 };
 

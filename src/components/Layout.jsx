@@ -26,6 +26,7 @@ import ThemeToggle from "./ThemeToggle.jsx";
 import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/inspire-agency-logo.svg";
 import { resolveImageUrl } from "../utils/imageHelpers";
+import RoleSwitcher from "./DevTools/RoleSwitcher.jsx";
 
 const Layout = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -367,7 +368,7 @@ const Layout = ({ children }) => {
       {/* Main content */}
       <main id="main-content" className="flex-1 md:pl-64" role="main">
         {/* Check if owner without agency */}
-        {user?.role === 'agency_owner' && !user?.agencyId && (
+        {(user?.role === 'agency_owner' || user?.role === 'owner' || user?.userType === 'owner') && !user?.agencyId && !user?.agency_id && (
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
               <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">
@@ -386,8 +387,11 @@ const Layout = ({ children }) => {
           </div>
         )}
         {/* Render children only if user has agency or is not an owner */}
-        {!(user?.role === 'agency_owner' && !user?.agencyId) && children}
+        {!((user?.role === 'agency_owner' || user?.role === 'owner' || user?.userType === 'owner') && !user?.agencyId && !user?.agency_id) && children}
       </main>
+
+      {/* Dev Tools - Role Switcher (only on localhost) */}
+      <RoleSwitcher />
     </div>
   );
 };

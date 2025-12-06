@@ -1,7 +1,6 @@
 // Country Service - Fetch countries from backend API
 import performanceService from './performanceService.js';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import CountryDataSource from '../api/datasources/CountryDataSource.js';
 
 class CountryService {
   /**
@@ -11,24 +10,13 @@ class CountryService {
   async getCountries() {
     return await performanceService.getCachedData('countries_api', async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/countries`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch countries: ${response.statusText}`);
-        }
-        const countries = await response.json();
+        const countries = await CountryDataSource.getCountries();
         return countries;
       } catch (error) {
         console.error('[countryService] Failed to fetch countries:', error);
         // Return fallback list if API fails
         return [
-          { country_name: 'United Arab Emirates', country_code: 'UAE', currency_code: 'AED' },
-          { country_name: 'Saudi Arabia', country_code: 'SAU', currency_code: 'SAR' },
-          { country_name: 'Qatar', country_code: 'QAT', currency_code: 'QAR' },
-          { country_name: 'Kuwait', country_code: 'KWT', currency_code: 'KWD' },
-          { country_name: 'Oman', country_code: 'OMN', currency_code: 'OMR' },
-          { country_name: 'Bahrain', country_code: 'BHR', currency_code: 'BHD' },
-          { country_name: 'Malaysia', country_code: 'MYS', currency_code: 'MYR' },
-        ];
+         ];
       }
     }, 'countries', 3600000); // Cache for 1 hour
   }

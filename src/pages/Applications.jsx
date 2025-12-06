@@ -39,6 +39,8 @@ import {
   jobService,
   constantsService,
 } from "../services/index.js";
+import stageTransitionService from "../services/stageTransitionService.js";
+import InterviewScheduleDialog from "../components/InterviewScheduleDialog.jsx";
 import { format } from "date-fns";
 import performanceService from "../services/performanceService";
 import { useAccessibility } from "../hooks/useAccessibility";
@@ -86,6 +88,10 @@ const Applications = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [newStage, setNewStage] = useState("");
+  
+  // Interview scheduling dialog
+  const [showInterviewDialog, setShowInterviewDialog] = useState(false);
+  const [selectedForInterview, setSelectedForInterview] = useState(null);
 
   // Client-side pagination for better UX (can be switched to server-side if needed)
   const {
@@ -211,7 +217,11 @@ const Applications = () => {
       const applications = applicationsResult.data || applicationsResult;
       const total = applicationsResult.total || applications.length;
 
-      setApplications(applications);
+      // Ensure arrays are always arrays
+      const safeApplications = Array.isArray(applications) ? applications : [];
+      const safeJobsData = Array.isArray(jobsData) ? jobsData : [];
+
+      setApplications(safeApplications);
       setPagination((prevPagination) => ({
         ...prevPagination,
         total: total,
@@ -223,7 +233,7 @@ const Applications = () => {
         totalPages: Math.ceil(total / pagination.limit),
         limit: pagination.limit,
       });
-      setJobs(jobsData);
+      setJobs(safeJobsData);
       setApplicationStages(stagesData);
 
       const endTime = performance.now();
@@ -239,6 +249,9 @@ const Applications = () => {
     } catch (err) {
       console.error("Failed to fetch applications data:", err);
       setError(err);
+      // Set empty arrays on error to prevent crashes
+      setApplications([]);
+      setJobs([]);
       announce(t("common.error"), "assertive");
     } finally {
       setIsLoading(false);
@@ -732,7 +745,8 @@ const Applications = () => {
     return constantsService.getApplicationStageLabel(stage);
   };
 
-  const countries = [...new Set(jobs.map((job) => job.country))];
+  const safeJobs = Array.isArray(jobs) ? jobs : []
+  const countries = [...new Set(safeJobs.map((job) => job.country))];
 
   // Loading state
   if (isLoading && applications.length === 0) {
@@ -963,40 +977,7 @@ const Applications = () => {
                     {tPage("actions.summary")}
                   </InteractiveButton>
 
-                  <InteractiveButton
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleOpenStageModal(application, null);
-                    }}
-                    variant="secondary"
-                    size="sm"
-                    disabled={movingStageApps.has(application.id)}
-                    loading={movingStageApps.has(application.id)}
-                    icon={ArrowRight}
-                    className="w-full shadow-sm hover:shadow-md transition-shadow duration-200"
-                  >
-                    {tPage("actions.moveStage")}
-                  </InteractiveButton>
-
-                  <InteractiveButton
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleOpenStageModal(
-                        application,
-                        applicationStages.REJECTED
-                      );
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    disabled={rejectingApps.has(application.id)}
-                    loading={rejectingApps.has(application.id)}
-                    icon={X}
-                    className="w-full text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 shadow-sm hover:shadow-md transition-shadow duration-200 border border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600"
-                  >
-                    {tPage("actions.reject")}
-                  </InteractiveButton>
+                  {/* Move and Reject buttons removed - use CandidateSummaryS2 for stage transitions */}
                 </div>
               )}
             </div>
@@ -1221,48 +1202,7 @@ const Applications = () => {
                           {tPage("actions.viewSummary")}
                         </button>
 
-                        <button
-                          onClick={() =>
-                            handleOpenStageModal(application, null)
-                          }
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-700"
-                          disabled={movingStageApps.has(application.id)}
-                          title={
-                            movingStageApps.has(application.id)
-                              ? tPage("modals.stageModal.updating")
-                              : tPage("actions.moveStage")
-                          }
-                        >
-                          {movingStageApps.has(application.id) ? (
-                            <div className="animate-spin w-3 h-3 border border-blue-600 border-t-transparent rounded-full" />
-                          ) : (
-                            <ArrowRight className="w-3 h-3" />
-                          )}
-                          {tPage("actions.move")}
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleOpenStageModal(
-                              application,
-                              applicationStages.REJECTED
-                            )
-                          }
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded border border-red-200 dark:border-red-700"
-                          disabled={rejectingApps.has(application.id)}
-                          title={
-                            rejectingApps.has(application.id)
-                              ? tPage("modals.rejectModal.rejecting")
-                              : tPage("actions.reject")
-                          }
-                        >
-                          {rejectingApps.has(application.id) ? (
-                            <div className="animate-spin w-3 h-3 border border-red-600 border-t-transparent rounded-full" />
-                          ) : (
-                            <X className="w-3 h-3" />
-                          )}
-                          {tPage("actions.reject")}
-                        </button>
+                        {/* Move and Reject buttons removed - use CandidateSummaryS2 for stage transitions */}
                       </div>
                     )}
                   </td>
@@ -1396,17 +1336,14 @@ const Applications = () => {
               <option value="shortlisted">
                 {tPage("applicationStatus.shortlisted")}
               </option>
-              <option value="scheduled">
+              <option value="interview_scheduled">
                 {tPage("filterOptions.scheduled")}
               </option>
-              <option value="interviewed">
+              <option value="interview_passed">
                 {tPage("filterOptions.interviewed")}
               </option>
-              <option value="selected">
-                {tPage("filterOptions.selected")}
-              </option>
-              <option value="rejected">
-                {tPage("applicationStatus.rejected")}
+              <option value="withdrawn">
+                {tPage("filterOptions.withdrawn") || "Withdrawn"}
               </option>
             </select>
 

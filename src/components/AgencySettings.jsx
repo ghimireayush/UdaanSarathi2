@@ -365,8 +365,7 @@ const AgencySettings = () => {
     { id: 'location', label: tPage('tabs.location'), icon: MapPin },
     { id: 'media', label: tPage('tabs.images'), icon: Camera },
     { id: 'social', label: tPage('tabs.socialMedia'), icon: Globe },
-    { id: 'services', label: tPage('tabs.services'), icon: Briefcase },
-    { id: 'settings', label: tPage('tabs.settings'), icon: Settings }
+    { id: 'services', label: tPage('tabs.services'), icon: Briefcase }
   ]
 
   return (
@@ -507,6 +506,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('social')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 
@@ -524,6 +524,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('services')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 
@@ -537,6 +538,7 @@ const AgencySettings = () => {
               onSave={() => saveChanges('settings')}
               onCancel={cancelEditing}
               isSaving={isSaving}
+              tPage={tPage}
             />
           )}
 

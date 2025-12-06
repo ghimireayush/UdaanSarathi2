@@ -33,7 +33,8 @@
     "allJobs": "All Jobs",
     "allCountries": "All Countries",
     "filterByJob": "Filter by Job",
-    "filterByCountry": "Filter by Country"
+    "filterByCountry": "Filter by Country",
+    "filterApplicationsInterviews": "Filter Applications & Interviews:"
   },
   "metrics": {
     "jobs": {
@@ -41,14 +42,17 @@
       "total": "Total jobs",
       "open": "Open jobs",
       "recent": "Recent jobs (28 days)",
-      "drafts": "Drafts"
+      "drafts": "Drafts",
+      "openInTimeframe": "Open (This Period)",
+      "createdInTimeframe": "Created (This Period)"
     },
     "applications": {
       "title": "Applications",
       "applicants": "Applicants",
       "appliedToJobs": "Applied to jobs",
       "shortlisted": "Shortlisted",
-      "selected": "Selected"
+      "selected": "Selected",
+      "appliedInTimeframe": "Applied (This Period)"
     },
     "interviews": {
       "title": "Interviews",
@@ -59,7 +63,69 @@
       "candidate": "candidate",
       "candidates": "candidates",
       "passed": "passed",
-      "failed": "failed"
+      "failed": "failed",
+      "total": "Total Interviews",
+      "completed": "Completed",
+      "pending": "Pending"
+    }
+  },
+  "tooltips": {
+    "jobs": {
+      "title": "Jobs",
+      "total": {
+        "label": "Total",
+        "description": "All job postings created by your agency (all time)"
+      },
+      "openInTimeframe": {
+        "label": "Open (This Period)",
+        "description": "Active jobs that were created or updated during the selected time range"
+      },
+      "createdInTimeframe": {
+        "label": "Created (This Period)",
+        "description": "New job postings created during the selected time range"
+      },
+      "drafts": {
+        "label": "Drafts",
+        "description": "Job postings saved as drafts and not yet published"
+      }
+    },
+    "applications": {
+      "title": "Applications",
+      "total": {
+        "label": "Total Applicants",
+        "description": "All candidates who have applied to your jobs (all time)"
+      },
+      "appliedInTimeframe": {
+        "label": "Applied (This Period)",
+        "description": "New applications received during the selected time range"
+      },
+      "shortlisted": {
+        "label": "Shortlisted",
+        "description": "Candidates who have been shortlisted and are ready for interviews"
+      },
+      "selected": {
+        "label": "Selected",
+        "description": "Candidates who passed interviews and were selected for the position"
+      }
+    },
+    "interviews": {
+      "title": "Interviews",
+      "total": {
+        "label": "Total Interviews",
+        "description": "All interviews scheduled for your agency (all time)"
+      },
+      "passRate": {
+        "label": "Pass Rate",
+        "description": "Success rate calculated as: (Passed / Completed) × 100%"
+      },
+      "completed": {
+        "label": "Completed",
+        "description": "Interviews that have been conducted and have a result (pass or fail)"
+      },
+      "pending": {
+        "label": "Pending",
+        "description": "Interviews scheduled for the future that are awaiting completion. Status must be 'scheduled' and date/time must be in the future."
+      }
     }
   },
   "quickActions": {

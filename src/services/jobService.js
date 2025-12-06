@@ -5,9 +5,8 @@ import performanceService from './performanceService.js'
 import { handleServiceError } from '../utils/errorHandler.js'
 import auditService from './auditService.js'
 import authService from './authService.js'
-import draftJobApiClient from './draftJobApiClient.js'
+import JobDataSource from '../api/datasources/JobDataSource.js'
 import { mapFrontendToBackend, mapBackendToFrontend, mapBackendArrayToFrontend } from './draftJobMapper.js'
-import adminJobApiClient from './adminJobApiClient.js'
 
 // Utility function to simulate API delay (reduced for performance)
 const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
@@ -51,8 +50,9 @@ class JobService {
     return await performanceService.getCachedData(cacheKey, async () => {
       return handleServiceError(async () => {
         // Use admin API client to fetch jobs with statistics
-        const jobs = await adminJobApiClient.getAdminJobs(filters);
-        return jobs;
+        const response = await JobDataSource.getAdminJobs(filters);
+        // Extract the data array from the response
+        return Array.isArray(response.data) ? response.data : [];
       }, 3, 500);
     }, 'jobs', 60000); // Cache for 1 minute
   }
@@ -198,8 +198,14 @@ class JobService {
       // Map frontend data to backend format
       const backendData = mapFrontendToBackend(draftData);
       
+      // Get license
+      const license = localStorage.getItem('udaan_agency_license');
+      if (!license) {
+        throw new Error('Agency license not found');
+      }
+      
       // Use real API
-      const backendDraft = await draftJobApiClient.createDraftJob(backendData);
+      const backendDraft = await JobDataSource.createDraftJob(license, backendData);
       const frontendDraft = mapBackendToFrontend(backendDraft);
       
       // Audit: draft job created
@@ -259,8 +265,13 @@ class JobService {
     // If it's a draft, use the API
     if (isDraft) {
       try {
+        const license = localStorage.getItem('udaan_agency_license');
+        if (!license) {
+          throw new Error('Agency license not found');
+        }
+        
         const backendData = mapFrontendToBackend(updateData);
-        const backendDraft = await draftJobApiClient.updateDraftJob(jobId, backendData);
+        const backendDraft = await JobDataSource.updateDraftJob(license, jobId, backendData);
         const frontendDraft = mapBackendToFrontend(backendDraft);
 
         // Update local cache
@@ -288,6 +299,52 @@ class JobService {
       } catch (error) {
         console.error('Failed to update draft via API:', error);
         // Fall through to mock implementation
+      }
+    }
+
+    // If updating is_active status, use the toggle API from JobDataSource
+    if ('is_active' in updateData) {
+      try {
+        const result = await JobDataSource.toggleJobStatus(jobId, updateData.is_active);
+        
+        // Update local cache
+        const jobIndex = jobsCache.findIndex(job => job.id === jobId);
+        if (jobIndex !== -1) {
+          jobsCache[jobIndex] = {
+            ...jobsCache[jobIndex],
+            is_active: result.is_active,
+            updated_at: new Date().toISOString()
+          };
+        }
+
+        // Audit: job status updated
+        try {
+          const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+          await auditService.logEvent({
+            user_id: actor.id,
+            user_name: actor.name,
+            action: 'UPDATE',
+            resource_type: 'JOB_POSTING',
+            resource_id: jobId,
+            changes: { is_active: updateData.is_active },
+            metadata: { 
+              action: updateData.is_active ? 'REOPEN' : 'CLOSE',
+              rejected_count: result.rejected_count,
+              rejected_application_ids: result.rejected_application_ids
+            }
+          });
+        } catch (e) {
+          console.warn('Audit logging (UPDATE JOB STATUS) failed:', e);
+        }
+
+        return {
+          ...jobsCache[jobIndex],
+          rejected_count: result.rejected_count,
+          rejected_application_ids: result.rejected_application_ids
+        };
+      } catch (error) {
+        console.error('Failed to toggle job status via API:', error);
+        throw error;
       }
     }
 
@@ -331,6 +388,58 @@ class JobService {
   }
 
   /**
+   * Toggle job posting status (close with rejection or reopen)
+   * @param {string} jobId - Job ID
+   * @param {boolean} isActive - Set to false to close (with rejection), true to reopen
+   * @returns {Promise<Object>} Result with status and rejection details
+   */
+  async toggleJobStatus(jobId, isActive) {
+    try {
+      const result = await JobDataSource.toggleJobStatus(jobId, isActive);
+      
+      // Update local cache
+      const jobIndex = jobsCache.findIndex(job => job.id === jobId);
+      if (jobIndex !== -1) {
+        jobsCache[jobIndex] = {
+          ...jobsCache[jobIndex],
+          is_active: result.is_active,
+          updated_at: new Date().toISOString()
+        };
+      }
+
+      // Audit: job status toggled
+      try {
+        const actor = authService.getCurrentUser() || { id: 'system', name: 'System' };
+        await auditService.logEvent({
+          user_id: actor.id,
+          user_name: actor.name,
+          action: 'TOGGLE_STATUS',
+          resource_type: 'JOB_POSTING',
+          resource_id: jobId,
+          changes: { is_active: isActive },
+          metadata: { 
+            action: isActive ? 'REOPEN' : 'CLOSE',
+            rejected_count: result.rejected_count || 0,
+            rejected_application_ids: result.rejected_application_ids || []
+          }
+        });
+      } catch (e) {
+        console.warn('Audit logging (TOGGLE JOB STATUS) failed:', e);
+      }
+
+      return {
+        success: true,
+        is_active: result.is_active,
+        rejected_count: result.rejected_count || 0,
+        rejected_application_ids: result.rejected_application_ids || []
+      };
+    } catch (error) {
+      console.error('Failed to toggle job status via API:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Delete job
    * @param {string} jobId - Job ID
    * @returns {Promise<boolean>} Success status
@@ -344,7 +453,12 @@ class JobService {
     // If it's a draft, use the API
     if (isDraft) {
       try {
-        await draftJobApiClient.deleteDraftJob(jobId);
+        const license = localStorage.getItem('udaan_agency_license');
+        if (!license) {
+          throw new Error('Agency license not found');
+        }
+        
+        await JobDataSource.deleteDraftJob(license, jobId);
 
         // Remove from local cache
         const jobIndex = jobsCache.findIndex(job => job.id === jobId);
@@ -461,7 +575,12 @@ class JobService {
     // If it's a draft, use the draft API's publish endpoint
     if (isDraft) {
       try {
-        const publishResult = await draftJobApiClient.publishDraftJob(jobId);
+        const license = localStorage.getItem('udaan_agency_license');
+        if (!license) {
+          throw new Error('Agency license not found');
+        }
+        
+        const publishResult = await JobDataSource.publishDraftJob(license, jobId);
 
         // Remove draft from cache and add published job
         const draftIndex = jobsCache.findIndex(job => job.id === jobId);
@@ -603,8 +722,14 @@ class JobService {
    */
   async getDraftJobs() {
     try {
+      // Get license
+      const license = localStorage.getItem('udaan_agency_license');
+      if (!license) {
+        throw new Error('Agency license not found');
+      }
+      
       // Use real API
-      const backendDrafts = await draftJobApiClient.getDraftJobs();
+      const backendDrafts = await JobDataSource.getDraftJobs(license);
       const frontendDrafts = mapBackendArrayToFrontend(backendDrafts);
       
       // Audit: fetched draft jobs
@@ -624,9 +749,8 @@ class JobService {
       return frontendDrafts;
     } catch (error) {
       console.error('Failed to fetch draft jobs from API:', error);
-      // Fallback to mock data if API fails
-      const constants = await constantsService.getJobStatuses();
-      return jobsCache.filter(job => job.status === constants.DRAFT);
+      // Return empty array instead of mock data
+      return [];
     }
   }
 
@@ -703,7 +827,7 @@ class JobService {
   async getJobStatistics() {
     const result = await handleServiceError(async () => {
       // Use admin API client to fetch statistics
-      const stats = await adminJobApiClient.getJobStatistics();
+      const stats = await JobDataSource.getJobStatistics();
       return stats;
     }, 3, 500);
     

@@ -1,0 +1,364 @@
+{
+  "workspace": "UdaanSarathi",
+  "domain": "job-portal-admin",
+  "analysis_timestamp": "2025-11-30T00:00:00Z",
+  "use_cases": [
+    {
+      "id": "uc_auth_login",
+      "title": "User Login",
+      "school": "restoration",
+      "api_endpoint": "/auth/login",
+      "method": "POST",
+      "service": "authService.js",
+      "evidence": {
+        "file": "src/services/auditService.js",
+        "lines": "428-451",
+        "snippet": "logLogin method - tracks user authentication"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_auth_logout",
+      "title": "User Logout",
+      "school": "restoration",
+      "api_endpoint": "/auth/logout",
+      "method": "POST",
+      "service": "authService.js",
+      "evidence": {
+        "file": "src/services/auditService.js",
+        "lines": "453-476",
+        "snippet": "logLogout method - tracks user session end"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_job_list_admin",
+      "title": "Get Admin Job Listings",
+      "school": "illusion",
+      "api_endpoint": "/admin/jobs",
+      "method": "GET",
+      "service": "adminJobApiClient.js",
+      "evidence": {
+        "file": "src/services/adminJobApiClient.js",
+        "lines": "39-85",
+        "snippet": "getAdminJobs with filters and statistics"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_job_country_stats",
+      "title": "Get Country Distribution",
+      "school": "illusion",
+      "api_endpoint": "/admin/jobs/statistics/countries",
+      "method": "GET",
+      "service": "adminJobApiClient.js",
+      "evidence": {
+        "file": "src/services/adminJobApiClient.js",
+        "lines": "89-108",
+        "snippet": "getCountryDistribution - cached statistics"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_draft_list",
+      "title": "Get Draft Jobs",
+      "school": "conjuration",
+      "api_endpoint": "/agencies/{license}/draft-jobs",
+      "method": "GET",
+      "service": "draftJobApiClient.js",
+      "evidence": {
+        "file": "src/services/draftJobApiClient.js",
+        "lines": "72-94",
+        "snippet": "getDraftJobs method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_draft_create",
+      "title": "Create Draft Job",
+      "school": "conjuration",
+      "api_endpoint": "/agencies/{license}/draft-jobs",
+      "method": "POST",
+      "service": "draftJobApiClient.js",
+      "evidence": {
+        "file": "src/services/draftJobApiClient.js",
+        "lines": "124-148",
+        "snippet": "createDraftJob method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_draft_update",
+      "title": "Update Draft Job",
+      "school": "alteration",
+      "api_endpoint": "/agencies/{license}/draft-jobs/{id}",
+      "method": "PATCH",
+      "service": "draftJobApiClient.js",
+      "evidence": {
+        "file": "src/services/draftJobApiClient.js",
+        "lines": "152-176",
+        "snippet": "updateDraftJob method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_draft_delete",
+      "title": "Delete Draft Job",
+      "school": "destruction",
+      "api_endpoint": "/agencies/{license}/draft-jobs/{id}",
+      "method": "DELETE",
+      "service": "draftJobApiClient.js",
+      "evidence": {
+        "file": "src/services/draftJobApiClient.js",
+        "lines": "180-202",
+        "snippet": "deleteDraftJob method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_draft_publish",
+      "title": "Publish Draft Job",
+      "school": "conjuration",
+      "api_endpoint": "/agencies/{license}/draft-jobs/{id}/publish",
+      "method": "POST",
+      "service": "draftJobApiClient.js",
+      "evidence": {
+        "file": "src/services/draftJobApiClient.js",
+        "lines": "233-257",
+        "snippet": "publishDraftJob - converts draft to live job"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_app_shortlist",
+      "title": "Shortlist Application",
+      "school": "alteration",
+      "api_endpoint": "/applications/{id}/shortlist",
+      "method": "POST",
+      "service": "applicationApiClient.js",
+      "evidence": {
+        "file": "src/services/applicationApiClient.js",
+        "lines": "21-40",
+        "snippet": "shortlistApplication method"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_app_withdraw",
+      "title": "Withdraw/Reject Application",
+      "school": "destruction",
+      "api_endpoint": "/applications/{id}/withdraw",
+      "method": "POST",
+      "service": "applicationApiClient.js",
+      "evidence": {
+        "file": "src/services/applicationApiClient.js",
+        "lines": "46-66",
+        "snippet": "withdrawApplication method"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_candidate_details",
+      "title": "Get Candidate Details",
+      "school": "illusion",
+      "api_endpoint": "/agencies/{license}/jobs/{jobId}/candidates/{candidateId}/details",
+      "method": "GET",
+      "service": "candidateApiClient.js",
+      "evidence": {
+        "file": "src/services/candidateApiClient.js",
+        "lines": "21-30",
+        "snippet": "getCandidateDetails method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_job_candidates",
+      "title": "Get Job Candidates",
+      "school": "illusion",
+      "api_endpoint": "/agencies/{license}/jobs/{jobId}/candidates",
+      "method": "GET",
+      "service": "jobCandidatesApiClient.js",
+      "evidence": {
+        "file": "src/services/jobCandidatesApiClient.js",
+        "lines": "82-138",
+        "snippet": "getCandidates with pagination and filters"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_bulk_shortlist",
+      "title": "Bulk Shortlist Candidates",
+      "school": "alteration",
+      "api_endpoint": "/agencies/{license}/jobs/{jobId}/candidates/bulk-shortlist",
+      "method": "POST",
+      "service": "jobCandidatesApiClient.js",
+      "evidence": {
+        "file": "src/services/jobCandidatesApiClient.js",
+        "lines": "177-208",
+        "snippet": "bulkShortlistCandidates method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_bulk_reject",
+      "title": "Bulk Reject Candidates",
+      "school": "destruction",
+      "api_endpoint": "/agencies/{license}/jobs/{jobId}/candidates/bulk-reject",
+      "method": "POST",
+      "service": "jobCandidatesApiClient.js",
+      "evidence": {
+        "file": "src/services/jobCandidatesApiClient.js",
+        "lines": "212-256",
+        "snippet": "bulkRejectCandidates method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_bulk_schedule_interview",
+      "title": "Bulk Schedule Interviews",
+      "school": "conjuration",
+      "api_endpoint": "/agencies/{license}/jobs/{jobId}/candidates/bulk-schedule-interview",
+      "method": "POST",
+      "service": "jobCandidatesApiClient.js",
+      "evidence": {
+        "file": "src/services/jobCandidatesApiClient.js",
+        "lines": "261-295",
+        "snippet": "bulkScheduleInterviews method"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_interview_schedule",
+      "title": "Schedule Interview",
+      "school": "conjuration",
+      "api_endpoint": "/applications/{id}/schedule-interview",
+      "method": "POST",
+      "service": "interviewApiClient.js",
+      "evidence": {
+        "file": "src/services/interviewApiClient.js",
+        "lines": "20-50",
+        "snippet": "scheduleInterview method"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_interview_reschedule",
+      "title": "Reschedule Interview",
+      "school": "alteration",
+      "api_endpoint": "/applications/{id}/reschedule-interview",
+      "method": "POST",
+      "service": "interviewApiClient.js",
+      "evidence": {
+        "file": "src/services/interviewApiClient.js",
+        "lines": "54-85",
+        "snippet": "rescheduleInterview method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_interview_complete",
+      "title": "Complete Interview",
+      "school": "alteration",
+      "api_endpoint": "/applications/{id}/complete-interview",
+      "method": "POST",
+      "service": "interviewApiClient.js",
+      "evidence": {
+        "file": "src/services/interviewApiClient.js",
+        "lines": "89-113",
+        "snippet": "completeInterview method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_member_invite",
+      "title": "Invite Team Member",
+      "school": "conjuration",
+      "api_endpoint": "/agencies/owner/members/invite",
+      "method": "POST",
+      "service": "memberService.js",
+      "evidence": {
+        "file": "src/services/memberService.js",
+        "lines": "70-150",
+        "snippet": "inviteMember with audit logging"
+      },
+      "status": "committed",
+      "audit_tracked": true
+    },
+    {
+      "id": "uc_member_list",
+      "title": "Get Team Members",
+      "school": "illusion",
+      "api_endpoint": "/agencies/owner/members",
+      "method": "GET",
+      "service": "memberService.js",
+      "evidence": {
+        "file": "src/services/memberService.js",
+        "lines": "180-230",
+        "snippet": "getMembersList with filters"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_member_delete",
+      "title": "Delete Team Member",
+      "school": "destruction",
+      "api_endpoint": "/agencies/owner/members/{id}",
+      "method": "DELETE",
+      "service": "memberService.js",
+      "evidence": {
+        "file": "src/services/memberService.js",
+        "lines": "234-275",
+        "snippet": "deleteMember method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    },
+    {
+      "id": "uc_member_status_update",
+      "title": "Update Member Status",
+      "school": "alteration",
+      "api_endpoint": "/agencies/owner/members/{id}/status",
+      "method": "PATCH",
+      "service": "memberService.js",
+      "evidence": {
+        "file": "src/services/memberService.js",
+        "lines": "279-325",
+        "snippet": "updateMemberStatus method"
+      },
+      "status": "committed",
+      "audit_tracked": false
+    }
+  ],
+  "summary": {
+    "total_use_cases": 24,
+    "by_school": {
+      "restoration": 2,
+      "illusion": 5,
+      "conjuration": 5,
+      "alteration": 7,
+      "destruction": 5
+    },
+    "audit_tracked": 8,
+    "audit_missing": 16
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Search, MapPin, Briefcase, ArrowRight } from 'lucide-react'
+import AgencySearchDataSource from '../../api/datasources/AgencySearchDataSource.js'
 
 const AgencySearch = ({ t }) => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -80,15 +81,45 @@ const AgencySearch = ({ t }) => {
   const handleSearch = async (query, location) => {
     setIsSearching(true)
     try {
+      // Use AgencySearchDataSource
       const params = new URLSearchParams()
-      if (query) params.append('q', query)
-      if (location) params.append('location', location)
+      if (query) params.append('keyword', query)
+      params.append('page', '1')
+      params.append('limit', '6')
       
-      const response = await fetch(`/api/public/agencies/search?${params.toString()}`)
-      if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
-        const data = await response.json()
-        setAgencies(data)
-      } else {
+      const data = await AgencySearchDataSource.searchAgencies(params)
+      
+      // Transform API response to match component expectations
+      const transformedAgencies = data.data.map(agency => ({
+        id: agency.id,
+        name: agency.name,
+        location: `${agency.city || 'Nepal'}, ${agency.country || 'Nepal'}`,
+        specializations: agency.specializations || [],
+        rating: 4.5, // Default rating (not in API yet)
+        activeJobs: agency.job_posting_count || 0
+      }))
+      
+      // Filter by location if provided
+      let filteredAgencies = transformedAgencies
+      if (location) {
+        filteredAgencies = transformedAgencies.filter(agency => 
+          agency.location.toLowerCase().includes(location.toLowerCase())
+        )
+      }
+      
+      setAgencies(filteredAgencies)
+    } catch (error) {
+      console.error('Failed to fetch agencies:', error)
+      setAgencies([])
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // Old implementation removed - using DataSource only
+  const handleSearchOld = async (query, location) => {
+    setIsSearching(true)
+    try {
         // API not available, use mock data filtered by location if provided
         let mockData = [
           {

@@ -1,109 +1,7 @@
 import { handleServiceError } from '../utils/errorHandler';
 import auditService from './auditService';
+import MemberDataSource from '../api/datasources/MemberDataSource.js';
 
-// API Configuration
-const API_BASE_URL = 'http://localhost:3000';
-const MEMBERS_INVITE_ENDPOINT = '/agencies/owner/members/invite';
-
-// Mock data for development
-const mockMembers = [
-  {
-    id: 'IC_001',
-    name: 'John Doe',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543210',
-    status: 'active',
-    createdAt: '2025-09-16T10:30:00Z'
-  },
-  {
-    id: 'REC_001',
-    name: 'Jane Smith',
-    role: 'recipient',
-    mobileNumber: '9876543211',
-    status: 'pending',
-    createdAt: '2025-09-16T09:00:00Z'
-  },
-  {
-    id: 'IC_002',
-    name: 'Mike Johnson',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543212',
-    status: 'active',
-    createdAt: '2025-09-14T14:30:00Z'
-  },
-  {
-    id: 'REC_002',
-    name: 'Sarah Wilson',
-    role: 'recipient',
-    mobileNumber: '9876543213',
-    status: 'inactive',
-    createdAt: '2025-09-13T11:15:00Z'
-  },
-  {
-    id: 'IC_003',
-    name: 'David Brown',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543214',
-    status: 'active',
-    createdAt: '2025-09-12T16:45:00Z'
-  },
-  {
-    id: 'IC_004',
-    name: 'Lisa Garcia',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543215',
-    status: 'pending',
-    createdAt: '2025-09-11T13:20:00Z'
-  },
-  {
-    id: 'REC_003',
-    name: 'Robert Taylor',
-    role: 'recipient',
-    mobileNumber: '9876543216',
-    status: 'active',
-    createdAt: '2025-09-10T08:10:00Z'
-  },
-  {
-    id: 'IC_005',
-    name: 'Emily Davis',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543217',
-    status: 'inactive',
-    createdAt: '2025-09-09T15:55:00Z'
-  },
-  {
-    id: 'REC_004',
-    name: 'Michael Anderson',
-    role: 'recipient',
-    mobileNumber: '9876543218',
-    status: 'active',
-    createdAt: '2025-09-08T12:40:00Z'
-  },
-  {
-    id: 'IC_006',
-    name: 'Jennifer Martinez',
-    role: 'interview-coordinator',
-    mobileNumber: '9876543219',
-    status: 'pending',
-    createdAt: '2025-09-07T17:25:00Z'
-  },
-  {
-    id: 'REC_005',
-    name: 'Kevin Anderson',
-    role: 'recipient',
-    mobileNumber: '9876543220',
-    status: 'pending',
-    createdAt: '2025-09-06T09:30:00Z'
-  },
-  {
-    id: 'REC_006',
-    name: 'Amanda Thompson',
-    role: 'recipient',
-    mobileNumber: '9876543221',
-    status: 'active',
-    createdAt: '2025-09-05T14:15:00Z'
-  }
-];
 
 export const inviteMember = async (memberData) => {
   return handleServiceError(async () => {
@@ -132,26 +30,7 @@ export const inviteMember = async (memberData) => {
       }
 
       // Real API call implementation
-      const response = await fetch(`${API_BASE_URL}${MEMBERS_INVITE_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          full_name: memberData.full_name,
-          phone: memberData.phone,
-          role: memberData.role
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const apiResult = await response.json();
+      const apiResult = await MemberDataSource.inviteMember(memberData);
       
       // Transform API response to match internal format
       const newMember = {
@@ -252,32 +131,7 @@ export const getMembersList = async (filters = {}) => {
     }
 
     try {
-      // Build query parameters
-      const queryParams = new URLSearchParams();
-      if (filters.search) queryParams.append('search', filters.search);
-      if (filters.role) queryParams.append('role', filters.role);
-      if (filters.status) queryParams.append('status', filters.status);
-      
-      const queryString = queryParams.toString();
-      const url = queryString 
-        ? `${API_BASE_URL}/agencies/owner/members?${queryString}`
-        : `${API_BASE_URL}/agencies/owner/members`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await MemberDataSource.getMembersList(filters)
       
       // Transform API response to match internal format
       const transformedData = Array.isArray(data) ? data.map(member => ({
@@ -315,19 +169,7 @@ export const deleteMember = async (memberId) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/agencies/owner/members/${memberId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-      }
+      await MemberDataSource.deleteMember(memberId)
 
       // Remove from mock data as well
       const index = mockMembers.findIndex(m => m.id === memberId)
@@ -363,22 +205,7 @@ export const updateMemberStatus = async (memberId, status) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/agencies/owner/members/${memberId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await MemberDataSource.updateMemberStatus(memberId, status)
 
       // Update mock data as well
       const member = mockMembers.find(m => m.id === memberId)

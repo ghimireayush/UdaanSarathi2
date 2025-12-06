@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { agencyService } from '../services/index.js'
+import { useAuth } from './AuthContext'
 
 const AgencyContext = createContext()
 
@@ -12,23 +14,62 @@ export const useAgency = () => {
 }
 
 export const AgencyProvider = ({ children }) => {
+  const navigate = useNavigate()
+  const { logout, user, isAuthenticated } = useAuth()
   const [agencyData, setAgencyData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
   // Fetch agency data on initial load
   const fetchAgencyData = async () => {
+    // Don't fetch if user is not authenticated or doesn't have an agency
+    if (!isAuthenticated || !user) {
+      setIsLoading(false)
+      return
+    }
+
+    // Don't fetch if user is an owner without an agency
+    const isOwner = user.role === 'agency_owner' || user.role === 'owner' || user.userType === 'owner'
+    if (isOwner && !user.agencyId && !user.agency_id) {
+      console.log('User is an owner without an agency, skipping agency data fetch')
+      setIsLoading(false)
+      setAgencyData(null)
+      return
+    }
+
     try {
       setIsLoading(true)
       setError(null)
       const data = await agencyService.getAgencyProfile()
       if (data) {
         setAgencyData(data)
+        // Store license number for API calls
+        if (data.license_number) {
+          localStorage.setItem('udaan_agency_license', data.license_number)
+        }
       } else {
         throw new Error('No data returned from server')
       }
     } catch (err) {
       console.error('Failed to fetch agency data:', err)
+      
+      // Handle 401 Unauthorized - logout and redirect
+      if (err.status === 401 || err.isAuthError) {
+        console.log('Unauthorized access detected, logging out...')
+        await logout()
+        navigate('/', { replace: true })
+        return
+      }
+      
+      // Handle 403 Forbidden - user doesn't have an agency yet (this is expected)
+      if (err.status === 403) {
+        console.log('User does not have an agency yet')
+        setError(null) // Don't set error for 403, it's expected
+        setAgencyData(null)
+        setIsLoading(false)
+        return
+      }
+      
       const errorMessage = err.message || 'Failed to load agency data'
       setError(errorMessage)
       // Don't set agencyData to null, keep it as is to show error state
@@ -81,7 +122,7 @@ export const AgencyProvider = ({ children }) => {
 
   useEffect(() => {
     fetchAgencyData()
-  }, [])
+  }, [isAuthenticated, user])
 
   const value = {
     // State

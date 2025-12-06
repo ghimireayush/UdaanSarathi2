@@ -5,6 +5,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import Navbar from "../components/public/Navbar";
 import Footer from "../components/public/Footer";
 import LoadingScreen from "../components/LoadingScreen";
+import TranslationDataSource from "../api/datasources/TranslationDataSource.js";
 
 const AboutPage = () => {
   const { theme, toggleTheme } = useTheme();
@@ -19,13 +20,8 @@ const AboutPage = () => {
     const loadTranslations = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `/translations/${language}/pages/about.json`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setTranslations(data);
-        }
+        const data = await TranslationDataSource.getPageTranslations(language, 'about');
+        setTranslations(data);
       } catch (error) {
         console.error("Failed to load translations:", error);
       } finally {

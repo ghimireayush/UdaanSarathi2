@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import authService, { ROLES, PERMISSIONS } from '../services/authService.js'
 import { auditService } from '../services/index.js'
+import tokenManager from '../services/tokenManager.js'
+import authErrorHandler from '../utils/authErrorHandler.js'
 
 const AuthContext = createContext(null)
 
@@ -17,47 +19,133 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [permissions, setPermissions] = useState([])
+  const [tokenExpiration, setTokenExpiration] = useState(null)
+  const [isTokenValid, setIsTokenValid] = useState(false)
 
   useEffect(() => {
     initializeAuth()
   }, [])
 
+  // Periodic token expiration checking (every 30 seconds)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return
+    }
+
+    const checkInterval = setInterval(() => {
+      checkTokenExpiration()
+    }, 30000) // Check every 30 seconds
+
+    return () => clearInterval(checkInterval)
+  }, [isAuthenticated])
+
   const initializeAuth = async () => {
     try {
-      // Check for stored authentication data
-      const storedUser = localStorage.getItem('udaan_user')
-      const storedToken = localStorage.getItem('udaan_token')
+      // Check for stored authentication data using TokenManager
+      const storedToken = tokenManager.getToken()
+      const storedUser = tokenManager.getUser()
       
       if (storedUser && storedToken) {
-        const userData = JSON.parse(storedUser)
+        // Validate token expiration
+        if (tokenManager.isTokenExpired()) {
+          // Token is expired, clear auth and redirect
+          console.log('Token expired during initialization, clearing auth')
+          await logout()
+          return
+        }
         
         // Validate that user data is complete
-        if (userData && userData.id && userData.role) {
-          // Validate token expiration if it exists
-          const storedPermissions = localStorage.getItem('udaan_permissions')
-          const permissions = storedPermissions ? JSON.parse(storedPermissions) : authService.getUserPermissions(userData.role)
+        if (storedUser.id && storedUser.role) {
+          // Get token expiration
+          const expiration = tokenManager.getTokenExpiration()
+          const storedPermissions = tokenManager.getPermissions()
+          const permissions = storedPermissions.length > 0 
+            ? storedPermissions 
+            : authService.getUserPermissions(storedUser.role)
           
           // Set authentication state
-          setUser(userData)
+          setUser(storedUser)
           setIsAuthenticated(true)
           setPermissions(permissions)
+          setTokenExpiration(expiration)
+          setIsTokenValid(true)
           
           // Update authService state to match
-          authService.currentUser = userData
+          authService.currentUser = storedUser
           authService.isAuthenticated = true
         } else {
           // Invalid user data found, clear auth
-          logout()
+          await logout()
         }
       } else {
         // No stored auth data, ensure clean state
-        logout()
+        await logout()
       }
     } catch (error) {
       console.error('Error initializing auth:', error)
-      logout()
+      await logout()
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  /**
+   * Validate current session
+   * @returns {Promise<boolean>} True if session is valid
+   */
+  const validateSession = async () => {
+    try {
+      const isValid = tokenManager.isTokenValid()
+      setIsTokenValid(isValid)
+      
+      if (!isValid) {
+        console.log('Session validation failed, clearing auth')
+        await logout()
+        return false
+      }
+      
+      return true
+    } catch (error) {
+      console.error('Error validating session:', error)
+      await logout()
+      return false
+    }
+  }
+
+  /**
+   * Check token expiration and handle warnings/logout
+   * Called periodically to monitor token status
+   */
+  const checkTokenExpiration = async () => {
+    try {
+      // Check if token is expired
+      if (tokenManager.isTokenExpired()) {
+        console.log('Token expired during session, logging out')
+        authErrorHandler.showAuthErrorNotification(
+          'Your session has expired. Please log in again.',
+          { type: 'warning' }
+        )
+        await logout()
+        return
+      }
+
+      // Check if warning should be shown
+      if (tokenManager.shouldShowExpirationWarning()) {
+        const timeUntil = tokenManager.getTimeUntilExpiration()
+        const minutesLeft = Math.ceil(timeUntil / 60000)
+        
+        authErrorHandler.showAuthErrorNotification(
+          `Your session will expire in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}. Please save your work.`,
+          { type: 'warning', duration: 5000 }
+        )
+      }
+
+      // Update token expiration state
+      const expiration = tokenManager.getTokenExpiration()
+      setTokenExpiration(expiration)
+      setIsTokenValid(tokenManager.isTokenValid())
+    } catch (error) {
+      console.error('Error checking token expiration:', error)
     }
   }
 
@@ -78,10 +166,22 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       const result = await authService.loginVerifyWithBackend({ phone, otp })
+      
+      // Store token with expiration using TokenManager
+      const expiresIn = result.expiresIn || (24 * 60 * 60 * 1000) // Default 24 hours
+      tokenManager.setToken(result.token, expiresIn)
+      tokenManager.setUser(result.user)
+      tokenManager.setPermissions(result.permissions)
+      tokenManager.setLoginPortal('admin')
+      
+      const expiration = tokenManager.getTokenExpiration()
+      
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
-      localStorage.setItem('login_portal', 'admin')
+      setTokenExpiration(expiration)
+      setIsTokenValid(true)
+      
       return result
     } catch (error) {
       console.error('Login verify (backend) error:', error)
@@ -121,10 +221,22 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       const result = await authService.loginVerifyOwnerWithBackend({ phone, otp })
+      
+      // Store token with expiration using TokenManager
+      const expiresIn = result.expiresIn || (24 * 60 * 60 * 1000) // Default 24 hours
+      tokenManager.setToken(result.token, expiresIn)
+      tokenManager.setUser(result.user)
+      tokenManager.setPermissions(result.permissions)
+      tokenManager.setLoginPortal('owner')
+      
+      const expiration = tokenManager.getTokenExpiration()
+      
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
-      localStorage.setItem('login_portal', 'owner')
+      setTokenExpiration(expiration)
+      setIsTokenValid(true)
+      
       return {
         ...result,
         hasAgency: result.hasAgency
@@ -141,9 +253,22 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       const result = await authService.verifyOwnerWithBackend({ phone, otp })
+      
+      // Store token with expiration using TokenManager
+      const expiresIn = result.expiresIn || (24 * 60 * 60 * 1000) // Default 24 hours
+      tokenManager.setToken(result.token, expiresIn)
+      tokenManager.setUser(result.user)
+      tokenManager.setPermissions(result.permissions)
+      tokenManager.setLoginPortal('owner')
+      
+      const expiration = tokenManager.getTokenExpiration()
+      
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
+      setTokenExpiration(expiration)
+      setIsTokenValid(true)
+      
       return {
         ...result,
         hasAgency: result.hasAgency
@@ -296,10 +421,22 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       const result = await authService.memberLoginVerifyWithBackend({ phone, otp })
+      
+      // Store token with expiration using TokenManager
+      const expiresIn = result.expiresIn || (24 * 60 * 60 * 1000) // Default 24 hours
+      tokenManager.setToken(result.token, expiresIn)
+      tokenManager.setUser(result.user)
+      tokenManager.setPermissions(result.permissions)
+      tokenManager.setLoginPortal('member')
+      
+      const expiration = tokenManager.getTokenExpiration()
+      
       setUser(result.user)
       setIsAuthenticated(true)
       setPermissions(result.permissions)
-      localStorage.setItem('login_portal', 'member')
+      setTokenExpiration(expiration)
+      setIsTokenValid(true)
+      
       return result
     } catch (error) {
       console.error('Member login verify (backend) error:', error)
@@ -360,26 +497,40 @@ export const AuthProvider = ({ children }) => {
       }
     }
     
+    // Clear all authentication data using TokenManager
+    tokenManager.clearToken()
     authService.logout()
+    
     setUser(null)
     setIsAuthenticated(false)
     setPermissions([])
+    setTokenExpiration(null)
+    setIsTokenValid(false)
   }
 
   const hasPermission = (permission) => {
-    return authService.hasPermission(permission)
+    // Use current user from state instead of authService to ensure fresh data
+    if (!user) return false
+    const userRole = user.specificRole || user.role
+    const userPermissions = authService.getUserPermissions(userRole)
+    return userPermissions.includes(permission)
   }
 
   const hasAnyPermission = (permissionList) => {
-    return authService.hasAnyPermission(permissionList)
+    // Use current user from state instead of authService to ensure fresh data
+    return permissionList.some(permission => hasPermission(permission))
   }
 
   const hasAllPermissions = (permissionList) => {
-    return authService.hasAllPermissions(permissionList)
+    // Use current user from state instead of authService to ensure fresh data
+    return permissionList.every(permission => hasPermission(permission))
   }
 
   const hasRole = (role) => {
-    return authService.hasRole(role)
+    // Use current user from state instead of authService to ensure fresh data
+    if (!user) return false
+    const userRole = user.specificRole || user.role
+    return userRole === role
   }
 
   const isAdmin = () => {
@@ -400,12 +551,36 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('udaan_user', JSON.stringify(updatedUser))
   }
 
+  /**
+   * Update user role (for dev tools only)
+   * @param {string} newRole - New role to assign
+   */
+  const updateUserRole = (newRole) => {
+    const updatedUser = {
+      ...user,
+      role: newRole,
+      specificRole: newRole,
+    }
+    setUser(updatedUser)
+    localStorage.setItem('udaan_user', JSON.stringify(updatedUser))
+    
+    // Update permissions for new role
+    const newPermissions = authService.getUserPermissions(newRole)
+    setPermissions(newPermissions)
+    localStorage.setItem('udaan_permissions', JSON.stringify(newPermissions))
+    
+    // Update authService state
+    authService.currentUser = updatedUser
+  }
+
   const value = {
     // State
     user,
     isAuthenticated,
     isLoading,
     permissions,
+    tokenExpiration,
+    isTokenValid,
     
     // Actions
     login, // legacy mock admin login
@@ -424,6 +599,9 @@ export const AuthProvider = ({ children }) => {
     createCompany,
     logout,
     updateUser,
+    updateUserRole, // Dev tools only
+    validateSession,
+    checkTokenExpiration,
     
     // Permission checks
     hasPermission,
