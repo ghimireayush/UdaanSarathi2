@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "page": "jobManagement"
+  },
+  "title": "जागिर व्यवस्थापन",
+  "subtitle": "जागिर पोस्टिङहरू सिर्जना र सम्पादन गर्नुहोस्",
+  "actions": {
+    "createNewJob": "नयाँ जागिर सिर्जना गर्नुहोस्",
+    "edit": "सम्पादन गर्नुहोस्",
+    "retry": "पुनः प्रयास गर्नुहोस्"
+  },
+  "search": {
+    "placeholder": "शीर्षक, देश, वा शहरद्वारा जागिरहरू खोज्नुहोस्..."
+  },
+  "status": {
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय"
+  },
+  "labels": {
+    "positions": "{{count}} पद",
+    "positionsPlural": "{{count}} पदहरू",
+    "vacancies": "{{count}} रिक्त स्थानहरू"
+  },
+  "empty": {
+    "noJobs": "अहिलेसम्म कुनै जागिर पोस्टिङ छैन",
+    "noJobsDescription": "सुरु गर्न तपाईंको पहिलो जागिर पोस्टिङ सिर्जना गर्नुहोस्",
+    "noSearchResults": "तपाईंको खोजसँग कुनै जागिर मेल खाँदैन",
+    "noSearchResultsDescription": "फरक खोज शब्द प्रयास गर्नुहोस्"
+  },
+  "loading": {
+    "jobs": "जागिर पोस्टिङहरू लोड गर्दै..."
+  },
+  "error": {
+    "failedToLoad": "जागिर पोस्टिङहरू लोड गर्न असफल",
+    "licenseNotFound": "एजेन्सी लाइसेन्स फेला परेन"
+  }
+}

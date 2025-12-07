@@ -308,12 +308,15 @@ class AuthService {
 
   async verifyOwnerWithBackend({ phone, otp }) {
     const data = await AuthDataSource.verifyOwner({ phone, otp })
-    // Expected: { token: string, user_id: string, agency_id?: string | null, user_type, phone, full_name? }
+    // Expected: { token: string, user_id: string, agency_id?: string | null, user_type, phone, full_name?, role }
 
+    // Use role from backend response ('owner') for RBAC compatibility
+    // Backend returns 'owner', which matches ROLE_FEATURES keys in roleBasedAccess.js
     const backendUser = {
       id: data.user_id,
       phone: data.phone || phone,
-      role: ROLES.AGENCY_OWNER,
+      role: data.role || 'owner', // Use backend role for RBAC compatibility
+      specificRole: data.role || 'owner', // Store as specificRole for RBAC
       userType: data.user_type || 'owner',
       name: data.full_name || 'Agency Owner', // Use actual name from backend
       fullName: data.full_name || null,
@@ -540,13 +543,14 @@ class AuthService {
       throw new Error('Phone number already registered')
     }
 
-    // Create new user
+    // Create new user - use 'owner' role for RBAC compatibility
     const newUser = {
       id: `user_${Date.now()}`,
       username: userData.phone,
       phone: userData.phone,
       name: userData.fullName,
-      role: ROLES.AGENCY_OWNER,
+      role: 'owner', // Use 'owner' for RBAC compatibility (not ROLES.AGENCY_OWNER)
+      specificRole: 'owner',
       phone: userData.phone,
       avatar: '/avatars/default.jpg',
       isActive: true,

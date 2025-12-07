@@ -18,10 +18,20 @@ import workflowApiService from '../services/workflowApiService'
 import stageTransitionService from '../services/stageTransitionService'
 import InterviewScheduleDialog from '../components/InterviewScheduleDialog'
 import { useAgency } from '../contexts/AgencyContext'
+import { useLanguage } from '../hooks/useLanguage'
+import { useStageTranslations } from '../hooks/useStageTranslations'
 import { format } from 'date-fns'
 
 const WorkflowV2 = () => {
   const { agencyData, isLoading: agencyLoading } = useAgency()
+  const { tPageSync } = useLanguage({ pageName: 'workflow', autoLoad: true })
+  const { getStageLabel, getStageAction } = useStageTranslations()
+  
+  // Helper function for translations with fallback
+  const t = (key, fallback = key) => {
+    const result = tPageSync(key)
+    return result === key ? fallback : result
+  }
   // State
   const [candidates, setCandidates] = useState([])
   const [analytics, setAnalytics] = useState(null)
@@ -294,7 +304,7 @@ const WorkflowV2 = () => {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Error Loading Data</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button onClick={loadData} className="btn-primary">
-            Retry
+            {t('actions.retry', 'Retry')}
           </button>
         </div>
       </div>
@@ -306,10 +316,10 @@ const WorkflowV2 = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Workflow Management
+          {t('title', 'Workflow Management')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Manage candidates through post-interview workflow stages
+          {t('subtitle', 'Manage candidates through post-interview workflow stages')}
         </p>
       </div>
 
@@ -321,7 +331,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">Total Candidates</p>
+                  <p className="text-blue-100 text-sm font-medium">{t('analytics.totalCandidates', 'Total Candidates')}</p>
                   <p className="text-3xl font-bold">{analytics.total_candidates || 0}</p>
                 </div>
                 <Users className="w-10 h-10 text-blue-200" />
@@ -331,7 +341,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-green-500 to-green-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Interview Passed</p>
+                  <p className="text-green-100 text-sm font-medium">{t('analytics.interviewPassed', 'Interview Passed')}</p>
                   <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
                 <CheckCircle className="w-10 h-10 text-green-200" />
@@ -341,7 +351,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Total Processed</p>
+                  <p className="text-purple-100 text-sm font-medium">{t('analytics.totalProcessed', 'Total Processed')}</p>
                   <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
                 <Users className="w-10 h-10 text-purple-200" />
@@ -351,7 +361,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-100 text-sm font-medium">Success Rate</p>
+                  <p className="text-orange-100 text-sm font-medium">{t('analytics.successRate', 'Success Rate')}</p>
                   <p className="text-3xl font-bold">
                     {analytics.conversion_rates?.overall_success_rate?.toFixed(1) || 0}%
                   </p>
@@ -390,7 +400,7 @@ const WorkflowV2 = () => {
                     <p className={`text-xs text-center mt-2 font-medium leading-tight whitespace-nowrap ${
                       isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-400'
                     }`}>
-                      {stage.label}
+                      {getStageLabel(stage.id)}
                     </p>
                   </div>
                 )
@@ -478,6 +488,7 @@ const WorkflowV2 = () => {
                 setIsReschedule(true)
                 setShowInterviewDialog(true)
               }}
+              t={t}
             />
           ))
         )}
@@ -551,17 +562,17 @@ const WorkflowV2 = () => {
               disabled={pagination.current_page === 1}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              Previous
+              {t('actions.previous', 'Previous')}
             </button>
             <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
-              Page {pagination.current_page} of {pagination.total_pages}
+              {t('pagination.page', 'Page {{current}} of {{total}}').replace('{{current}}', pagination.current_page).replace('{{total}}', pagination.total_pages)}
             </span>
             <button
               onClick={() => setCurrentPage(p => Math.min(pagination.total_pages, p + 1))}
               disabled={pagination.current_page === pagination.total_pages}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              Next
+              {t('actions.next', 'Next')}
             </button>
           </div>
         </div>
@@ -572,7 +583,7 @@ const WorkflowV2 = () => {
 }
 
 // Candidate Card Component (matching original Workflow design)
-const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextStages, onScheduleInterview, onRescheduleInterview }) => {
+const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextStages, onScheduleInterview, onRescheduleInterview, t }) => {
   const [isUpdating, setIsUpdating] = useState(false)
 
   const handleStatusUpdate = async (newStage, interviewDetails = null) => {
@@ -619,7 +630,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 {candidate.passport_number && (
                   <div className="flex items-center">
                     <CreditCard className="w-3 h-3 mr-1" />
-                    <span>Passport: {candidate.passport_number}</span>
+                    <span>{t('candidateCard.passportLabel', 'Passport')}: {candidate.passport_number}</span>
                   </div>
                 )}
 
@@ -657,7 +668,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors"
                 title="Shortlist candidate"
               >
-                Shortlist
+                {t('actions.shortlist', 'Shortlist')}
               </button>
             )}
 
@@ -668,7 +679,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 className="text-xs px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors"
                 title="Schedule interview"
               >
-                Schedule Interview
+                {t('actions.scheduleInterview', 'Schedule Interview')}
               </button>
             )}
 
@@ -681,7 +692,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 transition-colors"
                   title="Mark interview as passed"
                 >
-                  Pass
+                  {t('actions.pass', 'Pass')}
                 </button>
                 <button
                   onClick={async () => {
@@ -696,7 +707,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 transition-colors"
                   title="Mark interview as failed"
                 >
-                  Fail
+                  {t('actions.fail', 'Fail')}
                 </button>
                 <button
                   onClick={() => onRescheduleInterview(candidate)}
@@ -704,14 +715,14 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   title="Reschedule interview"
                 >
-                  Reschedule
+                  {t('actions.reschedule', 'Reschedule')}
                 </button>
               </>
             )}
 
             {candidate.application?.status === 'interview_passed' && (
               <span className="text-xs px-3 py-1.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                Final Stage
+                {t('actions.finalStage', 'Final Stage')}
               </span>
             )}
           </div>

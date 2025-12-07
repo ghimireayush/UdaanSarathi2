@@ -7,13 +7,15 @@
   "items": {
     "dashboard": "ड्यासबोर्ड",
     "jobs": "जागिरहरू",
+    "jobManagement": "जागिर व्यवस्थापन",
     "drafts": "मस्यौदाहरू",
     "applications": "आवेदनहरू",
     "interviews": "अन्तर्वार्ताहरू",
     "workflow": "कार्यप्रवाह",
     "teamMembers": "टोली सदस्यहरू",
     "auditLog": "लेखापरीक्षा लग",
-    "agencySettings": "एजेन्सी सेटिङहरू"
+    "agencySettings": "एजेन्सी सेटिङहरू",
+    "settings": "सेटिङहरू"
   },
   "userMenu": {
     "profile": "प्रोफाइल",

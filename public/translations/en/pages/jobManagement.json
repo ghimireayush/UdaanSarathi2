@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "page": "jobManagement"
+  },
+  "title": "Job Management",
+  "subtitle": "Create and edit job postings",
+  "actions": {
+    "createNewJob": "Create New Job",
+    "edit": "Edit",
+    "retry": "Retry"
+  },
+  "search": {
+    "placeholder": "Search jobs by title, country, or city..."
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "labels": {
+    "positions": "{{count}} position",
+    "positionsPlural": "{{count}} positions",
+    "vacancies": "{{count}} vacancies"
+  },
+  "empty": {
+    "noJobs": "No job postings yet",
+    "noJobsDescription": "Create your first job posting to get started",
+    "noSearchResults": "No jobs match your search",
+    "noSearchResultsDescription": "Try a different search term"
+  },
+  "loading": {
+    "jobs": "Loading job postings..."
+  },
+  "error": {
+    "failedToLoad": "Failed to load job postings",
+    "licenseNotFound": "Agency license not found"
+  }
+}

@@ -150,50 +150,45 @@ class ConstantsService {
    * @returns {string} Formatted stage label
    */
   getApplicationStageLabel(stage, t = null) {
-    // Map stage values to translation keys
-    const translationKeys = {
+    // Normalize stage ID (handle both underscore and hyphen formats)
+    const normalizedStage = stage?.replace(/-/g, '_')
+    
+    // Map stage values to normalized keys
+    const stageMapping = {
       [constantsData.applicationStages.APPLIED]: 'applied',
       [constantsData.applicationStages.SHORTLISTED]: 'shortlisted',
-      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'interviewScheduled',
-      [constantsData.applicationStages.INTERVIEW_PASSED]: 'interviewPassed',
-      'rejected': 'rejected' // Also support rejected status
+      [constantsData.applicationStages.INTERVIEW_SCHEDULED]: 'interview_scheduled',
+      [constantsData.applicationStages.INTERVIEW_PASSED]: 'interview_passed',
+      'interview_failed': 'interview_failed',
+      'interview_rescheduled': 'interview_rescheduled',
+      'rejected': 'rejected',
+      'withdrawn': 'withdrawn',
+      'hired': 'hired'
     }
     
-    const key = translationKeys[stage]
+    const key = stageMapping[normalizedStage] || normalizedStage
     if (!key) return stage
     
-    // If translation function provided, use it
+    // If translation function provided, use it with the new key format
     if (t) {
-      return t(`applicationStatus.${key}`)
+      const result = t(`stages.${key}`)
+      if (result !== `stages.${key}`) return result
     }
     
-    // Otherwise, use i18nService directly
-    try {
-      // Try to get from applications page translations
-      const translated = i18nService.t(`applications.applicationStatus.${key}`)
-      // If translation key is returned as-is, fall back to English
-      if (translated === `applications.applicationStatus.${key}`) {
-        const fallbackLabels = {
-          'applied': 'Applied',
-          'shortlisted': 'Shortlisted',
-          'interviewScheduled': 'Interview Scheduled',
-          'interviewPassed': 'Interview Passed',
-          'rejected': 'Rejected'
-        }
-        return fallbackLabels[key] || stage
-      }
-      return translated
-    } catch (error) {
-      // Fallback to English if translation fails
-      const fallbackLabels = {
-        'applied': 'Applied',
-        'shortlisted': 'Shortlisted',
-        'interviewScheduled': 'Interview Scheduled',
-        'interviewPassed': 'Interview Passed',
-        'rejected': 'Rejected'
-      }
-      return fallbackLabels[key] || stage
+    // Fallback labels (English)
+    const fallbackLabels = {
+      'applied': 'Applied',
+      'shortlisted': 'Shortlisted',
+      'interview_scheduled': 'Interview Scheduled',
+      'interview_passed': 'Interview Passed',
+      'interview_failed': 'Interview Failed',
+      'interview_rescheduled': 'Interview Rescheduled',
+      'rejected': 'Rejected',
+      'withdrawn': 'Withdrawn',
+      'hired': 'Hired'
     }
+    
+    return fallbackLabels[key] || stage
   }
 
   /**

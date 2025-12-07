@@ -207,11 +207,13 @@ export const ROLE_FEATURES = {
 /**
  * Navigation items configuration
  * Maps to navbar items with role-based visibility
+ * Order matters - items appear in sidebar in this order
  */
 export const NAVIGATION_ITEMS = {
   dashboard: {
     path: '/dashboard',
     label: 'Dashboard',
+    translationKey: 'dashboard',
     icon: 'BarChart3',
     description: 'View agency overview and metrics',
     roles: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
@@ -219,14 +221,23 @@ export const NAVIGATION_ITEMS = {
   jobs: {
     path: '/jobs',
     label: 'Jobs',
+    translationKey: 'jobs',
     icon: 'Briefcase',
     description: 'Manage job postings',
     roles: ['owner', 'admin', 'manager', 'staff', 'recruiter'],
   },
-
+  jobManagement: {
+    path: '/job-management',
+    label: 'Job Management',
+    translationKey: 'jobManagement',
+    icon: 'FileEdit',
+    description: 'Create and edit job postings',
+    roles: ['owner', 'admin', 'manager'],
+  },
   applications: {
     path: '/applications',
     label: 'Applications',
+    translationKey: 'applications',
     icon: 'Users',
     description: 'Review candidate applications',
     roles: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
@@ -234,6 +245,7 @@ export const NAVIGATION_ITEMS = {
   interviews: {
     path: '/interviews',
     label: 'Interviews',
+    translationKey: 'interviews',
     icon: 'Calendar',
     description: 'Schedule and manage interviews',
     roles: ['owner', 'admin', 'manager', 'recruiter', 'coordinator'],
@@ -241,6 +253,7 @@ export const NAVIGATION_ITEMS = {
   workflow: {
     path: '/workflow',
     label: 'Workflow',
+    translationKey: 'workflow',
     icon: 'GitBranch',
     description: 'Track candidate workflow stages',
     roles: ['owner', 'admin', 'manager', 'staff', 'visaOfficer'],
@@ -248,6 +261,7 @@ export const NAVIGATION_ITEMS = {
   teamMembers: {
     path: '/teammembers',
     label: 'Team Members',
+    translationKey: 'teamMembers',
     icon: 'UsersRound',
     description: 'Manage team members and roles',
     roles: ['owner', 'admin'],
@@ -255,23 +269,18 @@ export const NAVIGATION_ITEMS = {
   auditLog: {
     path: '/auditlog',
     label: 'Audit Log',
+    translationKey: 'auditLog',
     icon: 'History',
     description: 'View system activity logs',
     roles: ['owner', 'admin'],
   },
   settings: {
     path: '/settings',
-    label: 'Settings',
+    label: 'Agency Settings',
+    translationKey: 'agencySettings',
     icon: 'Settings',
     description: 'Configure agency settings',
     roles: ['owner'],
-  },
-  jobManagement: {
-    path: '/job-management',
-    label: 'Job Management',
-    icon: 'Briefcase',
-    description: 'Create and edit job postings',
-    roles: ['owner', 'admin', 'manager'],
   },
 };
 
@@ -353,7 +362,8 @@ export const getAvailableRoles = () => {
  * @returns {boolean} True if role has access
  */
 export const hasFeatureAccess = (role, feature) => {
-  const roleConfig = ROLE_FEATURES[role];
+  const normalizedRole = normalizeRole(role);
+  const roleConfig = ROLE_FEATURES[normalizedRole];
   if (!roleConfig) return false;
   return roleConfig.features[feature] === true;
 };
@@ -366,9 +376,10 @@ export const hasFeatureAccess = (role, feature) => {
  * @returns {boolean} True if role can perform action
  */
 export const canPerformAction = (role, feature, action) => {
+  const normalizedRole = normalizeRole(role);
   const permissions = FEATURE_PERMISSIONS[feature];
   if (!permissions || !permissions[action]) return false;
-  return permissions[action].includes(role);
+  return permissions[action].includes(normalizedRole);
 };
 
 /**
@@ -377,11 +388,23 @@ export const canPerformAction = (role, feature, action) => {
  * @returns {Array} Array of accessible feature names
  */
 export const getAccessibleFeatures = (role) => {
-  const roleConfig = ROLE_FEATURES[role];
+  const normalizedRole = normalizeRole(role);
+  const roleConfig = ROLE_FEATURES[normalizedRole];
   if (!roleConfig) return [];
   return Object.keys(roleConfig.features).filter(
     feature => roleConfig.features[feature] === true
   );
+};
+
+/**
+ * Normalize legacy role names to current RBAC role names
+ * @param {string} role - Role value (may be legacy)
+ * @returns {string} Normalized role value
+ */
+const normalizeRole = (role) => {
+  if (role === 'agency_owner') return 'owner';
+  if (role === 'agency_member') return 'staff';
+  return role;
 };
 
 /**
@@ -390,8 +413,9 @@ export const getAccessibleFeatures = (role) => {
  * @returns {Array} Array of accessible navigation items
  */
 export const getAccessibleNavItems = (role) => {
+  const normalizedRole = normalizeRole(role);
   return Object.values(NAVIGATION_ITEMS).filter(item =>
-    item.roles.includes(role)
+    item.roles.includes(normalizedRole)
   );
 };
 
@@ -401,7 +425,8 @@ export const getAccessibleNavItems = (role) => {
  * @returns {Object} Role configuration
  */
 export const getRoleConfig = (role) => {
-  return ROLE_FEATURES[role] || null;
+  const normalizedRole = normalizeRole(role);
+  return ROLE_FEATURES[normalizedRole] || null;
 };
 
 /**
@@ -410,7 +435,8 @@ export const getRoleConfig = (role) => {
  * @returns {Object} Role display info (label, description, color)
  */
 export const getRoleDisplayInfo = (role) => {
-  const config = ROLE_FEATURES[role];
+  const normalizedRole = normalizeRole(role);
+  const config = ROLE_FEATURES[normalizedRole];
   if (!config) return null;
   return {
     label: config.label,

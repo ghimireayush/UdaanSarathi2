@@ -706,10 +706,10 @@ const JobDetails = () => {
               onClick={loadAllData}
               className="btn-secondary"
             >
-              Retry
+              {tPage('labels.retry')}
             </button>
             <Link to="/jobs" className="btn-primary">
-              Back to Jobs
+              {tPage('actions.backToJobs')}
             </Link>
           </div>
         </div>
@@ -754,7 +754,7 @@ const JobDetails = () => {
               {candidate.priority_score && (
                 <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full">
                   <Star className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% match</span>
+                  <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{tPage('labels.match', { score: candidate.priority_score })}</span>
                 </div>
               )}
             </div>
@@ -763,21 +763,24 @@ const JobDetails = () => {
               <div className="flex items-start text-base text-gray-600 dark:text-gray-400">
                 <MapPin className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
                 <span className="truncate">
-                  {candidate.location ? formatLocation(candidate.location) : (candidate.address || 'Location not specified')}
+                  {candidate.location ? formatLocation(candidate.location) : (candidate.address || tPage('labels.locationNotSpecified'))}
                 </span>
               </div>
               <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
                 <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{candidate.phone || 'No phone'}</span>
+                <span>{candidate.phone || tPage('labels.noPhone')}</span>
               </div>
               <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
                 <FileText className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{formatExperience(candidate.experience)} experience</span>
+                <span>{tPage('labels.experience', { experience: formatExperience(candidate.experience) })}</span>
               </div>
               {candidate.documents && candidate.documents.length > 0 && (
                 <div className="flex items-center text-base text-blue-600 dark:text-blue-400">
                   <FileText className="w-5 h-5 mr-2 flex-shrink-0" />
-                  <span>{candidate.documents.length} document{candidate.documents.length !== 1 ? 's' : ''} attached</span>
+                  <span>{candidate.documents.length !== 1 
+                    ? tPage('labels.documentsAttachedPlural', { count: candidate.documents.length })
+                    : tPage('labels.documentsAttached', { count: candidate.documents.length })
+                  }</span>
                 </div>
               )}
             </div>
@@ -790,7 +793,7 @@ const JobDetails = () => {
               ))}
               {candidate.skills.length > 6 && (
                 <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                  +{candidate.skills.length - 6} more
+                  {tPage('labels.moreSkills', { count: candidate.skills.length - 6 })}
                 </span>
               )}
             </div>
@@ -801,7 +804,7 @@ const JobDetails = () => {
           <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
             {candidate.applied_at 
               ? tPage('labels.appliedOn', { date: format(new Date(candidate.applied_at), 'MMM dd, yyyy') })
-              : 'Applied recently'
+              : tPage('labels.appliedRecently')
             }
           </span>
 
@@ -815,7 +818,7 @@ const JobDetails = () => {
               disabled={isShortlisting}
             >
               <UserCheck className="w-4 h-4 mr-2" />
-              {isShortlisting ? 'Shortlisting...' : 'Shortlist'}
+              {isShortlisting ? tPage('labels.shortlisting') : tPage('actions.shortlist')}
             </button>
           )}
 
@@ -825,14 +828,14 @@ const JobDetails = () => {
               className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 whitespace-nowrap flex items-center"
             >
               <Eye className="w-4 h-4 mr-1" />
-              View Profile
+              {tPage('actions.viewProfile')}
             </button>
             <button
               onClick={(e) => e.stopPropagation()}
               className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap flex items-center"
             >
               <Download className="w-4 h-4 mr-1" />
-              Download CV
+              {tPage('actions.downloadCV')}
             </button>
           </div>
         </div>
@@ -855,11 +858,11 @@ const JobDetails = () => {
               </div>
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                 <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                  Mark Shortlisting Complete
+                  {tPage('jobStatus.markShortlistingComplete')}
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    This action will finalize the shortlisting process for this job. Here's what will happen:
+                    {tPage('dialog.completionTitle')}
                   </p>
 
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -873,11 +876,11 @@ const JobDetails = () => {
                   </div>
 
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-green-800 mb-2">✅ After completion:</h4>
+                    <h4 className="text-sm font-semibold text-green-800 mb-2">{tPage('afterCompletion.title')}</h4>
                     <ul className="text-sm text-green-700 space-y-1">
-                      <li>• You can proceed to schedule interviews with shortlisted candidates</li>
-                      <li>• The job will move to the interview scheduling phase</li>
-                      <li>• All application data will be preserved for reporting</li>
+                      <li>• {tPage('afterCompletion.proceedToSchedule')}</li>
+                      <li>• {tPage('afterCompletion.jobWillMove')}</li>
+                      <li>• {tPage('afterCompletion.dataPreserved')}</li>
                     </ul>
                   </div>
                 </div>
@@ -919,10 +922,10 @@ const JobDetails = () => {
             {/* Why I'm here section */}
             {!showShortlistPool && (
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
-                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Why I'm here</h3>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">Verify applicants for this job and shortlist candidates.</p>
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">{tPage('whyImHere.title')}</h3>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">{tPage('whyImHere.description')}</p>
                 <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
-                  💡 Candidates are automatically ranked by skill/education match. Use filters to refine results.
+                  {tPage('whyImHere.hint')}
                 </div>
               </div>
             )}
@@ -931,39 +934,39 @@ const JobDetails = () => {
             {!showShortlistPool && (
               <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Skill-Based Filtering (priority ranking)</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('filtering.title')}</h3>
                   <div className="flex items-center space-x-4">
-                    <label className="text-base font-medium text-gray-700 dark:text-gray-300">Show top:</label>
+                    <label className="text-base font-medium text-gray-700 dark:text-gray-300">{tPage('filtering.showTop')}</label>
                     <select
                       value={topNFilter}
                       onChange={(e) => handleTopNFilterChange(Number(e.target.value))}
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="form-select-sm"
                     >
-                      <option value={10}>Top 10</option>
-                      <option value={20}>Top 20</option>
-                      <option value={50}>Top 50</option>
-                      <option value={0}>View All ({appliedCandidates.length})</option>
+                      <option value={10}>{tPage('filtering.top10')}</option>
+                      <option value={20}>{tPage('filtering.top20')}</option>
+                      <option value={50}>{tPage('filtering.top50')}</option>
+                      <option value={0}>{tPage('filtering.viewAll', { count: appliedCandidates.length })}</option>
                     </select>
                   </div>
                 </div>
 
                 <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
-                  Candidates ranked to the top by skill/education match. Select prioritized tags (AND semantics) to refine results:
+                  {tPage('filtering.description')}
                 </p>
 
                 {/* Results summary */}
                 <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-base">
                     <span className="text-gray-700 dark:text-gray-300">
-                      Showing {appliedCandidates.length} of {appliedCandidates.length} candidates
+                      {tPage('filtering.showing', { current: appliedCandidates.length, total: appliedCandidates.length })}
                       {selectedTags.length > 0 && (
                         <span className="text-blue-600 dark:text-blue-400 ml-2">
-                          (filtered by {selectedTags.length} tag{selectedTags.length !== 1 ? 's' : ''})
+                          {tPage('filtering.filteredBy', { count: selectedTags.length, plural: selectedTags.length !== 1 ? 's' : '' })}
                         </span>
                       )}
                       {(searchParams.toString() && searchParams.toString() !== 'tab=applied') && (
                         <span className="text-green-600 dark:text-green-400 ml-2 text-sm">
-                          • Filters preserved in URL
+                          • {tPage('filtering.filtersPreserved')}
                         </span>
                       )}
                     </span>
@@ -975,7 +978,7 @@ const JobDetails = () => {
                         }}
                         className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                       >
-                        Clear all filters
+                        {tPage('filtering.clearAllFilters')}
                       </button>
                     )}
                   </div>
@@ -988,10 +991,10 @@ const JobDetails = () => {
                       <div className="flex items-center">
                         <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
                         <div>
-                          <h4 className="text-lg font-semibold text-green-800 dark:text-green-300">Shortlisting Progress</h4>
+                          <h4 className="text-lg font-semibold text-green-800 dark:text-green-300">{tPage('progress.title')}</h4>
                           <p className="text-base text-green-700 dark:text-green-300">
-                            {shortlistedCandidates.length} candidate{shortlistedCandidates.length !== 1 ? 's' : ''} shortlisted,
-                            {' '}{appliedCandidates.length} remaining to review
+                            {tPage('progress.candidatesShortlisted', { count: shortlistedCandidates.length, plural: shortlistedCandidates.length !== 1 ? 's' : '' })}
+                            {' '}{tPage('progress.remainingToReview', { count: appliedCandidates.length })}
                           </p>
                         </div>
                       </div>
@@ -999,7 +1002,7 @@ const JobDetails = () => {
                         <div className="text-2xl font-bold text-green-800 dark:text-green-300">
                           {Math.round((shortlistedCandidates.length / (shortlistedCandidates.length + appliedCandidates.length)) * 100)}%
                         </div>
-                        <div className="text-sm text-green-600 dark:text-green-400">Complete</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">{tPage('progress.complete')}</div>
                       </div>
                     </div>
                   </div>
@@ -1038,7 +1041,7 @@ const JobDetails = () => {
                 </div>
 
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Tag sources: original job tags + prioritized tags selected here (removable).
+                  {tPage('filtering.tagSources')}
                 </p>
               </div>
             )}
@@ -1080,7 +1083,7 @@ const JobDetails = () => {
                       className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center text-base font-medium"
                     >
                       <CheckCircle className="w-5 h-5 mr-2" />
-                      Reopen Job Posting
+                      {tPage('jobStatus.reopenJobPosting')}
                     </button>
                   ) : (
                     <button
@@ -1089,7 +1092,7 @@ const JobDetails = () => {
                       disabled={isCompletingShortlisting}
                     >
                       <CheckCircle className="w-5 h-5 mr-2" />
-                      {isCompletingShortlisting ? 'Processing...' : 'Mark Shortlisting Complete'}
+                      {isCompletingShortlisting ? tPage('jobStatus.processing') : tPage('jobStatus.markShortlistingComplete')}
                     </button>
                   )}
                 </div>
@@ -1102,7 +1105,7 @@ const JobDetails = () => {
                         disabled={isShortlisting}
                       >
                         <UserCheck className="w-5 h-5 mr-2" />
-                        {isShortlisting ? 'Shortlisting...' : `Shortlist (${selectedCandidates.size})`}
+                        {isShortlisting ? tPage('labels.shortlisting') : `${tPage('actions.shortlist')} (${selectedCandidates.size})`}
                       </button>
                     </>
                   )}
@@ -1118,7 +1121,7 @@ const JobDetails = () => {
 {tPage('labels.shortlistedCandidates', { count: shortlistedCandidates.length })}
                 </h3>
                 <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                  These candidates have been shortlisted for this position. Click any candidate to view their full profile.
+                  {tPage('labels.shortlistedDescription') || 'These candidates have been shortlisted for this position. Click any candidate to view their full profile.'}
                 </p>
               </div>
             )}
@@ -1276,12 +1279,12 @@ const JobDetails = () => {
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{job.title}</h1>
                   {job.is_active === false && (
                     <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm font-medium rounded-full">
-                      Closed
+                      {tPage('jobStatus.inactive')}
                     </span>
                   )}
                   {job.is_active === true && (
                     <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium rounded-full">
-                      Active
+                      {tPage('jobStatus.active')}
                     </span>
                   )}
                 </div>
@@ -1311,22 +1314,22 @@ const JobDetails = () => {
               <div className="flex items-center gap-3">
                 <Link to="/jobs" className="btn-secondary flex items-center">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Jobs
+                  {tPage('actions.backToJobs')}
                 </Link>
               </div>
             </div>
 
             {/* Analytics Section */}
             <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Analytics</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{tPage('analytics.title')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
                   <div className="flex items-center">
                     <Eye className="w-5 h-5 text-purple-600 mr-2" />
                     <div>
-                      <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">View Count</p>
+                      <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">{tPage('analytics.viewCount')}</p>
                       <p className="text-2xl font-bold text-purple-900 dark:text-purple-200">{analytics?.view_count || job.view_count || 0}</p>
-                      <p className="text-xs text-purple-700 dark:text-purple-300">Individual job views</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-300">{tPage('analytics.individualJobViews')}</p>
                     </div>
                   </div>
                 </div>

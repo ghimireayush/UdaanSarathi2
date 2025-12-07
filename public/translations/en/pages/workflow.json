@@ -22,7 +22,9 @@
     "interviewScheduled": "Interview Scheduled",
     "interviewScheduledDescription": "Candidates with scheduled interviews",
     "interviewPassed": "Interview Passed",
-    "interviewPassedDescription": "Candidates who passed interviews"
+    "interviewPassedDescription": "Candidates who passed interviews",
+    "interviewFailed": "Interview Failed",
+    "interviewFailedDescription": "Candidates who did not pass interviews"
   },
   "tabs": {
     "byJob": "By Job Post",
@@ -37,6 +39,7 @@
     "applicantDistribution": "Applicant Distribution by Job"
   },
   "candidateCard": {
+    "passportLabel": "Passport",
     "passport": "Passport: {{number}}",
     "documents": "{{count}} document{{plural}} attached",
     "interviewedAt": "Interviewed: {{date}}",
@@ -46,7 +49,16 @@
     "viewSummary": "View Summary",
     "updateStatus": "Update Status",
     "attachDocument": "Attach Document",
-    "removeDocument": "Remove Document"
+    "removeDocument": "Remove Document",
+    "shortlist": "Shortlist",
+    "scheduleInterview": "Schedule Interview",
+    "pass": "Pass",
+    "fail": "Fail",
+    "reschedule": "Reschedule",
+    "finalStage": "Final Stage",
+    "retry": "Retry",
+    "previous": "Previous",
+    "next": "Next"
   },
   "modals": {
     "stageTransition": {

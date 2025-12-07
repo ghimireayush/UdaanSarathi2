@@ -269,7 +269,7 @@ const OwnerAnalytics = () => {
                         status: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="form-select"
                   >
                     <option value="all">{tPage("filters.all")}</option>
                     <option value="active">{tPage("filters.active")}</option>
@@ -291,7 +291,7 @@ const OwnerAnalytics = () => {
                         sortBy: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="form-select"
                   >
                     <option value="name">{tPage("filters.name")}</option>
                     <option value="jobs">{tPage("filters.jobs")}</option>
@@ -313,7 +313,7 @@ const OwnerAnalytics = () => {
                         sortOrder: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="form-select"
                   >
                     <option value="asc">
                       {filters.sortBy === "name"
@@ -425,7 +425,7 @@ const OwnerAnalytics = () => {
                       setItemsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                    className="form-select-sm"
                   >
                     <option value={12}>12</option>
                     <option value={24}>24</option>

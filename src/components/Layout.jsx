@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout, hasPermission, hasAnyPermission, isAdmin } = useAuth();
   const { agencyName, agencyLogo } = useAgency();
-  const { tPageSync } = useLanguage({
+  const { tPageSync, pageLoaded, locale } = useLanguage({
     pageName: "navigation",
     autoLoad: true,
   });
@@ -49,6 +49,7 @@ const Layout = ({ children }) => {
         const fallbacks = {
           "items.dashboard": "Dashboard",
           "items.jobs": "Jobs",
+          "items.jobManagement": "Job Management",
           "items.drafts": "Drafts",
           "items.applications": "Applications",
           "items.interviews": "Interviews",
@@ -56,6 +57,7 @@ const Layout = ({ children }) => {
           "items.teamMembers": "Team Members",
           "items.auditLog": "Audit Log",
           "items.agencySettings": "Agency Settings",
+          "items.settings": "Settings",
           "userMenu.logout": "Logout",
         };
         return fallbacks[key] || key;
@@ -66,6 +68,7 @@ const Layout = ({ children }) => {
       const fallbacks = {
         "items.dashboard": "Dashboard",
         "items.jobs": "Jobs",
+        "items.jobManagement": "Job Management",
         "items.drafts": "Drafts",
         "items.applications": "Applications",
         "items.interviews": "Interviews",
@@ -73,6 +76,7 @@ const Layout = ({ children }) => {
         "items.teamMembers": "Team Members",
         "items.auditLog": "Audit Log",
         "items.agencySettings": "Agency Settings",
+        "items.settings": "Settings",
         "userMenu.logout": "Logout",
       };
       return fallbacks[key] || key;
@@ -112,12 +116,15 @@ const Layout = ({ children }) => {
   };
 
   // Build navigation items from accessible items
-  const navItems = accessibleNavItems.map(item => ({
-    path: item.path,
-    label: tNav(`items.${item.label.toLowerCase().replace(/\s+/g, '')}`),
-    icon: iconMap[item.icon] || BarChart3,
-    show: true,
-  })).filter((item) => item.show);
+  // useMemo ensures re-render when locale or pageLoaded changes
+  const navItems = useMemo(() => {
+    return accessibleNavItems.map(item => ({
+      path: item.path,
+      label: tNav(`items.${item.translationKey || item.label.toLowerCase().replace(/\s+/g, '')}`),
+      icon: iconMap[item.icon] || BarChart3,
+      show: true,
+    })).filter((item) => item.show);
+  }, [accessibleNavItems, pageLoaded, locale]);
 
   const isActive = (path) => {
     if (path === "/dashboard" && location.pathname === "/") return true;

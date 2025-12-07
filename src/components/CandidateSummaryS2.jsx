@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useConfirm } from './ConfirmProvider.jsx'
+import { useAgency } from '../contexts/AgencyContext.jsx'
 import ApplicationHistory from './ApplicationHistory.jsx'
 import ApplicationNotes from './ApplicationNotes.jsx'
 import DocumentDataSource from '../api/datasources/DocumentDataSource.js'
@@ -85,6 +86,7 @@ const CandidateSummaryS2 = ({
   const [editNoteIsPrivate, setEditNoteIsPrivate] = useState(true)
   
   const { confirm } = useConfirm()
+  const { agencyData } = useAgency()
   
   // Load documents from API when candidate changes
   useEffect(() => {
@@ -440,6 +442,163 @@ const CandidateSummaryS2 = ({
           type: 'danger'
         })
       }
+    }
+  }
+
+  // Handle document upload for agency (to candidate's document slot)
+  const handleDocumentUpload = async (event, documentTypeId, documentTypeName) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      await confirm({
+        title: 'File Size Error',
+        message: 'File exceeds the 10MB limit. Please select a smaller file.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+      event.target.value = ''
+      return
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png']
+    if (!allowedTypes.includes(file.type)) {
+      await confirm({
+        title: 'Invalid File Type',
+        message: 'Please upload a PDF, JPEG, or PNG file.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+      event.target.value = ''
+      return
+    }
+
+    const confirmed = await confirm({
+      title: 'Upload Document',
+      message: `Upload "${file.name}" as ${documentTypeName}?`,
+      confirmText: 'Yes, Upload',
+      cancelText: 'Cancel',
+      type: 'info'
+    })
+
+    if (!confirmed) {
+      event.target.value = ''
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const candidateId = candidateData.id
+      const agencyLicense = agencyData?.license_number
+      
+      if (!agencyLicense || !jobId) {
+        throw new Error('Agency license or job ID not available')
+      }
+
+      console.log('📤 Uploading document:', { candidateId, agencyLicense, jobId, documentTypeId, fileName: file.name })
+      
+      if (!documentTypeId) {
+        throw new Error('Document type ID is missing')
+      }
+
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('document_type_id', documentTypeId)
+      formData.append('name', file.name)
+      formData.append('notes', 'Uploaded by agency')
+
+      await DocumentDataSource.uploadAgencyCandidateDocument(
+        agencyLicense,
+        jobId,
+        candidateId,
+        formData
+      )
+
+      // Reload documents
+      const docs = await DocumentDataSource.getAgencyCandidateDocuments(agencyLicense, jobId, candidateId)
+      setApiDocuments(docs)
+
+      await confirm({
+        title: 'Upload Successful',
+        message: `${documentTypeName} uploaded successfully!`,
+        confirmText: 'Great!',
+        type: 'success'
+      })
+    } catch (error) {
+      console.error('Failed to upload document:', error)
+      await confirm({
+        title: 'Upload Error',
+        message: error.response?.data?.message || error.message || 'Failed to upload document. Please try again.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
+    } finally {
+      setIsUploading(false)
+      event.target.value = ''
+    }
+  }
+
+  // Handle document verification (approve/reject)
+  const handleDocumentVerify = async (documentId, status, documentName) => {
+    let rejectionReason = null
+    
+    if (status === 'rejected') {
+      // Prompt for rejection reason
+      const reason = window.prompt('Please provide a reason for rejection:')
+      if (!reason) {
+        return // User cancelled
+      }
+      rejectionReason = reason
+    }
+
+    const confirmed = await confirm({
+      title: status === 'approved' ? 'Approve Document' : 'Reject Document',
+      message: status === 'approved' 
+        ? `Are you sure you want to approve "${documentName}"?`
+        : `Are you sure you want to reject "${documentName}"?\n\nReason: ${rejectionReason}`,
+      confirmText: status === 'approved' ? 'Yes, Approve' : 'Yes, Reject',
+      cancelText: 'Cancel',
+      type: status === 'approved' ? 'info' : 'danger'
+    })
+
+    if (!confirmed) return
+
+    try {
+      const candidateId = candidateData.id
+      const agencyLicense = agencyData?.license_number
+
+      if (!agencyLicense || !jobId) {
+        throw new Error('Agency license or job ID not available')
+      }
+
+      await DocumentDataSource.verifyAgencyCandidateDocument(
+        agencyLicense,
+        jobId,
+        candidateId,
+        documentId,
+        { status, rejection_reason: rejectionReason }
+      )
+
+      // Reload documents
+      const docs = await DocumentDataSource.getAgencyCandidateDocuments(agencyLicense, jobId, candidateId)
+      setApiDocuments(docs)
+
+      await confirm({
+        title: 'Success',
+        message: `Document ${status} successfully!`,
+        confirmText: 'Okay',
+        type: 'success'
+      })
+    } catch (error) {
+      console.error('Failed to verify document:', error)
+      await confirm({
+        title: 'Error',
+        message: error.response?.data?.message || error.message || 'Failed to update document status.',
+        confirmText: 'Okay',
+        type: 'danger'
+      })
     }
   }
 
@@ -902,13 +1061,15 @@ const CandidateSummaryS2 = ({
                 <div className="space-y-3">
                   {(apiDocuments.slots || apiDocuments.data || []).map((slot) => {
                     // Handle both old format (slots) and new format (data with document_type)
-                    const docType = slot.document_type || { name: slot.document_type_name, is_required: slot.is_required }
+                    const docType = slot.document_type || { name: slot.document_type_name, is_required: slot.is_required, id: slot.document_type_id }
                     const doc = slot.document
                     const isUploaded = !!doc
+                    // Get document type ID from slot or docType
+                    const typeId = slot.document_type_id || docType?.id
                     
                     return (
                       <div 
-                        key={slot.document_type_id || docType.id} 
+                        key={typeId} 
                         className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600"
                       >
                         <div className="flex-1">
@@ -939,6 +1100,27 @@ const CandidateSummaryS2 = ({
                                 }`}>
                                   {doc.verification_status}
                                 </span>
+                                {/* Approve/Reject buttons for pending documents */}
+                                {jobId && doc.verification_status === 'pending' && (
+                                  <>
+                                    <button
+                                      onClick={() => handleDocumentVerify(doc.id, 'approved', doc.name)}
+                                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+                                      title="Approve document"
+                                    >
+                                      <CheckCircle className="w-3 h-3 mr-1" />
+                                      Approve
+                                    </button>
+                                    <button
+                                      onClick={() => handleDocumentVerify(doc.id, 'rejected', doc.name)}
+                                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                      title="Reject document"
+                                    >
+                                      <AlertCircle className="w-3 h-3 mr-1" />
+                                      Reject
+                                    </button>
+                                  </>
+                                )}
                               </div>
                             </div>
                           ) : (
@@ -948,15 +1130,57 @@ const CandidateSummaryS2 = ({
                           )}
                         </div>
                         
-                        {isUploaded && (
-                          <a
-                            href={doc.document_url}
-                            download
-                            className="ml-4 inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                          >
-                            <Download className="w-4 h-4 mr-1" />
-                            Download
-                          </a>
+                        {/* Upload button for empty slots (agency can upload) */}
+                        {!isUploaded && jobId && (
+                          <label className={`ml-4 inline-flex items-center px-3 py-2 border border-blue-300 dark:border-blue-600 shadow-sm text-sm font-medium rounded-md text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            <Upload className="w-4 h-4 mr-1" />
+                            {isUploading ? 'Uploading...' : 'Upload'}
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => handleDocumentUpload(e, typeId, docType.name)}
+                              disabled={isUploading}
+                            />
+                          </label>
+                        )}
+
+                        {isUploaded && doc.document_url && (
+                          <div className="ml-4 flex items-center space-x-2">
+                            <a
+                              href={doc.document_url.startsWith('http') ? doc.document_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc.document_url}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                              title="Preview"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </a>
+                            <button
+                              onClick={async () => {
+                                const url = doc.document_url.startsWith('http') ? doc.document_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc.document_url}`
+                                try {
+                                  const response = await fetch(url)
+                                  const blob = await response.blob()
+                                  const blobUrl = window.URL.createObjectURL(blob)
+                                  const link = document.createElement('a')
+                                  link.href = blobUrl
+                                  link.download = doc.name || 'document'
+                                  document.body.appendChild(link)
+                                  link.click()
+                                  document.body.removeChild(link)
+                                  window.URL.revokeObjectURL(blobUrl)
+                                } catch (err) {
+                                  console.error('Download failed:', err)
+                                  window.open(url, '_blank')
+                                }
+                              }}
+                              className="inline-flex items-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                              title="Download"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         )}
                       </div>
                     )

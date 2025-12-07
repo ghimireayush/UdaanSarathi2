@@ -20,8 +20,10 @@
     "week": "हप्ता"
   },
   "filters": {
+    "filterByJob": "जागिर अनुसार फिल्टर गर्नुहोस्",
     "allJobs": "सबै जागिरहरू",
-    "searchPlaceholder": "उम्मेदवार वा अन्तर्वार्ता लिने व्यक्ति खोज्नुहोस्..."
+    "searchCandidate": "उम्मेदवार खोज्नुहोस्",
+    "searchPlaceholder": "नाम, इमेल, फोनद्वारा खोज्नुहोस्..."
   },
   "stats": {
     "todaysInterviews": "आजका अन्तर्वार्ताहरू",

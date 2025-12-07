@@ -195,51 +195,65 @@ class AuditService {
 
   /**
    * Get human-readable action label
+   * Prefers backend description if available, falls back to local mapping
    * @param {string} action - Action code
+   * @param {Object} log - Full log object (optional, may contain description from backend)
    * @returns {string} Action label
    */
-  getActionLabel(action) {
+  getActionLabel(action, log = null) {
+    // Use backend description if available
+    if (log?.description) {
+      return log.description;
+    }
+    
     const labels = {
-      'register': 'Registered',
-      'login_start': 'Login Started',
-      'login_verify': 'Login Verified',
-      'logout': 'Logged Out',
-      'apply_job': 'Applied to Job',
-      'shortlist_candidate': 'Shortlisted Candidate',
-      'schedule_interview': 'Scheduled Interview',
-      'reschedule_interview': 'Rescheduled Interview',
-      'complete_interview': 'Completed Interview',
-      'withdraw_application': 'Withdrew Application',
-      'reject_application': 'Rejected Application',
-      'create_job_posting': 'Created Job Posting',
-      'update_job_posting': 'Updated Job Posting',
-      'close_job_posting': 'Closed Job Posting',
-      'update_job_tags': 'Updated Job Tags',
-      'create_agency': 'Created Agency',
-      'update_agency': 'Updated Agency',
-      'add_team_member': 'Added Team Member',
-      'remove_team_member': 'Removed Team Member',
-      'create_profile': 'Created Profile',
-      'update_profile': 'Updated Profile',
-      'update_job_profile': 'Updated Job Profile',
+      'register': 'New account registered',
+      'login_start': 'Login initiated',
+      'login_verify': 'Login completed',
+      'logout': 'Logged out',
+      'apply_job': 'Applied for a job position',
+      'shortlist_candidate': 'Candidate shortlisted for interview',
+      'schedule_interview': 'Interview scheduled',
+      'reschedule_interview': 'Interview rescheduled',
+      'complete_interview': 'Interview completed',
+      'withdraw_application': 'Application withdrawn',
+      'reject_application': 'Application rejected',
+      'create_job_posting': 'New job posting created',
+      'update_job_posting': 'Job posting updated',
+      'close_job_posting': 'Job posting closed',
+      'update_job_tags': 'Job requirements updated',
+      'create_agency': 'Agency profile created',
+      'update_agency': 'Agency profile updated',
+      'add_team_member': 'Team member added',
+      'remove_team_member': 'Team member removed',
+      'create_profile': 'Candidate profile created',
+      'update_profile': 'Profile information updated',
+      'update_job_profile': 'Job preferences updated',
     };
-    return labels[action] || action?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown';
+    return labels[action] || action?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown action';
   }
 
   /**
    * Get human-readable category label
+   * Prefers backend category_label if available
    * @param {string} category - Category code
+   * @param {Object} log - Full log object (optional, may contain category_label from backend)
    * @returns {string} Category label
    */
-  getCategoryLabel(category) {
+  getCategoryLabel(category, log = null) {
+    // Use backend category_label if available
+    if (log?.category_label) {
+      return log.category_label;
+    }
+    
     const labels = {
       'auth': 'Authentication',
-      'application': 'Applications',
+      'application': 'Job Applications',
       'job_posting': 'Job Postings',
-      'agency': 'Agency',
-      'candidate': 'Candidates',
+      'agency': 'Agency Management',
+      'candidate': 'Candidate Profiles',
       'interview': 'Interviews',
-      'admin': 'Admin',
+      'admin': 'Administration',
       'system': 'System',
     };
     return labels[category] || category?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown';

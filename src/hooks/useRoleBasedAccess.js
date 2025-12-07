@@ -17,16 +17,25 @@ import {
 export const useRoleBasedAccess = () => {
   const { user } = useAuth();
 
+  // Normalize legacy role names to current RBAC role names
+  const normalizeRole = (role) => {
+    // Map legacy 'agency_owner' to 'owner' for RBAC compatibility
+    if (role === 'agency_owner') return 'owner';
+    // Map legacy 'agency_member' to 'staff' as default member role
+    if (role === 'agency_member') return 'staff';
+    return role;
+  };
+
   // Get user's role
   const getUserRole = () => {
     // If user has a specific role in their profile, use it directly
     if (user?.specificRole) {
-      return user.specificRole;
+      return normalizeRole(user.specificRole);
     }
     
     // Otherwise, use the role directly (backend now returns 'owner' for owners)
     if (user?.role) {
-      return user.role;
+      return normalizeRole(user.role);
     }
     
     // Fallback to staff if no role found

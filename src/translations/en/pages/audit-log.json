@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "version": "1.1.0",
+    "lastUpdated": "2024-12-06",
     "page": "audit-log"
   },
   "title": "Audit Log",
@@ -20,6 +20,12 @@
     "exportCsv": "Export CSV",
     "clearData": "Clear Data"
   },
+  "stats": {
+    "totalEvents": "Total Events",
+    "applications": "Applications",
+    "interviews": "Interviews",
+    "authEvents": "Auth Events"
+  },
   "filters": {
     "title": "Filters",
     "searchPlaceholder": "Search logs...",
@@ -28,12 +34,40 @@
       "resourceType": "Resource Type",
       "action": "Action",
       "dateFrom": "Date From",
-      "dateTo": "Date To"
+      "dateTo": "Date To",
+      "category": "Category",
+      "outcome": "Outcome",
+      "dateRange": "Date Range",
+      "perPage": "Per Page"
     },
     "options": {
       "allUsers": "All Users",
       "allTypes": "All Types",
       "allActions": "All Actions"
+    },
+    "category": {
+      "all": "All Categories",
+      "auth": "Authentication",
+      "application": "Job Applications",
+      "job_posting": "Job Postings",
+      "agency": "Agency Management",
+      "candidate": "Candidate Profiles",
+      "interview": "Interviews",
+      "admin": "Administration",
+      "system": "System"
+    },
+    "outcome": {
+      "all": "All Outcomes",
+      "success": "Success",
+      "failure": "Failure",
+      "denied": "Denied"
+    },
+    "dateRange": {
+      "all": "All Time",
+      "today": "Today",
+      "week": "Last 7 Days",
+      "month": "Last 30 Days",
+      "custom": "Custom Range"
     },
     "resetAll": "Reset All",
     "activeFilters": "{{count}} active",
@@ -43,6 +77,16 @@
       "user_2": "Senior Recruiter",
       "user_3": "Interview Coordinator"
     }
+  },
+  "pagination": {
+    "showing": "Showing {{count}} of {{total}} events",
+    "page": "Page {{current}} of {{total}}",
+    "total": "{{count}} total",
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next",
+    "last": "Last",
+    "perPage": "Per Page"
   },
   "resourceTypes": {
     "agencyProfile": "Agency Profile",

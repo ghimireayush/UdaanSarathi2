@@ -20,8 +20,10 @@
     "week": "Week"
   },
   "filters": {
+    "filterByJob": "Filter by Job",
     "allJobs": "All Jobs",
-    "searchPlaceholder": "Search candidates or interviewers..."
+    "searchCandidate": "Search Candidate",
+    "searchPlaceholder": "Search by name, email, phone..."
   },
   "stats": {
     "todaysInterviews": "Today's Interviews",

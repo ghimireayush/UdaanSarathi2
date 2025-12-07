@@ -284,7 +284,7 @@ const Interviews = () => {
           <div className="flex items-center">
             <Calendar className="w-8 h-8 text-blue-600 mr-3" />
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Today</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.todaysInterviews') || 'Today'}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.today}</div>
             </div>
           </div>
@@ -293,7 +293,7 @@ const Interviews = () => {
           <div className="flex items-center">
             <Calendar className="w-8 h-8 text-green-600 mr-3" />
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Scheduled</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.totalScheduled') || 'Scheduled'}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.scheduled}</div>
             </div>
           </div>
@@ -302,7 +302,7 @@ const Interviews = () => {
           <div className="flex items-center">
             <Calendar className="w-8 h-8 text-red-600 mr-3" />
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Unattended</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.unattended') || 'Unattended'}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.unattended}</div>
             </div>
           </div>
@@ -311,7 +311,7 @@ const Interviews = () => {
           <div className="flex items-center">
             <Calendar className="w-8 h-8 text-purple-600 mr-3" />
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{tPage('stats.completed') || 'Completed'}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.completed}</div>
             </div>
           </div>
@@ -323,14 +323,14 @@ const Interviews = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Filter by Job
+              {tPage('filters.filterByJob') || 'Filter by Job'}
             </label>
             <select
               value={selectedJob}
               onChange={(e) => handleJobSelect(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="form-select"
             >
-              <option value="">All Jobs</option>
+              <option value="">{tPage('filters.allJobs') || 'All Jobs'}</option>
               {jobs.map(job => (
                 <option key={job.id} value={job.id}>
                   {job.title} - {job.company}
@@ -341,13 +341,13 @@ const Interviews = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Search Candidate
+              {tPage('filters.searchCandidate') || 'Search Candidate'}
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search by name, email, phone..."
+                placeholder={tPage('filters.searchPlaceholder') || 'Search by name, email, phone...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -392,7 +392,7 @@ const Interviews = () => {
             <div>
               {/* Contemporary filters are in ScheduledInterviews component */}
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews.
+                {tPage('filters.useTabsHint') || 'Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews.'}
               </p>
             </div>
           )}

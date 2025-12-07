@@ -21,6 +21,7 @@ import CandidateShortlist from '../components/CandidateShortlist'
 import { formatInNepalTz, getCurrentNepalTime } from '../utils/nepaliDate'
 import { rankCandidates, getRankingInsights } from '../services/candidateRankingService'
 import { useLanguage } from '../hooks/useLanguage'
+import { useStageTranslations } from '../hooks/useStageTranslations'
 import LanguageSwitch from '../components/LanguageSwitch'
 
 // Mock data - replace with actual API calls
@@ -40,6 +41,8 @@ const JobShortlist = () => {
     return tPageSync(key, params)
   }
   
+  const { getStageLabel, getStageDescription } = useStageTranslations()
+  
   const [job, setJob] = useState(null)
   const [candidates, setCandidates] = useState([])
   const [rankedCandidates, setRankedCandidates] = useState([])
@@ -47,12 +50,12 @@ const JobShortlist = () => {
   const [loading, setLoading] = useState(true)
   const [showInsights, setShowInsights] = useState(false)
 
-  // Workflow stages configuration - using shortlist translations
+  // Workflow stages configuration - using centralized stage translations
   const workflowStages = [
-    { id: 'applied', label: tPage('workflowStages.applied'), icon: FileText, description: 'Initial application submitted', color: 'blue' },
-    { id: 'shortlisted', label: tPage('workflowStages.shortlisted'), icon: CheckCircle, description: 'Selected for interview', color: 'yellow' },
-    { id: 'interview-scheduled', label: tPage('workflowStages.interviewScheduled'), icon: Calendar, description: 'Interview appointment set', color: 'purple' },
-    { id: 'interview-passed', label: tPage('workflowStages.interviewPassed'), icon: Users, description: 'Successfully completed interview', color: 'green' }
+    { id: 'applied', label: getStageLabel('applied'), icon: FileText, description: getStageDescription('applied'), color: 'blue' },
+    { id: 'shortlisted', label: getStageLabel('shortlisted'), icon: CheckCircle, description: getStageDescription('shortlisted'), color: 'yellow' },
+    { id: 'interview_scheduled', label: getStageLabel('interview_scheduled'), icon: Calendar, description: getStageDescription('interview_scheduled'), color: 'purple' },
+    { id: 'interview_passed', label: getStageLabel('interview_passed'), icon: Users, description: getStageDescription('interview_passed'), color: 'green' }
   ]
 
   // Load job and candidates data

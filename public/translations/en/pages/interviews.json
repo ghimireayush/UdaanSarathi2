@@ -13,7 +13,8 @@
   },
   "viewModes": {
     "list": "List",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "contemporary": "Contemporary"
   },
   "timeRanges": {
     "day": "Day",
@@ -21,7 +22,14 @@
   },
   "filters": {
     "allJobs": "All Jobs",
-    "searchPlaceholder": "Search candidates or interviewers..."
+    "filterByJob": "Filter by Job",
+    "searchCandidate": "Search Candidate",
+    "searchPlaceholder": "Search candidates or interviewers...",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "unattended": "Unattended",
+    "all": "All",
+    "useTabsHint": "Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews."
   },
   "stats": {
     "todaysInterviews": "Today's Interviews",
@@ -67,6 +75,26 @@
     "cancelled": "Cancelled",
     "rescheduled": "Rescheduled",
     "noShow": "No Show"
+  },
+  "actions": {
+    "markPass": "Mark Pass",
+    "markFail": "Mark Fail",
+    "reject": "Reject",
+    "reschedule": "Reschedule",
+    "inPerson": "In-person",
+    "online": "Online",
+    "interviewer": "Interviewer",
+    "viewDetails": "View Details"
+  },
+  "card": {
+    "unattendedFlag": "Automatically flagged as unattended (grace period expired)",
+    "duration": "{{duration}} min",
+    "office": "Office"
+  },
+  "empty": {
+    "noInterviews": "No scheduled interviews",
+    "noInterviewsAll": "No interviews have been scheduled yet.",
+    "noInterviewsFilter": "No interviews match the \"{{filter}}\" filter."
   },
   "loading": {
     "interviews": "Loading interviews..."

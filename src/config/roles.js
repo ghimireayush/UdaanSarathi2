@@ -114,7 +114,9 @@ export const getAssignableRoles = () => {
  * @returns {Object|null} Role object or null
  */
 export const getRoleByValue = (value) => {
-  return Object.values(ROLES).find(role => role.value === value) || null;
+  // Normalize legacy role names
+  const normalizedValue = value === 'agency_owner' ? 'owner' : value;
+  return Object.values(ROLES).find(role => role.value === normalizedValue) || null;
 };
 
 /**
@@ -123,7 +125,9 @@ export const getRoleByValue = (value) => {
  * @returns {string} Role label
  */
 export const getRoleLabel = (value) => {
-  const role = getRoleByValue(value);
+  // Normalize legacy role names
+  const normalizedValue = value === 'agency_owner' ? 'owner' : value;
+  const role = getRoleByValue(normalizedValue);
   return role ? role.label : value;
 };
 

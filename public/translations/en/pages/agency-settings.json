@@ -1,11 +1,11 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-07",
     "page": "agency-settings"
   },
   "title": "Agency Settings",
-  "subtitle": "Manage your agency profile, preferences, and system configuration",
+  "subtitle": "Manage your agency profile, contact information, and preferences",
   "tabs": {
     "basicInfo": "Basic Info",
     "contact": "Contact",
@@ -16,14 +16,41 @@
     "settings": "Settings"
   },
   "sections": {
+    "agencyPreview": "Agency Preview",
     "agencyLogo": "Agency Logo",
     "basicInfo": {
       "title": "Basic Information",
+      "editTitle": "Edit Basic Information",
       "subtitle": "Update your agency's basic details and contact information"
     },
     "contactInfo": {
       "title": "Contact Information",
+      "editTitle": "Edit Contact Information",
       "subtitle": "Manage contact details and communication preferences"
+    },
+    "location": {
+      "title": "Location",
+      "editTitle": "Edit Location",
+      "subtitle": "Update your agency's address and location"
+    },
+    "media": {
+      "title": "Media & Images",
+      "subtitle": "Upload logos, banners, and other media"
+    },
+    "socialMedia": {
+      "title": "Social Media",
+      "editTitle": "Edit Social Media",
+      "subtitle": "Connect your social media profiles"
+    },
+    "services": {
+      "title": "Services & Specializations",
+      "editTitle": "Edit Services",
+      "subtitle": "Manage your agency's services and target countries"
+    },
+    "settings": {
+      "title": "Settings",
+      "editTitle": "Edit Settings",
+      "subtitle": "Configure system preferences"
     },
     "branding": {
       "title": "Branding & Media",
@@ -44,11 +71,17 @@
   },
   "fields": {
     "agencyName": "Agency Name",
+    "agencyNameRequired": "Agency Name *",
     "description": "Description",
     "website": "Website",
     "email": "Email Address",
+    "emailRequired": "Email *",
     "phone": "Phone Number",
+    "phoneRequired": "Phone *",
+    "mobile": "Mobile",
+    "mobileRequired": "Mobile *",
     "address": "Address",
+    "addressRequired": "Address *",
     "city": "City",
     "country": "Country",
     "postalCode": "Postal Code",
@@ -60,7 +93,14 @@
     "dateFormat": "Date Format",
     "notifications": "Email Notifications",
     "twoFactorAuth": "Two-Factor Authentication",
-    "sessionTimeout": "Session Timeout"
+    "sessionTimeout": "Session Timeout",
+    "establishedYear": "Established Year",
+    "established": "Established",
+    "licenseNumber": "License Number",
+    "licenseNumberRequired": "License Number *",
+    "services": "Services",
+    "specializations": "Specializations",
+    "targetCountries": "Target Countries"
   },
   "placeholders": {
     "enterAgencyName": "Enter agency name",
@@ -70,7 +110,7 @@
     "description": "Describe your agency's services and expertise",
     "website": "https://www.yourwebsite.com",
     "email": "contact@youragency.com",
-    "phone": "+1 (555) 123-4567",
+    "phone": "+977 1 234 5678",
     "address": "Enter your business address",
     "city": "Enter city name",
     "postalCode": "Enter postal/ZIP code"
@@ -83,7 +123,16 @@
     "remove": "Remove",
     "reset": "Reset to Default",
     "preview": "Preview",
-    "test": "Test Connection"
+    "test": "Test Connection",
+    "edit": "Edit",
+    "add": "Add",
+    "delete": "Delete",
+    "chooseOnMap": "Choose on Map",
+    "changeLogo": "Change Logo",
+    "changeBanner": "Change Banner",
+    "addService": "Add Service",
+    "addSpecialization": "Add Specialization",
+    "addCountry": "Add Country"
   },
   "messages": {
     "settingsSaved": "Settings saved successfully!",
@@ -106,6 +155,36 @@
     "invalidPhone": "Please enter a valid phone number",
     "minLength": "Minimum {{min}} characters required",
     "maxLength": "Maximum {{max}} characters allowed"
+  },
+  "media": {
+    "logoDescription": "Upload your agency logo. This will be displayed on your profile and job postings.",
+    "uploadLogo": "Upload Logo",
+    "uploading": "Uploading...",
+    "maxFileSize": "Max 5MB, JPEG/PNG/GIF",
+    "logoHint": "Changes will appear immediately in the navigation menu",
+    "processingLogo": "Processing logo upload...",
+    "bannerTitle": "Agency Banner",
+    "bannerDescription": "Upload a banner image for your agency profile. Recommended size: 1200x300 pixels.",
+    "uploadBanner": "Upload Banner",
+    "processingBanner": "Processing banner upload...",
+    "notSet": "Not Set"
+  },
+  "socialPlatforms": {
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter"
+  },
+  "countries": {
+    "selectCountry": "Select country to add",
+    "uae": "UAE",
+    "saudiArabia": "Saudi Arabia",
+    "qatar": "Qatar",
+    "kuwait": "Kuwait",
+    "oman": "Oman",
+    "bahrain": "Bahrain",
+    "malaysia": "Malaysia",
+    "singapore": "Singapore"
   },
   "loading": {
     "settings": "Loading settings...",

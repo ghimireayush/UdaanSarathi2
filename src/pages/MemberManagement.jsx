@@ -174,7 +174,7 @@ const MemberManagement = () => {
                     required
                     value={formData.role}
                     onChange={handleInputChange}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright"
+                    className="form-select"
                   >
                     {assignableRoles.map(role => (
                       <option key={role.value} value={role.value}>

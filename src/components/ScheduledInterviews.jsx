@@ -33,12 +33,22 @@ import CandidateDataSource from '../api/datasources/CandidateDataSource.js'
 import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
 import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
 import { useAgency } from '../contexts/AgencyContext.jsx'
+import { useLanguage } from '../hooks/useLanguage'
+import { useStageTranslations } from '../hooks/useStageTranslations'
 import { format, isToday, isTomorrow, isPast, addMinutes, parseISO } from 'date-fns'
 import CandidateSummaryS2 from './CandidateSummaryS2.jsx'
 import { formatTime12Hour } from '../utils/helpers.js'
 
 const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, currentFilter, onFilterChange, onDataReload, showFilters = true }) => {
   const { agencyData } = useAgency()
+  const { tPageSync } = useLanguage({ pageName: 'interviews', autoLoad: true })
+  const { getStageLabel, getStageAction } = useStageTranslations()
+  
+  // Helper function for translations with fallback
+  const t = (key, fallback = key) => {
+    const result = tPageSync(key)
+    return result === key ? fallback : result
+  }
   // Use parent's currentFilter directly, no local state
   const activeSubtab = currentFilter || 'all'
   const [selectedCandidate, setSelectedCandidate] = useState(null)
@@ -111,14 +121,29 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
         name: interview.candidate_name || interview.name || 'Unknown Candidate',
         phone: interview.candidate_phone || interview.phone || '',
         email: interview.candidate_email || interview.email || '',
-        interview: interview
+        interview: interview,
+        // Include application_id for notes loading in sidebar
+        application_id: interview.application_id || interview.job_application_id,
+        application: {
+          id: interview.application_id || interview.job_application_id,
+          stage: interview.application_stage || 'interview_scheduled'
+        }
       }))
       console.log('✅ Setting interviews from propInterviews:', mapped.length)
       setInterviews(mapped)
     } else {
       // Use candidates passed from parent (already filtered by server)
-      console.log('✅ Setting interviews from candidates:', candidates?.length || 0)
-      setInterviews(candidates || [])
+      // Ensure application object exists for notes loading
+      const mappedCandidates = (candidates || []).map(c => ({
+        ...c,
+        application_id: c.application_id || c.application?.id || c.interview?.job_application_id,
+        application: c.application || {
+          id: c.application_id || c.interview?.job_application_id,
+          stage: c.stage || c.interview?.status || 'interview_scheduled'
+        }
+      }))
+      console.log('✅ Setting interviews from candidates:', mappedCandidates.length)
+      setInterviews(mappedCandidates)
     }
   }, [candidates, jobId, propInterviews])
   
@@ -534,7 +559,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
     const isUnattendedInterview = isUnattended(interview)
 
     if (isUnattendedInterview) {
-      return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Unattended</span>
+      return <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">{t('filters.unattended', 'Unattended')}</span>
     }
     
     // ✅ Check rescheduled_at timestamp for rescheduled status
@@ -621,7 +646,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors"
           >
             <CheckCircle className="w-3 h-3 mr-1 inline" />
-            Mark Pass
+            {getStageAction('markPass')}
           </button>
           <button
             onClick={(e) => {
@@ -631,7 +656,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
           >
             <XCircle className="w-3 h-3 mr-1 inline" />
-            Mark Fail
+            {getStageAction('markFail')}
           </button>
           <button
             onClick={(e) => {
@@ -644,7 +669,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
           >
             <X className="w-3 h-3 mr-1 inline" />
-            Reject
+            {getStageAction('reject')}
           </button>
         </div>
       )
@@ -662,7 +687,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors"
           >
             <CheckCircle className="w-3 h-3 mr-1 inline" />
-            Mark Pass
+            {getStageAction('markPass')}
           </button>
           <button
             onClick={(e) => {
@@ -672,7 +697,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
           >
             <XCircle className="w-3 h-3 mr-1 inline" />
-            Mark Fail
+            {getStageAction('markFail')}
           </button>
           <button
             onClick={(e) => {
@@ -685,7 +710,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
           >
             <X className="w-3 h-3 mr-1 inline" />
-            Reject
+            {getStageAction('reject')}
           </button>
           <button
             onClick={(e) => {
@@ -698,7 +723,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
           >
             <RotateCcw className="w-3 h-3 mr-1 inline" />
-            Reschedule
+            {getStageAction('rescheduleInterview')}
           </button>
         </div>
       )
@@ -730,6 +755,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
         isInterviewContext={true}
+        jobId={jobId || selectedCandidate?.job_id || selectedCandidate?.interview?.job_posting_id}
         onMarkPass={async (candidateId) => {
           setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
           await handleAction({ id: candidateId }, 'pass')
@@ -756,10 +782,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
       {showFilters && (
         <div className="flex flex-wrap gap-2">
           {[
-            { id: 'today', label: 'Today', count: getSubtabCounts().today },
-            { id: 'tomorrow', label: 'Tomorrow', count: getSubtabCounts().tomorrow },
-            { id: 'unattended', label: 'Unattended', count: getSubtabCounts().unattended },
-            { id: 'all', label: 'All', count: getSubtabCounts().all }
+            { id: 'today', label: t('filters.today', 'Today'), count: getSubtabCounts().today },
+            { id: 'tomorrow', label: t('filters.tomorrow', 'Tomorrow'), count: getSubtabCounts().tomorrow },
+            { id: 'unattended', label: t('filters.unattended', 'Unattended'), count: getSubtabCounts().unattended },
+            { id: 'all', label: t('filters.all', 'All'), count: getSubtabCounts().all }
           ].map(subtab => (
             <button
               key={subtab.id}
@@ -838,7 +864,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
 
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <User className="w-4 h-4 mr-2" />
-                        <span>Interviewer: {interview.interviewer || 'Not assigned'}</span>
+                        <span>{t('actions.interviewer', 'Interviewer')}: {interview.interviewer || t('status.notScheduled', 'Not assigned')}</span>
                       </div>
 
                       {/* Interview Type */}
@@ -869,7 +895,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                           <div className="flex items-center">
                             <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
                             <p className="text-sm text-red-800 dark:text-red-300">
-                              Automatically flagged as unattended (grace period expired)
+                              {t('card.unattendedFlag', 'Automatically flagged as unattended (grace period expired)')}
                             </p>
                           </div>
                         </div>
@@ -889,7 +915,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                     className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors flex items-center"
                   >
                     <Eye className="w-4 h-4 mr-1" />
-                    View Details
+                    {t('actions.viewDetails', 'View Details')}
                   </button>
                 </div>
               </div>
@@ -898,7 +924,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
         ) : (
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No scheduled interviews</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('empty.noInterviews', 'No scheduled interviews')}</h3>
             <p className="text-gray-600 dark:text-gray-400">
               {activeSubtab === 'all'
                 ? 'No interviews have been scheduled yet.'

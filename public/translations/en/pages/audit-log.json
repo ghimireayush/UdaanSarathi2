@@ -15,6 +15,7 @@
     "placeholder": "Search by name, phone number or role..."
   },
   "filters": {
+    "title": "Filters",
     "toggle": "Filters",
     "dateRange": "Date Range",
     "role": "Role",

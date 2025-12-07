@@ -8,10 +8,13 @@ import { useAgency } from '../contexts/AgencyContext.jsx' // ✅ Phase 2: Get ag
 import { format, addMinutes, isSameMinute, parseISO, addDays, startOfDay } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 import { formatTime12Hour } from '../utils/helpers.js'
+import { useLanguage } from '../hooks/useLanguage'
 
 const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
   const navigate = useNavigate()
   const { agencyData } = useAgency() // ✅ Phase 2: Get agency context
+  const { tPageSync } = useLanguage({ pageName: 'job-details', autoLoad: true })
+  const t = (key, params = {}) => tPageSync(key, params)
   const [selectedCandidates, setSelectedCandidates] = useState(new Set())
   const [schedulingMode, setSchedulingMode] = useState('individual') // 'individual', 'batch', 'suggested', 'ai'
   const [schedulingData, setSchedulingData] = useState({
@@ -385,11 +388,11 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       <div className="flex items-start">
         <AlertTriangle className="w-5 h-5 text-red-600 mr-2 mt-0.5" />
         <div className="flex-1">
-          <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">Scheduling Conflicts Detected</h4>
+          <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">{t('scheduling.conflictsDetected')}</h4>
           <div className="space-y-2">
             {conflicts.map((conflict, index) => (
               <div key={index} className="text-sm text-red-700 dark:text-red-300">
-                <strong>{conflict.candidateName}</strong> has {conflict.conflicts.length} conflicting interview(s):
+                <strong>{conflict.candidateName}</strong> {t('scheduling.hasConflicts', { count: conflict.conflicts.length })}
                 <ul className="ml-4 mt-1">
                   {conflict.conflicts.map((existingInterview, idx) => (
                     <li key={idx} className="text-xs text-red-600 dark:text-red-400">
@@ -402,7 +405,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             ))}
           </div>
           <p className="text-xs text-red-600 dark:text-red-400 mt-2">
-            Please choose a different time slot or deselect conflicting candidates.
+            {t('scheduling.conflictsHint')}
           </p>
         </div>
       </div>
@@ -411,16 +414,16 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'not_scheduled': { class: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200', label: 'Not Scheduled' },
-      'scheduled': { class: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200', label: 'Scheduled' },
-      'completed': { class: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200', label: 'Completed' },
-      'cancelled': { class: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200', label: 'Cancelled' },
-      'rescheduled': { class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200', label: 'Rescheduled' }
+      'not_scheduled': { class: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200', labelKey: 'scheduling.statusNotScheduled' },
+      'scheduled': { class: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200', labelKey: 'scheduling.statusScheduled' },
+      'completed': { class: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200', labelKey: 'scheduling.statusCompleted' },
+      'cancelled': { class: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200', labelKey: 'scheduling.statusCancelled' },
+      'rescheduled': { class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200', labelKey: 'scheduling.statusRescheduled' }
     }
     const config = statusConfig[status] || statusConfig['not_scheduled']
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
-        {config.label}
+        {t(config.labelKey)}
       </span>
     )
   }
@@ -428,17 +431,17 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
   return (
     <div className="space-y-6 max-w-6xl mx-auto w-full">
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-        <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Interview Scheduling</h3>
+        <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">{t('scheduling.title')}</h3>
         <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-          Review shortlisted candidates and create interview schedules with multiple scheduling options.
+          {t('scheduling.description')}
         </p>
       </div>
 
       {/* Requirements Checklist */}
       <div>
-        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Requirements Checklist</h4>
+        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.requirementsChecklist')}</h4>
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Auto-selected requirements for interviews:</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{t('scheduling.autoSelectedRequirements')}</p>
           <div className="flex flex-wrap gap-2">
             {requirements.map(requirement => {
               const IconComponent = requirement.icon
@@ -466,14 +469,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             })}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Click X to remove requirements. Selected requirements will be communicated to candidates.
+            {t('scheduling.requirementsHint')}
           </p>
         </div>
       </div>
 
       {/* Scheduling Mode Selection */}
       <div>
-        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Scheduling Options</h4>
+        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.schedulingOptions')}</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
             onClick={() => {
@@ -490,8 +493,8 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             }`}
           >
             <User className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Individual</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Schedule one by one</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('scheduling.individual')}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{t('scheduling.individualDesc')}</div>
           </button>
           
           <button
@@ -503,8 +506,8 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             }`}
           >
             <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Batch</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Schedule multiple</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('scheduling.batch')}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{t('scheduling.batchDesc')}</div>
           </button>
           
           <button
@@ -516,8 +519,8 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             }`}
           >
             <Calendar className="w-6 h-6 mx-auto mb-2 text-green-600" />
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Suggested</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Auto-generated schedule</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('scheduling.suggested')}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{t('scheduling.suggestedDesc')}</div>
           </button>
           
           <button
@@ -529,8 +532,8 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             }`}
           >
             <Zap className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">AI-Assisted</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Smart recommendations</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('scheduling.aiAssisted')}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{t('scheduling.aiAssistedDesc')}</div>
           </button>
         </div>
       </div>
@@ -538,14 +541,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       {/* Individual Scheduling */}
       {schedulingMode === 'individual' && (
         <div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Individual Scheduling</h4>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.individualScheduling')}</h4>
           
           {/* Candidate Selection */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">Select Candidate</h5>
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">{t('scheduling.selectCandidate')}</h5>
               <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                Select one candidate at a time
+                {t('scheduling.selectOneAtATime')}
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -585,11 +588,11 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
           {/* Scheduling Form */}
           {selectedCandidates.size > 0 && (
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Schedule Details</h5>
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.scheduleDetails')}</h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Date {!schedulingData.date && <span className="text-red-500">*</span>}
+                    {t('scheduling.date')} {!schedulingData.date && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type="date"
@@ -605,13 +608,13 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                   />
                   {!schedulingData.date && (
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
-                      Click to select interview date
+                      {t('scheduling.clickToSelectDate')}
                     </p>
                   )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Time {!schedulingData.time && <span className="text-red-500">*</span>}
+                    {t('scheduling.time')} {!schedulingData.time && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type="time"
@@ -630,12 +633,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                     </p>
                   ) : (
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
-                      Click to select interview time
+                      {t('scheduling.clickToSelectTime')}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (minutes)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.duration')}</label>
                   <select
                     value={schedulingData.duration}
                     onChange={(e) => handleSchedulingDataChange('duration', parseInt(e.target.value))}
@@ -649,13 +652,13 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Interviewer</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.interviewer')}</label>
                   <select
                     value={schedulingData.interviewer}
                     onChange={(e) => handleSchedulingDataChange('interviewer', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
-                    <option value="">Select interviewer</option>
+                    <option value="">{t('scheduling.selectInterviewer')}</option>
                     {teamMembers.map((member) => (
                       <option key={member.id} value={member.name}>
                         {member.name} ({member.role})
@@ -664,21 +667,21 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.location')}</label>
                   <input
                     type="text"
                     value={schedulingData.location}
                     onChange={(e) => handleSchedulingDataChange('location', e.target.value)}
-                    placeholder="Enter location"
+                    placeholder={t('scheduling.enterLocation')}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.notes')}</label>
                   <textarea
                     value={schedulingData.notes}
                     onChange={(e) => handleSchedulingDataChange('notes', e.target.value)}
-                    placeholder="Add any additional notes for the interview"
+                    placeholder={t('scheduling.notesPlaceholder')}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
@@ -692,10 +695,10 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       {/* Batch Scheduling */}
       {schedulingMode === 'batch' && (
         <div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Batch Scheduling</h4>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.batchScheduling')}</h4>
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between mb-3">
-              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">Batch Schedule Groups</h5>
+              <h5 className="text-md font-medium text-gray-900 dark:text-gray-100">{t('scheduling.batchScheduleGroups')}</h5>
               <button
                 onClick={() => {
                   const newBatch = {
@@ -713,22 +716,22 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                 className="btn-primary text-sm flex items-center"
               >
                 <Plus className="w-4 h-4 mr-1" />
-                Add Batch
+                {t('scheduling.addBatch')}
               </button>
             </div>
             
             {batchScheduling.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Users className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p>No batch schedules created yet.</p>
-                <p className="text-sm mt-1">Click "Add Batch" to create your first batch schedule.</p>
+                <p>{t('scheduling.noBatchSchedules')}</p>
+                <p className="text-sm mt-1">{t('scheduling.clickAddBatch')}</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {batchScheduling.map((batch, index) => (
                   <div key={batch.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
                     <div className="flex items-center justify-between mb-3">
-                      <h6 className="font-medium text-gray-900 dark:text-gray-100">Batch {index + 1}</h6>
+                      <h6 className="font-medium text-gray-900 dark:text-gray-100">{t('scheduling.batchNumber', { number: index + 1 })}</h6>
                       <button
                         onClick={() => {
                           setBatchScheduling(prev => prev.filter(b => b.id !== batch.id))
@@ -742,7 +745,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Date {!batch.date && <span className="text-red-500">*</span>}
+                          {t('scheduling.date')} {!batch.date && <span className="text-red-500">*</span>}
                         </label>
                         <input
                           type="date"
@@ -762,7 +765,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Time {!batch.time && <span className="text-red-500">*</span>}
+                          {t('scheduling.time')} {!batch.time && <span className="text-red-500">*</span>}
                         </label>
                         <input
                           type="time"
@@ -785,7 +788,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                         )}
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (min)</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.durationMin')}</label>
                         <select
                           value={batch.duration || 60}
                           onChange={(e) => {
@@ -794,12 +797,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                           }}
                           className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         >
-                          <option value={15}>15 min</option>
-                          <option value={30}>30 min</option>
-                          <option value={45}>45 min</option>
-                          <option value={60}>60 min</option>
-                          <option value={90}>90 min</option>
-                          <option value={120}>120 min</option>
+                          <option value={15}>{t('scheduling.minOption', { min: 15 })}</option>
+                          <option value={30}>{t('scheduling.minOption', { min: 30 })}</option>
+                          <option value={45}>{t('scheduling.minOption', { min: 45 })}</option>
+                          <option value={60}>{t('scheduling.minOption', { min: 60 })}</option>
+                          <option value={90}>{t('scheduling.minOption', { min: 90 })}</option>
+                          <option value={120}>{t('scheduling.minOption', { min: 120 })}</option>
                         </select>
                       </div>
                     </div>
@@ -823,14 +826,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                       ))}
                       {candidates.every(c => batchScheduling.some(b => b.candidates.includes(c.id))) && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 italic">
-                          All candidates have been assigned to batches
+                          {t('scheduling.allCandidatesAssigned')}
                         </div>
                       )}
                     </div>
                     
                     {batch.candidates.length > 0 && (
                       <div className="mt-2">
-                        <div className="text-xs text-gray-700 dark:text-gray-300 mb-1">Selected candidates:</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.selectedCandidates')}</div>
                         <div className="flex flex-wrap gap-1">
                           {batch.candidates.map(candidateId => {
                             const candidate = candidates.find(c => c.id === candidateId)
@@ -863,22 +866,22 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       {/* Suggested Scheduling */}
       {schedulingMode === 'suggested' && (
         <div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Suggested Scheduling</h4>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.suggestedScheduling')}</h4>
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">Duration</label>
+                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">{t('scheduling.durationLabel')}</label>
                 <select
                   value={suggestedScheduling.duration}
                   onChange={(e) => setSuggestedScheduling(prev => ({ ...prev, duration: e.target.value }))}
                   className="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="2 weeks">2 weeks</option>
-                  <option value="2 days">2 days</option>
+                  <option value="2 weeks">{t('scheduling.twoWeeks')}</option>
+                  <option value="2 days">{t('scheduling.twoDays')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">Start Date</label>
+                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">{t('scheduling.startDate')}</label>
                 <input
                   type="date"
                   value={suggestedScheduling.startDate}
@@ -888,24 +891,24 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">Interviews per Day</label>
+                <label className="block text-sm font-medium text-green-800 dark:text-green-300 mb-1">{t('scheduling.interviewsPerDay')}</label>
                 <select
                   value={suggestedScheduling.interviewsPerDay}
                   onChange={(e) => setSuggestedScheduling(prev => ({ ...prev, interviewsPerDay: parseInt(e.target.value) }))}
                   className="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value={1}>1 per day</option>
-                  <option value={2}>2 per day</option>
-                  <option value={3}>3 per day</option>
-                  <option value={4}>4 per day</option>
-                  <option value={5}>5 per day</option>
+                  <option value={1}>{t('scheduling.perDay', { count: 1 })}</option>
+                  <option value={2}>{t('scheduling.perDay', { count: 2 })}</option>
+                  <option value={3}>{t('scheduling.perDay', { count: 3 })}</option>
+                  <option value={4}>{t('scheduling.perDay', { count: 4 })}</option>
+                  <option value={5}>{t('scheduling.perDay', { count: 5 })}</option>
                 </select>
               </div>
             </div>
           </div>
           
           <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-            <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Generated Schedule Preview</h5>
+            <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.generatedSchedulePreview')}</h5>
             <div className="space-y-3">
               {generateSuggestedSchedule().map((day, index) => (
                 <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
@@ -916,7 +919,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                     {day.candidates.map((slot, slotIndex) => (
                       <div key={slotIndex} className="flex items-center justify-between text-sm">
                         <span>{slot.time} - {slot.candidate.name}</span>
-                        <span className="text-gray-500 dark:text-gray-400">Priority: {slot.candidate.priority_score}%</span>
+                        <span className="text-gray-500 dark:text-gray-400">{t('scheduling.priority')}: {slot.candidate.priority_score}%</span>
                       </div>
                     ))}
                   </div>
@@ -930,15 +933,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
       {/* AI-Assisted Scheduling */}
       {schedulingMode === 'ai' && (
         <div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">AI-Assisted Scheduling</h4>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">{t('scheduling.aiAssistedScheduling')}</h4>
           <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4 mb-4">
             <div className="flex items-start">
               <Zap className="w-5 h-5 text-purple-600 mr-2 mt-0.5" />
               <div>
-                <h5 className="text-sm font-medium text-purple-800 dark:text-purple-300">Smart Scheduling for Top Candidates</h5>
+                <h5 className="text-sm font-medium text-purple-800 dark:text-purple-300">{t('scheduling.smartSchedulingTitle')}</h5>
                 <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
-                  AI has analyzed candidate profiles and suggests optimal scheduling for your top 5 candidates.
-                  Please review and approve the suggestions.
+                  {t('scheduling.smartSchedulingDesc')}
                 </p>
               </div>
             </div>
@@ -972,7 +974,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-purple-700 dark:text-purple-300">{suggestion.candidate.priority_score}%</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Match Score</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{t('scheduling.matchScore')}</div>
                   </div>
                 </div>
               </div>
@@ -983,9 +985,9 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2 mt-0.5" />
               <div>
-                <h5 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Review Required</h5>
+                <h5 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">{t('scheduling.reviewRequired')}</h5>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                  AI suggestions need thorough review. Please verify candidate availability and interviewer schedules before confirming.
+                  {t('scheduling.reviewRequiredDesc')}
                 </p>
               </div>
             </div>
@@ -1019,7 +1021,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Calendar className="w-4 h-4 mr-2" />
-              {isScheduling ? 'Scheduling...' : 'Apply Suggested Schedule'}
+              {isScheduling ? t('scheduling.scheduling') : t('scheduling.applySuggestedSchedule')}
             </button>
           )}
           
@@ -1034,7 +1036,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Zap className="w-4 h-4 mr-2" />
-              {isScheduling ? 'Scheduling...' : 'Apply AI Schedule'}
+              {isScheduling ? t('scheduling.scheduling') : t('scheduling.applyAISchedule')}
             </button>
           )}
           
@@ -1045,7 +1047,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Users className="w-4 h-4 mr-2" />
-              {isScheduling ? 'Scheduling...' : `Schedule ${batchScheduling.length} Batch${batchScheduling.length !== 1 ? 'es' : ''}`}
+              {isScheduling ? t('scheduling.scheduling') : t('scheduling.scheduleBatches', { count: batchScheduling.length })}
             </button>
           )}
           
@@ -1063,7 +1065,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Calendar className="w-4 h-4 mr-2" />
-              {isScheduling ? 'Scheduling...' : 'Schedule Interview'}
+              {isScheduling ? t('scheduling.scheduling') : t('scheduling.scheduleInterview')}
             </button>
           )}
         </div>

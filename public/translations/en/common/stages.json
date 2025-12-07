@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "description": "Single source of truth for stage translations"
+  },
+  "stages": {
+    "applied": "Applied",
+    "shortlisted": "Shortlisted",
+    "interview_scheduled": "Interview Scheduled",
+    "interview_passed": "Interview Passed",
+    "interview_failed": "Interview Failed",
+    "interview_rescheduled": "Interview Rescheduled",
+    "withdrawn": "Withdrawn",
+    "rejected": "Rejected",
+    "hired": "Hired"
+  },
+  "stageDescriptions": {
+    "applied": "Candidates who have submitted applications",
+    "shortlisted": "Candidates selected for interview",
+    "interview_scheduled": "Candidates with scheduled interviews",
+    "interview_passed": "Candidates who passed interviews",
+    "interview_failed": "Candidates who did not pass interviews",
+    "interview_rescheduled": "Candidates with rescheduled interviews",
+    "withdrawn": "Candidates who withdrew their application",
+    "rejected": "Candidates who were rejected",
+    "hired": "Candidates who were hired"
+  },
+  "stageActions": {
+    "shortlist": "Shortlist",
+    "scheduleInterview": "Schedule Interview",
+    "rescheduleInterview": "Reschedule Interview",
+    "markPass": "Mark Pass",
+    "markFail": "Mark Fail",
+    "reject": "Reject",
+    "withdraw": "Withdraw",
+    "hire": "Hire"
+  }
+}

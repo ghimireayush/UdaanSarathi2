@@ -547,7 +547,7 @@ const AgencySettings = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <AgencyPreview data={agencyData} />
+          <AgencyPreview data={agencyData} tPage={tPage} />
         </div>
       </div>
     </div>
@@ -563,14 +563,14 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Basic Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.basicInfo.editTitle')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
-              Cancel
+              {tPage('actions.cancel')}
             </button>
             <button
               onClick={onSave}
@@ -585,7 +585,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Agency Name *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.agencyNameRequired')}</label>
             <input
               type="text"
               value={formData.name || ''}
@@ -599,13 +599,10 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
               className="form-input"
               placeholder={tPage('placeholders.enterAgencyName')}
             />
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-              💡 This will update the agency name in the navigation menu
-            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.description')}</label>
             <textarea
               value={formData.description || ''}
               onChange={(e) => onFormChange('description', e.target.value)}
@@ -617,7 +614,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Established Year</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.establishedYear')}</label>
               <input
                 type="number"
                 value={formData.established_year || ''}
@@ -630,7 +627,7 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License Number *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.licenseNumberRequired')}</label>
               <input
                 type="text"
                 value={formData.license_number || ''}
@@ -648,35 +645,35 @@ const BasicInfoSection = ({ data, isEditing, formData, onFormChange, onStartEdit
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.basicInfo.title')}</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
         >
           <Edit className="w-4 h-4 mr-1" />
-          Edit
+          {tPage('actions.edit')}
         </button>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Agency Name</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.agencyName')}</label>
           <p className="text-sm text-gray-900 dark:text-gray-100">{data.name}</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.description')}</label>
           <p className="text-sm text-gray-900 dark:text-gray-100">{data.description}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Established</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.established')}</label>
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.established_year}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License Number</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.licenseNumber')}</label>
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.license_number}</p>
           </div>
         </div>
@@ -694,14 +691,14 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Contact Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.contactInfo.editTitle')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
-              Cancel
+              {tPage('actions.cancel')}
             </button>
             <button
               onClick={onSave}
@@ -717,47 +714,47 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.phoneRequired')}</label>
               <input
                 type="tel"
                 value={formData.phone || ''}
                 onChange={(e) => onFormChange('phone', e.target.value)}
                 className="form-input"
-                placeholder="+977-1-4567890"
+                placeholder={tPage('placeholders.phone')}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.mobileRequired')}</label>
               <input
                 type="tel"
                 value={formData.mobile || ''}
                 onChange={(e) => onFormChange('mobile', e.target.value)}
                 className="form-input"
-                placeholder="+977-9841234567"
+                placeholder={tPage('placeholders.phone')}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.emailRequired')}</label>
             <input
               type="email"
               value={formData.email || ''}
               onChange={(e) => onFormChange('email', e.target.value)}
               className="form-input"
-              placeholder="info@agency.com"
+              placeholder={tPage('placeholders.email')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.website')}</label>
             <input
               type="url"
               value={formData.website || ''}
               onChange={(e) => onFormChange('website', e.target.value)}
               className="form-input"
-              placeholder="www.agency.com"
+              placeholder={tPage('placeholders.website')}
             />
           </div>
         </div>
@@ -768,20 +765,20 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Contact Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.contactInfo.title')}</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
         >
           <Edit className="w-4 h-4 mr-1" />
-          Edit
+          {tPage('actions.edit')}
         </button>
       </div>
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.phone')}</label>
             <div className="flex items-center">
               <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
               <p className="text-sm text-gray-900 dark:text-gray-100">{data.phone}</p>
@@ -789,7 +786,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.mobile')}</label>
             <div className="flex items-center">
               <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
               <p className="text-sm text-gray-900 dark:text-gray-100">{data.mobile}</p>
@@ -798,7 +795,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.email')}</label>
           <div className="flex items-center">
             <Mail className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.email}</p>
@@ -806,7 +803,7 @@ const ContactSection = ({ data, isEditing, formData, onFormChange, onStartEdit, 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.website')}</label>
           <div className="flex items-center">
             <Globe className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
             <a href={`https://${data.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
@@ -848,14 +845,14 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
       <>
         <div className="card p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Location</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.location.editTitle')}</h2>
             <div className="flex items-center space-x-2">
               <button
                 onClick={onCancel}
                 className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 disabled={isSaving}
               >
-                Cancel
+                {tPage('actions.cancel')}
               </button>
               <button
                 onClick={onSave}
@@ -863,14 +860,14 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                 className="btn-primary text-sm flex items-center"
               >
                 <Save className="w-4 h-4 mr-1" />
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving ? tPage('actions.saving') : tPage('actions.save')}
               </button>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.addressRequired')}</label>
               <div className="space-y-2">
                 <textarea
                   value={formData.address || ''}
@@ -886,7 +883,7 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   disabled={isSaving}
                 >
                   <MapPin className="w-4 h-4 mr-1" />
-                  Choose on Map
+                  {tPage('actions.chooseOnMap')}
                 </button>
               </div>
               {selectedLocation && (
@@ -922,19 +919,19 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Location</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.location.title')}</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
         >
           <Edit className="w-4 h-4 mr-1" />
-          Edit
+          {tPage('actions.edit')}
         </button>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.address')}</label>
           <div className="flex items-start">
             <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2 mt-0.5" />
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.address}</p>
@@ -945,12 +942,6 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
               <span>Coordinates: {data.latitude.toFixed(6)}, {data.longitude.toFixed(6)}</span>
             </div>
           )}
-        </div>
-
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            This address will be displayed on your public profile and used for candidate visits.
-          </p>
         </div>
       </div>
     </div>
@@ -1120,7 +1111,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
           
           <div className="flex-1">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              Upload your agency logo. This will be displayed on your profile and job postings.
+              {tPage('media.logoDescription')}
             </p>
             <div className="flex items-center space-x-3">
               <button
@@ -1130,7 +1121,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
                 className="btn-secondary text-sm flex items-center"
               >
                 <Upload className="w-4 h-4 mr-1" />
-                {isLogoProcessing ? 'Uploading...' : 'Upload Logo'}
+                {isLogoProcessing ? tPage('media.uploading') : tPage('media.uploadLogo')}
               </button>
               <input
                 ref={logoInputRef}
@@ -1142,16 +1133,16 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
                 id="logo-upload-input"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Max 5MB, JPEG/PNG/GIF
+                {tPage('media.maxFileSize')}
               </p>
             </div>
             <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-              💡 Changes will appear instantly in the navigation menu
+              💡 {tPage('media.logoHint')}
             </p>
             {isLogoProcessing && (
               <div className="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400">
                 <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 dark:border-blue-400 mr-2"></div>
-                Processing logo upload...
+                {tPage('media.processingLogo')}
               </div>
             )}
           </div>
@@ -1160,7 +1151,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
 
       {/* Banner Section */}
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Agency Banner</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">{tPage('media.bannerTitle')}</h2>
         
         <div className="space-y-4">
           <div className="w-full h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden relative">
@@ -1182,7 +1173,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
           
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              Upload a banner image for your agency profile. Recommended size: 1200x300 pixels.
+              {tPage('media.bannerDescription')}
             </p>
             <div className="flex items-center space-x-3">
               <button
@@ -1192,7 +1183,7 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
                 className="btn-secondary text-sm flex items-center"
               >
                 <Upload className="w-4 h-4 mr-1" />
-                {isBannerProcessing ? 'Uploading...' : 'Upload Banner'}
+                {isBannerProcessing ? tPage('media.uploading') : tPage('media.uploadBanner')}
               </button>
               <input
                 ref={bannerInputRef}
@@ -1204,13 +1195,13 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
                 id="banner-upload-input"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Max 5MB, JPEG/PNG/GIF
+                {tPage('media.maxFileSize')}
               </p>
             </div>
             {isBannerProcessing && (
               <div className="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400">
                 <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 dark:border-blue-400 mr-2"></div>
-                Processing banner upload...
+                {tPage('media.processingBanner')}
               </div>
             )}
           </div>
@@ -1223,24 +1214,24 @@ const MediaSection = ({ data, onFileUpload, isSaving, onLogoUpdate, tPage }) => 
 // Social Media Section
 const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
   const socialPlatforms = [
-    { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
-    { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/yourpage' },
-    { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/company/yourcompany' },
-    { key: 'twitter', label: 'Twitter', placeholder: 'https://twitter.com/yourhandle' }
+    { key: 'facebook', label: tPage('socialPlatforms.facebook'), placeholder: 'https://facebook.com/yourpage' },
+    { key: 'instagram', label: tPage('socialPlatforms.instagram'), placeholder: 'https://instagram.com/yourpage' },
+    { key: 'linkedin', label: tPage('socialPlatforms.linkedin'), placeholder: 'https://linkedin.com/company/yourcompany' },
+    { key: 'twitter', label: tPage('socialPlatforms.twitter'), placeholder: 'https://twitter.com/yourhandle' }
   ]
 
   if (isEditing) {
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Social Media</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.socialMedia.editTitle')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
-              Cancel
+              {tPage('actions.cancel')}
             </button>
             <button
               onClick={onSave}
@@ -1276,13 +1267,13 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Social Media</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.socialMedia.title')}</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
         >
           <Edit className="w-4 h-4 mr-1" />
-          Edit
+          {tPage('actions.edit')}
         </button>
       </div>
 
@@ -1302,7 +1293,7 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
                 {data.social_media[platform.key]}
               </a>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400">Not set</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{tPage('media.notSet')}</p>
             )}
           </div>
         ))}
@@ -1329,14 +1320,14 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Services & Specializations</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.services.editTitle')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
-              Cancel
+              {tPage('actions.cancel')}
             </button>
             <button
               onClick={onSave}
@@ -1352,7 +1343,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
         <div className="space-y-6">
           {/* Services */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Services Offered</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.services')}</label>
             <div className="space-y-2">
               {(formData.services || []).map((service, index) => (
                 <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
@@ -1368,7 +1359,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
-                  placeholder="Add new service"
+                  placeholder={tPage('actions.addService')}
                   className="form-input flex-1"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
@@ -1393,7 +1384,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           {/* Specializations */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Specializations</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.specializations')}</label>
             <div className="space-y-2">
               {(formData.specializations || []).map((spec, index) => (
                 <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
@@ -1409,7 +1400,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
-                  placeholder="Add specialization"
+                  placeholder={tPage('actions.addSpecialization')}
                   className="form-input flex-1"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
@@ -1434,7 +1425,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 
           {/* Target Countries */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Countries</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.targetCountries')}</label>
             <div className="space-y-2">
               {(formData.countries || []).map((country, index) => (
                 <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
@@ -1457,15 +1448,15 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                     }
                   }}
                 >
-                  <option value="">Select country to add</option>
-                  <option value="UAE">UAE</option>
-                  <option value="Saudi Arabia">Saudi Arabia</option>
-                  <option value="Qatar">Qatar</option>
-                  <option value="Kuwait">Kuwait</option>
-                  <option value="Oman">Oman</option>
-                  <option value="Bahrain">Bahrain</option>
-                  <option value="Malaysia">Malaysia</option>
-                  <option value="Singapore">Singapore</option>
+                  <option value="">{tPage('countries.selectCountry')}</option>
+                  <option value="UAE">{tPage('countries.uae')}</option>
+                  <option value="Saudi Arabia">{tPage('countries.saudiArabia')}</option>
+                  <option value="Qatar">{tPage('countries.qatar')}</option>
+                  <option value="Kuwait">{tPage('countries.kuwait')}</option>
+                  <option value="Oman">{tPage('countries.oman')}</option>
+                  <option value="Bahrain">{tPage('countries.bahrain')}</option>
+                  <option value="Malaysia">{tPage('countries.malaysia')}</option>
+                  <option value="Singapore">{tPage('countries.singapore')}</option>
                 </select>
               </div>
             </div>
@@ -1479,19 +1470,19 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     <div className="space-y-6">
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Services & Specializations</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.services.title')}</h2>
           <button
             onClick={onStartEdit}
             className="btn-secondary text-sm flex items-center"
           >
             <Edit className="w-4 h-4 mr-1" />
-            Edit
+            {tPage('actions.edit')}
           </button>
         </div>
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Services Offered</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.services')}</h3>
             <div className="flex flex-wrap gap-2">
               {data.services?.map((service, index) => (
                 <span key={index} className="chip chip-blue">
@@ -1502,7 +1493,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Specializations</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.specializations')}</h3>
             <div className="flex flex-wrap gap-2">
               {data.specializations?.map((spec, index) => (
                 <span key={index} className="chip chip-green">
@@ -1513,7 +1504,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Countries</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.targetCountries')}</h3>
             <div className="flex flex-wrap gap-2">
               {data.target_countries?.map((country, index) => (
                 <span key={index} className="chip chip-yellow">
@@ -1534,14 +1525,14 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
     return (
       <div className="card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Settings</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.settings.editTitle')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onCancel}
               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               disabled={isSaving}
             >
-              Cancel
+              {tPage('actions.cancel')}
             </button>
             <button
               onClick={onSave}
@@ -1557,7 +1548,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.currency')}</label>
               <select
                 value={formData.currency || ''}
                 onChange={(e) => onFormChange('currency', e.target.value)}
@@ -1572,7 +1563,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.timezone')}</label>
               <select
                 value={formData.timezone || ''}
                 onChange={(e) => onFormChange('timezone', e.target.value)}
@@ -1587,7 +1578,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.dateFormat')}</label>
             <select
               value={formData.date_format || ''}
               onChange={(e) => onFormChange('date_format', e.target.value)}
@@ -1600,7 +1591,7 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Notifications</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{tPage('fields.notifications')}</label>
             <div className="space-y-2">
               <label className="flex items-center">
                 <input
@@ -1650,48 +1641,48 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Settings</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.settings.title')}</h2>
         <button
           onClick={onStartEdit}
           className="btn-secondary text-sm flex items-center"
         >
           <Edit className="w-4 h-4 mr-1" />
-          Edit
+          {tPage('actions.edit')}
         </button>
       </div>
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.currency')}</label>
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.currency || 'NPR'}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.timezone')}</label>
             <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.timezone || 'Asia/Kathmandu'}</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{tPage('fields.dateFormat')}</label>
           <p className="text-sm text-gray-900 dark:text-gray-100">{data.settings?.date_format || 'DD/MM/YYYY'}</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notifications</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{tPage('fields.notifications')}</label>
           <div className="space-y-1">
             <div className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.email_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Email notifications</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{tPage('fields.notifications')}</span>
             </div>
             <div className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.sms_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
-              <span className="text-sm text-gray-700 dark:text-gray-300">SMS notifications</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">SMS</span>
             </div>
             <div className="flex items-center">
               <span className={`w-2 h-2 rounded-full mr-2 ${data.settings?.notifications?.push_enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></span>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Push notifications</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Push</span>
             </div>
           </div>
         </div>
@@ -1701,13 +1692,13 @@ const SettingsSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
 }
 
 // Agency Preview Sidebar
-const AgencyPreview = ({ data }) => {
+const AgencyPreview = ({ data, tPage }) => {
   if (!data) {
     return null
   }
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Agency Preview</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{tPage('sections.agencyPreview')}</h3>
       
       <div className="text-center mb-4">
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg mx-auto mb-3 flex items-center justify-center overflow-hidden">

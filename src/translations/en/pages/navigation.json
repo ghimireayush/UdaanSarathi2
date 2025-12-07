@@ -1,19 +1,21 @@
 {
   "meta": {
-    "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "version": "1.1.0",
+    "lastUpdated": "2024-12-06",
     "page": "navigation"
   },
   "items": {
     "dashboard": "Dashboard",
     "jobs": "Jobs",
+    "jobManagement": "Job Management",
     "drafts": "Drafts",
     "applications": "Applications",
     "interviews": "Interviews",
     "workflow": "Workflow",
     "teamMembers": "Team Members",
     "auditLog": "Audit Log",
-    "agencySettings": "Agency Settings"
+    "agencySettings": "Agency Settings",
+    "settings": "Settings"
   },
   "userMenu": {
     "profile": "Profile",

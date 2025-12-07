@@ -22,7 +22,9 @@
     "interviewScheduled": "अन्तर्वार्ता निर्धारित",
     "interviewScheduledDescription": "निर्धारित अन्तर्वार्ता भएका उम्मेदवारहरू",
     "interviewPassed": "अन्तर्वार्ता उत्तीर्ण",
-    "interviewPassedDescription": "अन्तर्वार्ता उत्तीर्ण गरेका उम्मेदवारहरू"
+    "interviewPassedDescription": "अन्तर्वार्ता उत्तीर्ण गरेका उम्मेदवारहरू",
+    "interviewFailed": "अन्तर्वार्ता असफल",
+    "interviewFailedDescription": "अन्तर्वार्ता उत्तीर्ण नगरेका उम्मेदवारहरू"
   },
   "tabs": {
     "byJob": "जागिर पोस्टअनुसार",
@@ -37,6 +39,7 @@
     "applicantDistribution": "जागिरअनुसार आवेदक वितरण"
   },
   "candidateCard": {
+    "passportLabel": "राहदानी",
     "passport": "राहदानी: {{number}}",
     "documents": "{{count}} कागजात{{plural}} संलग्न",
     "interviewedAt": "अन्तर्वार्ता: {{date}}",
@@ -46,7 +49,16 @@
     "viewSummary": "सारांश हेर्नुहोस्",
     "updateStatus": "स्थिति अपडेट गर्नुहोस्",
     "attachDocument": "कागजात संलग्न गर्नुहोस्",
-    "removeDocument": "कागजात हटाउनुहोस्"
+    "removeDocument": "कागजात हटाउनुहोस्",
+    "shortlist": "छनोट सूचीमा राख्नुहोस्",
+    "scheduleInterview": "अन्तर्वार्ता निर्धारण गर्नुहोस्",
+    "pass": "उत्तीर्ण",
+    "fail": "असफल",
+    "reschedule": "पुनः निर्धारण गर्नुहोस्",
+    "finalStage": "अन्तिम चरण",
+    "retry": "पुनः प्रयास गर्नुहोस्",
+    "previous": "अघिल्लो",
+    "next": "अर्को"
   },
   "modals": {
     "stageTransition": {
