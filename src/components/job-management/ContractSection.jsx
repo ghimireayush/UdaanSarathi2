@@ -20,8 +20,9 @@ const ContractSection = ({ data, onSave, isFromExtraction = false }) => {
   const [success, setSuccess] = useState(false);
 
   const provisionOptions = ['free', 'paid', 'not_provided'];
+  const overtimePolicyOptions = ['as_per_company_policy', 'paid', 'unpaid', 'not_applicable'];
 
-  // Initialize form data
+  // Initialize form data when data changes
   useEffect(() => {
     if (data) {
       setFormData({
@@ -36,9 +37,15 @@ const ContractSection = ({ data, onSave, isFromExtraction = false }) => {
         transport: data.transport ?? '',
         annual_leave_days: data.annual_leave_days ?? ''
       });
-      setIsDirty(isFromExtraction);
     }
-  }, [data, isFromExtraction]);
+  }, [data]);
+
+  // When extraction flag is set, mark form as dirty so save button is enabled
+  useEffect(() => {
+    if (isFromExtraction) {
+      setIsDirty(true);
+    }
+  }, [isFromExtraction]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -52,32 +59,20 @@ const ContractSection = ({ data, onSave, isFromExtraction = false }) => {
     setSuccess(false);
     
     try {
-      const updates = {};
-      
-      // Convert numeric fields
-      const numericFields = ['period_years', 'hours_per_day', 'days_per_week', 'weekly_off_days', 'annual_leave_days'];
-      numericFields.forEach(field => {
-        const newVal = formData[field] === '' ? null : Number(formData[field]);
-        const oldVal = data?.[field] ?? null;
-        if (newVal !== oldVal) updates[field] = newVal;
-      });
+      const updates = {
+        period_years: formData.period_years === '' ? null : Number(formData.period_years),
+        renewable: formData.renewable,
+        hours_per_day: formData.hours_per_day === '' ? null : Number(formData.hours_per_day),
+        days_per_week: formData.days_per_week === '' ? null : Number(formData.days_per_week),
+        overtime_policy: formData.overtime_policy || null,
+        weekly_off_days: formData.weekly_off_days === '' ? null : Number(formData.weekly_off_days),
+        food: formData.food || null,
+        accommodation: formData.accommodation || null,
+        transport: formData.transport || null,
+        annual_leave_days: formData.annual_leave_days === '' ? null : Number(formData.annual_leave_days)
+      };
 
-      // Boolean field
-      if (formData.renewable !== (data?.renewable ?? false)) {
-        updates.renewable = formData.renewable;
-      }
-
-      // String fields
-      const stringFields = ['overtime_policy', 'food', 'accommodation', 'transport'];
-      stringFields.forEach(field => {
-        const newVal = formData[field] || null;
-        const oldVal = data?.[field] ?? null;
-        if (newVal !== oldVal) updates[field] = newVal;
-      });
-
-      if (Object.keys(updates).length > 0) {
-        await onSave(updates);
-      }
+      await onSave(updates);
       setIsDirty(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -205,17 +200,20 @@ const ContractSection = ({ data, onSave, isFromExtraction = false }) => {
           </label>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-3">
+        <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Overtime Policy
           </label>
-          <input
-            type="text"
+          <select
             value={formData.overtime_policy}
             onChange={(e) => handleChange('overtime_policy', e.target.value)}
-            placeholder="e.g., 1.5x hourly rate"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="">Select...</option>
+            {overtimePolicyOptions.map(opt => (
+              <option key={opt} value={opt}>{opt.replace(/_/g, ' ')}</option>
+            ))}
+          </select>
         </div>
 
         <div>

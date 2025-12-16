@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "component": "candidate-summary"
+  },
+  "header": {
+    "title": "Candidate Details",
+    "interviewManagement": "Interview Management"
+  },
+  "profile": {
+    "currentStage": "Current Stage",
+    "appliedFor": "Applied for:",
+    "applied": "Applied:"
+  },
+  "stages": {
+    "applied": "Applied",
+    "shortlisted": "Shortlisted",
+    "interviewScheduled": "Interview Scheduled",
+    "interviewPassed": "Interview Passed"
+  },
+  "interview": {
+    "title": "Interview Details",
+    "dateTime": "Date & Time",
+    "notScheduled": "Not scheduled",
+    "duration": "Duration",
+    "minutes": "minutes",
+    "location": "Location",
+    "notSpecified": "Not specified",
+    "interviewer": "Interviewer",
+    "notAssigned": "Not assigned",
+    "requiredDocuments": "Required Documents for Interview",
+    "bringDocuments": "Candidate must bring these documents to the interview",
+    "notes": "Interview Notes",
+    "remarks": "Interview Remarks & Feedback",
+    "type": "Interview Type"
+  },
+  "contact": {
+    "title": "Contact Information",
+    "phone": "Phone",
+    "email": "Email",
+    "passport": "Passport",
+    "address": "Address"
+  },
+  "professional": {
+    "title": "Professional Details",
+    "experience": "Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "months": "months",
+    "completed": "Completed:"
+  },
+  "documents": {
+    "title": "Documents",
+    "viewAndDownload": "View and download candidate documents",
+    "loading": "Loading documents...",
+    "noDocuments": "No documents available",
+    "notUploaded": "Not uploaded",
+    "required": "Required",
+    "uploading": "Uploading...",
+    "upload": "Upload",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "actions": {
+    "shortlist": "Shortlist",
+    "scheduleInterview": "Schedule Interview",
+    "pass": "Pass",
+    "fail": "Fail",
+    "reschedule": "Reschedule",
+    "close": "Close",
+    "cancel": "Cancel",
+    "updating": "Updating...",
+    "processing": "Processing..."
+  },
+  "dialogs": {
+    "invalidTransition": {
+      "title": "Invalid Stage Transition",
+      "message": "You cannot move directly from \"{{from}}\" to \"{{to}}\". Please follow the proper workflow sequence.",
+      "confirm": "Okay"
+    },
+    "confirmStageUpdate": {
+      "title": "Confirm Stage Update",
+      "message": "Are you sure you want to move this candidate from \"{{from}}\" to \"{{to}}\"? This action cannot be undone.",
+      "confirm": "Yes, Update Stage"
+    },
+    "scheduleInterview": {
+      "title": "Schedule Interview",
+      "message": "Are you sure you want to schedule an interview for {{name}}?",
+      "confirm": "Yes, Schedule"
+    },
+    "markPassed": {
+      "title": "Mark Interview as Passed",
+      "message": "Are you sure you want to mark {{name}}'s interview as PASSED? This action cannot be undone.",
+      "confirm": "Yes, Mark as Passed"
+    },
+    "markFailed": {
+      "title": "Mark Interview as Failed",
+      "message": "Are you sure you want to mark {{name}}'s interview as FAILED? This action cannot be undone.",
+      "confirm": "Yes, Mark as Failed"
+    },
+    "reschedule": {
+      "title": "Reschedule Interview",
+      "message": "Are you sure you want to reschedule the interview for {{name}}?",
+      "messageElapsed": "The interview time has elapsed. Would you like to reschedule for {{name}}?",
+      "confirm": "Yes, Reschedule"
+    },
+    "rejectCandidate": {
+      "title": "Reject Candidate",
+      "placeholder": "Enter rejection reason...",
+      "confirm": "Confirm Reject"
+    },
+    "success": {
+      "title": "Success",
+      "interviewPassed": "Interview marked as passed!",
+      "interviewFailed": "Interview marked as failed.",
+      "interviewScheduled": "Interview scheduled successfully!",
+      "interviewRescheduled": "Interview rescheduled successfully!",
+      "confirm": "OK"
+    },
+    "error": {
+      "title": "Error",
+      "updateFailed": "Failed to update candidate status. Please try again.",
+      "passFailed": "Failed to mark interview as passed: {{error}}",
+      "failFailed": "Failed to mark interview as failed: {{error}}",
+      "confirm": "Okay"
+    }
+  },
+  "notes": {
+    "noApplicationId": "No application ID found - cannot load notes"
+  }
+}

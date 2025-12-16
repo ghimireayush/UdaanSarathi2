@@ -1,5 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
+import { useLanguage } from '../hooks/useLanguage'
 
 /**
  * ApplicationHistory Component
@@ -7,10 +8,12 @@ import { format } from 'date-fns'
  * Shows who made changes, when, and any notes/reasons
  */
 const ApplicationHistory = ({ historyBlob }) => {
+  const { tPageSync } = useLanguage({ pageName: 'application-history', autoLoad: true })
+  const t = (key, params = {}) => tPageSync(key, params)
   if (!historyBlob || historyBlob.length === 0) {
     return (
       <div className="text-gray-500 text-sm italic">
-        No history available
+        {t('noHistory')}
       </div>
     )
   }
@@ -40,7 +43,7 @@ const ApplicationHistory = ({ historyBlob }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Application History</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
       
       <div className="relative">
         {/* Timeline line */}
@@ -63,13 +66,13 @@ const ApplicationHistory = ({ historyBlob }) => {
                   </span>
                   {entry.corrected && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300">
-                      Corrected
+                      {t('corrected')}
                     </span>
                   )}
                 </div>
                 
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">by {entry.updated_by || 'System'}</span>
+                  <span className="font-medium">{t('by')} {entry.updated_by || t('system')}</span>
                   <span className="mx-1">•</span>
                   <span>{format(new Date(entry.updated_at), 'MMM dd, yyyy HH:mm')}</span>
                 </div>
@@ -82,7 +85,7 @@ const ApplicationHistory = ({ historyBlob }) => {
                 
                 {entry.prev_status && (
                   <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Changed from: {formatStatus(entry.prev_status)}
+                    {t('changedFrom')} {formatStatus(entry.prev_status)}
                   </div>
                 )}
               </div>

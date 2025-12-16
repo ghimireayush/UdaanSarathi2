@@ -55,19 +55,96 @@ const ExpensesSection = ({ data, onSave, isFromExtraction = false }) => {
     { value: 'return_only', label: 'Return Only' }
   ];
 
+  // Transform API data to form structure
+  const transformApiDataToForm = (apiData) => {
+    if (!apiData) return { medical: { domestic: {}, foreign: {} }, insurance: {}, travel: {}, visa_permit: {}, training: {}, welfare_service: { welfare: {}, service: {} } };
+
+    return {
+      medical: {
+        domestic: {
+          who_pays: apiData.medical?.domestic_who_pays,
+          is_free: apiData.medical?.domestic_is_free,
+          amount: apiData.medical?.domestic_amount,
+          currency: apiData.medical?.domestic_currency,
+          notes: apiData.medical?.domestic_notes,
+        },
+        foreign: {
+          who_pays: apiData.medical?.foreign_who_pays,
+          is_free: apiData.medical?.foreign_is_free,
+          amount: apiData.medical?.foreign_amount,
+          currency: apiData.medical?.foreign_currency,
+          notes: apiData.medical?.foreign_notes,
+        }
+      },
+      insurance: {
+        who_pays: apiData.insurance?.who_pays,
+        is_free: apiData.insurance?.is_free,
+        amount: apiData.insurance?.amount,
+        currency: apiData.insurance?.currency,
+        coverage_amount: apiData.insurance?.coverage_amount,
+        coverage_currency: apiData.insurance?.coverage_currency,
+        notes: apiData.insurance?.notes,
+      },
+      travel: {
+        who_provides: apiData.travel?.who_provides,
+        ticket_type: apiData.travel?.ticket_type,
+        is_free: apiData.travel?.is_free,
+        amount: apiData.travel?.amount,
+        currency: apiData.travel?.currency,
+        notes: apiData.travel?.notes,
+      },
+      visa_permit: {
+        who_pays: apiData.visa_permit?.who_pays,
+        is_free: apiData.visa_permit?.is_free,
+        amount: apiData.visa_permit?.amount,
+        currency: apiData.visa_permit?.currency,
+        refundable: apiData.visa_permit?.refundable,
+        notes: apiData.visa_permit?.notes,
+      },
+      training: {
+        who_pays: apiData.training?.who_pays,
+        is_free: apiData.training?.is_free,
+        amount: apiData.training?.amount,
+        currency: apiData.training?.currency,
+        duration_days: apiData.training?.duration_days,
+        mandatory: apiData.training?.mandatory,
+        notes: apiData.training?.notes,
+      },
+      welfare_service: {
+        welfare: {
+          who_pays: apiData.welfare_service?.welfare_who_pays,
+          is_free: apiData.welfare_service?.welfare_is_free,
+          amount: apiData.welfare_service?.welfare_amount,
+          currency: apiData.welfare_service?.welfare_currency,
+          fund_purpose: apiData.welfare_service?.welfare_fund_purpose,
+          refundable: apiData.welfare_service?.welfare_refundable,
+          notes: apiData.welfare_service?.welfare_notes,
+        },
+        service: {
+          who_pays: apiData.welfare_service?.service_who_pays,
+          is_free: apiData.welfare_service?.service_is_free,
+          amount: apiData.welfare_service?.service_amount,
+          currency: apiData.welfare_service?.service_currency,
+          type: apiData.welfare_service?.service_type,
+          refundable: apiData.welfare_service?.service_refundable,
+          notes: apiData.welfare_service?.service_notes,
+        }
+      }
+    };
+  };
+
   useEffect(() => {
     if (data) {
-      setFormData({
-        medical: data.medical || { domestic: {}, foreign: {} },
-        insurance: data.insurance || {},
-        travel: data.travel || {},
-        visa_permit: data.visa_permit || {},
-        training: data.training || {},
-        welfare_service: data.welfare_service || { welfare: {}, service: {} }
-      });
-      setIsDirty(isFromExtraction);
+      setFormData(transformApiDataToForm(data));
     }
-  }, [data, isFromExtraction]);
+  }, [data]);
+
+  // When extraction flag is set, mark form as dirty so save button is enabled
+  useEffect(() => {
+    if (isFromExtraction) {
+      setIsDirty(true);
+    }
+  }, [isFromExtraction]);
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -94,13 +171,111 @@ const ExpensesSection = ({ data, onSave, isFromExtraction = false }) => {
     setSuccess(false);
   };
 
+  // Transform form data to match backend DTO structure
+  const transformFormDataForApi = (data) => {
+    const toNumber = (val) => val === '' || val === null || val === undefined ? undefined : Number(val);
+    const toInt = (val) => val === '' || val === null || val === undefined ? undefined : parseInt(val, 10);
+    const nonEmpty = (val) => val === '' ? undefined : val;
+
+    const result = {};
+
+    // Medical - flatten nested structure
+    if (data.medical?.domestic || data.medical?.foreign) {
+      result.medical = {
+        domestic_who_pays: nonEmpty(data.medical?.domestic?.who_pays),
+        domestic_is_free: data.medical?.domestic?.is_free || false,
+        domestic_amount: toNumber(data.medical?.domestic?.amount),
+        domestic_currency: nonEmpty(data.medical?.domestic?.currency),
+        domestic_notes: nonEmpty(data.medical?.domestic?.notes),
+        foreign_who_pays: nonEmpty(data.medical?.foreign?.who_pays),
+        foreign_is_free: data.medical?.foreign?.is_free || false,
+        foreign_amount: toNumber(data.medical?.foreign?.amount),
+        foreign_currency: nonEmpty(data.medical?.foreign?.currency),
+        foreign_notes: nonEmpty(data.medical?.foreign?.notes),
+      };
+    }
+
+    // Insurance
+    if (data.insurance && Object.keys(data.insurance).length > 0) {
+      result.insurance = {
+        who_pays: nonEmpty(data.insurance?.who_pays),
+        is_free: data.insurance?.is_free || false,
+        amount: toNumber(data.insurance?.amount),
+        currency: nonEmpty(data.insurance?.currency),
+        coverage_amount: toNumber(data.insurance?.coverage_amount),
+        coverage_currency: nonEmpty(data.insurance?.coverage_currency),
+        notes: nonEmpty(data.insurance?.notes),
+      };
+    }
+
+    // Travel
+    if (data.travel && Object.keys(data.travel).length > 0) {
+      result.travel = {
+        who_provides: nonEmpty(data.travel?.who_provides),
+        ticket_type: nonEmpty(data.travel?.ticket_type),
+        is_free: data.travel?.is_free || false,
+        amount: toNumber(data.travel?.amount),
+        currency: nonEmpty(data.travel?.currency),
+        notes: nonEmpty(data.travel?.notes),
+      };
+    }
+
+    // Visa/Permit
+    if (data.visa_permit && Object.keys(data.visa_permit).length > 0) {
+      result.visa_permit = {
+        who_pays: nonEmpty(data.visa_permit?.who_pays),
+        is_free: data.visa_permit?.is_free || false,
+        amount: toNumber(data.visa_permit?.amount),
+        currency: nonEmpty(data.visa_permit?.currency),
+        refundable: data.visa_permit?.refundable || false,
+        notes: nonEmpty(data.visa_permit?.notes),
+      };
+    }
+
+    // Training
+    if (data.training && Object.keys(data.training).length > 0) {
+      result.training = {
+        who_pays: nonEmpty(data.training?.who_pays),
+        is_free: data.training?.is_free || false,
+        amount: toNumber(data.training?.amount),
+        currency: nonEmpty(data.training?.currency),
+        duration_days: toInt(data.training?.duration_days),
+        mandatory: data.training?.mandatory || false,
+        notes: nonEmpty(data.training?.notes),
+      };
+    }
+
+    // Welfare/Service - flatten nested structure
+    if (data.welfare_service?.welfare || data.welfare_service?.service) {
+      result.welfare_service = {
+        welfare_who_pays: nonEmpty(data.welfare_service?.welfare?.who_pays),
+        welfare_is_free: data.welfare_service?.welfare?.is_free || false,
+        welfare_amount: toNumber(data.welfare_service?.welfare?.amount),
+        welfare_currency: nonEmpty(data.welfare_service?.welfare?.currency),
+        welfare_fund_purpose: nonEmpty(data.welfare_service?.welfare?.fund_purpose),
+        welfare_refundable: data.welfare_service?.welfare?.refundable || false,
+        welfare_notes: nonEmpty(data.welfare_service?.welfare?.notes),
+        service_who_pays: nonEmpty(data.welfare_service?.service?.who_pays),
+        service_is_free: data.welfare_service?.service?.is_free || false,
+        service_amount: toNumber(data.welfare_service?.service?.amount),
+        service_currency: nonEmpty(data.welfare_service?.service?.currency),
+        service_type: nonEmpty(data.welfare_service?.service?.type),
+        service_refundable: data.welfare_service?.service?.refundable || false,
+        service_notes: nonEmpty(data.welfare_service?.service?.notes),
+      };
+    }
+
+    return result;
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     setError(null);
     setSuccess(false);
     
     try {
-      await onSave(formData);
+      const apiData = transformFormDataForApi(formData);
+      await onSave(apiData);
       setIsDirty(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

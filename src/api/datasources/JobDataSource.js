@@ -280,6 +280,23 @@ class JobDataSource {
   }
 
   /**
+   * Update job posting expenses (PATCH semantics)
+   * @param {string} license - Agency license number
+   * @param {string} jobId - Job posting ID
+   * @param {Object} data - Expense categories to update
+   * @param {Object} [data.medical] - Medical expense data
+   * @param {Object} [data.insurance] - Insurance expense data
+   * @param {Object} [data.travel] - Travel expense data
+   * @param {Object} [data.visa_permit] - Visa/permit expense data
+   * @param {Object} [data.training] - Training expense data
+   * @param {Object} [data.welfare_service] - Welfare/service expense data
+   * @returns {Promise<Object>} Updated job with id and updated_at
+   */
+  async updateExpenses(license, jobId, data) {
+    return httpClient.patch(`/agencies/${license}/job-management/${jobId}/expenses`, data)
+  }
+
+  /**
    * Add a new position to a job posting
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting ID
@@ -319,6 +336,37 @@ class JobDataSource {
    */
   async removePosition(license, jobId, positionId) {
     return httpClient.delete(`/agencies/${license}/job-management/${jobId}/positions/${positionId}`)
+  }
+
+  // ============================================
+  // IMAGE UPLOAD ENDPOINTS
+  // ============================================
+
+  /**
+   * Upload job posting cutout image
+   * @param {string} license - Agency license number
+   * @param {string} jobId - Job posting ID
+   * @param {File} file - Image file to upload
+   * @returns {Promise<Object>} Upload result with URL
+   */
+  async uploadJobImage(license, jobId, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return httpClient.upload(
+      `/agencies/${license}/job-postings/${jobId}/cutout`,
+      formData
+    )
+  }
+
+  /**
+   * Delete job posting cutout image
+   * @param {string} license - Agency license number
+   * @param {string} jobId - Job posting ID
+   * @returns {Promise<Object>} Deletion confirmation
+   */
+  async deleteJobImage(license, jobId) {
+    return httpClient.delete(`/agencies/${license}/job-postings/${jobId}/cutout`)
   }
 }
 

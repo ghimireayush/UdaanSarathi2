@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "component": "application-notes"
+  },
+  "title": "Application Notes",
+  "addNote": "Add Note",
+  "saveNote": "Save Note",
+  "cancel": "Cancel",
+  "loading": "Loading notes...",
+  "noNotes": "No notes yet. Add your first note above.",
+  "placeholder": "Enter your note here...",
+  "privateNote": "Private Note",
+  "generalNote": "General Note",
+  "private": "Private",
+  "general": "General",
+  "edited": "(edited)",
+  "dialogs": {
+    "emptyNote": {
+      "title": "Empty Note",
+      "message": "Please enter some text for the note.",
+      "confirm": "OK"
+    },
+    "deleteNote": {
+      "title": "Delete Note",
+      "message": "Are you sure you want to delete this note? This action cannot be undone.",
+      "confirm": "Yes, Delete",
+      "cancel": "Cancel"
+    },
+    "success": {
+      "title": "Success",
+      "noteAdded": "Note added successfully!",
+      "noteUpdated": "Note updated successfully!",
+      "noteDeleted": "Note deleted successfully!",
+      "confirm": "OK"
+    },
+    "error": {
+      "title": "Error",
+      "addFailed": "Failed to add note: {{error}}",
+      "updateFailed": "Failed to update note: {{error}}",
+      "deleteFailed": "Failed to delete note: {{error}}",
+      "confirm": "OK"
+    }
+  }
+}

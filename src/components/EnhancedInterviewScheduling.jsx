@@ -570,7 +570,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                         </span>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{candidate.name}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{candidate.name}</div>
+                          {candidate.priority_score !== undefined && candidate.priority_score !== null && (
+                            <span className="text-xs font-bold text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded-full">
+                              {candidate.priority_score}%
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
                         </div>
@@ -819,9 +826,12 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                             const updatedBatch = { ...batch, candidates: [...batch.candidates, candidate.id] }
                             setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
                           }}
-                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors flex items-center gap-1"
                         >
                           {candidate.name}
+                          {candidate.priority_score !== undefined && candidate.priority_score !== null && (
+                            <span className="font-bold text-yellow-600 dark:text-yellow-400">({candidate.priority_score}%)</span>
+                          )}
                         </button>
                       ))}
                       {candidates.every(c => batchScheduling.some(b => b.candidates.includes(c.id))) && (
@@ -838,8 +848,11 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                           {batch.candidates.map(candidateId => {
                             const candidate = candidates.find(c => c.id === candidateId)
                             return (
-                              <div key={candidateId} className="flex items-center text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                                {candidate?.name}
+                              <div key={candidateId} className="flex items-center text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full gap-1">
+                                <span>{candidate?.name}</span>
+                                {candidate?.priority_score !== undefined && candidate?.priority_score !== null && (
+                                  <span className="font-bold text-yellow-600 dark:text-yellow-500">({candidate.priority_score}%)</span>
+                                )}
                                 <button
                                   onClick={() => {
                                     const updatedBatch = { ...batch, candidates: batch.candidates.filter(id => id !== candidateId) }
@@ -955,7 +968,14 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                       <span className="text-sm font-medium text-purple-700 dark:text-purple-300">#{index + 1}</span>
                     </div>
                     <div>
-                      <h5 className="font-medium text-gray-900 dark:text-gray-100">{suggestion.candidate.name}</h5>
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-medium text-gray-900 dark:text-gray-100">{suggestion.candidate.name}</h5>
+                        {suggestion.candidate.priority_score !== undefined && suggestion.candidate.priority_score !== null && (
+                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded-full">
+                            {suggestion.candidate.priority_score}%
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{suggestion.reasoning}</p>
                       <div className="flex items-center space-x-4 mt-2 text-sm">
                         <span className="text-gray-700 dark:text-gray-300">

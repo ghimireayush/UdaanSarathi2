@@ -46,7 +46,7 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
     fetchCountries();
   }, []);
 
-  // Initialize form data
+  // Initialize form data when data changes
   useEffect(() => {
     if (data) {
       setFormData({
@@ -60,10 +60,15 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
         announcement_type: data.announcement_type || 'full_ad',
         notes: data.notes || ''
       });
-      // If data came from extraction, mark as dirty so Save button is enabled
-      setIsDirty(isFromExtraction);
     }
-  }, [data, isFromExtraction]);
+  }, [data]);
+
+  // When extraction flag is set, mark form as dirty so save button is enabled
+  useEffect(() => {
+    if (isFromExtraction) {
+      setIsDirty(true);
+    }
+  }, [isFromExtraction]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -77,26 +82,20 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
     setSuccess(false);
     
     try {
-      // Only send changed fields
-      const updates = {};
-      if (formData.posting_title !== (data?.posting_title || '')) updates.posting_title = formData.posting_title;
-      if (formData.country !== (data?.country || '')) updates.country = formData.country;
-      if (formData.city !== (data?.city || '')) updates.city = formData.city || null;
-      if (formData.lt_number !== (data?.lt_number || '')) updates.lt_number = formData.lt_number || null;
-      if (formData.chalani_number !== (data?.chalani_number || '')) updates.chalani_number = formData.chalani_number || null;
-      
-      const origApprovalDate = data?.approval_date_ad ? data.approval_date_ad.split('T')[0] : '';
-      if (formData.approval_date_ad !== origApprovalDate) updates.approval_date_ad = formData.approval_date_ad || null;
-      
-      const origPostingDate = data?.posting_date_ad ? data.posting_date_ad.split('T')[0] : '';
-      if (formData.posting_date_ad !== origPostingDate) updates.posting_date_ad = formData.posting_date_ad || null;
-      
-      if (formData.announcement_type !== (data?.announcement_type || 'full_ad')) updates.announcement_type = formData.announcement_type;
-      if (formData.notes !== (data?.notes || '')) updates.notes = formData.notes || null;
+      // Send all fields (backend will handle PATCH semantics)
+      const updates = {
+        posting_title: formData.posting_title,
+        country: formData.country,
+        city: formData.city || null,
+        lt_number: formData.lt_number || null,
+        chalani_number: formData.chalani_number || null,
+        approval_date_ad: formData.approval_date_ad || null,
+        posting_date_ad: formData.posting_date_ad || null,
+        announcement_type: formData.announcement_type,
+        notes: formData.notes || null
+      };
 
-      if (Object.keys(updates).length > 0) {
-        await onSave(updates);
-      }
+      await onSave(updates);
       setIsDirty(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

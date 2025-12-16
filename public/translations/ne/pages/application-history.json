@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "component": "application-history"
+  },
+  "title": "आवेदन इतिहास",
+  "noHistory": "कुनै इतिहास उपलब्ध छैन",
+  "by": "द्वारा",
+  "system": "प्रणाली",
+  "corrected": "सुधारिएको",
+  "changedFrom": "बाट परिवर्तन गरियो:"
+}

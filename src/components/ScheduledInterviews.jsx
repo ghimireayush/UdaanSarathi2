@@ -843,7 +843,15 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
 
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name || 'Unknown Candidate'}</h3>
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name || 'Unknown Candidate'}</h3>
+                          {candidate.priority_score !== undefined && candidate.priority_score !== null && (
+                            <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full">
+                              <Star className="w-4 h-4 text-yellow-500" />
+                              <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% Match</span>
+                            </div>
+                          )}
+                        </div>
                         {getStatusBadge(interview)}
                       </div>
 

@@ -31,6 +31,7 @@ import DocumentDataSource from '../api/datasources/DocumentDataSource.js'
 import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
 import InterviewScheduleDialog from './InterviewScheduleDialog.jsx'
 import { formatTime12Hour } from '../utils/helpers.js'
+import { useLanguage } from '../hooks/useLanguage'
 
 const CandidateSummaryS2 = ({ 
   candidate, 
@@ -87,6 +88,8 @@ const CandidateSummaryS2 = ({
   
   const { confirm } = useConfirm()
   const { agencyData } = useAgency()
+  const { tPageSync } = useLanguage({ pageName: 'candidate-summary', autoLoad: true })
+  const t = (key, params = {}) => tPageSync(key, params)
   
   // Load documents from API when candidate changes
   useEffect(() => {
@@ -229,10 +232,10 @@ const CandidateSummaryS2 = ({
 
   // Define the 4 main workflow stages
   const mainWorkflowStages = [
-    { id: 'applied', label: 'Applied' },
-    { id: 'shortlisted', label: 'Shortlisted' },
-    { id: 'interview-scheduled', label: 'Interview Scheduled' },
-    { id: 'interview-passed', label: 'Interview Passed' }
+    { id: 'applied', label: t('stages.applied') },
+    { id: 'shortlisted', label: t('stages.shortlisted') },
+    { id: 'interview-scheduled', label: t('stages.interviewScheduled') },
+    { id: 'interview-passed', label: t('stages.interviewPassed') }
   ]
 
   const currentStage = mainWorkflowStages.find(s => s.id === candidateData.application?.stage) || 
@@ -685,9 +688,9 @@ const CandidateSummaryS2 = ({
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Candidate Details</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('header.title')}</h2>
               {isInterviewContext && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Interview Management</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('header.interviewManagement')}</p>
               )}
             </div>
             <button
@@ -717,7 +720,7 @@ const CandidateSummaryS2 = ({
                       <span className="chip chip-blue">
                         {currentStage.label}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">Current Stage</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{t('profile.currentStage')}</span>
                     </div>
                   )}
                   
@@ -725,7 +728,7 @@ const CandidateSummaryS2 = ({
                   {candidateData.job_title && (
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                       <Briefcase className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Applied for:</span>
+                      <span className="font-medium">{t('profile.appliedFor')}</span>
                       <span className="ml-1">{candidateData.job_title}</span>
                     </div>
                   )}
@@ -734,7 +737,7 @@ const CandidateSummaryS2 = ({
                   {candidateData.application?.created_at && (
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <Calendar className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Applied:</span>
+                      <span className="font-medium">{t('profile.applied')}</span>
                       <span className="ml-1">
                         {format(new Date(candidateData.application.created_at), 'MMM dd, yyyy')}
                       </span>
@@ -749,7 +752,7 @@ const CandidateSummaryS2 = ({
               <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                   <MessageSquare className="w-5 h-5 mr-2 text-blue-600" />
-                  Interview Details
+                  {t('interview.title')}
                 </h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -757,7 +760,7 @@ const CandidateSummaryS2 = ({
                     <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                       <div className="flex items-center text-sm mb-2">
                         <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Interview Date & Time</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('interview.dateTime')}</span>
                       </div>
                       <p className="text-gray-900 dark:text-gray-100 font-medium">
                         {format(new Date(candidate.interviewed_at), 'EEEE, MMM dd, yyyy')}
@@ -772,7 +775,7 @@ const CandidateSummaryS2 = ({
                     <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                       <div className="flex items-center text-sm mb-2">
                         <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Interview Type</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('interview.type')}</span>
                       </div>
                       <p className="text-gray-900 dark:text-gray-100 font-medium">
                         {candidate.application.interview_type}
@@ -785,7 +788,7 @@ const CandidateSummaryS2 = ({
                   <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                     <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                       <MessageSquare className="w-4 h-4 mr-2 text-blue-600" />
-                      Interview Remarks & Feedback
+                      {t('interview.remarks')}
                     </h5>
                     <div className="prose prose-sm max-w-none">
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
@@ -802,14 +805,14 @@ const CandidateSummaryS2 = ({
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <User className="w-5 h-5 mr-2" />
-                Contact Information
+                {t('contact.title')}
               </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Phone</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('contact.phone')}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">{candidateData.phone}</div>
                   </div>
                 </div>
@@ -817,7 +820,7 @@ const CandidateSummaryS2 = ({
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Email</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('contact.email')}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">{candidateData.email}</div>
                   </div>
                 </div>
@@ -826,7 +829,7 @@ const CandidateSummaryS2 = ({
                   <div className="flex items-center space-x-3">
                     <CreditCard className="w-5 h-5 text-gray-400" />
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Passport</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('contact.passport')}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">{candidateData.passport_number}</div>
                     </div>
                   </div>
@@ -835,7 +838,7 @@ const CandidateSummaryS2 = ({
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Address</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('contact.address')}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">{candidateData.address}</div>
                   </div>
                 </div>
@@ -846,19 +849,19 @@ const CandidateSummaryS2 = ({
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <Briefcase className="w-5 h-5 mr-2" />
-                Professional Details
+                {t('professional.title')}
               </h4>
               
               <div className="space-y-4">
                 {/* Experience */}
                 {candidateData.experience && Array.isArray(candidateData.experience) && candidateData.experience.length > 0 ? (
                   <div>
-                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Experience</h5>
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.experience')}</h5>
                     <div className="space-y-2">
                       {candidateData.experience.map((exp, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
                           <div className="font-medium text-gray-900 dark:text-gray-100">{exp.title} at {exp.employer}</div>
-                          <div className="text-xs text-gray-500">{exp.months} months</div>
+                          <div className="text-xs text-gray-500">{exp.months} {t('professional.months')}</div>
                           {exp.description && <div className="mt-1">{exp.description}</div>}
                         </div>
                       ))}
@@ -866,7 +869,7 @@ const CandidateSummaryS2 = ({
                   </div>
                 ) : candidateData.experience ? (
                   <div>
-                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Experience</h5>
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.experience')}</h5>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{candidateData.experience}</p>
                   </div>
                 ) : null}
@@ -876,14 +879,14 @@ const CandidateSummaryS2 = ({
                   <div>
                     <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                       <GraduationCap className="w-4 h-4 mr-1" />
-                      Education
+                      {t('professional.education')}
                     </h5>
                     <div className="space-y-2">
                       {candidateData.education.map((edu, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
                           <div className="font-medium text-gray-900 dark:text-gray-100">{edu.degree}</div>
                           {edu.institution && <div className="text-xs text-gray-500">{edu.institution}</div>}
-                          {edu.year_completed && <div className="text-xs text-gray-500">Completed: {edu.year_completed}</div>}
+                          {edu.year_completed && <div className="text-xs text-gray-500">{t('professional.completed')} {edu.year_completed}</div>}
                         </div>
                       ))}
                     </div>
@@ -893,7 +896,7 @@ const CandidateSummaryS2 = ({
                 {/* Skills */}
                 {candidateData.skills && candidateData.skills.length > 0 && (
                   <div>
-                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Skills</h5>
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.skills')}</h5>
                     <div className="flex flex-wrap gap-2">
                       {candidateData.skills.map((skill, index) => (
                         <span key={index} className="chip chip-blue text-xs">
@@ -911,16 +914,16 @@ const CandidateSummaryS2 = ({
               <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-                  Interview Details
+                  {t('interview.title')}
                 </h4>
                 <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-blue-200 dark:border-blue-600">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Date & Time</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.dateTime')}</div>
                       <div className="text-base text-gray-900 dark:text-gray-100 font-medium">
                         {candidateData.interview.scheduled_at 
                           ? format(new Date(candidateData.interview.scheduled_at), 'MMM dd, yyyy')
-                          : 'Not scheduled'}
+                          : t('interview.notScheduled')}
                       </div>
                       {candidateData.interview.time && (
                         <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -929,16 +932,16 @@ const CandidateSummaryS2 = ({
                       )}
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Duration</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.duration || 60} minutes</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.duration')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.duration || 60} {t('interview.minutes')}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Location</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.location || 'Not specified'}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.location')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.location || t('interview.notSpecified')}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Interviewer</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.interviewer || 'Not assigned'}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.interviewer')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.interviewer || t('interview.notAssigned')}</div>
                     </div>
                   </div>
                   
@@ -947,7 +950,7 @@ const CandidateSummaryS2 = ({
                     <div className="mt-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-600">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                         <Paperclip className="w-4 h-4 mr-2 text-purple-600" />
-                        Required Documents for Interview
+                        {t('interview.requiredDocuments')}
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {candidateData.interview.required_documents.map((docType, index) => {
@@ -974,7 +977,7 @@ const CandidateSummaryS2 = ({
                         })}
                       </div>
                       <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                        Candidate must bring these documents to the interview
+                        {t('interview.bringDocuments')}
                       </p>
                     </div>
                   )}
@@ -984,7 +987,7 @@ const CandidateSummaryS2 = ({
                     <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 border border-yellow-200 dark:border-yellow-600">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                         <MessageSquare className="w-4 h-4 mr-2 text-yellow-600" />
-                        Interview Notes
+                        {t('interview.notes')}
                       </div>
                       <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{candidateData.interview.notes}</div>
                     </div>
@@ -1013,7 +1016,7 @@ const CandidateSummaryS2 = ({
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="text-center py-4 text-red-600 dark:text-red-400">
                   <AlertCircle className="w-6 h-6 mx-auto mb-2" />
-                  <p className="text-sm">No application ID found - cannot load notes</p>
+                  <p className="text-sm">{t('notes.noApplicationId')}</p>
                 </div>
               </div>
             )}
@@ -1031,7 +1034,7 @@ const CandidateSummaryS2 = ({
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                     <Paperclip className="w-5 h-5 mr-2" />
-                    Documents
+                    {t('documents.title')}
                     {apiDocuments && (apiDocuments.slots || apiDocuments.data) && (
                       <span className="ml-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
                         {(apiDocuments.slots || apiDocuments.data || []).filter(slot => slot.document).length} / {(apiDocuments.slots || apiDocuments.data || []).length}
@@ -1039,7 +1042,7 @@ const CandidateSummaryS2 = ({
                     )}
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    View and download candidate documents
+                    {t('documents.viewAndDownload')}
                   </p>
                 </div>
               </div>
@@ -1048,7 +1051,7 @@ const CandidateSummaryS2 = ({
               {loadingDocuments ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Loading documents...</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('documents.loading')}</p>
                 </div>
               ) : documentError ? (
                 <div className="text-center py-8">
@@ -1078,7 +1081,7 @@ const CandidateSummaryS2 = ({
                               {docType.name}
                             </span>
                             {docType.is_required && (
-                              <span className="text-xs text-red-600 dark:text-red-400 font-medium">Required</span>
+                              <span className="text-xs text-red-600 dark:text-red-400 font-medium">{t('documents.required')}</span>
                             )}
                           </div>
                           
@@ -1106,18 +1109,18 @@ const CandidateSummaryS2 = ({
                                     <button
                                       onClick={() => handleDocumentVerify(doc.id, 'approved', doc.name)}
                                       className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-                                      title="Approve document"
+                                      title={t('documents.approve')}
                                     >
                                       <CheckCircle className="w-3 h-3 mr-1" />
-                                      Approve
+                                      {t('documents.approve')}
                                     </button>
                                     <button
                                       onClick={() => handleDocumentVerify(doc.id, 'rejected', doc.name)}
                                       className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
-                                      title="Reject document"
+                                      title={t('documents.reject')}
                                     >
                                       <AlertCircle className="w-3 h-3 mr-1" />
-                                      Reject
+                                      {t('documents.reject')}
                                     </button>
                                   </>
                                 )}
@@ -1125,7 +1128,7 @@ const CandidateSummaryS2 = ({
                             </div>
                           ) : (
                             <div className="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
-                              Not uploaded
+                              {t('documents.notUploaded')}
                             </div>
                           )}
                         </div>
@@ -1134,7 +1137,7 @@ const CandidateSummaryS2 = ({
                         {!isUploaded && jobId && (
                           <label className={`ml-4 inline-flex items-center px-3 py-2 border border-blue-300 dark:border-blue-600 shadow-sm text-sm font-medium rounded-md text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                             <Upload className="w-4 h-4 mr-1" />
-                            {isUploading ? 'Uploading...' : 'Upload'}
+                            {isUploading ? t('documents.uploading') : t('documents.upload')}
                             <input
                               type="file"
                               className="hidden"
@@ -1189,7 +1192,7 @@ const CandidateSummaryS2 = ({
               ) : (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <Paperclip className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No documents available</p>
+                  <p className="text-sm">{t('documents.noDocuments')}</p>
                 </div>
               )}
             </div>
@@ -1202,7 +1205,7 @@ const CandidateSummaryS2 = ({
               {isUpdating && (
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                  Updating...
+                  {t('actions.updating')}
                 </div>
               )}
               
@@ -1217,9 +1220,9 @@ const CandidateSummaryS2 = ({
                       }}
                       disabled={isUpdating}
                       className="text-xs px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
-                      title="Shortlist candidate"
+                      title={t('actions.shortlist')}
                     >
-                      Shortlist
+                      {t('actions.shortlist')}
                     </button>
                   )}
 
@@ -1243,9 +1246,9 @@ const CandidateSummaryS2 = ({
                       }}
                       disabled={isUpdating}
                       className="text-xs px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
-                      title="Schedule interview"
+                      title={t('actions.scheduleInterview')}
                     >
-                      Schedule Interview
+                      {t('actions.scheduleInterview')}
                     </button>
                   )}
 
@@ -1256,10 +1259,10 @@ const CandidateSummaryS2 = ({
                         onClick={async () => {
                           // Show confirmation dialog first
                           const confirmed = await confirm({
-                            title: 'Mark Interview as Passed',
-                            message: `Are you sure you want to mark ${candidateData.name}'s interview as PASSED? This action cannot be undone.`,
-                            confirmText: 'Yes, Mark as Passed',
-                            cancelText: 'Cancel',
+                            title: t('dialogs.markPassed.title'),
+                            message: t('dialogs.markPassed.message', { name: candidateData.name }),
+                            confirmText: t('dialogs.markPassed.confirm'),
+                            cancelText: t('actions.cancel'),
                             type: 'warning'
                           })
                           
@@ -1308,10 +1311,10 @@ const CandidateSummaryS2 = ({
                         {isUpdating ? (
                           <>
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                            Processing...
+                            {t('actions.processing')}
                           </>
                         ) : (
-                          'Pass'
+                          t('actions.pass')
                         )}
                       </button>
 
@@ -1319,10 +1322,10 @@ const CandidateSummaryS2 = ({
                         onClick={async () => {
                           // Show confirmation dialog first
                           const confirmed = await confirm({
-                            title: 'Mark Interview as Failed',
-                            message: `Are you sure you want to mark ${candidateData.name}'s interview as FAILED? This action cannot be undone.`,
-                            confirmText: 'Yes, Mark as Failed',
-                            cancelText: 'Cancel',
+                            title: t('dialogs.markFailed.title'),
+                            message: t('dialogs.markFailed.message', { name: candidateData.name }),
+                            confirmText: t('dialogs.markFailed.confirm'),
+                            cancelText: t('actions.cancel'),
                             type: 'danger'
                           })
                           
@@ -1371,10 +1374,10 @@ const CandidateSummaryS2 = ({
                         {isUpdating ? (
                           <>
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                            Processing...
+                            {t('actions.processing')}
                           </>
                         ) : (
-                          'Fail'
+                          t('actions.fail')
                         )}
                       </button>
 
@@ -1407,9 +1410,9 @@ const CandidateSummaryS2 = ({
                                 }
                               }}
                               className="text-xs px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                              title="Reschedule interview"
+                              title={t('actions.reschedule')}
                             >
-                              Reschedule
+                              {t('actions.reschedule')}
                             </button>
                           )
                         }
@@ -1445,9 +1448,9 @@ const CandidateSummaryS2 = ({
                                   }
                                 }}
                                 className="text-xs px-3 py-2 rounded border border-amber-400 text-amber-700 hover:bg-amber-50"
-                                title="Interview time elapsed — reschedule"
+                                title={t('actions.reschedule')}
                               >
-                                Reschedule
+                                {t('actions.reschedule')}
                               </button>
                             )
                           }
@@ -1463,7 +1466,7 @@ const CandidateSummaryS2 = ({
                 onClick={onClose}
                 className="btn-secondary"
               >
-                Close
+                {t('actions.close')}
               </button>
             </div>
           </div>
@@ -1474,11 +1477,11 @@ const CandidateSummaryS2 = ({
       {interviewActionType === 'reject' && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 10000 }}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-2xl">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Reject Candidate</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{t('dialogs.rejectCandidate.title')}</h3>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Enter rejection reason..."
+              placeholder={t('dialogs.rejectCandidate.placeholder')}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-4"
               rows={4}
             />
@@ -1490,7 +1493,7 @@ const CandidateSummaryS2 = ({
                 }}
                 className="btn-secondary"
               >
-                Cancel
+                {t('actions.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1504,7 +1507,7 @@ const CandidateSummaryS2 = ({
                 disabled={!rejectionReason.trim() || isProcessingInterview}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
               >
-                Confirm Reject
+                {t('dialogs.rejectCandidate.confirm')}
               </button>
             </div>
           </div>

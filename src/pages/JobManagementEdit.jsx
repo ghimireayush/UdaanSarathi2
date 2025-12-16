@@ -9,6 +9,7 @@ import ContractSection from '../components/job-management/ContractSection.jsx';
 import PositionsSection from '../components/job-management/PositionsSection.jsx';
 import TagsSection from '../components/job-management/TagsSection.jsx';
 import ExpensesSection from '../components/job-management/ExpensesSection.jsx';
+import ImageUploadSection from '../components/job-management/ImageUploadSection.jsx';
 import mockExtractedJobData from '../data/mockExtractedJobData.json';
 import enhancedExtractedJobData from '../data/enhancedExtractedJobData.json';
 
@@ -26,9 +27,12 @@ const JobManagementEdit = () => {
   const [isExtractingEnhanced, setIsExtractingEnhanced] = useState(false);
   const [enhancedExtractionSuccess, setEnhancedExtractionSuccess] = useState(false);
   const [dataFromExtraction, setDataFromExtraction] = useState(false); // Flag to mark data as needing save
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState(null);
   
   // Section refs for scroll tracking
   const sectionRefs = {
+    image: useRef(null),
     basic: useRef(null),
     employer: useRef(null),
     contract: useRef(null),
@@ -125,10 +129,9 @@ const JobManagementEdit = () => {
   };
 
   const handleExpensesSave = async (data) => {
-    // TODO: Add expenses update endpoint to backend
-    // For now, just update local state
-    setJobData(prev => ({ ...prev, expenses: data }));
-    return { success: true };
+    const result = await JobDataSource.updateExpenses(license, id, data);
+    setJobData(prev => ({ ...prev, expenses: { ...prev.expenses, ...data } }));
+    return result;
   };
 
   // Position handlers
@@ -296,6 +299,31 @@ const JobManagementEdit = () => {
     setDataFromExtraction(false);
   };
 
+  // Image upload handlers
+  const handleImageUploadSuccess = (imageUrl) => {
+    setJobData(prev => ({
+      ...prev,
+      cutout_url: imageUrl
+    }));
+    setImageUploadError(null);
+  };
+
+  const handleImageDeleteSuccess = () => {
+    setJobData(prev => ({
+      ...prev,
+      cutout_url: null
+    }));
+    setImageUploadError(null);
+  };
+
+  // Construct full image URL from relative path
+  const getFullImageUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    return `${baseUrl}/${url}`;
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -429,6 +457,20 @@ const JobManagementEdit = () => {
 
         {/* Main Content */}
         <div className="flex-1 space-y-8">
+          <div ref={sectionRefs.image} id="section-image">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Job Image</h2>
+              <ImageUploadSection
+                jobId={id}
+                currentImageUrl={getFullImageUrl(jobData?.cutout_url)}
+                onImageUpload={handleImageUploadSuccess}
+                onImageDelete={handleImageDeleteSuccess}
+                isLoading={isUploadingImage}
+                error={imageUploadError}
+              />
+            </div>
+          </div>
+
           <div ref={sectionRefs.basic} id="section-basic">
             <BasicInfoSection
               data={jobData}

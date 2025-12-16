@@ -1,7 +1,8 @@
 import React from 'react';
-import { FileText, Building2, ScrollText, Users, Tags, DollarSign } from 'lucide-react';
+import { FileText, Building2, ScrollText, Users, Tags, DollarSign, Image as ImageIcon } from 'lucide-react';
 
 const sections = [
+  { key: 'image', label: 'Job Image', icon: ImageIcon },
   { key: 'basic', label: 'Basic Info', icon: FileText },
   { key: 'employer', label: 'Employer', icon: Building2 },
   { key: 'contract', label: 'Contract', icon: ScrollText },

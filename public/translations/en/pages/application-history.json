@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-07",
+    "component": "application-history"
+  },
+  "title": "Application History",
+  "noHistory": "No history available",
+  "by": "by",
+  "system": "System",
+  "corrected": "Corrected",
+  "changedFrom": "Changed from:"
+}

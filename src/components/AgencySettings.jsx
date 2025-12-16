@@ -15,9 +15,11 @@ import {
   AlertCircle,
   CheckCircle,
   Settings,
-  Briefcase
+  Briefcase,
+  CornerDownLeft
 } from 'lucide-react'
 import { agencyService } from '../services/index.js'
+import countryService from '../services/countryService.js'
 import { useAgency } from '../contexts/AgencyContext'
 import { useLanguage } from '../hooks/useLanguage'
 import LanguageSwitch from './LanguageSwitch'
@@ -361,11 +363,11 @@ const AgencySettings = () => {
 
   const tabs = [
     { id: 'basic', label: tPage('tabs.basicInfo'), icon: Building2 },
-    { id: 'contact', label: tPage('tabs.contact'), icon: Phone },
-    { id: 'location', label: tPage('tabs.location'), icon: MapPin },
     { id: 'media', label: tPage('tabs.images'), icon: Camera },
+    { id: 'contact', label: tPage('tabs.contact'), icon: Phone },
     { id: 'social', label: tPage('tabs.socialMedia'), icon: Globe },
-    { id: 'services', label: tPage('tabs.services'), icon: Briefcase }
+    { id: 'services', label: tPage('tabs.services'), icon: Briefcase },
+    { id: 'location', label: tPage('tabs.location'), icon: MapPin }
   ]
 
   return (
@@ -1304,6 +1306,26 @@ const SocialMediaSection = ({ data, isEditing, formData, onFormChange, onStartEd
 
 // Services Section
 const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit, onSave, onCancel, isSaving, tPage }) => {
+  const [countries, setCountries] = useState([])
+  const [loadingCountries, setLoadingCountries] = useState(false)
+
+  // Load countries on mount
+  useEffect(() => {
+    loadCountries()
+  }, [])
+
+  const loadCountries = async () => {
+    setLoadingCountries(true)
+    try {
+      const countryNames = await countryService.getCountryNames()
+      setCountries(countryNames)
+    } catch (error) {
+      console.error('Failed to load countries:', error)
+    } finally {
+      setLoadingCountries(false)
+    }
+  }
+
   const addItem = (field, item) => {
     const currentItems = formData[field] || []
     if (item.trim() && !currentItems.includes(item.trim())) {
@@ -1376,7 +1398,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   }}
                   className="btn-secondary text-sm"
                 >
-                  <Plus className="w-4 h-4" />
+                  <CornerDownLeft className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -1417,7 +1439,7 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   }}
                   className="btn-secondary text-sm"
                 >
-                  <Plus className="w-4 h-4" />
+                  <CornerDownLeft className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -1447,16 +1469,14 @@ const ServicesSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                       e.target.value = ''
                     }
                   }}
+                  disabled={loadingCountries}
                 >
                   <option value="">{tPage('countries.selectCountry')}</option>
-                  <option value="UAE">{tPage('countries.uae')}</option>
-                  <option value="Saudi Arabia">{tPage('countries.saudiArabia')}</option>
-                  <option value="Qatar">{tPage('countries.qatar')}</option>
-                  <option value="Kuwait">{tPage('countries.kuwait')}</option>
-                  <option value="Oman">{tPage('countries.oman')}</option>
-                  <option value="Bahrain">{tPage('countries.bahrain')}</option>
-                  <option value="Malaysia">{tPage('countries.malaysia')}</option>
-                  <option value="Singapore">{tPage('countries.singapore')}</option>
+                  {countries.map(country => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -1698,7 +1718,7 @@ const AgencyPreview = ({ data, tPage }) => {
   }
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{tPage('sections.agencyPreview')}</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">{tPage('sections.agencyPreview')}</h3>
       
       <div className="text-center mb-4">
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg mx-auto mb-3 flex items-center justify-center overflow-hidden">
@@ -1717,15 +1737,15 @@ const AgencyPreview = ({ data, tPage }) => {
       </div>
 
       <div className="space-y-2 text-sm">
-        <div className="flex items-center">
+        <div className="flex items-center justify-center">
           <Phone className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
           <span className="text-gray-900 dark:text-gray-100">{data.phone}</span>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-center">
           <Mail className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
           <span className="text-gray-900 dark:text-gray-100">{data.email}</span>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-center">
           <Globe className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
           <span className="text-gray-900 dark:text-gray-100">{data.website}</span>
         </div>

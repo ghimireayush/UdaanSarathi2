@@ -12,7 +12,7 @@ const EmployerSection = ({ data, onSave, isFromExtraction = false }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Initialize form data
+  // Initialize form data when data changes
   useEffect(() => {
     if (data) {
       setFormData({
@@ -20,9 +20,15 @@ const EmployerSection = ({ data, onSave, isFromExtraction = false }) => {
         country: data.country || '',
         city: data.city || ''
       });
-      setIsDirty(isFromExtraction);
     }
-  }, [data, isFromExtraction]);
+  }, [data]);
+
+  // When extraction flag is set, mark form as dirty so save button is enabled
+  useEffect(() => {
+    if (isFromExtraction) {
+      setIsDirty(true);
+    }
+  }, [isFromExtraction]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -36,14 +42,13 @@ const EmployerSection = ({ data, onSave, isFromExtraction = false }) => {
     setSuccess(false);
     
     try {
-      const updates = {};
-      if (formData.company_name !== (data?.company_name || '')) updates.company_name = formData.company_name;
-      if (formData.country !== (data?.country || '')) updates.country = formData.country;
-      if (formData.city !== (data?.city || '')) updates.city = formData.city || null;
+      const updates = {
+        company_name: formData.company_name,
+        country: formData.country,
+        city: formData.city || null
+      };
 
-      if (Object.keys(updates).length > 0) {
-        await onSave(updates);
-      }
+      await onSave(updates);
       setIsDirty(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

@@ -22,7 +22,7 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
 
   const experienceLevels = ['entry', 'junior', 'mid', 'senior', 'expert'];
 
-  // Initialize form data
+  // Initialize form data when data changes
   useEffect(() => {
     if (data) {
       setFormData({
@@ -34,9 +34,15 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
           level: data.experience_requirements?.level ?? ''
         }
       });
-      setIsDirty(isFromExtraction);
     }
-  }, [data, isFromExtraction]);
+  }, [data]);
+
+  // When extraction flag is set, mark form as dirty so save button is enabled
+  useEffect(() => {
+    if (isFromExtraction) {
+      setIsDirty(true);
+    }
+  }, [isFromExtraction]);
 
   const handleAddSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
