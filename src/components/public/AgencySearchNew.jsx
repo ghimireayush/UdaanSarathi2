@@ -118,7 +118,7 @@ const AgencySearchNew = ({ t }) => {
     params.append('limit', limit.toString())
     params.append('sortBy', sortBy)
     params.append('sortOrder', sortOrder)
-    return `http://localhost:3000/agencies/search?${params.toString()}`
+    return `${import.meta.env.VITE_API_BASE_URL || 'https://dev.kaha.com.np/job-portal'}/agencies/search?${params.toString()}`
   }
 
   /**
@@ -202,7 +202,7 @@ const AgencySearchNew = ({ t }) => {
    */
   const fetchSearchConfig = async () => {
     try {
-      const response = await fetch('http://localhost:3000/agencies/search/config')
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://dev.kaha.com.np/job-portal'}/agencies/search/config`)
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`)
       }

@@ -1,6 +1,10 @@
 import { handleServiceError } from '../utils/errorHandler';
 import auditService from './auditService';
 import MemberDataSource from '../api/datasources/MemberDataSource.js';
+import { getAssignableRoles } from '../config/roles.js';
+
+// Mock data for development
+let mockMembers = [];
 
 
 export const inviteMember = async (memberData) => {
@@ -10,10 +14,11 @@ export const inviteMember = async (memberData) => {
       throw new Error('Invalid member data - full_name, phone, and role are required');
     }
 
-    // Validate role according to API spec
-    const validRoles = ['staff', 'admin', 'manager'];
+    // Validate role according to RBAC configuration
+    const assignableRoles = getAssignableRoles();
+    const validRoles = assignableRoles.map(role => role.value);
     if (!validRoles.includes(memberData.role)) {
-      throw new Error('Invalid role. Must be one of: staff, admin, manager');
+      throw new Error(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
     }
 
     // Check if phone number already exists
@@ -22,104 +27,57 @@ export const inviteMember = async (memberData) => {
       throw new Error('A member with this phone number already exists');
     }
 
-    try {
-      // Get JWT token from localStorage
-      const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
-      if (!token) {
-        throw new Error('Not authenticated. Please log in first.')
-      }
-
-      // Real API call implementation
-      const apiResult = await MemberDataSource.inviteMember(memberData);
-      
-      // Transform API response to match internal format
-      const newMember = {
-        id: apiResult.id,
-        name: memberData.full_name, // Keep internal name field for compatibility
-        full_name: memberData.full_name,
-        phone: apiResult.phone,
-        mobileNumber: apiResult.phone, // Keep internal mobileNumber for compatibility
-        role: apiResult.role,
-        status: apiResult.status || 'pending',
-        dev_password: apiResult.dev_password,
-        createdAt: apiResult.created_at || new Date().toISOString()
-      };
-
-      // Add to mock data for development
-      mockMembers.push(newMember);
-
-      // Audit: member invitation
-      try {
-        await auditService.logEvent({
-          user_id: 'current_user', // In real app, get from auth context
-          user_name: 'Current User',
-          action: 'INVITE',
-          resource_type: 'MEMBER',
-          resource_id: newMember.id,
-          metadata: {
-            member_name: newMember.full_name,
-            member_role: newMember.role,
-            member_phone: newMember.phone,
-            dev_password_provided: !!apiResult.dev_password
-          }
-        });
-      } catch (e) {
-        console.warn('Audit logging (INVITE MEMBER) failed:', e);
-      }
-
-      return {
-        success: true,
-        message: `Invitation sent to ${memberData.full_name}`,
-        data: newMember
-      };
-
-    } catch (error) {
-      // Fallback to mock implementation for development
-      console.warn('API call failed, using mock implementation:', error.message);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const newMember = {
-        id: `member_${Date.now()}`,
-        name: memberData.full_name,
-        full_name: memberData.full_name,
-        phone: memberData.phone,
-        mobileNumber: memberData.phone,
-        role: memberData.role,
-        status: 'pending',
-        dev_password: `temp_${Math.random().toString(36).substring(2, 8)}`,
-        createdAt: new Date().toISOString()
-      };
-
-      // Add to mock data
-      mockMembers.push(newMember);
-
-      // Audit: member invitation (mock)
-      try {
-        await auditService.logEvent({
-          user_id: 'current_user',
-          user_name: 'Current User',
-          action: 'INVITE',
-          resource_type: 'MEMBER',
-          resource_id: newMember.id,
-          metadata: {
-            member_name: newMember.full_name,
-            member_role: newMember.role,
-            member_phone: newMember.phone,
-            mock_implementation: true
-          }
-        });
-      } catch (e) {
-        console.warn('Audit logging (INVITE MEMBER) failed:', e);
-      }
-
-      return {
-        success: true,
-        message: `Invitation sent to ${memberData.full_name} (Mock)`,
-        data: newMember
-      };
+    // Get JWT token from localStorage
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('udaan_token') : null
+    if (!token) {
+      throw new Error('Not authenticated. Please log in first.')
     }
+
+    // Real API call implementation
+    console.log('[memberService] Calling API to invite member:', memberData);
+    const apiResult = await MemberDataSource.inviteMember(memberData);
+    console.log('[memberService] API response:', apiResult);
+    
+    // Transform API response to match internal format
+    const newMember = {
+      id: apiResult.id,
+      name: memberData.full_name, // Keep internal name field for compatibility
+      full_name: memberData.full_name,
+      phone: apiResult.phone,
+      mobileNumber: apiResult.phone, // Keep internal mobileNumber for compatibility
+      role: apiResult.role,
+      status: apiResult.status || 'pending',
+      dev_password: apiResult.dev_password,
+      createdAt: apiResult.created_at || new Date().toISOString()
+    };
+
+    // Add to mock data for development
+    mockMembers.push(newMember);
+
+    // Audit: member invitation
+    try {
+      await auditService.logEvent({
+        user_id: 'current_user', // In real app, get from auth context
+        user_name: 'Current User',
+        action: 'INVITE',
+        resource_type: 'MEMBER',
+        resource_id: newMember.id,
+        metadata: {
+          member_name: newMember.full_name,
+          member_role: newMember.role,
+          member_phone: newMember.phone,
+          dev_password_provided: !!apiResult.dev_password
+        }
+      });
+    } catch (e) {
+      console.warn('Audit logging (INVITE MEMBER) failed:', e);
+    }
+
+    return {
+      success: true,
+      message: `Invitation sent to ${memberData.full_name}`,
+      data: newMember
+    };
   });
 };
 

@@ -21,6 +21,7 @@ const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [error, setError] = useState(null);
 
   // Filter and search logic
   const filteredMembers = members.filter(member => {
@@ -99,6 +100,7 @@ const Members = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     
     const confirmed = await confirm({
       title: tPage('modals.confirmInvitation.title'),
@@ -111,7 +113,11 @@ const Members = () => {
 
     setLoading(true);
     try {
-      await inviteMember(formData);
+      const result = await inviteMember(formData);
+      if (!result.success) {
+        setError(result.message || 'Failed to send invitation');
+        return;
+      }
       await loadMembers();
       setFormData({
         full_name: '',
@@ -120,6 +126,7 @@ const Members = () => {
       });
     } catch (error) {
       console.error('Error inviting member:', error);
+      setError(error.message || 'Failed to send invitation. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -213,6 +220,11 @@ const Members = () => {
         </div>
         
         <div className="p-6">
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

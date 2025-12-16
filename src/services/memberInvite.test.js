@@ -3,6 +3,8 @@
  * Testing the API integration with auth documentation
  */
 
+import { getAssignableRoles } from '../config/roles';
+
 describe('Member Invite API Integration', () => {
   // Mock fetch
   global.fetch = jest.fn();
@@ -89,7 +91,11 @@ describe('Member Invite API Integration', () => {
   test('validates role values according to API spec', async () => {
     const { inviteMember } = await import('./memberService');
 
-    const invalidRoles = ['user', 'guest', 'coordinator'];
+    const assignableRoles = getAssignableRoles();
+    const validRolesList = assignableRoles.map(role => role.value).join(', ');
+    
+    // Use roles that are NOT in the assignable list
+    const invalidRoles = ['user', 'guest', 'owner'];
     
     for (const invalidRole of invalidRoles) {
       try {
@@ -100,7 +106,7 @@ describe('Member Invite API Integration', () => {
         });
         fail('Should have thrown role validation error');
       } catch (error) {
-        expect(error.message).toContain('Must be one of: staff, admin, manager');
+        expect(error.message).toContain(`Must be one of: ${validRolesList}`);
       }
     }
   });

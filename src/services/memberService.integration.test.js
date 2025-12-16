@@ -4,6 +4,7 @@
  */
 
 import { inviteMember } from './memberService';
+import { getAssignableRoles } from '../config/roles';
 
 // Mock fetch for integration testing
 global.fetch = jest.fn();
@@ -66,7 +67,8 @@ describe('Member Service API Integration', () => {
     });
 
     it('should handle all API-specified roles', async () => {
-      const roles = ['staff', 'admin', 'manager'];
+      const assignableRoles = getAssignableRoles();
+      const roles = assignableRoles.map(role => role.value);
       
       for (const role of roles) {
         const mockResponse = {
@@ -96,7 +98,11 @@ describe('Member Service API Integration', () => {
     });
 
     it('should reject invalid roles not in API specification', async () => {
-      const invalidRoles = ['user', 'guest', 'coordinator', 'recipient'];
+      const assignableRoles = getAssignableRoles();
+      const validRolesList = assignableRoles.map(role => role.value).join(', ');
+      
+      // Use roles that are NOT in the assignable list
+      const invalidRoles = ['user', 'guest', 'owner', 'recipient'];
       
       for (const invalidRole of invalidRoles) {
         const memberData = {
@@ -106,7 +112,7 @@ describe('Member Service API Integration', () => {
         };
 
         await expect(inviteMember(memberData)).rejects.toThrow(
-          'Invalid role. Must be one of: staff, admin, manager'
+          `Invalid role. Must be one of: ${validRolesList}`
         );
       }
     });

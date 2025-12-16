@@ -1,5 +1,6 @@
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from './memberService';
 import auditService from './auditService';
+import { getAssignableRoles } from '../config/roles';
 
 // Mock the audit service
 jest.mock('./auditService', () => ({
@@ -104,8 +105,11 @@ describe('memberService', () => {
         role: 'invalid-role'
       };
 
+      const assignableRoles = getAssignableRoles();
+      const validRolesList = assignableRoles.map(role => role.value).join(', ');
+
       await expect(inviteMember(invalidRoleData)).rejects.toThrow(
-        'Invalid role. Must be one of: staff, admin, manager'
+        `Invalid role. Must be one of: ${validRolesList}`
       );
     });
 
@@ -169,7 +173,8 @@ describe('memberService', () => {
     });
 
     it('should handle all valid roles', async () => {
-      const roles = ['staff', 'admin', 'manager'];
+      const assignableRoles = getAssignableRoles();
+      const roles = assignableRoles.map(role => role.value);
       
       for (const role of roles) {
         fetch.mockResolvedValueOnce({

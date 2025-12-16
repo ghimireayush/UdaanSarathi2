@@ -11,7 +11,7 @@ import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
 import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
 
 // API Configuration
-const API_BASE_URL = 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dev.kaha.com.np/job-portal'
 
 // Get agency license from localStorage (set during login)
 const getAgencyLicense = () => {
