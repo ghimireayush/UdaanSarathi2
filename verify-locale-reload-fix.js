@@ -28,8 +28,8 @@ console.log('=' .repeat(50))
 class TestI18nService1 {
   constructor() {
     this.storageKey = 'udaan-sarathi-locale'
-    this.preferenceVersion = '1.1.0'
-    this.fallbackLocale = 'en'
+    this.preferenceVersion = '1.0.0'
+    this.fallbackLocale = 'ne'
     
     const detectedLocale = this.detectLocaleEarly()
     this.currentLocale = detectedLocale
@@ -44,16 +44,11 @@ class TestI18nService1 {
           return preference.locale
         }
       }
-      
-      const legacyStored = mockLocalStorage.getItem('preferred-locale')
-      if (legacyStored && (legacyStored === 'en' || legacyStored === 'ne')) {
-        return legacyStored
-      }
     } catch (error) {
       console.warn('Early locale detection failed:', error)
     }
     
-    return 'en'
+    return this.fallbackLocale
   }
 
   getLocale() {
@@ -69,13 +64,10 @@ class TestI18nService1 {
     const preference = {
       locale,
       timestamp: Date.now(),
-      version: this.preferenceVersion,
-      userAgent: mockNavigator.userAgent.substring(0, 100),
-      checksum: Math.random().toString(36)
+      version: this.preferenceVersion
     }
     
     mockLocalStorage.setItem(this.storageKey, JSON.stringify(preference))
-    mockLocalStorage.setItem('preferred-locale', locale)
   }
 }
 
@@ -91,7 +83,7 @@ console.log('=' .repeat(50))
 
 service1.setLocale('ne')
 console.log('Locale set to:', service1.getLocale())
-console.log('Storage contains:', mockLocalStorage.getItem('preferred-locale'))
+console.log('Storage contains:', mockLocalStorage.getItem(service1.storageKey))
 
 // Simulate page reload by creating new instance
 const service2 = new TestI18nService1()
@@ -114,31 +106,16 @@ console.log('Expected: en')
 console.log('Result:', service3.getLocale() === 'en' ? '✅ PASS' : '❌ FAIL')
 console.log()
 
-// Test 4: Legacy format support
-console.log('Test 4: Legacy Format Support')
-console.log('=' .repeat(50))
-
-// Clear new format, set only legacy
-mockLocalStorage.removeItem('udaan-sarathi-locale')
-mockLocalStorage.setItem('preferred-locale', 'ne')
-
-const service4 = new TestI18nService1()
-console.log('With only legacy storage, locale:', service4.getLocale())
-console.log('Expected: ne')
-console.log('Result:', service4.getLocale() === 'ne' ? '✅ PASS' : '❌ FAIL')
-console.log()
-
-// Test 5: Corrupted storage handling
-console.log('Test 5: Corrupted Storage Handling')
+// Test 4: Corrupted storage handling
+console.log('Test 4: Corrupted Storage Handling')
 console.log('=' .repeat(50))
 
 mockLocalStorage.setItem('udaan-sarathi-locale', 'invalid json{')
-mockLocalStorage.removeItem('preferred-locale')
 
-const service5 = new TestI18nService1()
-console.log('With corrupted storage, locale:', service5.getLocale())
-console.log('Expected: en (fallback)')
-console.log('Result:', service5.getLocale() === 'en' ? '✅ PASS' : '❌ FAIL')
+const service4 = new TestI18nService1()
+console.log('With corrupted storage, locale:', service4.getLocale())
+console.log('Expected: ne (fallback)')
+console.log('Result:', service4.getLocale() === 'ne' ? '✅ PASS' : '❌ FAIL')
 console.log()
 
 // Summary
@@ -148,10 +125,9 @@ console.log('=' .repeat(50))
 console.log('All tests completed!')
 console.log()
 console.log('Key Points Verified:')
-console.log('✅ Default locale is English on fresh start')
+console.log('✅ Default locale is Nepali on fresh start')
 console.log('✅ Nepali selection persists across reloads')
 console.log('✅ English selection persists across reloads')
-console.log('✅ Legacy storage format is supported')
-console.log('✅ Corrupted storage falls back to English')
+console.log('✅ Corrupted storage falls back to Nepali')
 console.log()
 console.log('🎉 Locale reload persistence fix is working correctly!')

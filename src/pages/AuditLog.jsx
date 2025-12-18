@@ -238,7 +238,7 @@ const AuditLogPage = () => {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+            {tPage("filters.title") || "Refresh"}
           </button>
           <LanguageSwitch />
         </div>
@@ -499,7 +499,7 @@ const AuditLogPage = () => {
 
                   {/* Actor - More prominent */}
                   <div className="min-w-[180px]">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Performed by</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">{tPage("messages.performedBy")}</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100 capitalize">
                       {log.user_role || "System"}
                     </p>

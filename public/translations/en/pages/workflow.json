@@ -22,9 +22,7 @@
     "interviewScheduled": "Interview Scheduled",
     "interviewScheduledDescription": "Candidates with scheduled interviews",
     "interviewPassed": "Interview Passed",
-    "interviewPassedDescription": "Candidates who passed interviews",
-    "interviewFailed": "Interview Failed",
-    "interviewFailedDescription": "Candidates who did not pass interviews"
+    "interviewPassedDescription": "Candidates who passed interviews"
   },
   "tabs": {
     "byJob": "By Job Post",
@@ -39,7 +37,6 @@
     "applicantDistribution": "Applicant Distribution by Job"
   },
   "candidateCard": {
-    "passportLabel": "Passport",
     "passport": "Passport: {{number}}",
     "documents": "{{count}} document{{plural}} attached",
     "interviewedAt": "Interviewed: {{date}}",
@@ -49,16 +46,7 @@
     "viewSummary": "View Summary",
     "updateStatus": "Update Status",
     "attachDocument": "Attach Document",
-    "removeDocument": "Remove Document",
-    "shortlist": "Shortlist",
-    "scheduleInterview": "Schedule Interview",
-    "pass": "Pass",
-    "fail": "Fail",
-    "reschedule": "Reschedule",
-    "finalStage": "Final Stage",
-    "retry": "Retry",
-    "previous": "Previous",
-    "next": "Next"
+    "removeDocument": "Remove Document"
   },
   "modals": {
     "stageTransition": {
@@ -89,11 +77,15 @@
     "page": "Page {{current}} of {{total}}"
   },
   "empty": {
-    "noCandidates": "No candidates found",
-    "noSearchResults": "No candidates match your search criteria.",
-    "noStageResults": "No candidates in {{stage}} stage."
+    "noCandidates": "No Candidates Found",
+    "noSearchResults": "Try adjusting your search",
+    "noStageResults": "No candidates in this stage"
   },
   "loading": {
     "workflow": "Loading workflow data..."
+  },
+  "error": {
+    "failedToLoad": "Failed to Load",
+    "retry": "Retry"
   }
 }

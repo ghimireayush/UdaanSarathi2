@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
+    "page": "setup-company"
+  },
+  "title": "Setup Your Company",
+  "subtitle": "Tell us about your manpower agency",
+  "branding": {
+    "logoAlt": "Udaan Sarathi Logo"
+  },
+  "form": {
+    "companyName": {
+      "label": "Company Name",
+      "placeholder": "Enter company name"
+    },
+    "address": {
+      "label": "Address",
+      "placeholder": "Enter company address"
+    },
+    "city": {
+      "label": "City",
+      "placeholder": "Enter city"
+    },
+    "country": {
+      "label": "Country",
+      "placeholder": "Enter country"
+    },
+    "phone": {
+      "label": "Phone Number",
+      "placeholder": "Company phone"
+    },
+    "website": {
+      "label": "Website",
+      "placeholder": "Company website (optional)"
+    },
+    "registrationNumber": {
+      "label": "Company Registration Number",
+      "placeholder": "Enter registration number"
+    },
+    "description": {
+      "label": "Company Description",
+      "placeholder": "Tell us about your company (optional)"
+    },
+    "submit": "Complete Setup",
+    "submitting": "Setting Up Company..."
+  },
+  "cardTitle": "Company Information",
+  "loggedInAs": "Logged in as:",
+  "messages": {
+    "error": "Failed to create company"
+  }
+}

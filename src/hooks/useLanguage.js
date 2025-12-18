@@ -5,6 +5,18 @@ import LanguageContext from '../contexts/LanguageContext'
 /**
  * Enhanced useLanguage hook that integrates with global language context
  * Provides comprehensive language management with loading states and error handling
+ * 
+ * USAGE EXAMPLE:
+ * const { tPageSync, isLoading } = useLanguage({ pageName: 'login', autoLoad: true })
+ * const label = tPageSync('form.phoneLabel')  // Gets from public/translations/
+ * 
+ * TRANSLATION LOADING:
+ * When autoLoad: true, this hook automatically:
+ * 1. Calls loadPageTranslations('login')
+ * 2. Makes HTTP request to public/translations/ne/pages/login.json
+ * 3. Caches translations in memory
+ * 4. Makes them available via tPageSync()
+ * 
  * @param {Object} options - Hook options
  * @param {string} options.pageName - Page name for automatic translation loading
  * @param {boolean} options.autoLoad - Whether to automatically load page translations

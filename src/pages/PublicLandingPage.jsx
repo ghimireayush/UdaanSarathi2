@@ -16,7 +16,7 @@ const PublicLandingPage = () => {
   const { isAuthenticated, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("landing-language") || "en";
+    return localStorage.getItem("landing-language") || "ne";
   });
   const [translations, setTranslations] = useState({});
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -99,7 +99,7 @@ const PublicLandingPage = () => {
   }, [showContent]);
 
   const toggleLanguage = () => {
-    const newLang = language === "en" ? "ne" : "en";
+    const newLang = language === "ne" ? "en" : "ne";
     setLanguage(newLang);
     localStorage.setItem("landing-language", newLang);
   };

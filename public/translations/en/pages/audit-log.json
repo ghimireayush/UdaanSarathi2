@@ -1,66 +1,64 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-11-18",
+    "lastUpdated": "2024-12-17",
     "page": "audit-log"
   },
-  "title": "User Access Log",
-  "subtitle": "Track user login and logout activities with name, phone number, role, and timestamps",
+  "title": "Audit Logs",
+  "subtitle": "Track all system activities and changes",
   "stats": {
-    "totalLogs": "Total Access Logs",
-    "uniqueUsers": "Unique Users",
-    "todayAccess": "Today's Access"
-  },
-  "search": {
-    "placeholder": "Search by name, phone number or role..."
+    "totalEvents": "Total Events",
+    "applications": "Applications",
+    "interviews": "Interviews",
+    "authEvents": "Auth Events"
   },
   "filters": {
     "title": "Filters",
-    "toggle": "Filters",
-    "dateRange": "Date Range",
-    "role": "Role",
-    "sortOrder": "Sort Order",
-    "allTime": "All Time",
-    "today": "Today",
-    "thisWeek": "This Week",
-    "thisMonth": "This Month",
-    "custom": "Custom Range",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "allRoles": "All Roles",
-    "newest": "Newest First",
-    "oldest": "Oldest First"
-  },
-  "roles": {
-    "recipient": "Recipient",
-    "admin": "Admin",
-    "coordinator": "Coordinator"
-  },
-  "table": {
-    "headers": {
-      "name": "Name",
-      "role": "Role",
-      "loginTime": "Login Time",
-      "logoutTime": "Logout Time"
+    "labels": {
+      "category": "Category",
+      "outcome": "Outcome",
+      "dateRange": "Date Range",
+      "perPage": "Items Per Page"
     },
-    "stillLoggedIn": "Still logged in"
+    "category": {
+      "all": "All Categories",
+      "auth": "Authentication",
+      "application": "Applications",
+      "job_posting": "Job Postings",
+      "agency": "Agency",
+      "candidate": "Candidate",
+      "interview": "Interview",
+      "admin": "Admin",
+      "system": "System"
+    },
+    "outcome": {
+      "all": "All Outcomes",
+      "success": "Success",
+      "failure": "Failure",
+      "denied": "Denied"
+    },
+    "dateRange": {
+      "all": "All Time",
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month",
+      "custom": "Custom Range"
+    }
   },
   "pagination": {
-    "show": "Show",
-    "perPage": "per page",
-    "showing": "Showing {{start}} to {{end}} of {{total}} logs",
+    "showing": "Showing {{count}} of {{total}} logs",
+    "page": "Page {{current}} of {{total}}",
+    "total": "Total: {{count}}",
     "first": "First",
     "previous": "Previous",
     "next": "Next",
     "last": "Last"
   },
   "messages": {
-    "noResults": {
-      "filtered": "No access logs found matching your search criteria.",
-      "empty": "No access logs available."
-    },
-    "results": {
-      "showing": "Showing {{count}} of {{total}} access logs"
-    }
+    "noLogsFound": "No audit logs found",
+    "performedBy": "Performed by"
+  },
+  "error": {
+    "failedToLoad": "Failed to load audit logs"
   }
 }

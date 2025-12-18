@@ -12,10 +12,16 @@ import ExpensesSection from '../components/job-management/ExpensesSection.jsx';
 import ImageUploadSection from '../components/job-management/ImageUploadSection.jsx';
 import mockExtractedJobData from '../data/mockExtractedJobData.json';
 import enhancedExtractedJobData from '../data/enhancedExtractedJobData.json';
+import { useLanguage } from '../hooks/useLanguage.js';
 
 const JobManagementEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { tPageSync } = useLanguage({ pageName: 'job-management', autoLoad: true });
+  
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params);
+  };
   
   // State
   const [jobData, setJobData] = useState(null);
@@ -372,7 +378,7 @@ const JobManagementEdit = () => {
             className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Job Management
+            {tPage('buttons.backToJobManagement')}
           </button>
           
           {/* Upload Buttons */}
@@ -392,17 +398,17 @@ const JobManagementEdit = () => {
               {isExtractingFromImage ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Extracting...
+                  {tPage('buttons.extracting')}
                 </>
               ) : extractionSuccess ? (
                 <>
                   <ImageIcon className="w-4 h-4 mr-2" />
-                  Filled!
+                  {tPage('buttons.filled')}
                 </>
               ) : (
                 <>
                   <Upload className="w-4 h-4 mr-2" />
-                  Basic Extract
+                  {tPage('buttons.basicExtract')}
                 </>
               )}
             </button>
@@ -422,17 +428,17 @@ const JobManagementEdit = () => {
               {isExtractingEnhanced ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Extracting...
+                  {tPage('buttons.extracting')}
                 </>
               ) : enhancedExtractionSuccess ? (
                 <>
                   <ImageIcon className="w-4 h-4 mr-2" />
-                  All Filled!
+                  {tPage('buttons.filled')}
                 </>
               ) : (
                 <>
                   <Upload className="w-4 h-4 mr-2" />
-                  Enhanced Extract
+                  {tPage('buttons.basicExtract')}
                 </>
               )}
             </button>

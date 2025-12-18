@@ -84,7 +84,7 @@ const MemberLogin = () => {
   
   const handleSendOtp = async () => {
     if (!username || username.length !== 10) {
-      setError('Please enter a valid 10-digit phone number')
+      setError(tPage('validation.invalidPhone'))
       return
     }
 
@@ -129,14 +129,14 @@ const MemberLogin = () => {
     
     // Validate phone number
     if (!username || username.length !== 10) {
-      setError('Please enter a valid 10-digit phone number')
+      setError(tPage('validation.invalidPhone'))
       setLoading(false)
       return
     }
 
     // Validate OTP format
     if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-      setError('Please enter a valid 6-digit OTP')
+      setError(tPage('validation.invalidOtp'))
       setLoading(false)
       return
     }
@@ -183,7 +183,7 @@ const MemberLogin = () => {
           className="group flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-medium">Back</span>
+          <span className="font-medium">{tPage('footer.back')}</span>
         </Link>
       </div>
 
@@ -243,13 +243,13 @@ const MemberLogin = () => {
                 onClick={() => navigate('/login')}
                 className="flex-1 py-2 px-4 rounded-md font-medium transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
               >
-                Admin
+                {tPage('tabs.admin')}
               </button>
               <button
                 type="button"
                 className="flex-1 py-2 px-4 rounded-md font-medium transition-all bg-white dark:bg-gray-800 text-brand-navy dark:text-brand-blue-bright shadow-sm"
               >
-                Member
+                {tPage('tabs.member')}
               </button>
             </div>
           </CardHeader>
@@ -263,7 +263,7 @@ const MemberLogin = () => {
               
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Phone Number (10 digits)
+                  {tPage('form.phoneLabel')}
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -287,7 +287,7 @@ const MemberLogin = () => {
                         }
                       }}
                       className="block w-full pl-10 pr-3 py-3 text-lg border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright backdrop-blur-sm bg-white/50 dark:bg-gray-700/50 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                      placeholder="9801111111"
+                      placeholder={tPage('form.phonePlaceholder')}
                     />
                   </div>
                   <button
@@ -296,19 +296,19 @@ const MemberLogin = () => {
                     disabled={sendingOtp || username.length !== 10 || resendTimer > 0}
                     className="px-4 py-3 bg-brand-blue-bright hover:bg-brand-navy text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
-                    {sendingOtp ? 'Sending...' : resendTimer > 0 ? `${resendTimer}s` : otpSent ? 'Resend' : 'Send OTP'}
+                    {sendingOtp ? tPage('form.sending') : resendTimer > 0 ? `${resendTimer}s` : otpSent ? tPage('form.resend') : tPage('form.sendOtp')}
                   </button>
                 </div>
                 {otpSent && (
                   <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                    ✓ OTP sent successfully! Check your phone.
+                    {tPage('form.otpSuccess')}
                   </p>
                 )}
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
-                  Enter 6 Digit OTP
+                  {tPage('form.otpLabel')}
                 </label>
                 <OTPInput
                   value={otp}
@@ -319,7 +319,7 @@ const MemberLogin = () => {
                   className="mb-3"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                  Enter the 6-digit OTP sent to your registered contact
+                  {tPage('form.otpDescription')}
                 </p>
               </div>
               
@@ -354,7 +354,7 @@ const MemberLogin = () => {
                   className="h-4 w-4 text-brand-blue-bright focus:ring-brand-blue-bright border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Remember me
+                  {tPage('footer.rememberMe')}
                 </label>
               </div>
 

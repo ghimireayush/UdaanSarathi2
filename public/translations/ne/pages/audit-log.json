@@ -1,66 +1,64 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-11-18",
+    "lastUpdated": "2024-12-17",
     "page": "audit-log"
   },
-  "title": "प्रयोगकर्ता पहुँच लग",
-  "subtitle": "नाम, फोन नम्बर, भूमिका, र समयमुद्राको साथ प्रयोगकर्ता लगइन र लगआउट गतिविधिहरू ट्र्याक गर्नुहोस्",
+  "title": "अडिट लगहरू",
+  "subtitle": "सबै प्रणाली गतिविधि र परिवर्तनहरू ट्र्याक गर्नुहोस्",
   "stats": {
-    "totalLogs": "कुल पहुँच लगहरू",
-    "uniqueUsers": "अद्वितीय प्रयोगकर्ताहरू",
-    "todayAccess": "आजको पहुँच"
-  },
-  "search": {
-    "placeholder": "नाम, फोन नम्बर वा भूमिकाद्वारा खोज्नुहोस्..."
+    "totalEvents": "कुल घटनाहरू",
+    "applications": "आवेदनहरू",
+    "interviews": "अन्तर्वार्ताहरू",
+    "authEvents": "प्रमाणीकरण घटनाहरू"
   },
   "filters": {
     "title": "फिल्टरहरू",
-    "toggle": "फिल्टरहरू",
-    "dateRange": "मिति दायरा",
-    "role": "भूमिका",
-    "sortOrder": "क्रमबद्ध क्रम",
-    "allTime": "सबै समय",
-    "today": "आज",
-    "thisWeek": "यो हप्ता",
-    "thisMonth": "यो महिना",
-    "custom": "कस्टम दायरा",
-    "startDate": "सुरु मिति",
-    "endDate": "अन्त्य मिति",
-    "allRoles": "सबै भूमिकाहरू",
-    "newest": "नयाँ पहिले",
-    "oldest": "पुरानो पहिले"
-  },
-  "roles": {
-    "recipient": "प्राप्तकर्ता",
-    "admin": "प्रशासक",
-    "coordinator": "संयोजक"
-  },
-  "table": {
-    "headers": {
-      "name": "नाम",
-      "role": "भूमिका",
-      "loginTime": "लगइन समय",
-      "logoutTime": "लगआउट समय"
+    "labels": {
+      "category": "श्रेणी",
+      "outcome": "परिणाम",
+      "dateRange": "मिति दायरा",
+      "perPage": "प्रति पृष्ठ वस्तुहरू"
     },
-    "stillLoggedIn": "अझै लगइन छ"
+    "category": {
+      "all": "सबै श्रेणीहरू",
+      "auth": "प्रमाणीकरण",
+      "application": "आवेदनहरू",
+      "job_posting": "जागिर पोस्टिङहरू",
+      "agency": "एजेन्सी",
+      "candidate": "उम्मेद्वार",
+      "interview": "अन्तर्वार्ता",
+      "admin": "प्रशासक",
+      "system": "प्रणाली"
+    },
+    "outcome": {
+      "all": "सबै परिणामहरू",
+      "success": "सफल",
+      "failure": "असफल",
+      "denied": "अस्वीकृत"
+    },
+    "dateRange": {
+      "all": "सबै समय",
+      "today": "आज",
+      "week": "यो हप्ता",
+      "month": "यो महिना",
+      "custom": "कस्टम दायरा"
+    }
   },
   "pagination": {
-    "show": "देखाउनुहोस्",
-    "perPage": "प्रति पृष्ठ",
-    "showing": "{{total}} मध्ये {{start}} देखि {{end}} लगहरू देखाइँदै",
+    "showing": "{{count}} देखि {{total}} लगहरू देखाइँदैछ",
+    "page": "पृष्ठ {{current}} को {{total}}",
+    "total": "कुल: {{count}}",
     "first": "पहिलो",
     "previous": "अघिल्लो",
-    "next": "अर्को",
+    "next": "अगलो",
     "last": "अन्तिम"
   },
   "messages": {
-    "noResults": {
-      "filtered": "तपाईंको खोज मापदण्डसँग मेल खाने कुनै पहुँच लग फेला परेन।",
-      "empty": "कुनै पहुँच लग उपलब्ध छैन।"
-    },
-    "results": {
-      "showing": "{{total}} मध्ये {{count}} पहुँच लगहरू देखाइँदै"
-    }
+    "noLogsFound": "कुनै अडिट लग फेला परेन",
+    "performedBy": "द्वारा गरिएको"
+  },
+  "error": {
+    "failedToLoad": "अडिट लगहरू लोड गर्न असफल"
   }
 }

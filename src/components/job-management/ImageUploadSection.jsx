@@ -11,6 +11,7 @@ const ImageUploadSection = ({ jobId, currentImageUrl, onImageUpload, onImageDele
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [uploadAction, setUploadAction] = useState(null) // 'upload' or 'delete'
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef(null)
   const license = localStorage.getItem('udaan_agency_license')
@@ -59,6 +60,7 @@ const ImageUploadSection = ({ jobId, currentImageUrl, onImageUpload, onImageDele
 
       if (result.success && result.url) {
         setUploadSuccess(true)
+        setUploadAction('upload')
         // Construct full URL from relative path
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
         const fullUrl = result.url.startsWith('http') ? result.url : `${baseUrl}/${result.url}`
@@ -117,6 +119,7 @@ const ImageUploadSection = ({ jobId, currentImageUrl, onImageUpload, onImageDele
         setPreview(null)
         onImageDelete()
         setUploadSuccess(true)
+        setUploadAction('delete')
         setTimeout(() => setUploadSuccess(false), 3000)
       } else {
         setUploadError(result.error || 'Failed to delete image')
@@ -197,7 +200,7 @@ const ImageUploadSection = ({ jobId, currentImageUrl, onImageUpload, onImageDele
         <div className="flex items-start space-x-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-green-700 dark:text-green-300">
-            {preview && !currentImageUrl ? 'Image uploaded successfully' : 'Image deleted successfully'}
+            {uploadAction === 'delete' ? 'Image deleted successfully' : 'Image uploaded successfully'}
           </p>
         </div>
       )}

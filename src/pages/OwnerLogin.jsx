@@ -20,7 +20,6 @@ const OwnerLogin = () => {
   const [otpSent, setOtpSent] = useState(false)
   const [sendingOtp, setSendingOtp] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
-  const [devOtp, setDevOtp] = useState('')
   const { ownerLoginStart, ownerLoginVerify, isAuthenticated, user } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
@@ -132,10 +131,9 @@ const OwnerLogin = () => {
     setError('')
 
     try {
-      const result = await ownerLoginStart({ phone: username })
+      await ownerLoginStart({ phone: username })
       setOtpSent(true)
       setResendTimer(30)
-      setDevOtp(result?.dev_otp || '')
       setError('')
     } catch (err) {
       setError(err?.message || 'Failed to send OTP. Please try again.')
@@ -311,11 +309,6 @@ const OwnerLogin = () => {
                 {otpSent && (
                   <div className="mt-1 text-xs text-green-600 dark:text-green-400">
                     <p>✓ OTP sent successfully! Check your phone.</p>
-                    {devOtp && (
-                      <p className="mt-1 text-gray-500 dark:text-gray-300">
-                        Dev OTP: <span className="font-mono font-semibold">{devOtp}</span>
-                      </p>
-                    )}
                   </div>
                 )}
               </div>

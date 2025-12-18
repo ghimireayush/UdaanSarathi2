@@ -7,6 +7,19 @@ const LanguageContext = createContext(null)
 /**
  * Language Provider Component
  * Provides language state and translation functions to all child components
+ * 
+ * TRANSLATION LOADING FLOW:
+ * 1. LanguageProvider initializes i18nService
+ * 2. i18nService loads hardcoded English translations (fallback)
+ * 3. Components call useLanguage({ pageName: 'login', autoLoad: true })
+ * 4. Hook calls loadPageTranslations('login')
+ * 5. i18nService makes HTTP request to public/translations/ne/pages/login.json
+ * 6. Translations are cached and used for rendering
+ * 
+ * KEY POINT: The app fetches translations from public/translations/ at runtime!
+ * - src/translations/ is for source control only
+ * - public/translations/ is what the browser actually uses
+ * - Always keep them in sync!
  */
 export const LanguageProvider = ({ children }) => {
   // Get the current locale from i18nService immediately (it's already detected in constructor)

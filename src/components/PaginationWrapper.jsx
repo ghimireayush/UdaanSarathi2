@@ -1,5 +1,6 @@
 import React from 'react'
 import { InteractivePagination, PaginationInfo, ItemsPerPageSelector } from './InteractiveUI'
+import i18nService from '../services/i18nService'
 
 /**
  * Reusable pagination wrapper component
@@ -16,8 +17,16 @@ const PaginationWrapper = ({
   showInfo = true,
   showItemsPerPageSelector = true,
   className = '',
-  size = 'md'
+  size = 'md',
+  pageName = 'common' // Optional page name for translations
 }) => {
+  // Use global i18nService for pagination translations
+  // Pagination is a shared component, not page-specific
+  const tPage = (key, params = {}) => {
+    // Try to get from global common translations first
+    const result = i18nService.t(key, params)
+    return result !== key ? result : key
+  }
   // Don't render if no pagination needed
   if (totalPages <= 1 && !showItemsPerPageSelector) {
     return null
@@ -33,6 +42,7 @@ const PaginationWrapper = ({
             totalPages={totalPages}
             totalItems={totalItems}
             itemsPerPage={itemsPerPage}
+            t={tPage}
           />
         )}
         

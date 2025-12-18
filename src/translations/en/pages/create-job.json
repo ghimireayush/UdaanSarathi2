@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
+    "page": "create-job"
+  },
+  "title": "Create New Job Posting",
+  "subtitle": "Fill in the details to create a new job posting",
+  "form": {
+    "jobTitle": {
+      "label": "Job Title",
+      "placeholder": "Enter job title",
+      "required": true
+    },
+    "country": {
+      "label": "Country",
+      "placeholder": "Select country",
+      "required": true
+    },
+    "city": {
+      "label": "City (optional)",
+      "placeholder": "Enter city"
+    },
+    "vacancies": {
+      "label": "Number of Vacancies",
+      "placeholder": "Enter number of vacancies"
+    },
+    "salary": {
+      "label": "Monthly Salary",
+      "placeholder": "Enter salary amount"
+    },
+    "currency": {
+      "label": "Currency",
+      "placeholder": "Select currency"
+    },
+    "description": {
+      "label": "Job Description",
+      "placeholder": "Enter job description"
+    },
+    "requirements": {
+      "label": "Requirements",
+      "placeholder": "Enter job requirements"
+    },
+    "benefits": {
+      "label": "Benefits",
+      "placeholder": "Enter job benefits"
+    }
+  },
+  "buttons": {
+    "cancel": "Cancel",
+    "createJob": "Create Job",
+    "saveDraft": "Save as Draft",
+    "publish": "Publish"
+  },
+  "messages": {
+    "success": "Job created successfully",
+    "error": "Failed to create job",
+    "validationError": "Please fill in all required fields"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
+    "page": "setup-company"
+  },
+  "title": "आफ्नो कम्पनी सेटअप गर्नुहोस्",
+  "subtitle": "आफ्नो मानव शक्ति एजेन्सीको बारेमा बताउनुहोस्",
+  "branding": {
+    "logoAlt": "उडान सारथी लोगो"
+  },
+  "form": {
+    "companyName": {
+      "label": "कम्पनीको नाम",
+      "placeholder": "कम्पनीको नाम प्रविष्ट गर्नुहोस्"
+    },
+    "address": {
+      "label": "ठेगाना",
+      "placeholder": "कम्पनीको ठेगाना प्रविष्ट गर्नुहोस्"
+    },
+    "city": {
+      "label": "शहर",
+      "placeholder": "शहर प्रविष्ट गर्नुहोस्"
+    },
+    "country": {
+      "label": "देश",
+      "placeholder": "देश प्रविष्ट गर्नुहोस्"
+    },
+    "phone": {
+      "label": "फोन नम्बर",
+      "placeholder": "कम्पनीको फोन"
+    },
+    "website": {
+      "label": "वेबसाइट",
+      "placeholder": "कम्पनीको वेबसाइट (वैकल्पिक)"
+    },
+    "registrationNumber": {
+      "label": "कम्पनी दर्ता नम्बर",
+      "placeholder": "दर्ता नम्बर प्रविष्ट गर्नुहोस्"
+    },
+    "description": {
+      "label": "कम्पनीको विवरण",
+      "placeholder": "आफ्नो कम्पनीको बारेमा बताउनुहोस् (वैकल्पिक)"
+    },
+    "submit": "सेटअप पूरा गर्नुहोस्",
+    "submitting": "कम्पनी सेटअप गर्दै..."
+  },
+  "cardTitle": "कम्पनी जानकारी",
+  "loggedInAs": "लगइन गरिएको:",
+  "messages": {
+    "error": "कम्पनी बनाउन असफल"
+  }
+}

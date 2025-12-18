@@ -8,11 +8,17 @@ import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, User
 import { usePagination } from '../hooks/usePagination.js';
 import PaginationWrapper from '../components/PaginationWrapper.jsx';
 import { getAssignableRoles, getRoleLabel } from '../config/roles';
+import { useAdvancedRoles } from '../hooks/useAdvancedRoles';
+import rolesStorageService from '../services/rolesStorageService';
 
 const Members = () => {
+  const { isEnabled: advancedRolesEnabled, toggle: toggleAdvancedRoles } = useAdvancedRoles();
+  const allAssignableRoles = getAssignableRoles();
+  const filteredRoles = rolesStorageService.getFilteredRoles(allAssignableRoles);
+  
   const [formData, setFormData] = useState({
     full_name: '',
-    role: 'staff',
+    role: filteredRoles[0]?.value || 'staff',
     phone: ''
   });
   const [loading, setLoading] = useState(false);
@@ -160,8 +166,14 @@ const Members = () => {
     }
   };
 
-  // Get assignable roles from central configuration
-  const assignableRoles = getAssignableRoles();
+  // Update form default role when advanced roles toggle changes
+  useEffect(() => {
+    const updatedFilteredRoles = rolesStorageService.getFilteredRoles(allAssignableRoles);
+    setFormData(prev => ({
+      ...prev,
+      role: updatedFilteredRoles[0]?.value || 'staff'
+    }));
+  }, [advancedRolesEnabled]);
 
   const getRoleDisplayName = (role) => {
     // Try to get translation first, fallback to role label from config
@@ -204,7 +216,28 @@ const Members = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
             <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="mt-4 sm:mt-0 flex items-center gap-4">
+            {/* Advanced Roles Toggle */}
+            <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+              <label htmlFor="advanced-roles-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                {tPage('settings.advancedRoles.label')}
+              </label>
+              <button
+                id="advanced-roles-toggle"
+                onClick={toggleAdvancedRoles}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  advancedRolesEnabled 
+                    ? 'bg-brand-blue-bright' 
+                    : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    advancedRolesEnabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
             <LanguageSwitch />
           </div>
         </div>
@@ -254,7 +287,7 @@ const Members = () => {
                 required
                 className="form-select"
               >
-                {assignableRoles.map(role => (
+                {filteredRoles.map(role => (
                   <option key={role.value} value={role.value}>
                     {getRoleDisplayName(role.value)}
                   </option>
@@ -326,7 +359,7 @@ const Members = () => {
                 className="form-select-sm"
               >
                 <option value="all">{tPage('search.filters.allRoles')}</option>
-                {assignableRoles.map(role => (
+                {filteredRoles.map(role => (
                   <option key={role.value} value={role.value}>
                     {getRoleDisplayName(role.value)}
                   </option>

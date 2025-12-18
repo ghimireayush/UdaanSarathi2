@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "login"
   },
   "title": "Admin Login",
@@ -9,7 +9,19 @@
     "appName": "Udaan Sarathi",
     "logoAlt": "Udaan Sarathi Logo"
   },
+  "tabs": {
+    "admin": "Admin",
+    "member": "Member"
+  },
   "form": {
+    "phoneLabel": "Phone Number (10 digits)",
+    "phonePlaceholder": "9801234567",
+    "sendOtp": "Send OTP",
+    "sending": "Sending...",
+    "resend": "Resend",
+    "otpLabel": "Enter 6 Digit OTP",
+    "otpDescription": "Enter the 6-digit OTP sent to your registered contact",
+    "otpSuccess": "✓ OTP sent successfully! Check your phone.",
     "username": {
       "label": "Username",
       "placeholder": "Enter your username"
@@ -21,6 +33,10 @@
     "submit": "Sign In",
     "submitting": "Signing in..."
   },
+  "validation": {
+    "invalidPhone": "Please enter a valid 10-digit phone number",
+    "invalidOtp": "Please enter a valid 6-digit OTP"
+  },
   "messages": {
     "accessDenied": "This portal is for administrators only. Please use the member login if you are a Recipient or Interview Coordinator.",
     "unexpectedError": "An unexpected error occurred. Please try again."
@@ -28,6 +44,8 @@
   "footer": {
     "noAccount": "Don't have an account?",
     "signUp": "Sign up here",
-    "copyright": "© {{year}} Udaan Sarathi. All rights reserved."
+    "copyright": "© {{year}} Udaan Sarathi. All rights reserved.",
+    "rememberMe": "Remember me",
+    "back": "Back"
   }
 }

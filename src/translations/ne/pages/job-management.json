@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
+    "page": "job-management"
+  },
+  "title": "जागिर व्यवस्थापन",
+  "sections": {
+    "jobImage": "जागिर छवि",
+    "basicInfo": "आधारभूत जानकारी",
+    "employer": "नियोक्ता",
+    "contract": "अनुबन्ध",
+    "positions": "पदहरू",
+    "tags": "ट्यागहरू",
+    "expenses": "खर्चहरू"
+  },
+  "buttons": {
+    "backToJobManagement": "जागिर व्यवस्थापनमा फिर्ता",
+    "basicExtract": "आधारभूत निकाल्नुहोस्",
+    "extracting": "निकाल्दै...",
+    "filled": "भरिएको!"
+  },
+  "messages": {
+    "extractionSuccess": "डेटा सफलतापूर्वक निकालिएको"
+  }
+}

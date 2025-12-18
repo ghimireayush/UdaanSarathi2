@@ -1,106 +1,40 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "interviews"
   },
-  "title": "Interviews",
-  "subtitle": "Manage interview schedules, track attendance, and capture outcomes",
-  "tabs": {
-    "scheduled": "Scheduled Interviews",
-    "scheduleNew": "Schedule New",
-    "aiAssistant": "AI Assistant"
-  },
-  "viewModes": {
-    "list": "List",
-    "calendar": "Calendar",
-    "contemporary": "Contemporary"
-  },
-  "timeRanges": {
-    "day": "Day",
-    "week": "Week"
+  "title": "Interview Management",
+  "subtitle": "Manage and schedule candidate interviews",
+  "stats": {
+    "todaysInterviews": "Today",
+    "totalScheduled": "Scheduled",
+    "unattended": "Unattended",
+    "completed": "Completed"
   },
   "filters": {
-    "allJobs": "All Jobs",
     "filterByJob": "Filter by Job",
+    "allJobs": "All Jobs",
     "searchCandidate": "Search Candidate",
-    "searchPlaceholder": "Search candidates or interviewers...",
+    "searchPlaceholder": "Search by name, email, phone...",
+    "useTabsHint": "Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews.",
     "today": "Today",
     "tomorrow": "Tomorrow",
     "unattended": "Unattended",
-    "all": "All",
-    "useTabsHint": "Use the tabs below to filter by Today, Tomorrow, Unattended, or All interviews."
+    "all": "All"
   },
-  "stats": {
-    "todaysInterviews": "Today's Interviews",
-    "totalScheduled": "Total Scheduled",
-    "unattended": "Unattended",
-    "completed": "Completed",
-    "autoFlagged": "Auto-flagged after {{minutes}}min grace"
+  "tabs": {
+    "contemporary": "Contemporary",
+    "calendar": "Calendar"
   },
-  "messages": {
-    "selectJobToSchedule": "Select a Job to Schedule Interviews",
-    "selectJobMessage": "Choose a job from the filter above to view shortlisted candidates and schedule interviews.",
-    "noShortlistedCandidates": "No Shortlisted Candidates",
-    "noShortlistedMessage": "No candidates have been shortlisted for this job yet. Visit the Applications page to shortlist candidates first.",
-    "aiAssistantReady": "AI Assistant Ready",
-    "aiAssistantMessage": "Select a job with shortlisted candidates to get AI-powered scheduling suggestions."
-  },
-  "aiAssistant": {
-    "title": "AI Scheduling Assistant",
-    "subtitle": "Intelligent scheduling suggestions for optimal interview coverage",
-    "phase2Feature": "Phase 2 Feature"
-  },
-  "schedule": {
-    "individual": "Individual Scheduling",
-    "batch": "Batch Scheduling",
-    "suggested": "Suggested Schedule",
-    "aiAssisted": "AI-Assisted",
-    "selectCandidates": "Select Candidates",
-    "scheduleDetails": "Schedule Details",
-    "date": "Date",
-    "time": "Time",
-    "duration": "Duration",
-    "interviewer": "Interviewer",
-    "location": "Location",
-    "notes": "Notes",
-    "requirements": "Requirements Checklist",
-    "conflicts": "Scheduling Conflicts",
-    "scheduleButton": "Schedule Interviews"
-  },
-  "status": {
-    "notScheduled": "Not Scheduled",
-    "scheduled": "Scheduled",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "rescheduled": "Rescheduled",
-    "noShow": "No Show"
-  },
-  "actions": {
-    "markPass": "Mark Pass",
-    "markFail": "Mark Fail",
-    "reject": "Reject",
-    "reschedule": "Reschedule",
-    "inPerson": "In-person",
-    "online": "Online",
-    "interviewer": "Interviewer",
-    "viewDetails": "View Details"
+  "calendar": {
+    "dateRange": "Date Range",
+    "weekView": "Week View",
+    "customRange": "Custom Range",
+    "to": "to",
+    "clear": "Clear"
   },
   "card": {
-    "unattendedFlag": "Automatically flagged as unattended (grace period expired)",
-    "duration": "{{duration}} min",
-    "office": "Office"
-  },
-  "empty": {
-    "noInterviews": "No scheduled interviews",
-    "noInterviewsAll": "No interviews have been scheduled yet.",
-    "noInterviewsFilter": "No interviews match the \"{{filter}}\" filter."
-  },
-  "loading": {
-    "interviews": "Loading interviews..."
-  },
-  "error": {
-    "failedToLoad": "Failed to load interviews",
-    "retry": "Retry"
+    "unattendedFlag": "Automatically flagged as unattended (grace period expired)"
   }
 }

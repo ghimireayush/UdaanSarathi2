@@ -46,5 +46,9 @@
     "interviews": "अन्तर्वार्ताहरू",
     "settings": "सेटिङहरू",
     "logout": "लगआउट"
+  },
+  "pagination": {
+    "showing": "{{start}} देखि {{end}} को {{total}} परिणामहरू देखाइँदैछ",
+    "page": "पृष्ठ {{current}} को {{total}}"
   }
 }

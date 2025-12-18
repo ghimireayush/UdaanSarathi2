@@ -44,9 +44,9 @@ class I18nService {
   constructor() {
     // Initialize storage and persistence first
     this.storageKey = 'udaan-sarathi-locale'
-    this.preferenceVersion = '1.1.0'
+    this.preferenceVersion = '1.0.0'
     this.inMemoryPreference = null // Fallback when storage is unavailable
-    this.fallbackLocale = 'en'
+    this.fallbackLocale = 'ne' // Nepali is the default locale
     
     // Detect locale BEFORE setting currentLocale to ensure persistence works
     // This must happen before any other initialization
@@ -68,7 +68,14 @@ class I18nService {
     // Bind methods for event listeners
     this.handleStorageChange = this.handleStorageChange.bind(this)
     
-    // Initialize with default English translations
+    // Initialize with default English translations (FALLBACK ONLY)
+    // These hardcoded translations are used as a fallback if:
+    // 1. The HTTP request to public/translations/ fails
+    // 2. The translation key is not found in the loaded translations
+    // 3. The app is in an offline state
+    // 
+    // At runtime, the app prefers translations from public/translations/
+    // which are loaded via HTTP requests in loadPageTranslations()
     this.loadTranslations('en', {
       common: {
         loading: 'Loading...',
@@ -590,8 +597,9 @@ class I18nService {
   }
 
   /**
-   * Early locale detection for constructor (simplified version)
+   * Early locale detection for constructor
    * This runs before the service is fully initialized
+   * Nepali (ne) is the default locale
    * @returns {string} Detected locale
    */
   detectLocaleEarly() {
@@ -599,31 +607,29 @@ class I18nService {
       // Try localStorage first
       const stored = localStorage.getItem(this.storageKey)
       if (stored) {
-        const preference = JSON.parse(stored)
-        if (preference && preference.locale && (preference.locale === 'en' || preference.locale === 'ne')) {
-          return preference.locale
+        try {
+          const preference = JSON.parse(stored)
+          if (preference && preference.locale && this.validateLocale(preference.locale)) {
+            return preference.locale
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse stored locale preference:', parseError)
         }
-      }
-      
-      // Try legacy format
-      const legacyStored = localStorage.getItem('preferred-locale')
-      if (legacyStored && (legacyStored === 'en' || legacyStored === 'ne')) {
-        return legacyStored
       }
     } catch (error) {
       console.warn('Early locale detection failed:', error)
     }
     
-    // Default to English
-    return 'en'
+    // Default to Nepali (ne)
+    return this.fallbackLocale
   }
 
   /**
-   * Detect user's preferred locale with enhanced validation and corruption handling
+   * Detect user's preferred locale with validation
    * @returns {string} Detected locale
    */
   detectLocale() {
-    // Check new storage format first with validation
+    // Check localStorage first
     const localStorageLocale = this.loadPreferenceFromStorage('localStorage')
     if (localStorageLocale) {
       return localStorageLocale
@@ -635,27 +641,9 @@ class I18nService {
       return sessionStorageLocale
     }
     
-    // Check in-memory preference (final fallback storage)
+    // Check in-memory preference
     if (this.inMemoryPreference && this.validateLocale(this.inMemoryPreference.locale)) {
       return this.inMemoryPreference.locale
-    }
-    
-    // Check legacy localStorage format for backward compatibility
-    try {
-      const legacyStored = localStorage.getItem('preferred-locale')
-      if (legacyStored && this.validateLocale(legacyStored)) {
-        // Migrate to new format
-        this.saveLocalePreference(legacyStored)
-        return legacyStored
-      }
-    } catch (error) {
-      console.warn('Failed to read legacy locale preference:', error)
-    }
-    
-    // Check browser language
-    const browserLang = navigator.language.split('-')[0]
-    if (this.validateLocale(browserLang)) {
-      return browserLang
     }
     
     return this.fallbackLocale
@@ -730,15 +718,6 @@ class I18nService {
       return false
     }
     
-    // Validate checksum if present (for v1.1.0+)
-    if (preference.checksum) {
-      const expectedChecksum = this.generatePreferenceChecksum(preference.locale)
-      // Allow some flexibility in checksum validation due to timestamp differences
-      if (typeof preference.checksum !== 'string') {
-        return false
-      }
-    }
-    
     return true
   }
 
@@ -752,8 +731,8 @@ class I18nService {
       return false
     }
     
-    // Support versions 1.0.0 and 1.1.0
-    const supportedVersions = ['1.0.0', '1.1.0']
+    // Support version 1.0.0
+    const supportedVersions = ['1.0.0']
     return supportedVersions.includes(version)
   }
 
@@ -765,7 +744,6 @@ class I18nService {
     try {
       const storage = storageType === 'localStorage' ? localStorage : sessionStorage
       storage.removeItem(this.storageKey)
-      storage.removeItem('preferred-locale') // Also clear legacy key
       console.info(`Cleared corrupted preference from ${storageType}`)
     } catch (error) {
       console.warn(`Failed to clear corrupted preference from ${storageType}:`, error)
@@ -773,7 +751,7 @@ class I18nService {
   }
 
   /**
-   * Save locale preference with enhanced persistence and validation
+   * Save locale preference with validation
    * @param {string} locale - Locale to save
    */
   saveLocalePreference(locale) {
@@ -786,61 +764,29 @@ class I18nService {
     const preference = {
       locale,
       timestamp: Date.now(),
-      version: '1.1.0', // Updated version for enhanced persistence
-      userAgent: navigator.userAgent.substring(0, 100), // For corruption detection
-      checksum: this.generatePreferenceChecksum(locale)
+      version: this.preferenceVersion
     }
     
     // Try localStorage first
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(preference))
-      
-      // Also save the simple key for backward compatibility
-      localStorage.setItem('preferred-locale', locale)
-      
-      // Verify the save was successful (skip verification if localStorage is mocked/unavailable)
-      try {
-        if (this.verifyStoredPreference(preference, 'localStorage')) {
-          return true
-        } else {
-          throw new Error('Verification failed after localStorage save')
-        }
-      } catch (verifyError) {
-        // If verification fails due to storage issues, assume save was successful
-        console.warn('Could not verify localStorage save, assuming success:', verifyError)
-        return true
-      }
+      return true
     } catch (error) {
       console.warn('Failed to save locale preference to localStorage:', error)
       
       // Fallback to sessionStorage
       try {
         sessionStorage.setItem(this.storageKey, JSON.stringify(preference))
-        sessionStorage.setItem('preferred-locale', locale)
-        
-        // Verify sessionStorage save (skip verification if sessionStorage is mocked/unavailable)
-        try {
-          if (this.verifyStoredPreference(preference, 'sessionStorage')) {
-            return true
-          } else {
-            throw new Error('Verification failed after sessionStorage save')
-          }
-        } catch (verifyError) {
-          // If verification fails due to storage issues, assume save was successful
-          console.warn('Could not verify sessionStorage save, assuming success:', verifyError)
-          return true
-        }
+        return true
       } catch (sessionError) {
         console.warn('Failed to save locale preference to sessionStorage:', sessionError)
         
         // Final fallback to in-memory storage
         this.inMemoryPreference = preference
-        console.info('Locale preference saved to in-memory storage as final fallback')
+        console.info('Locale preference saved to in-memory storage')
         return true
       }
     }
-    
-    return false
   }
 
   /**
@@ -870,56 +816,25 @@ class I18nService {
   }
 
   /**
-   * Generate checksum for preference validation
-   * @param {string} locale - Locale code
-   * @returns {string} Checksum
-   */
-  generatePreferenceChecksum(locale) {
-    // Simple checksum based on locale and current timestamp with random component
-    const timestamp = Date.now()
-    const random = Math.random().toString(36).substring(2, 8)
-    const data = `${locale}-${timestamp}-${random}`
-    let hash = 0
-    for (let i = 0; i < data.length; i++) {
-      const char = data.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
-      hash = hash & hash // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(36)
-  }
-
-  /**
-   * Verify stored preference integrity
-   * @param {Object} preference - Preference object to verify
-   * @param {string} storageType - Type of storage ('localStorage' or 'sessionStorage')
-   * @returns {boolean} True if verification passes
-   */
-  verifyStoredPreference(preference, storageType) {
-    try {
-      const storage = storageType === 'localStorage' ? localStorage : sessionStorage
-      const stored = storage.getItem(this.storageKey)
-      
-      if (!stored) {
-        return false
-      }
-      
-      const parsedStored = JSON.parse(stored)
-      
-      // Verify essential fields match
-      return parsedStored.locale === preference.locale &&
-             parsedStored.version === preference.version &&
-             parsedStored.checksum === preference.checksum
-    } catch (error) {
-      console.warn(`Failed to verify stored preference in ${storageType}:`, error)
-      return false
-    }
-  }
-
-  /**
    * Load page-specific translations with enhanced validation and fallback
-   * @param {string} pageName - Name of the page
-   * @param {string} locale - Locale code
-   * @returns {Promise<Object>} Loaded translations
+   * 
+   * IMPORTANT: This method fetches translations from the PUBLIC folder at runtime!
+   * 
+   * Translation Loading Flow:
+   * 1. Component calls useLanguage({ pageName: 'login', autoLoad: true })
+   * 2. Hook calls loadPageTranslations('login')
+   * 3. This method makes HTTP request: fetch('/translations/ne/pages/login.json')
+   * 4. Browser fetches from: public/translations/ne/pages/login.json
+   * 5. Translations are cached and used for rendering
+   * 
+   * CRITICAL: The app ONLY uses public/translations/ at runtime!
+   * - src/translations/ is for source control and documentation only
+   * - public/translations/ is what the browser actually fetches
+   * - If public/translations/ is missing, app falls back to hardcoded translations
+   * 
+   * @param {string} pageName - Name of the page (e.g., 'login', 'dashboard')
+   * @param {string} locale - Locale code (e.g., 'ne', 'en')
+   * @returns {Promise<Object>} Loaded translations from public/translations/
    */
   async loadPageTranslations(pageName, locale = this.currentLocale) {
     const cacheKey = `${locale}-page-${pageName}`
@@ -939,6 +854,8 @@ class I18nService {
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
+        // ACTUAL HTTP REQUEST: Fetches from public/translations/
+        // Example: /translations/ne/pages/login.json
         const response = await fetch(`/translations/${locale}/pages/${pageName}.json`)
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: Failed to load page translations for ${pageName}`)
@@ -2589,14 +2506,12 @@ class I18nService {
   clearAllPreferences(includeInMemory = true) {
     try {
       localStorage.removeItem(this.storageKey)
-      localStorage.removeItem('preferred-locale')
     } catch (error) {
       console.warn('Failed to clear localStorage preferences:', error)
     }
     
     try {
       sessionStorage.removeItem(this.storageKey)
-      sessionStorage.removeItem('preferred-locale')
     } catch (error) {
       console.warn('Failed to clear sessionStorage preferences:', error)
     }
@@ -2606,32 +2521,6 @@ class I18nService {
     }
     
     console.info('All language preferences cleared')
-  }
-
-  /**
-   * Migrate old preference format to new format
-   * @param {string} locale - Locale from old format
-   * @returns {boolean} True if migration successful
-   */
-  migrateOldPreference(locale) {
-    if (!this.validateLocale(locale)) {
-      return false
-    }
-    
-    // Save in new format
-    const success = this.saveLocalePreference(locale)
-    
-    if (success) {
-      // Clear old format
-      try {
-        localStorage.removeItem('preferred-locale')
-        console.info(`Successfully migrated locale preference: ${locale}`)
-      } catch (error) {
-        console.warn('Failed to clear old preference format:', error)
-      }
-    }
-    
-    return success
   }
 
   /**

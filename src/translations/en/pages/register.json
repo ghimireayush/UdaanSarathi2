@@ -1,17 +1,17 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "register"
   },
-  "title": "Create Your Account",
-  "subtitle": "Register as an individual",
+  "title": "Create Account",
+  "subtitle": "Join Udaan Sarathi",
   "branding": {
     "logoAlt": "Udaan Sarathi Logo"
   },
   "steps": {
     "personalInfo": "Personal Information",
-    "verifyPhone": "Verify Your Phone"
+    "verifyPhone": "Verify Phone Number"
   },
   "form": {
     "fullName": {
@@ -19,32 +19,31 @@
       "placeholder": "Enter your full name"
     },
     "phone": {
-      "label": "Phone Number",
-      "placeholder": "Enter your phone number"
+      "label": "Phone Number (10 digits)",
+      "placeholder": "9801234567"
     },
     "otp": {
-      "label": "Verification Code",
+      "label": "Enter 6 Digit OTP",
       "placeholder": "000000"
     },
-    "register": "Register",
-    "registering": "Sending OTP...",
+    "register": "Create Account",
+    "registering": "Creating Account...",
     "verifyOtp": "Verify OTP",
     "verifying": "Verifying...",
     "back": "Back"
   },
   "messages": {
     "invalidPhone": "Please enter a valid 10-digit phone number",
-    "failedToSendOtp": "Failed to send OTP",
-    "otpSent": "OTP sent to {{phone}}",
-    "enterOtp": "Please enter the 6-digit verification code sent to your phone number",
     "invalidOtp": "Please enter a valid 6-digit OTP",
-    "incorrectOtp": "Invalid OTP. Please try again.",
-    "failedToVerifyOtp": "Failed to verify OTP"
+    "failedToSendOtp": "Failed to send OTP. Please try again.",
+    "failedToVerifyOtp": "Failed to verify OTP. Please try again.",
+    "otpSent": "OTP sent to {{phone}}",
+    "enterOtp": "Enter the 6-digit OTP sent to your phone"
   },
   "actions": {
-    "resendOtp": "Didn't receive the code? Resend OTP"
+    "resendOtp": "Resend OTP"
   },
   "legal": {
-    "terms": "By registering, you agree to our Terms of Service and Privacy Policy"
+    "terms": "By registering, you agree to our Terms & Conditions and Privacy Policy"
   }
 }

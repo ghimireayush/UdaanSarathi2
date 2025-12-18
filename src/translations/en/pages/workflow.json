@@ -77,11 +77,15 @@
     "page": "Page {{current}} of {{total}}"
   },
   "empty": {
-    "noCandidates": "No candidates found",
-    "noSearchResults": "No candidates match your search criteria.",
-    "noStageResults": "No candidates in {{stage}} stage."
+    "noCandidates": "No Candidates Found",
+    "noSearchResults": "Try adjusting your search",
+    "noStageResults": "No candidates in this stage"
   },
   "loading": {
     "workflow": "Loading workflow data..."
+  },
+  "error": {
+    "failedToLoad": "Failed to Load",
+    "retry": "Retry"
   }
 }

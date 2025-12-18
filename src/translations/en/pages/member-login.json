@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "member-login"
   },
   "title": "Member Portal",
@@ -19,6 +19,14 @@
   },
   "invitationMessage": "You've been invited to join the team. Please sign in to access your dashboard.",
   "form": {
+    "phoneLabel": "Phone Number (10 digits)",
+    "phonePlaceholder": "9801234567",
+    "sendOtp": "Send OTP",
+    "sending": "Sending...",
+    "resend": "Resend",
+    "otpLabel": "Enter 6 Digit OTP",
+    "otpDescription": "Enter the 6-digit OTP sent to your registered contact",
+    "otpSuccess": "✓ OTP sent successfully! Check your phone.",
     "username": {
       "label": "Username or Phone Number",
       "placeholder": "Enter your username or phone"
@@ -33,6 +41,10 @@
     },
     "submitting": "Signing in..."
   },
+  "validation": {
+    "invalidPhone": "Please enter a valid 10-digit phone number",
+    "invalidOtp": "Please enter a valid 6-digit OTP"
+  },
   "invitationDetails": {
     "title": "Invitation Details:",
     "description": "You've been invited as a team member. After signing in, you'll have access to the agency management dashboard."
@@ -44,6 +56,8 @@
   },
   "footer": {
     "needHelp": "Need help? Contact your agency administrator",
-    "copyright": "© {{year}} Udaan Sarathi. All rights reserved."
+    "copyright": "© {{year}} Udaan Sarathi. All rights reserved.",
+    "rememberMe": "Remember me",
+    "back": "Back"
   }
 }

@@ -465,9 +465,9 @@ const WorkflowV2 = () => {
         {!isLoading && candidates.length === 0 ? (
           <div className="card p-8 text-center">
             <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Candidates Found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('empty.noCandidates')}</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              {searchQuery ? 'Try adjusting your search' : 'No candidates in this stage'}
+              {searchQuery ? t('empty.noSearchResults') : t('empty.noStageResults')}
             </p>
           </div>
         ) : (

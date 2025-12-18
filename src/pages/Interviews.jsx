@@ -370,7 +370,7 @@ const Interviews = () => {
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
-              Contemporary
+              {tPage('tabs.contemporary')}
             </button>
             <button
               onClick={() => setMode('calendar')}
@@ -380,7 +380,7 @@ const Interviews = () => {
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
-              Calendar
+              {tPage('tabs.calendar')}
             </button>
           </div>
         </div>
@@ -404,7 +404,7 @@ const Interviews = () => {
             {/* Calendar View Mode Selector */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Date Range
+                {tPage('calendar.dateRange')}
               </label>
               <div className="flex gap-2">
                 <button
@@ -418,7 +418,7 @@ const Interviews = () => {
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  Week View
+                  {tPage('calendar.weekView')}
                 </button>
                 <button
                   onClick={() => {
@@ -438,7 +438,7 @@ const Interviews = () => {
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  Custom Range
+                  {tPage('calendar.customRange')}
                 </button>
               </div>
             </div>
@@ -465,7 +465,7 @@ const Interviews = () => {
                   onChange={(e) => setCustomDateRange(prev => ({ ...prev, from: e.target.value }))}
                   className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
-                <span className="text-gray-500 dark:text-gray-400">to</span>
+                <span className="text-gray-500 dark:text-gray-400">{tPage('calendar.to')}</span>
                 <input
                   type="date"
                   value={customDateRange.to}
@@ -478,7 +478,7 @@ const Interviews = () => {
                     onClick={() => setCustomDateRange({ from: '', to: '' })}
                     className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   >
-                    Clear
+                    {tPage('calendar.clear')}
                   </button>
                 )}
               </div>

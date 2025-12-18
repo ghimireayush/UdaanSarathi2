@@ -46,5 +46,9 @@
     "interviews": "Interviews",
     "settings": "Settings",
     "logout": "Logout"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} results",
+    "page": "Page {{current}} of {{total}}"
   }
 }

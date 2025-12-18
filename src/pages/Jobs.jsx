@@ -169,15 +169,6 @@ const Jobs = () => {
             showLabel={true}
             position="bottom-right"
           />
-          <PermissionGuard permission={PERMISSIONS.CREATE_JOB}>
-            <button 
-              onClick={() => navigate('/drafts')}
-              className="btn-primary flex items-center"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {tPageSync('actions.createJob')}
-            </button>
-          </PermissionGuard>
         </div>
       </div>
 
@@ -347,15 +338,7 @@ const Jobs = () => {
                                 {tPageSync('table.actions.schedule')}
                               </Link>
                             </PermissionGuard>
-                            {/* Dev Navigation - Always navigate to job_001 for testing */}
-                            <Link 
-                              to="/jobs/job_001"
-                              className="text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 flex items-center"
-                              title="Dev: Navigate to job_001 (has populated candidate data)"
-                            >
-                              <Bug className="w-4 h-4 mr-1" />
-                              Dev Navigate
-                            </Link>
+                           
                           </div>
                         </td>
                       </tr>

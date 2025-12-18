@@ -1,25 +1,11 @@
 {
   "meta": {
-    "version": "1.1.0",
-    "lastUpdated": "2024-12-06",
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
     "page": "audit-log"
   },
-  "title": "Audit Log",
-  "subtitle": "Track and monitor all system activities and changes",
-  "actions": {
-    "refresh": "Refresh",
-    "exportCSV": "Export CSV",
-    "clearData": "Clear Data"
-  },
-  "search": {
-    "placeholder": "Search logs...",
-    "ariaLabel": "Search audit logs"
-  },
-  "pageActions": {
-    "refresh": "Refresh",
-    "exportCsv": "Export CSV",
-    "clearData": "Clear Data"
-  },
+  "title": "Audit Logs",
+  "subtitle": "Track all system activities and changes",
   "stats": {
     "totalEvents": "Total Events",
     "applications": "Applications",
@@ -28,32 +14,21 @@
   },
   "filters": {
     "title": "Filters",
-    "searchPlaceholder": "Search logs...",
     "labels": {
-      "user": "User",
-      "resourceType": "Resource Type",
-      "action": "Action",
-      "dateFrom": "Date From",
-      "dateTo": "Date To",
       "category": "Category",
       "outcome": "Outcome",
       "dateRange": "Date Range",
-      "perPage": "Per Page"
-    },
-    "options": {
-      "allUsers": "All Users",
-      "allTypes": "All Types",
-      "allActions": "All Actions"
+      "perPage": "Items Per Page"
     },
     "category": {
       "all": "All Categories",
       "auth": "Authentication",
-      "application": "Job Applications",
+      "application": "Applications",
       "job_posting": "Job Postings",
-      "agency": "Agency Management",
-      "candidate": "Candidate Profiles",
-      "interview": "Interviews",
-      "admin": "Administration",
+      "agency": "Agency",
+      "candidate": "Candidate",
+      "interview": "Interview",
+      "admin": "Admin",
       "system": "System"
     },
     "outcome": {
@@ -65,109 +40,25 @@
     "dateRange": {
       "all": "All Time",
       "today": "Today",
-      "week": "Last 7 Days",
-      "month": "Last 30 Days",
+      "week": "This Week",
+      "month": "This Month",
       "custom": "Custom Range"
-    },
-    "resetAll": "Reset All",
-    "activeFilters": "{{count}} active",
-    "changes": "{{count}} changes",
-    "userNames": {
-      "user_1": "System Administrator",
-      "user_2": "Senior Recruiter",
-      "user_3": "Interview Coordinator"
     }
   },
   "pagination": {
-    "showing": "Showing {{count}} of {{total}} events",
+    "showing": "Showing {{count}} of {{total}} logs",
     "page": "Page {{current}} of {{total}}",
-    "total": "{{count}} total",
+    "total": "Total: {{count}}",
     "first": "First",
     "previous": "Previous",
     "next": "Next",
-    "last": "Last",
-    "perPage": "Per Page"
-  },
-  "resourceTypes": {
-    "agencyProfile": "Agency Profile",
-    "agencyMedia": "Agency Media",
-    "jobPosting": "Job Posting",
-    "candidate": "Candidate",
-    "application": "Application",
-    "user": "User",
-    "auth": "Auth"
-  },
-  "auditActions": {
-    "update": "Update",
-    "create": "Create",
-    "delete": "Delete",
-    "fileUpload": "File Upload",
-    "login": "Login",
-    "logout": "Logout"
-  },
-  "table": {
-    "headers": {
-      "actionUser": "Action & User",
-      "resource": "Resource",
-      "timestamp": "Timestamp",
-      "changes": "Changes",
-      "sessionInfo": "Session Info",
-      "details": "Details"
-    },
-    "tableActions": {
-      "show": "Show",
-      "hide": "Hide"
-    }
-  },
-  "changeDetails": {
-    "changesMade": "Changes Made:",
-    "from": "From:",
-    "to": "To:",
-    "notSet": "(Not set)",
-    "cannotDisplay": "[Object - Cannot display]",
-    "errorCannotDisplay": "[Error - Cannot display]",
-    "valueCannotDisplay": "[Value - Cannot display]",
-    "noDetailedChanges": "No detailed changes recorded."
-  },
-  "systemInfo": {
-    "title": "System Information:",
-    "userId": "User ID:",
-    "userName": "User Name:",
-    "actionType": "Action Type:",
-    "resourceType": "Resource Type:",
-    "resourceId": "Resource ID:",
-    "sessionId": "Session ID:",
-    "ipAddress": "IP Address:",
-    "userAgent": "User Agent:",
-    "timestamp": "Timestamp:",
-    "notSpecified": "Not specified",
-    "notAvailable": "Not available"
-  },
-  "metadata": {
-    "title": "Additional Metadata:",
-    "file": "File:",
-    "fileSize": "File Size:",
-    "browser": "Browser:",
-    "section": "Section:",
-    "userRole": "User Role:",
-    "jobTitle": "Job Title:",
-    "candidate": "Candidate:",
-    "stageChange": "Stage Change:",
-    "yes": "Yes"
+    "last": "Last"
   },
   "messages": {
     "noLogsFound": "No audit logs found",
-    "noLogsMessage": "Activity logs will appear here when changes are made to the system.",
-    "noLogsWithFilters": "No logs match your current filters. Try adjusting your search criteria.",
-    "clearAllFilters": "Clear All Filters",
-    "fieldsChanged": "{{count}} field{{plural}} changed",
-    "noChanges": "No changes"
-  },
-  "loading": {
-    "auditLogs": "Loading audit logs..."
+    "performedBy": "Performed by"
   },
   "error": {
-    "failedToLoad": "Failed to load audit logs",
-    "retry": "Retry"
+    "failedToLoad": "Failed to load audit logs"
   }
 }

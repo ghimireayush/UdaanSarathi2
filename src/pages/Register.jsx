@@ -20,7 +20,6 @@ const Register = () => {
   const [otp, setOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [registrationData, setRegistrationData] = useState(null)
-  const [devOtp, setDevOtp] = useState('')
   const [showContent, setShowContent] = useState(false)
   
   const navigate = useNavigate()
@@ -74,7 +73,6 @@ const Register = () => {
 
       setRegistrationData(formData)
       setShowOtpField(true)
-      setDevOtp(result?.dev_otp || '')
       setError('')
     } catch (err) {
       setError(err.message || tPage('messages.failedToSendOtp'))
@@ -116,11 +114,10 @@ const Register = () => {
     setOtp('')
     setOtpLoading(true)
     try {
-      const result = await registerOwnerWithBackend({
+      await registerOwnerWithBackend({
         fullName: registrationData.fullName,
         phone: registrationData.phone
       })
-      setDevOtp(result?.dev_otp || '')
     } catch (err) {
       setError(err.message || tPage('messages.failedToSendOtp'))
     } finally {
@@ -282,11 +279,6 @@ const Register = () => {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 mb-4 dark:bg-green-900/20 dark:border-green-700 dark:text-green-200">
                     {tPage('messages.otpSent', { phone: registrationData?.phone })}
                   </div>
-                  {devOtp && (
-                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                      Dev OTP: <span className="font-mono font-semibold">{devOtp}</span>
-                    </div>
-                  )}
                   <p className="text-gray-600 text-sm dark:text-gray-400">
                     {tPage('messages.enterOtp')}
                   </p>

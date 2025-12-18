@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "job-details"
   },
   "tabs": {
@@ -30,7 +30,8 @@
     "backToJobs": "Back to Jobs"
   },
   "labels": {
-    "appliedOn": "Applied {{date}}",
+    "appliedOn": "Applied on {{date}}",
+    "appliedRecently": "Applied recently",
     "applicantCount": "Applicant Count",
     "total": "Total",
     "shortlisted": "Shortlisted",
@@ -40,7 +41,16 @@
     "noShortlistedCandidates": "No shortlisted candidates",
     "noScheduledInterviews": "No scheduled interviews",
     "startByShortlisting": "Start by shortlisting candidates from the Applied tab.",
-    "scheduleFromShortlisted": "Schedule interviews from the Shortlisted tab to see them here."
+    "scheduleFromShortlisted": "Schedule interviews from the Shortlisted tab to see them here.",
+    "locationNotSpecified": "Location not specified",
+    "noPhone": "No phone",
+    "experience": "{{experience}} experience",
+    "documentsAttached": "{{count}} document attached",
+    "documentsAttachedPlural": "{{count}} documents attached",
+    "moreSkills": "+{{count}} more",
+    "match": "{{score}}% match",
+    "shortlisting": "Shortlisting...",
+    "retry": "Retry"
   },
   "dialog": {
     "completionTitle": "Complete Shortlisting Process",
@@ -62,5 +72,117 @@
   "error": {
     "failedToLoad": "Failed to load job details",
     "retry": "Retry"
+  },
+  "filtering": {
+    "title": "Skill-based Filtering (Priority Order)",
+    "showTop": "Show top:",
+    "top10": "Top 10",
+    "top20": "Top 20",
+    "top50": "Top 50",
+    "viewAll": "View All ({{count}})",
+    "description": "Candidates ranked by skill/education match. Select priority tags (AND logic) to refine results:",
+    "showing": "Showing {{current}} of {{total}} candidates",
+    "filteredBy": "(Filtered by {{count}} tag{{plural}})",
+    "filtersPreserved": "Filters preserved in URL",
+    "clearAllFilters": "Clear all filters",
+    "tagSources": "Tag sources: Original job tags + priority tags selected here (removable)."
+  },
+  "whyImHere": {
+    "title": "Why I'm Here",
+    "description": "Verify applicants for this job and shortlist candidates.",
+    "hint": "💡 Candidates are automatically sorted by skill/education match. Use filters to refine results."
+  },
+  "progress": {
+    "title": "Shortlisting Progress",
+    "candidatesShortlisted": "{{count}} candidate{{plural}} shortlisted,",
+    "remainingToReview": "{{count}} remaining to review",
+    "complete": "Complete"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "viewCount": "View Count",
+    "individualJobViews": "Individual Job Views"
+  },
+  "jobStatus": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "reopenJobPosting": "Reopen Job Posting",
+    "markShortlistingComplete": "Mark Shortlisting Complete",
+    "processing": "Processing..."
+  },
+  "afterCompletion": {
+    "title": "✅ After Completion:",
+    "proceedToSchedule": "You can proceed to schedule interviews with shortlisted candidates",
+    "jobWillMove": "Job will move to interview scheduling stage",
+    "dataPreserved": "All application data will be preserved for reporting"
+  },
+  "scheduling": {
+    "title": "Interview Scheduling",
+    "description": "Review shortlisted candidates and create interview schedules with various options.",
+    "requirementsChecklist": "Requirements Checklist",
+    "autoSelectedRequirements": "Auto-selected requirements for interview:",
+    "requirementsHint": "Click X to remove requirements. Selected requirements will be communicated to candidates.",
+    "schedulingOptions": "Scheduling Options",
+    "individual": "Individual",
+    "individualDesc": "Schedule one by one",
+    "batch": "Batch",
+    "batchDesc": "Schedule multiple at once",
+    "suggested": "Suggested",
+    "suggestedDesc": "Automatic scheduling",
+    "aiAssisted": "AI-Assisted",
+    "aiAssistedDesc": "Smart recommendations",
+    "individualScheduling": "Individual Scheduling",
+    "selectCandidate": "Select Candidate",
+    "selectOneAtATime": "Select one candidate at a time",
+    "scheduleDetails": "Schedule Details",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration (minutes)",
+    "interviewer": "Interviewer",
+    "location": "Location",
+    "notes": "Notes",
+    "clickToSelectDate": "Click to select interview date",
+    "clickToSelectTime": "Click to select interview time",
+    "selectInterviewer": "Select interviewer",
+    "enterLocation": "Enter location",
+    "notesPlaceholder": "Add any additional notes for the interview",
+    "statusNotScheduled": "Not Scheduled",
+    "statusScheduled": "Scheduled",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "statusRescheduled": "Rescheduled",
+    "batchScheduling": "Batch Scheduling",
+    "batchScheduleGroups": "Batch Schedule Groups",
+    "addBatch": "Add Batch",
+    "noBatchSchedules": "No batch schedules created yet.",
+    "clickAddBatch": "Click \"Add Batch\" to create your first batch schedule.",
+    "allCandidatesAssigned": "All candidates assigned to batches",
+    "selectedCandidates": "Selected candidates:",
+    "suggestedScheduling": "Suggested Scheduling",
+    "durationLabel": "Duration",
+    "startDate": "Start Date",
+    "interviewsPerDay": "Interviews per day",
+    "generatedSchedulePreview": "Generated Schedule Preview",
+    "aiAssistedScheduling": "AI-Assisted Scheduling",
+    "smartSchedulingTitle": "Smart Scheduling for Top Candidates",
+    "smartSchedulingDesc": "AI has analyzed candidate profiles and suggests optimal scheduling for your top 5 candidates. Please review and approve suggestions.",
+    "matchScore": "Match Score",
+    "reviewRequired": "Review Required",
+    "reviewRequiredDesc": "AI suggestions require careful review. Please verify candidate availability and interviewer schedules before confirming.",
+    "scheduling": "Creating schedule...",
+    "applySuggestedSchedule": "Apply Suggested Schedule",
+    "applyAISchedule": "Apply AI Schedule",
+    "scheduleBatches": "Schedule {{count}} batch(es)",
+    "scheduleInterview": "Schedule Interview",
+    "conflictsDetected": "Schedule Conflicts Detected",
+    "hasConflicts": "{{count}} conflicting interview(s) for:",
+    "conflictsHint": "Please select different time slots or remove conflicting candidates.",
+    "batchNumber": "Batch {{number}}",
+    "durationMin": "Duration (minutes)",
+    "minOption": "{{min}} minutes",
+    "twoWeeks": "2 weeks",
+    "twoDays": "2 days",
+    "perDay": "{{count}} per day",
+    "priority": "Priority"
   }
 }

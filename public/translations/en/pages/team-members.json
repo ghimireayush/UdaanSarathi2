@@ -1,15 +1,19 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
+    "lastUpdated": "2024-12-17",
     "page": "team-members"
   },
   "title": "Team Members",
-  "subtitle": "Invite and manage your agency's team members.",
+  "subtitle": "Manage your team members and their roles",
+  "permissions": {
+    "accessDenied": "Access Denied",
+    "noPermission": "You don't have permission to manage team members."
+  },
   "sections": {
     "invite": {
       "title": "Invite Team Member",
-      "subtitle": "Add new members to your recruitment team"
+      "subtitle": "Send an invitation to a new team member"
     },
     "members": {
       "title": "Team Members ({{count}})"
@@ -21,12 +25,7 @@
       "placeholder": "Enter full name"
     },
     "role": {
-      "label": "Role *",
-      "options": {
-        "staff": "Staff Member",
-        "admin": "Administrator",
-        "manager": "Manager"
-      }
+      "label": "Role *"
     },
     "phone": {
       "label": "Phone Number *",
@@ -34,30 +33,34 @@
     },
     "actions": {
       "sendInvitation": "Send Invitation",
-      "sending": "Sending Invitation..."
+      "sending": "Sending..."
     }
   },
-  "roles": {
-    "staff": "Staff Member",
-    "admin": "Administrator",
-    "manager": "Manager",
-    "recruiter": "Recruiter",
-    "coordinator": "Coordinator",
-    "interviewCoordinator": "Interview Coordinator",
-    "recipient": "Recipient"
-  },
-  "status": {
-    "active": "Active",
-    "inactive": "Inactive",
-    "pending": "Pending",
-    "suspended": "Suspended"
+  "modals": {
+    "confirmInvitation": {
+      "title": "Confirm Invitation",
+      "message": "Send invitation to {{name}} as {{role}}?",
+      "confirm": "Send",
+      "cancel": "Cancel"
+    },
+    "confirmDeletion": {
+      "title": "Confirm Deletion",
+      "message": "Are you sure you want to delete {{name}}?",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
   },
   "search": {
-    "placeholder": "Search members...",
+    "placeholder": "Search by name or phone...",
     "filters": {
       "allRoles": "All Roles",
       "allStatus": "All Status"
     }
+  },
+  "status": {
+    "pending": "Pending",
+    "active": "Active",
+    "suspended": "Suspended"
   },
   "table": {
     "headers": {
@@ -73,37 +76,35 @@
       "tempPassword": "Temp Password: {{password}}"
     }
   },
-  "actions": {
-    "activate": "Activate member",
-    "deactivate": "Deactivate member",
-    "delete": "Delete member"
-  },
-  "modals": {
-    "confirmInvitation": {
-      "title": "Confirm Invitation",
-      "message": "Are you sure you want to invite {{name}} as {{role}}?",
-      "confirm": "Yes, Invite",
-      "cancel": "Cancel"
-    },
-    "confirmDeletion": {
-      "title": "Confirm Deletion",
-      "message": "Are you sure you want to delete {{name}}? This action cannot be undone.",
-      "confirm": "Yes, Delete",
-      "cancel": "Cancel"
-    }
-  },
   "loading": {
     "members": "Loading members..."
   },
   "empty": {
-    "noMembers": "No team members found. Invite your first member above.",
-    "noSearchResults": "No members match your search criteria"
+    "noMembers": "No team members yet",
+    "noSearchResults": "No members found matching your search"
+  },
+  "actions": {
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "delete": "Delete"
+  },
+  "settings": {
+    "advancedRoles": {
+      "label": "Enable advanced roles"
+    }
   },
   "pagination": {
-    "showing": "Showing {{start}} to {{end}} of {{total}} members"
+    "showing": "Showing {{start}} to {{end}} of {{total}} results",
+    "page": "Page {{current}} of {{total}}"
   },
-  "permissions": {
-    "accessDenied": "Access Denied",
-    "noPermission": "You don't have permission to manage team members."
+  "roles": {
+    "owner": "Agency Owner",
+    "admin": "Administrator",
+    "manager": "Manager",
+    "staff": "Staff",
+    "recruiter": "Recruiter",
+    "coordinator": "Interview Coordinator",
+    "visaOfficer": "Visa Officer",
+    "accountant": "Accountant"
   }
 }

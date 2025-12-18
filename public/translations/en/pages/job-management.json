@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-17",
+    "page": "job-management"
+  },
+  "title": "Job Management",
+  "sections": {
+    "jobImage": "Job Image",
+    "basicInfo": "Basic Info",
+    "employer": "Employer",
+    "contract": "Contract",
+    "positions": "Positions",
+    "tags": "Tags",
+    "expenses": "Expenses"
+  },
+  "buttons": {
+    "backToJobManagement": "Back to Job Management",
+    "basicExtract": "Basic Extract",
+    "extracting": "Extracting...",
+    "filled": "Filled!"
+  },
+  "messages": {
+    "extractionSuccess": "Data extracted successfully"
+  }
+}

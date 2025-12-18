@@ -1,17 +1,23 @@
 import React from 'react';
 import { FileText, Building2, ScrollText, Users, Tags, DollarSign, Image as ImageIcon } from 'lucide-react';
-
-const sections = [
-  { key: 'image', label: 'Job Image', icon: ImageIcon },
-  { key: 'basic', label: 'Basic Info', icon: FileText },
-  { key: 'employer', label: 'Employer', icon: Building2 },
-  { key: 'contract', label: 'Contract', icon: ScrollText },
-  { key: 'positions', label: 'Positions', icon: Users },
-  { key: 'tags', label: 'Tags', icon: Tags },
-  { key: 'expenses', label: 'Expenses', icon: DollarSign }
-];
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 const SectionNavigation = ({ activeSection, onSectionClick }) => {
+  const { tPageSync } = useLanguage({ pageName: 'job-management', autoLoad: true });
+  
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params);
+  };
+
+  const sections = [
+    { key: 'image', label: tPage('sections.jobImage'), icon: ImageIcon },
+    { key: 'basic', label: tPage('sections.basicInfo'), icon: FileText },
+    { key: 'employer', label: tPage('sections.employer'), icon: Building2 },
+    { key: 'contract', label: tPage('sections.contract'), icon: ScrollText },
+    { key: 'positions', label: tPage('sections.positions'), icon: Users },
+    { key: 'tags', label: tPage('sections.tags'), icon: Tags },
+    { key: 'expenses', label: tPage('sections.expenses'), icon: DollarSign }
+  ];
   return (
     <nav className="sticky top-8">
       <ul className="space-y-1">

@@ -163,17 +163,45 @@ export const PaginationInfo = ({
   totalPages, 
   totalItems, 
   itemsPerPage,
-  className = '' 
+  className = '',
+  t = null // Optional translation function
 }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
+  // Helper function for translations with fallback and template substitution
+  const translate = (key, defaultText, params = {}) => {
+    let text = defaultText
+    
+    if (t && typeof t === 'function') {
+      const result = t(key)
+      // Check if translation was found (result will be different from key)
+      if (result && result !== key) {
+        text = result
+      }
+    }
+    
+    // Replace template variables
+    return text
+      .replace(/{{start}}/g, params.start || startItem)
+      .replace(/{{end}}/g, params.end || endItem)
+      .replace(/{{total}}/g, params.total || totalItems)
+      .replace(/{{current}}/g, params.current || currentPage)
+  }
+
   return (
     <div className={`text-sm text-gray-600 dark:text-gray-400 ${className}`}>
-      Showing {startItem} to {endItem} of {totalItems} results
+      {translate('pagination.showing', `Showing {{start}} to {{end}} of {{total}} results`, {
+        start: startItem,
+        end: endItem,
+        total: totalItems
+      })}
       {totalPages > 1 && (
         <span className="ml-2">
-          (Page {currentPage} of {totalPages})
+          ({translate('pagination.page', `Page {{current}} of {{total}}`, {
+            current: currentPage,
+            total: totalPages
+          })})
         </span>
       )}
     </div>

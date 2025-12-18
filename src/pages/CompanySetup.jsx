@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "../components/ui/Card";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/logo.svg";
 
 const CompanySetup = () => {
@@ -36,6 +37,11 @@ const CompanySetup = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { createCompany, user, isAuthenticated, logout } = useAuth();
+  const { tPageSync } = useLanguage({ pageName: 'setup-company', autoLoad: true });
+
+  const tPage = (key, params = {}) => {
+    return tPageSync(key, params);
+  };
 
   // Use userId from location state (for registration flow) or from authenticated user
   const userId = location.state?.userId || user?.id;
@@ -106,14 +112,14 @@ const CompanySetup = () => {
               className="w-24 h-24 object-contain mb-2"
             />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Setup Your Company
+              {tPage('title')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Tell us about your manpower agency
+              {tPage('subtitle')}
             </p>
             {user && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                Logged in as: <span className="font-medium">{user.name || user.phone}</span>
+                {tPage('loggedInAs')} <span className="font-medium">{user.name || user.phone}</span>
               </p>
             )}
           </div>
@@ -122,7 +128,7 @@ const CompanySetup = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-center text-xl">
-              Company Information
+              {tPage('cardTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -138,7 +144,7 @@ const CompanySetup = () => {
                   htmlFor="companyName"
                   className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                 >
-                  Company Name
+                  {tPage('form.companyName.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -152,7 +158,7 @@ const CompanySetup = () => {
                     value={formData.companyName}
                     onChange={handleInputChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                    placeholder="Enter company name"
+                    placeholder={tPage('form.companyName.placeholder')}
                   />
                 </div>
               </div>
@@ -162,7 +168,7 @@ const CompanySetup = () => {
                   htmlFor="address"
                   className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                 >
-                  Address
+                  {tPage('form.address.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -176,7 +182,7 @@ const CompanySetup = () => {
                     value={formData.address}
                     onChange={handleInputChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                    placeholder="Enter company address"
+                    placeholder={tPage('form.address.placeholder')}
                   />
                 </div>
               </div>
@@ -187,7 +193,7 @@ const CompanySetup = () => {
                     htmlFor="city"
                     className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                   >
-                    City
+                    {tPage('form.city.label')}
                   </label>
                   <input
                     id="city"
@@ -197,7 +203,7 @@ const CompanySetup = () => {
                     value={formData.city}
                     onChange={handleInputChange}
                     className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                    placeholder="Enter city"
+                    placeholder={tPage('form.city.placeholder')}
                   />
                 </div>
 
@@ -206,7 +212,7 @@ const CompanySetup = () => {
                     htmlFor="country"
                     className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                   >
-                    Country
+                    {tPage('form.country.label')}
                   </label>
                   <input
                     id="country"
@@ -216,7 +222,7 @@ const CompanySetup = () => {
                     value={formData.country}
                     onChange={handleInputChange}
                     className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                    placeholder="Enter country"
+                    placeholder={tPage('form.country.placeholder')}
                   />
                 </div>
               </div>
@@ -227,7 +233,7 @@ const CompanySetup = () => {
                     htmlFor="phone"
                     className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                   >
-                    Phone Number
+                    {tPage('form.phone.label')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -241,7 +247,7 @@ const CompanySetup = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                      placeholder="Company phone"
+                      placeholder={tPage('form.phone.placeholder')}
                     />
                   </div>
                 </div>
@@ -251,7 +257,7 @@ const CompanySetup = () => {
                     htmlFor="website"
                     className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                   >
-                    Website
+                    {tPage('form.website.label')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -264,7 +270,7 @@ const CompanySetup = () => {
                       value={formData.website}
                       onChange={handleInputChange}
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                      placeholder="Company website (optional)"
+                      placeholder={tPage('form.website.placeholder')}
                     />
                   </div>
                 </div>
@@ -275,7 +281,7 @@ const CompanySetup = () => {
                   htmlFor="registrationNumber"
                   className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                 >
-                  Company Registration Number
+                  {tPage('form.registrationNumber.label')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -289,7 +295,7 @@ const CompanySetup = () => {
                     value={formData.registrationNumber}
                     onChange={handleInputChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                    placeholder="Enter registration number"
+                    placeholder={tPage('form.registrationNumber.placeholder')}
                   />
                 </div>
               </div>
@@ -299,7 +305,7 @@ const CompanySetup = () => {
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
                 >
-                  Company Description
+                  {tPage('form.description.label')}
                 </label>
                 <textarea
                   id="description"
@@ -308,7 +314,7 @@ const CompanySetup = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-100 dark:placeholder-gray-400"
-                  placeholder="Tell us about your company (optional)"
+                  placeholder={tPage('form.description.placeholder')}
                 />
               </div>
 
@@ -340,10 +346,10 @@ const CompanySetup = () => {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Setting Up Company...
+                      {tPage('form.submitting')}
                     </span>
                   ) : (
-                    "Complete Setup"
+                    tPage('form.submit')
                   )}
                 </button>
               </div>
