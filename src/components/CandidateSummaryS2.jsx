@@ -999,17 +999,7 @@ const CandidateSummaryS2 = ({
             {/* Application Notes Section */}
             {candidateData.application?.id ? (
               <>
-                {/* Debug Info - Remove in production */}
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="p-4 mx-6 mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <div className="text-xs font-mono text-yellow-800 dark:text-yellow-200">
-                      <div className="font-semibold mb-1">Debug Info:</div>
-                      <div>Application ID: {candidateData.application.id}</div>
-                      <div>Candidate ID: {candidateData.id}</div>
-                      <div>Current Stage: {candidateData.application.stage}</div>
-                    </div>
-                  </div>
-                )}
+              
                 <ApplicationNotes applicationId={candidateData.application.id} />
               </>
             ) : (

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { jobService, applicationService, candidateService, constantsService } from '../services/index.js'
 import CandidateDataSource from '../api/datasources/CandidateDataSource.js'
+import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
 import stageTransitionService from '../services/stageTransitionService.js'
 import InterviewScheduleDialog from '../components/InterviewScheduleDialog.jsx'
 import { useAgency } from '../contexts/AgencyContext.jsx'
@@ -91,7 +92,15 @@ const JobDetails = () => {
   // Load data on mount and when filters change
   useEffect(() => {
     loadAllData()
-  }, [id, activeTab, topNFilter, selectedTags, scheduledFilter])
+  }, [id, topNFilter, selectedTags, scheduledFilter])
+
+  // Handle scheduled filter changes separately without full reload
+  useEffect(() => {
+    if (activeTab === 'scheduled') {
+      // Only reload if we're on the scheduled tab and filter changed
+      loadAllData()
+    }
+  }, [scheduledFilter])
 
   // Handle ESC key to close sidebar
   useEffect(() => {
@@ -252,16 +261,8 @@ const JobDetails = () => {
   }
 
   const handleTabChange = (tabId) => {
-    // Save current scroll position
-    const scrollY = window.scrollY
-    
     setActiveTab(tabId)
     updateUrlParams({ tab: tabId })
-    
-    // Restore scroll position after state update
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollY)
-    })
   }
 
   const handleTopNFilterChange = (value) => {
@@ -829,13 +830,6 @@ const JobDetails = () => {
             >
               <Eye className="w-4 h-4 mr-1" />
               {tPage('actions.viewProfile')}
-            </button>
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap flex items-center"
-            >
-              <Download className="w-4 h-4 mr-1" />
-              {tPage('actions.downloadCV')}
             </button>
           </div>
         </div>

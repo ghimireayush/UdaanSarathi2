@@ -142,12 +142,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex transition-colors duration-200">
       {/* Skip to content link for accessibility */}
-      <a
-        href="#main-content"
-        className="absolute left-0 top-0 bg-brand-navy text-white px-4 py-2 rounded-br-md transform -translate-y-full focus:translate-y-0 transition-transform z-50"
-      >
-        Skip to main content
-      </a>
+     
 
       {/* Left Sidebar Navigation */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">

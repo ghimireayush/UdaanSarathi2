@@ -84,13 +84,18 @@ export const useLanguage = (options = {}) => {
     }
 
     try {
-      // Use tPage from context for synchronous access
-      return tPage(pageName, key, params)
+      // Get i18nService directly for synchronous access to page translations
+      const i18nService = window.__i18nService || require('../services/i18nService').default
+      if (i18nService && typeof i18nService.tPage === 'function') {
+        return i18nService.tPage(pageName, key, params)
+      }
+      // Fallback to regular translation
+      return t(key, params)
     } catch (error) {
       // Fallback to regular translation
       return t(key, params)
     }
-  }, [pageName, t, tPage])
+  }, [pageName, t])
 
   /**
    * Load translations for the current page

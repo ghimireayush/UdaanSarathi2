@@ -11,8 +11,7 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
     education_requirements: [],
     experience_requirements: {
       min_years: '',
-      max_years: '',
-      level: ''
+      max_years: ''
     },
     canonical_title_ids: []
   });
@@ -34,8 +33,6 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
   const suggestionsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
-  const experienceLevels = ['entry', 'junior', 'mid', 'senior', 'expert'];
-
   // Initialize form data when data changes
   useEffect(() => {
     if (data) {
@@ -44,8 +41,7 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
         education_requirements: data.education_requirements || [],
         experience_requirements: {
           min_years: data.experience_requirements?.min_years ?? '',
-          max_years: data.experience_requirements?.max_years ?? '',
-          level: data.experience_requirements?.level ?? ''
+          max_years: data.experience_requirements?.max_years ?? ''
         },
         canonical_title_ids: data.canonical_title_ids || []
       });
@@ -194,8 +190,7 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
         education_requirements: formData.education_requirements,
         experience_requirements: {
           min_years: formData.experience_requirements.min_years === '' ? null : Number(formData.experience_requirements.min_years),
-          max_years: formData.experience_requirements.max_years === '' ? null : Number(formData.experience_requirements.max_years),
-          level: formData.experience_requirements.level || null
+          max_years: formData.experience_requirements.max_years === '' ? null : Number(formData.experience_requirements.max_years)
         },
         canonical_title_ids: formData.canonical_title_ids
       };
@@ -396,7 +391,7 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {tPage('experience_requirements', 'Experience Requirements')}
           </label>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                 {tPage('min_years', 'Min Years')}
@@ -420,23 +415,6 @@ const TagsSection = ({ data, onSave, isFromExtraction = false }) => {
                 onChange={(e) => handleExperienceChange('max_years', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                {tPage('level', 'Level')}
-              </label>
-              <select
-                value={formData.experience_requirements.level}
-                onChange={(e) => handleExperienceChange('level', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">{tPage('select', 'Select...')}</option>
-                {experienceLevels.map(level => (
-                  <option key={level} value={level}>
-                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
         </div>

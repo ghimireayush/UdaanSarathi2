@@ -1,17 +1,44 @@
-import httpClient from '../config/httpClient.js'
-
 /**
  * Translation Data Source
- * Handles all API calls related to translations and i18n
+ * Handles all translation file fetching from public folder
+ * Fetches directly from static files, not through API
  */
 class TranslationDataSource {
+  constructor() {
+    this.baseURL = '/translations'
+  }
+
+  /**
+   * Fetch translation file directly from public folder
+   * @param {string} path - Path to translation file relative to /translations
+   * @returns {Promise<Object>} Translation data
+   */
+  async fetchTranslationFile(path) {
+    try {
+      const url = `${this.baseURL}${path}`
+      console.log('[TranslationDataSource] Fetching from:', url)
+      const response = await fetch(url)
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load ${path}: ${response.status} ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      console.log('[TranslationDataSource] Successfully loaded:', path)
+      return data
+    } catch (error) {
+      console.error('[TranslationDataSource] Error loading translation file:', error)
+      throw error
+    }
+  }
+
   /**
    * Get common translations for a locale
    * @param {string} locale - Locale code (e.g., 'en', 'ne')
    * @returns {Promise<Object>} Common translations
    */
   async getCommonTranslations(locale) {
-    return httpClient.get(`/translations/${locale}/common.json`)
+    return this.fetchTranslationFile(`/${locale}/common.json`)
   }
 
   /**
@@ -21,7 +48,7 @@ class TranslationDataSource {
    * @returns {Promise<Object>} Page translations
    */
   async getPageTranslations(locale, pageName) {
-    return httpClient.get(`/translations/${locale}/pages/${pageName}.json`)
+    return this.fetchTranslationFile(`/${locale}/pages/${pageName}.json`)
   }
 
   /**
@@ -31,7 +58,7 @@ class TranslationDataSource {
    * @returns {Promise<Object>} Component translations
    */
   async getComponentTranslations(locale, componentName) {
-    return httpClient.get(`/translations/${locale}/components/${componentName}.json`)
+    return this.fetchTranslationFile(`/${locale}/components/${componentName}.json`)
   }
 
   /**
@@ -41,7 +68,7 @@ class TranslationDataSource {
    * @returns {Promise<Object>} Translation data
    */
   async getTranslationFile(locale, file) {
-    return httpClient.get(`/translations/${locale}/${file}`)
+    return this.fetchTranslationFile(`/${locale}/${file}`)
   }
 }
 

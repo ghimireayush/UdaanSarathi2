@@ -435,7 +435,6 @@ const Members = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name || member.full_name}</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{tPage('table.memberInfo.id', { id: member.id })}</div>
                           {member.dev_password && (
                             <div className="text-xs text-blue-600 dark:text-blue-400">{tPage('table.memberInfo.tempPassword', { password: member.dev_password })}</div>
                           )}

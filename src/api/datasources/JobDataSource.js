@@ -368,6 +368,24 @@ class JobDataSource {
   async deleteJobImage(license, jobId) {
     return httpClient.delete(`/agencies/${license}/job-postings/${jobId}/cutout`)
   }
+
+  // ============================================
+  // DRAFT STATUS ENDPOINTS
+  // ============================================
+
+  /**
+   * Toggle job posting draft status
+   * @param {string} license - Agency license number
+   * @param {string} jobId - Job posting ID
+   * @param {boolean} isDraft - Set to true for draft, false to publish
+   * @returns {Promise<Object>} Updated draft status with success flag
+   */
+  async toggleJobPostingDraft(license, jobId, isDraft) {
+    return httpClient.patch(
+      `/agencies/${license}/job-postings/${jobId}/toggle-draft`,
+      { is_draft: isDraft }
+    )
+  }
 }
 
 export default new JobDataSource()

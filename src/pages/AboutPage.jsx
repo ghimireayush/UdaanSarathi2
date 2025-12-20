@@ -20,10 +20,14 @@ const AboutPage = () => {
     const loadTranslations = async () => {
       try {
         setIsLoading(true);
+        console.log('[AboutPage] Loading translations for language:', language);
         const data = await TranslationDataSource.getPageTranslations(language, 'about');
+        console.log('[AboutPage] Translations loaded:', data);
         setTranslations(data);
       } catch (error) {
-        console.error("Failed to load translations:", error);
+        console.error("[AboutPage] Failed to load translations:", error);
+        // Set empty object to prevent errors
+        setTranslations({});
       } finally {
         setIsLoading(false);
       }
@@ -52,7 +56,11 @@ const AboutPage = () => {
     for (const k of keys) {
       value = value?.[k];
     }
-    return value || key;
+    if (!value) {
+      console.warn(`[AboutPage] Missing translation key: ${key}`);
+      return key;
+    }
+    return value;
   };
 
   if (isLoading || !showContent) {

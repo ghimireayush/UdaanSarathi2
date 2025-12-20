@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, AlertCircle, RefreshCw, Loader2, Upload, ImageIcon } from 'lucide-react';
+import { ArrowLeft, AlertCircle, RefreshCw, Loader2, Upload, ImageIcon, FileText } from 'lucide-react';
 import JobDataSource from '../api/datasources/JobDataSource.js';
 import SectionNavigation from '../components/job-management/SectionNavigation.jsx';
 import BasicInfoSection from '../components/job-management/BasicInfoSection.jsx';
@@ -35,6 +35,7 @@ const JobManagementEdit = () => {
   const [dataFromExtraction, setDataFromExtraction] = useState(false); // Flag to mark data as needing save
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageUploadError, setImageUploadError] = useState(null);
+  const [isTogglingDraft, setIsTogglingDraft] = useState(false);
   
   // Section refs for scroll tracking
   const sectionRefs = {
@@ -170,6 +171,21 @@ const JobManagementEdit = () => {
   // Scroll to section
   const scrollToSection = (sectionKey) => {
     sectionRefs[sectionKey]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // Handle draft toggle
+  const handleToggleDraft = async () => {
+    setIsTogglingDraft(true);
+    try {
+      const newDraftStatus = !jobData.is_draft;
+      await JobDataSource.toggleJobPostingDraft(license, id, newDraftStatus);
+      setJobData(prev => ({ ...prev, is_draft: newDraftStatus }));
+    } catch (err) {
+      console.error('Failed to toggle draft status:', err);
+      alert(tPage('messages.draftToggleFailed'));
+    } finally {
+      setIsTogglingDraft(false);
+    }
   };
 
   // Handle image upload - extract data and patch form
@@ -381,8 +397,22 @@ const JobManagementEdit = () => {
             {tPage('buttons.backToJobManagement')}
           </button>
           
-          {/* Upload Buttons */}
+          {/* Draft Toggle and Upload Buttons */}
           <div className="flex gap-2">
+            {/* Draft Toggle Button */}
+            <button
+              onClick={handleToggleDraft}
+              disabled={isTogglingDraft}
+              className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                jobData?.is_draft
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-800'
+                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800'
+              }`}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              {isTogglingDraft ? '...' : (jobData?.is_draft ? tPage('buttons.publishFromDraft') || 'Publish' : tPage('buttons.markAsDraft') || 'Mark as Draft')}
+            </button>
+            
             {/* Basic Upload Button */}
             <button
               onClick={handleImageUpload}
@@ -444,12 +474,25 @@ const JobManagementEdit = () => {
             </button>
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {jobData?.posting_title || 'Edit Job Posting'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {jobData?.country}{jobData?.city ? `, ${jobData.city}` : ''}
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {jobData?.posting_title || 'Edit Job Posting'}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              {jobData?.country}{jobData?.city ? `, ${jobData.city}` : ''}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+              jobData?.is_draft
+                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+            }`}>
+              {jobData?.is_draft ? tPage('status.draft') : tPage('status.published')}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-8">

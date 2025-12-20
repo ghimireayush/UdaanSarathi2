@@ -5,6 +5,7 @@
     "page": "job-management"
   },
   "title": "Job Management",
+  "subtitle": "Create and manage job postings",
   "sections": {
     "jobImage": "Job Image",
     "basicInfo": "Basic Info",
@@ -18,9 +19,42 @@
     "backToJobManagement": "Back to Job Management",
     "basicExtract": "Basic Extract",
     "extracting": "Extracting...",
-    "filled": "Filled!"
+    "filled": "Filled!",
+    "toggleDraft": "Toggle Draft",
+    "markAsDraft": "Mark as Draft",
+    "publishFromDraft": "Publish"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "draft": "Draft",
+    "published": "Published"
+  },
+  "labels": {
+    "positions": "{{ count }} position",
+    "positionsPlural": "{{ count }} positions",
+    "vacancies": "{{ count }} vacancies"
+  },
+  "actions": {
+    "createNewJob": "Create New Job",
+    "edit": "Edit",
+    "retry": "Retry"
+  },
+  "search": {
+    "placeholder": "Search jobs by title, country, or city..."
+  },
+  "empty": {
+    "noJobs": "No job postings yet",
+    "noJobsDescription": "Create your first job posting to get started",
+    "noSearchResults": "No jobs found",
+    "noSearchResultsDescription": "Try adjusting your search terms"
+  },
+  "error": {
+    "failedToLoad": "Failed to load job postings"
   },
   "messages": {
-    "extractionSuccess": "Data extracted successfully"
+    "extractionSuccess": "Data extracted successfully",
+    "draftToggleSuccess": "Draft status updated successfully",
+    "draftToggleFailed": "Failed to update draft status"
   }
 }

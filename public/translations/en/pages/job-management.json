@@ -18,9 +18,18 @@
     "backToJobManagement": "Back to Job Management",
     "basicExtract": "Basic Extract",
     "extracting": "Extracting...",
-    "filled": "Filled!"
+    "filled": "Filled!",
+    "toggleDraft": "Toggle Draft",
+    "markAsDraft": "Mark as Draft",
+    "publishFromDraft": "Publish"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published"
   },
   "messages": {
-    "extractionSuccess": "Data extracted successfully"
+    "extractionSuccess": "Data extracted successfully",
+    "draftToggleSuccess": "Draft status updated successfully",
+    "draftToggleFailed": "Failed to update draft status"
   }
 }

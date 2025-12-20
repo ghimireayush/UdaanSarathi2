@@ -1,7 +1,7 @@
 // Audit Service - Connects to backend audit logging API
 import { format } from 'date-fns';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dev.kaha.com.np/job-portal';
 
 /**
  * Get auth token from localStorage

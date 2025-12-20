@@ -878,15 +878,6 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   className="form-textarea"
                   placeholder={tPage('placeholders.completeAddress')}
                 />
-                <button
-                  type="button"
-                  onClick={handleChooseOnMap}
-                  className="btn-secondary text-sm flex items-center"
-                  disabled={isSaving}
-                >
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {tPage('actions.chooseOnMap')}
-                </button>
               </div>
               {selectedLocation && (
                 <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
@@ -895,12 +886,6 @@ const LocationSection = ({ data, isEditing, formData, onFormChange, onStartEdit,
                   </p>
                 </div>
               )}
-            </div>
-
-            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Tip:</strong> Use "Choose on Map" for precise location selection, or manually enter the address with landmarks and detailed directions.
-              </p>
             </div>
           </div>
         </div>

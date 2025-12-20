@@ -154,14 +154,22 @@ const AgencySearchNew = ({ t }) => {
   const fetchAgencies = async (keyword, page = 1, limit = 6, sortBy = 'name', sortOrder = 'asc') => {
     try {
       const url = buildSearchURL(keyword, page, limit, sortBy, sortOrder)
-      const response = await fetch(url)
+      console.log('[AgencySearchNew] Fetching from URL:', url)
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
       
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
+        throw new Error(`API error: ${response.status} ${response.statusText}`)
       }
       
       /** @type {PaginatedResponse} */
       const data = await response.json()
+      console.log('[AgencySearchNew] Fetch successful, received:', data.data?.length || 0, 'agencies')
       
       return {
         agencies: data.data.map(transformAgency),
@@ -169,7 +177,8 @@ const AgencySearchNew = ({ t }) => {
       }
     } catch (error) {
       console.error('[AgencySearchNew] Failed to fetch agencies:', error)
-      setError(error instanceof Error ? error.message : 'Failed to load agencies')
+      const errorMsg = error instanceof Error ? error.message : 'Failed to load agencies'
+      setError(errorMsg)
       return {
         agencies: [],
         meta: { total: 0, page: 1, limit: limit, totalPages: 0 }
@@ -433,11 +442,13 @@ const AgencySearchNew = ({ t }) => {
    * @param {string} location - Location query
    */
   const handleSearch = async (query, location) => {
+    console.log('[AgencySearchNew] handleSearch called with:', { query, location })
     setIsSearching(true)
     setError(null)
     
     try {
       const { agencies } = await fetchAgencies(query, 1, 6)
+      console.log('[AgencySearchNew] Received agencies:', agencies.length)
       
       // Filter by location if provided (client-side filtering)
       let filteredAgencies = agencies
@@ -445,11 +456,14 @@ const AgencySearchNew = ({ t }) => {
         filteredAgencies = agencies.filter(agency =>
           agency.location.toLowerCase().includes(location.toLowerCase())
         )
+        console.log('[AgencySearchNew] After location filter:', filteredAgencies.length)
       }
       
+      console.log('[AgencySearchNew] Setting search results:', filteredAgencies.length)
       setSearchResults(filteredAgencies)
     } catch (err) {
       console.error('[AgencySearchNew] Search failed:', err)
+      setError('Search failed. Please try again.')
     } finally {
       setIsSearching(false)
     }
@@ -465,6 +479,7 @@ const AgencySearchNew = ({ t }) => {
       handleSearch(debouncedQuery, debouncedLocation)
     } else {
       setSearchResults([])
+      setError(null)
     }
   }, [debouncedQuery, debouncedLocation])
 
@@ -655,68 +670,84 @@ const AgencySearchNew = ({ t }) => {
           </div>
         </div>
 
-        {/* Top 6 Agencies - Always Shown */}
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Top Agencies with Most Job Openings
-            </h3>
-            <button
-              onClick={handleViewMore}
-              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-            >
-              <span>View More</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Error State */}
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+        {/* Top 6 Agencies - Only shown when not searching */}
+        {!searchQuery && !locationQuery && (
+          <div className="mb-12">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {t('search.topAgencies')}
+              </h3>
+              <button
+                onClick={handleViewMore}
+                className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+              >
+                <span>{t('search.viewMore')}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
-          )}
 
-          {/* Loading State */}
-          {isLoadingTop && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => renderSkeletonCard(i))}
-            </div>
-          )}
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+              </div>
+            )}
 
-          {/* Top Agencies Grid */}
-          {!isLoadingTop && topAgencies.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {topAgencies.map((agency) => renderAgencyCard(agency))}
-            </div>
-          )}
-        </div>
+            {/* Loading State */}
+            {isLoadingTop && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => renderSkeletonCard(i))}
+              </div>
+            )}
 
-        {/* Search Results */}
-        {isSearching && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => renderSkeletonCard(i))}
+            {/* Top Agencies Grid */}
+            {!isLoadingTop && topAgencies.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {topAgencies.map((agency) => renderAgencyCard(agency))}
+              </div>
+            )}
           </div>
         )}
 
-        {!isSearching && searchResults.length > 0 && (
+        {/* Search Results Section - Only shown when searching */}
+        {(searchQuery || locationQuery) && (
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-              Search Results
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {searchResults.map((agency) => renderAgencyCard(agency))}
-            </div>
-          </div>
-        )}
+            {/* Error State for Search */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+              </div>
+            )}
 
-        {!isSearching && (searchQuery || locationQuery) && searchResults.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="w-12 h-12 text-gray-400 dark:text-gray-500" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('search.noResults')}</h3>
-            <p className="text-gray-600 dark:text-gray-400">{t('search.tryAgain')}</p>
+            {/* Loading State */}
+            {isSearching && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => renderSkeletonCard(i))}
+              </div>
+            )}
+
+            {/* Search Results Grid */}
+            {!isSearching && searchResults.length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+                  Search Results
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchResults.map((agency) => renderAgencyCard(agency))}
+                </div>
+              </div>
+            )}
+
+            {/* No Results State */}
+            {!isSearching && searchResults.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('search.noResults')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('search.tryAgain')}</p>
+              </div>
+            )}
           </div>
         )}
 

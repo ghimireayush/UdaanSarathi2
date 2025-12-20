@@ -30,6 +30,9 @@ export const LanguageProvider = ({ children }) => {
 
   // Initialize i18n service on mount
   useEffect(() => {
+    // Expose i18nService globally for hooks to access
+    window.__i18nService = i18nService
+    
     if (!i18nService.isInitialized) {
       i18nService.init()
     }
