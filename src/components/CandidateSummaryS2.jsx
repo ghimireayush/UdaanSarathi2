@@ -181,6 +181,7 @@ const CandidateSummaryS2 = ({
         experience: candidate.job_profile?.experience,
         education: candidate.job_profile?.education,
         skills: candidate.job_profile?.skills || [],
+        trainings: candidate.job_profile?.trainings || [],
         summary: candidate.job_profile?.summary,
         
         // Job context
@@ -860,9 +861,13 @@ const CandidateSummaryS2 = ({
                     <div className="space-y-2">
                       {candidateData.experience.map((exp, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{exp.title} at {exp.employer}</div>
-                          <div className="text-xs text-gray-500">{exp.months} {t('professional.months')}</div>
-                          {exp.description && <div className="mt-1">{exp.description}</div>}
+                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                            {exp.formatted || `${exp.title} at ${exp.employer}`}
+                          </div>
+                          {!exp.formatted && exp.months && (
+                            <div className="text-xs text-gray-500">{exp.months} {t('professional.months')}</div>
+                          )}
+                          {exp.description && <div className="mt-1 text-xs">{exp.description}</div>}
                         </div>
                       ))}
                     </div>
@@ -884,9 +889,15 @@ const CandidateSummaryS2 = ({
                     <div className="space-y-2">
                       {candidateData.education.map((edu, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{edu.degree}</div>
-                          {edu.institution && <div className="text-xs text-gray-500">{edu.institution}</div>}
-                          {edu.year_completed && <div className="text-xs text-gray-500">{t('professional.completed')} {edu.year_completed}</div>}
+                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                            {edu.formatted || edu.degree}
+                          </div>
+                          {!edu.formatted && edu.institution && (
+                            <div className="text-xs text-gray-500">{edu.institution}</div>
+                          )}
+                          {!edu.formatted && edu.year_completed && (
+                            <div className="text-xs text-gray-500">{t('professional.completed')} {edu.year_completed}</div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -900,8 +911,34 @@ const CandidateSummaryS2 = ({
                     <div className="flex flex-wrap gap-2">
                       {candidateData.skills.map((skill, index) => (
                         <span key={index} className="chip chip-blue text-xs">
-                          {skill}
+                          {typeof skill === 'string' ? skill : (skill.formatted || skill.title)}
                         </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Trainings */}
+                {candidateData.trainings && Array.isArray(candidateData.trainings) && candidateData.trainings.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.trainings', 'Trainings')}</h5>
+                    <div className="space-y-2">
+                      {candidateData.trainings.map((training, index) => (
+                        <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                            {training.formatted || `${training.title} - ${training.provider}`}
+                          </div>
+                          {!training.formatted && (
+                            <>
+                              {training.hours && (
+                                <div className="text-xs text-gray-500">{training.hours} hours</div>
+                              )}
+                              {training.certificate && (
+                                <div className="text-xs text-green-600 dark:text-green-400">✓ Certificate</div>
+                              )}
+                            </>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>

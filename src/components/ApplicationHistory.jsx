@@ -19,6 +19,24 @@ const ApplicationHistory = ({ historyBlob }) => {
   }
 
   /**
+   * Format updated_by field for display
+   */
+  const formatUpdatedBy = (updatedBy) => {
+    if (!updatedBy) return t('system')
+    
+    // Map common values to display names
+    const updatedByMap = {
+      'system': t('system'),
+      'agency': 'agency',
+      'admin': 'admin',
+      'candidate': t('candidate')
+    }
+    
+    // If it's a known value, use mapped name, otherwise use as-is (for names)
+    return updatedByMap[updatedBy.toLowerCase()] || updatedBy
+  }
+
+  /**
    * Get badge color based on status
    */
   const getStatusBadgeColor = (status) => {
@@ -72,7 +90,7 @@ const ApplicationHistory = ({ historyBlob }) => {
                 </div>
                 
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">{t('by')} {entry.updated_by || t('system')}</span>
+                  <span className="font-medium">{formatUpdatedBy(entry.updated_by)} द्वारा</span>
                   <span className="mx-1">•</span>
                   <span>{format(new Date(entry.updated_at), 'MMM dd, yyyy HH:mm')}</span>
                 </div>

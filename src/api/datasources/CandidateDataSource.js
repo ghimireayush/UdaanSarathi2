@@ -11,10 +11,15 @@ class CandidateDataSource {
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting UUID
    * @param {string} candidateId - Candidate UUID
+   * @param {string} applicationId - Application UUID (optional, for specific application)
    * @returns {Promise<Object>} Complete candidate details
    */
-  async getCandidateDetails(license, jobId, candidateId) {
-    return httpClient.get(`/agencies/${license}/jobs/${jobId}/candidates/${candidateId}/details`)
+  async getCandidateDetails(license, jobId, candidateId, applicationId = null) {
+    let url = `/agencies/${license}/jobs/${jobId}/candidates/${candidateId}/details`
+    if (applicationId) {
+      url += `?application_id=${applicationId}`
+    }
+    return httpClient.get(url)
   }
 
   /**
@@ -152,39 +157,17 @@ class CandidateDataSource {
    * @param {string} interviewData.date - Interview date (AD format)
    * @param {string} interviewData.time - Interview time
    * @param {number} interviewData.duration - Duration in minutes
-   * @param {string} interviewData.location - Interview location
-   * @param {string} interviewData.interviewer - Contact person/interviewer name
-   * @param {string[]} interviewData.requirements - Required documents
-   * @param {string} interviewData.notes - Additional notes
-   * @returns {Promise<Object>} Result with success status, updated_count, failed candidates, and errors
-   */
-  async bulkScheduleInterviews(license, jobId, candidateIds, interviewData) {
-    return httpClient.post(`/agencies/${license}/jobs/${jobId}/candidates/bulk-schedule-interview`, {
-      candidate_ids: candidateIds,
-      interview_date_ad: interviewData.date,
-      interview_time: interviewData.time,
-      duration_minutes: interviewData.duration || 60,
-      location: interviewData.location,
-      contact_person: interviewData.interviewer,
-      required_documents: interviewData.requirements || [],
-      notes: interviewData.notes || '',
-      updatedBy: 'agency'
-    }, {
-      headers: { 'Content-Type': 'application/json' }
-    })
-  }
-
   /**
    * Multi-batch schedule interviews - Schedule multiple batches in a single API call
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting ID
-   * @param {Array} batches - Array of batch objects with candidate_ids, date, time, etc.
+   * @param {Array} batches - Array of batch objects with application_ids, date, time, etc.
    * @returns {Promise<Object>} Result with success status, updated_count, failed candidates, and errors
    */
   async multiBatchScheduleInterviews(license, jobId, batches) {
     return httpClient.post(`/agencies/${license}/jobs/${jobId}/candidates/multi-batch-schedule`, {
       batches: batches.map(batch => ({
-        candidate_ids: batch.candidates,
+        application_ids: batch.candidates, // Now sending application IDs instead of candidate IDs
         interview_date_ad: batch.date,
         interview_date_bs: batch.date_bs,
         interview_time: batch.time,

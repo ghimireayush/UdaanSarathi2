@@ -321,33 +321,33 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
         .filter(req => req.selected)
         .map(req => req.id)
 
-      // ✅ Phase 2: Use bulk scheduling API instead of looping
-      const candidateIds = Array.from(selectedCandidates)
+      // Convert individual scheduling to multi-batch format
+      const applicationIds = Array.from(selectedCandidates)
       
-      const result = await CandidateDataSource.bulkScheduleInterviews(
-        agencyData.license_number,
+      const result = await CandidateDataSource.multiBatchScheduleInterviews(
+        license,
         jobId,
-        candidateIds,
-        {
+        [{
+          candidates: applicationIds, // This will be converted to application_ids in the API call
           date: schedulingData.date,
           time: schedulingData.time,
-          duration: schedulingData.duration, // ✅ Phase 2: Duration field
+          duration: schedulingData.duration,
           location: schedulingData.location,
           interviewer: schedulingData.interviewer,
           requirements: selectedRequirements,
           notes: schedulingData.notes
-        },
-        license
+        }]
       )
 
-      // ✅ Phase 2: Handle partial failures
-      if (result.success) {
-        console.log(`✅ Successfully scheduled ${result.updated_count} interview(s)`)
+      // Handle results
+      const totalScheduled = result.updated_count || 0
+      const totalFailed = result.failed?.length || 0
+
+      if (totalFailed === 0) {
+        console.log(`✅ Successfully scheduled ${totalScheduled} interview(s)`)
       } else {
-        const succeeded = result.updated_count || 0
-        const failed = result.failed?.length || 0
         console.warn(
-          `⚠️ Scheduled ${succeeded} of ${candidateIds.length} interviews. ${failed} failed.`,
+          `⚠️ Scheduled ${totalScheduled} interviews. ${totalFailed} failed.`,
           result.errors
         )
       }
@@ -552,43 +552,63 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {candidates.map(candidate => (
-                <div
-                  key={candidate.id}
-                  onClick={() => handleCandidateSelect(candidate.id)}
-                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
-                    selectedCandidates.has(candidate.id)
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          {candidate.name?.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{candidate.name}</div>
-                          {candidate.priority_score !== undefined && candidate.priority_score !== null && (
-                            <span className="text-xs font-bold text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded-full">
-                              {candidate.priority_score}%
-                            </span>
+              {candidates.map(candidate => {
+                const applicationId = candidate.application_id || candidate.application?.id
+                return (
+                  <div
+                    key={candidate.id}
+                    onClick={() => handleCandidateSelect(applicationId)}
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      selectedCandidates.has(applicationId)
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                            {candidate.name?.charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{candidate.name}</div>
+                            {candidate.priority_score !== undefined && candidate.priority_score !== null && (
+                              <span className="text-xs font-bold text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded-full">
+                                {candidate.priority_score}%
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Position Info */}
+                          {candidate.position && (
+                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                              {candidate.position.title}
+                              {(candidate.position.salary || candidate.position.monthly_salary_amount) && (
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  {' '}• 💰 {(candidate.position.salary?.amount || candidate.position.monthly_salary_amount)?.toLocaleString()} {candidate.position.salary?.currency || candidate.position.salary_currency || 'AED'}
+                                  {candidate.position.salary?.converted_amount && (
+                                    <span> (≈ {candidate.position.salary.converted_amount.toLocaleString()} {candidate.position.salary.converted_currency || 'NPR'})</span>
+                                  )}
+                                </span>
+                              )}
+                            </div>
                           )}
+                          
+                          {/* Status Badge - On its own line */}
+                          <div className="mt-2">
+                            {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
-                        </div>
-                      </div>
                     </div>
-                    {selectedCandidates.has(candidate.id) && (
+                    {selectedCandidates.has(applicationId) && (
                       <CheckCircle className="w-5 h-5 text-blue-600" />
                     )}
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -817,13 +837,16 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                     <div className="flex flex-wrap gap-2">
                       {candidates.filter(c => {
                         // Check if candidate is already in ANY batch (not just current batch)
-                        const isInAnyBatch = batchScheduling.some(b => b.candidates.includes(c.id))
+                        const applicationId = c.application_id || c.application?.id
+                        const isInAnyBatch = batchScheduling.some(b => b.candidates.includes(applicationId))
                         return !isInAnyBatch
                       }).map(candidate => (
                         <button
                           key={candidate.id}
                           onClick={() => {
-                            const updatedBatch = { ...batch, candidates: [...batch.candidates, candidate.id] }
+                            // Store application_id instead of candidate.id
+                            const applicationId = candidate.application_id || candidate.application?.id
+                            const updatedBatch = { ...batch, candidates: [...batch.candidates, applicationId] }
                             setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
                           }}
                           className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors flex items-center gap-1"
@@ -834,7 +857,10 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                           )}
                         </button>
                       ))}
-                      {candidates.every(c => batchScheduling.some(b => b.candidates.includes(c.id))) && (
+                      {candidates.every(c => {
+                        const applicationId = c.application_id || c.application?.id
+                        return batchScheduling.some(b => b.candidates.includes(applicationId))
+                      }) && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 italic">
                           {t('scheduling.allCandidatesAssigned')}
                         </div>
@@ -845,17 +871,18 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                       <div className="mt-2">
                         <div className="text-xs text-gray-700 dark:text-gray-300 mb-1">{t('scheduling.selectedCandidates')}</div>
                         <div className="flex flex-wrap gap-1">
-                          {batch.candidates.map(candidateId => {
-                            const candidate = candidates.find(c => c.id === candidateId)
+                          {batch.candidates.map(applicationId => {
+                            // Find candidate by application_id
+                            const candidate = candidates.find(c => (c.application_id || c.application?.id) === applicationId)
                             return (
-                              <div key={candidateId} className="flex items-center text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full gap-1">
+                              <div key={applicationId} className="flex items-center text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full gap-1">
                                 <span>{candidate?.name}</span>
                                 {candidate?.priority_score !== undefined && candidate?.priority_score !== null && (
                                   <span className="font-bold text-yellow-600 dark:text-yellow-500">({candidate.priority_score}%)</span>
                                 )}
                                 <button
                                   onClick={() => {
-                                    const updatedBatch = { ...batch, candidates: batch.candidates.filter(id => id !== candidateId) }
+                                    const updatedBatch = { ...batch, candidates: batch.candidates.filter(id => id !== applicationId) }
                                     setBatchScheduling(prev => prev.map(b => b.id === batch.id ? updatedBatch : b))
                                   }}
                                   className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"

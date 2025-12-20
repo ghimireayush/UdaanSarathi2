@@ -63,6 +63,7 @@ const JobDetails = () => {
   const [availableTags, setAvailableTags] = useState([])
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarLoading, setIsSidebarLoading] = useState(false)
 
   // State for service layer data
   const [job, setJob] = useState(null)
@@ -92,15 +93,7 @@ const JobDetails = () => {
   // Load data on mount and when filters change
   useEffect(() => {
     loadAllData()
-  }, [id, topNFilter, selectedTags, scheduledFilter])
-
-  // Handle scheduled filter changes separately without full reload
-  useEffect(() => {
-    if (activeTab === 'scheduled') {
-      // Only reload if we're on the scheduled tab and filter changed
-      loadAllData()
-    }
-  }, [scheduledFilter])
+  }, [id, topNFilter, selectedTags])
 
   // Handle ESC key to close sidebar
   useEffect(() => {
@@ -456,7 +449,7 @@ const JobDetails = () => {
 
   const handleCandidateClick = async (candidate) => {
     try {
-      setIsLoading(true)
+      setIsSidebarLoading(true)
       
       // Get agency license
       const license = agencyData?.license_number
@@ -464,11 +457,23 @@ const JobDetails = () => {
         throw new Error('Agency license not available')
       }
       
+      // Get the application ID - it could be in different places depending on data source
+      const applicationId = candidate.application?.id || candidate.application_id
+      
+      if (!applicationId) {
+        console.warn('No application ID found, using candidate data as-is')
+        setSelectedCandidate(candidate)
+        setIsSidebarOpen(true)
+        return
+      }
+      
       // Fetch complete candidate details from unified endpoint
+      // Pass applicationId so backend returns the correct application
       const candidateDetails = await CandidateDataSource.getCandidateDetails(
         license,
         id, // jobId
-        candidate.id
+        candidate.id,
+        applicationId // Pass the specific application ID
       )
       
       console.log('✅ Loaded candidate details:', candidateDetails)
@@ -484,7 +489,7 @@ const JobDetails = () => {
       setSelectedCandidate(candidate)
       setIsSidebarOpen(true)
     } finally {
-      setIsLoading(false)
+      setIsSidebarLoading(false)
     }
   }
 
@@ -750,57 +755,71 @@ const JobDetails = () => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 truncate">{candidate.name}</h3>
+            {/* Name and Priority Score */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{candidate.name}</h3>
+                {candidate.gender && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{candidate.gender}</p>
+                )}
+              </div>
               {candidate.priority_score && (
-                <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full">
+                <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full whitespace-nowrap">
                   <Star className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{tPage('labels.match', { score: candidate.priority_score })}</span>
+                  <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% Match</span>
                 </div>
               )}
             </div>
 
-            <div className="mt-4 space-y-2">
-              <div className="flex items-start text-base text-gray-600 dark:text-gray-400">
-                <MapPin className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
-                <span className="truncate">
-                  {candidate.location ? formatLocation(candidate.location) : (candidate.address || tPage('labels.locationNotSpecified'))}
-                </span>
+            {/* Position Information */}
+            {candidate.position && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-4">
+                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">{candidate.position.title}</p>
+                
+                {/* Salary */}
+                {candidate.position.salary && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💰 {candidate.position.salary.amount?.toLocaleString()} {candidate.position.salary.currency}
+                    </p>
+                    {candidate.position.salary.converted_amount && (
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        ≈ {candidate.position.salary.converted_amount.toLocaleString()} {candidate.position.salary.converted_currency}
+                        {candidate.position.salary.conversion_rate && (
+                          <span className="text-gray-600 dark:text-gray-400"> @ {candidate.position.salary.conversion_rate}</span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
-                <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{candidate.phone || tPage('labels.noPhone')}</span>
-              </div>
-              <div className="flex items-center text-base text-gray-600 dark:text-gray-400">
-                <FileText className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span>{tPage('labels.experience', { experience: formatExperience(candidate.experience) })}</span>
-              </div>
-              {candidate.documents && candidate.documents.length > 0 && (
-                <div className="flex items-center text-base text-blue-600 dark:text-blue-400">
-                  <FileText className="w-5 h-5 mr-2 flex-shrink-0" />
-                  <span>{candidate.documents.length !== 1 
-                    ? tPage('labels.documentsAttachedPlural', { count: candidate.documents.length })
-                    : tPage('labels.documentsAttached', { count: candidate.documents.length })
-                  }</span>
+            )}
+
+            {/* Contact Information */}
+            <div className="space-y-2">
+              {candidate.address && (
+                <div className="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                  <MapPin className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="truncate">{candidate.address}</span>
                 </div>
               )}
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {candidate.skills.slice(0, 6).map((skill, index) => (
-                <span key={index} className="chip chip-blue text-sm px-3 py-1">
-                  {skill}
-                </span>
-              ))}
-              {candidate.skills.length > 6 && (
-                <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                  {tPage('labels.moreSkills', { count: candidate.skills.length - 6 })}
-                </span>
+              {candidate.phone && (
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>{candidate.phone}</span>
+                </div>
+              )}
+              {candidate.email && (
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">{candidate.email}</span>
+                </div>
               )}
             </div>
           </div>
         </div>
 
+        {/* Right Side Actions */}
         <div className="flex flex-col items-start sm:items-end space-y-3 min-w-max">
           <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
             {candidate.applied_at 
@@ -823,15 +842,13 @@ const JobDetails = () => {
             </button>
           )}
 
-          <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 whitespace-nowrap flex items-center"
-            >
-              <Eye className="w-4 h-4 mr-1" />
-              {tPage('actions.viewProfile')}
-            </button>
-          </div>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 whitespace-nowrap flex items-center"
+          >
+            <Eye className="w-4 h-4 mr-1" />
+            {tPage('actions.viewProfile')}
+          </button>
         </div>
       </div>
     </div>

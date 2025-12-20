@@ -99,11 +99,48 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
   }
 
   // Handle candidate click to open sidebar
-  const handleCandidateClick = (candidate) => {
-    // Use real candidate data from API
-    // Documents will be loaded by CandidateSummaryS2 or document API if needed
-    setSelectedCandidate(candidate)
-    setIsSidebarOpen(true)
+  const handleCandidateClick = async (candidate) => {
+    try {
+      setIsLoadingFiltered(true)
+      
+      // Get agency license
+      const license = agencyData?.license_number
+      if (!license) {
+        throw new Error('Agency license not available')
+      }
+      
+      // Get the application ID
+      const applicationId = candidate.application_id || candidate.application?.id
+      
+      if (!applicationId) {
+        console.warn('No application ID found, using candidate data as-is')
+        setSelectedCandidate(candidate)
+        setIsSidebarOpen(true)
+        return
+      }
+      
+      // Fetch complete candidate details from unified endpoint
+      const candidateDetails = await CandidateDataSource.getCandidateDetails(
+        license,
+        jobId,
+        candidate.id,
+        applicationId
+      )
+      
+      console.log('✅ Loaded candidate details:', candidateDetails)
+      
+      setSelectedCandidate(candidateDetails)
+      setIsSidebarOpen(true)
+      
+    } catch (error) {
+      console.error('❌ Failed to load candidate details:', error)
+      
+      // Fallback: use the candidate data we already have
+      setSelectedCandidate(candidate)
+      setIsSidebarOpen(true)
+    } finally {
+      setIsLoadingFiltered(false)
+    }
   }
 
   useEffect(() => {
@@ -869,6 +906,54 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                           <span className="ml-2">{interview.location || 'Not specified'}</span>
                         </div>
                       </div>
+
+                      {/* Position Information */}
+                      {candidate.position && (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">{candidate.position.title}</p>
+                              
+                              {/* Salary Information */}
+                              {(candidate.position.salary || candidate.position.monthly_salary_amount) && (
+                                <div className="mt-1 space-y-1">
+                                  {/* Base Salary */}
+                                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                                    💰 {(candidate.position.salary?.amount || candidate.position.monthly_salary_amount)?.toLocaleString()} {candidate.position.salary?.currency || candidate.position.salary_currency || 'AED'}
+                                  </p>
+                                  
+                                  {/* Converted Salary (if available) */}
+                                  {candidate.position.salary?.converted_amount && (
+                                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                                      ≈ {candidate.position.salary.converted_amount.toLocaleString()} {candidate.position.salary.converted_currency || 'NPR'}
+                                      {candidate.position.salary.conversion_rate && (
+                                        <span className="text-gray-600 dark:text-gray-400"> @ {candidate.position.salary.conversion_rate}</span>
+                                      )}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Vacancies */}
+                              {candidate.position.total_vacancies && (
+                                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                  📋 {candidate.position.total_vacancies} position{candidate.position.total_vacancies !== 1 ? 's' : ''} available
+                                  {candidate.position.male_vacancies || candidate.position.female_vacancies ? (
+                                    <span> ({candidate.position.male_vacancies || 0}M, {candidate.position.female_vacancies || 0}F)</span>
+                                  ) : null}
+                                </p>
+                              )}
+                              
+                              {/* Working Hours */}
+                              {candidate.position.hours_per_day_override && (
+                                <p className="text-xs text-blue-700 dark:text-blue-300">
+                                  ⏰ {candidate.position.hours_per_day_override}h/day, {candidate.position.days_per_week_override || 5} days/week
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <User className="w-4 h-4 mr-2" />
