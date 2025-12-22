@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, AlertCircle, RefreshCw, Loader2, Upload, ImageIcon, FileText } from 'lucide-react';
+import { ArrowLeft, AlertCircle, RefreshCw, Loader2, Upload, ImageIcon, FileText, X } from 'lucide-react';
 import JobDataSource from '../api/datasources/JobDataSource.js';
 import SectionNavigation from '../components/job-management/SectionNavigation.jsx';
 import BasicInfoSection from '../components/job-management/BasicInfoSection.jsx';
@@ -36,6 +36,7 @@ const JobManagementEdit = () => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [isTogglingDraft, setIsTogglingDraft] = useState(false);
+  const [draftToggleError, setDraftToggleError] = useState(null);
   
   // Section refs for scroll tracking
   const sectionRefs = {
@@ -87,6 +88,16 @@ const JobManagementEdit = () => {
   useEffect(() => {
     fetchJobDetails();
   }, [fetchJobDetails]);
+
+  // Auto-dismiss draft toggle error after 6 seconds
+  useEffect(() => {
+    if (draftToggleError) {
+      const timer = setTimeout(() => {
+        setDraftToggleError(null);
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [draftToggleError]);
 
   // Scroll tracking with IntersectionObserver
   useEffect(() => {
@@ -182,13 +193,30 @@ const JobManagementEdit = () => {
   // Handle draft toggle
   const handleToggleDraft = async () => {
     setIsTogglingDraft(true);
+    setDraftToggleError(null);
     try {
       const newDraftStatus = !jobData.is_draft;
       await JobDataSource.toggleJobPostingDraft(license, id, newDraftStatus);
       setJobData(prev => ({ ...prev, is_draft: newDraftStatus }));
     } catch (err) {
       console.error('Failed to toggle draft status:', err);
-      alert(tPage('messages.draftToggleFailed'));
+      
+      // Extract error message from server response
+      let errorMessage = tPage('messages.draftToggleFailed');
+      let errorDetails = [];
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+      
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        errorDetails = err.response.data.errors;
+      }
+      
+      setDraftToggleError({
+        message: errorMessage,
+        details: errorDetails
+      });
     } finally {
       setIsTogglingDraft(false);
     }
@@ -228,16 +256,6 @@ const JobManagementEdit = () => {
           ...prev?.contract,
           ...extracted.contract
         },
-        // Positions - replace with extracted positions
-        positions: extracted.positions.map((pos, idx) => ({
-          id: `extracted_${idx}`,
-          title: pos.title,
-          male_vacancies: pos.male_vacancies,
-          female_vacancies: pos.female_vacancies,
-          monthly_salary_amount: pos.monthly_salary_amount,
-          salary_currency: pos.salary_currency,
-          position_notes: pos.position_notes
-        })),
         // Tags
         tags: {
           ...prev?.tags,
@@ -250,6 +268,7 @@ const JobManagementEdit = () => {
           ...prev?.expenses,
           ...extracted.expenses
         }
+        // NOTE: Positions are NOT prefilled - user must add them manually
       }));
       
       setDataFromExtraction(true); // Mark that data needs saving
@@ -291,15 +310,6 @@ const JobManagementEdit = () => {
           ...prev?.contract,
           ...extracted.contract
         },
-        positions: extracted.positions.map((pos, idx) => ({
-          id: `enhanced_${idx}`,
-          title: pos.title,
-          male_vacancies: pos.male_vacancies,
-          female_vacancies: pos.female_vacancies,
-          monthly_salary_amount: pos.monthly_salary_amount,
-          salary_currency: pos.salary_currency,
-          position_notes: pos.position_notes
-        })),
         tags: {
           ...prev?.tags,
           skills: extracted.tags.skills,
@@ -310,6 +320,7 @@ const JobManagementEdit = () => {
           ...prev?.expenses,
           ...extracted.expenses
         }
+        // NOTE: Positions are NOT prefilled - user must add them manually
       }));
       
       setDataFromExtraction(true);
@@ -580,6 +591,39 @@ const JobManagementEdit = () => {
           </div>
         </div>
       </div>
+
+      {/* Draft Toggle Error Snackbar */}
+      {draftToggleError && (
+        <div className="fixed bottom-4 right-4 max-w-md z-50 animate-in slide-in-from-bottom-5 duration-300">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg shadow-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-red-900 dark:text-red-200 text-sm">
+                  {draftToggleError.message}
+                </h3>
+                {draftToggleError.details && draftToggleError.details.length > 0 && (
+                  <ul className="mt-2 space-y-1">
+                    {draftToggleError.details.map((detail, idx) => (
+                      <li key={idx} className="text-xs text-red-800 dark:text-red-300 flex items-start gap-2">
+                        <span className="text-red-600 dark:text-red-400 mt-0.5">•</span>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <button
+                onClick={() => setDraftToggleError(null)}
+                className="flex-shrink-0 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -182,6 +182,10 @@ class HttpClient {
       const error = new Error(errorData.message || `HTTP ${response.status}`)
       error.status = response.status
       error.statusCode = response.status
+      error.response = {
+        status: response.status,
+        data: errorData
+      }
       throw error
     }
     
