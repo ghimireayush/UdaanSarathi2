@@ -22,6 +22,7 @@ import { useAgency } from '../contexts/AgencyContext'
 import { useLanguage } from '../hooks/useLanguage'
 import { useStageTranslations } from '../hooks/useStageTranslations'
 import { useConfirm } from '../components/ConfirmProvider'
+import { useToast } from '../components/ToastProvider'
 import { format } from 'date-fns'
 
 const WorkflowV2 = () => {
@@ -29,6 +30,7 @@ const WorkflowV2 = () => {
   const { tPageSync } = useLanguage({ pageName: 'workflow', autoLoad: true })
   const { getStageLabel, getStageAction } = useStageTranslations()
   const { confirm } = useConfirm()
+  const { success: showSuccess, error: showError } = useToast()
   
   // State
   const [candidates, setCandidates] = useState([])
@@ -267,15 +269,14 @@ const WorkflowV2 = () => {
         interviewDetails: interviewDetails
       })
 
-      await confirm({
-        title: tPageSync('modals.stageTransition.confirmTitle'),
-        message: `✓ ${tPageSync('modals.stageTransition.confirmMessage').replace('{{currentStage}}', currentStageLabel).replace('{{targetStage}}', newStageLabel)}`,
-        confirmText: tPageSync('modals.stageTransition.okayButton'),
-        type: 'success'
-      })
-      loadData() // Reload data
+      // Show success toast
+      showSuccess(`✓ ${tPageSync('modals.stageTransition.confirmMessage').replace('{{currentStage}}', currentStageLabel).replace('{{targetStage}}', newStageLabel)}`)
+      
+      // Success - reload data
+      loadData()
     } catch (err) {
       console.error('Stage update error:', err)
+      showError(tPageSync('modals.error.updateStatusMessage'))
       await confirm({
         title: tPageSync('modals.error.title'),
         message: tPageSync('modals.error.updateStatusMessage'),
@@ -450,7 +451,7 @@ const WorkflowV2 = () => {
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Search by name, phone, passport, email..."
+            placeholder={tPageSync('search.searchPlaceholder') || 'Search by name, phone, passport, email...'}
             value={searchInput}
             onChange={handleSearchInput}
             onFocus={handleSearchFocus}
@@ -543,14 +544,10 @@ const WorkflowV2 = () => {
                   interviewDetails
                 )
                 
-                await confirm({
-                  title: tPageSync('modals.stageTransition.confirmTitle'),
-                  message: tPageSync('modals.documentAttachment.title'),
-                  confirmText: tPageSync('modals.stageTransition.okayButton'),
-                  type: 'success'
-                })
+                showSuccess(tPageSync('modals.stageTransition.confirmTitle'))
                 loadData()
               } catch (err) {
+                showError(tPageSync('modals.error.updateStatusMessage'))
                 await confirm({
                   title: tPageSync('modals.error.title'),
                   message: tPageSync('modals.error.updateStatusMessage'),
@@ -743,18 +740,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   {tPageSync('actions.pass')}
                 </button>
                 <button
-                  onClick={async () => {
-                    const confirmed = await confirm({
-                      title: tPageSync('modals.stageTransition.confirmTitle'),
-                      message: tPageSync('modals.interview.failConfirmMessage'),
-                      confirmText: tPageSync('modals.common.confirm'),
-                      cancelText: tPageSync('modals.common.cancel'),
-                      type: 'warning'
-                    })
-                    if (confirmed) {
-                      await handleStatusUpdate('interview_failed')
-                    }
-                  }}
+                  onClick={() => handleStatusUpdate('interview_failed')}
                   disabled={isUpdating}
                   className="text-xs px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 transition-colors"
                   title="Mark interview as failed"

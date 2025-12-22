@@ -964,7 +964,18 @@ class I18nService {
       return this.t(key, params)
     }
     
-    return this.interpolate(value, params)
+    // Debug logging for interpolation
+    if (key.includes('markPassed') || key.includes('markFailed')) {
+      console.log(`[i18nService.tPage] Interpolating: key=${key}, value=${value}, params=`, params)
+    }
+    
+    const result = this.interpolate(value, params)
+    
+    if (key.includes('markPassed') || key.includes('markFailed')) {
+      console.log(`[i18nService.tPage] Result: ${result}`)
+    }
+    
+    return result
   }
 
   /**

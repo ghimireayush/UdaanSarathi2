@@ -87,6 +87,10 @@ export const useLanguage = (options = {}) => {
       // Get i18nService directly for synchronous access to page translations
       const i18nService = window.__i18nService || require('../services/i18nService').default
       if (i18nService && typeof i18nService.tPage === 'function') {
+        // Debug logging
+        if (key.includes('markPassed') || key.includes('markFailed')) {
+          console.log(`[useLanguage.tPageSync] Calling tPage with: key=${key}, params=`, params)
+        }
         return i18nService.tPage(pageName, key, params)
       }
       // Fallback to regular translation

@@ -30,7 +30,8 @@
   },
   "search": {
     "byJobPlaceholder": "Search jobs or candidates...",
-    "byApplicantPlaceholder": "Search by phone, passport, or name..."
+    "byApplicantPlaceholder": "Search by phone, passport, or name...",
+    "searchPlaceholder": "Search by name, phone, passport, email..."
   },
   "filters": {
     "all": "All ({{count}})",
@@ -47,7 +48,11 @@
     "updateStatus": "Update Status",
     "attachDocument": "Attach Document",
     "removeDocument": "Remove Document",
-    "reject": "Reject"
+    "reject": "Reject",
+    "pass": "Pass",
+    "fail": "Fail",
+    "reschedule": "Reschedule",
+    "finalStage": "Final Stage"
   },
   "modals": {
     "stageTransition": {

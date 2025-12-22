@@ -1,4 +1,5 @@
 // Utility helper functions
+import { format, isToday, isYesterday, isTomorrow, parseISO } from 'date-fns'
 
 /**
  * Simulate API delay
@@ -271,17 +272,14 @@ export const formatDateWithRelative = (date, options = {}) => {
   if (!date) return 'N/A'
 
   try {
-    // Import date-fns functions
-    const { format: dfFormat, isToday: dfIsToday, isYesterday, isTomorrow, parseISO } = require('date-fns')
-    
     const dateObj = typeof date === 'string' ? parseISO(date) : date
     
     if (!useRelative) {
-      return dfFormat(dateObj, dateFormat)
+      return format(dateObj, dateFormat)
     }
 
     // Check relative dates
-    if (dfIsToday(dateObj)) {
+    if (isToday(dateObj)) {
       return useNepali ? 'आज' : 'today'
     }
     if (isYesterday(dateObj)) {
@@ -292,7 +290,7 @@ export const formatDateWithRelative = (date, options = {}) => {
     }
 
     // Fall back to absolute date format
-    return dfFormat(dateObj, dateFormat)
+    return format(dateObj, dateFormat)
   } catch (error) {
     console.error('Error formatting date:', error)
     return 'Invalid Date'

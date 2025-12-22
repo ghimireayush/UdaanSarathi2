@@ -390,21 +390,35 @@ const JobDetails = () => {
         throw new Error('Agency license not available')
       }
 
-      // Convert Set to Array of candidate IDs
+      // Convert Set to Array of candidate IDs and extract application IDs
       const candidateIds = Array.from(selectedCandidates)
+      const applicationIds = []
       
-      // ✅ NEW: Use bulk reject API
+      for (const candidateId of candidateIds) {
+        const candidate = appliedCandidates.find(c => c.id === candidateId)
+        if (candidate) {
+          const applicationId = candidate.application?.id || candidate.application_id
+          if (applicationId) {
+            applicationIds.push(applicationId)
+          }
+        }
+      }
+      
+      if (applicationIds.length === 0) {
+        throw new Error('No valid applications found to reject')
+      }
+      
+      // ✅ NEW: Use bulk reject API with application IDs
       const result = await CandidateDataSource.bulkRejectCandidates(
         license,
         id,
-        candidateIds,
-        'Does not meet requirements', // Optional reason
-        license
+        applicationIds,
+        'Does not meet requirements' // Optional reason
       )
 
       // Show summary message
       if (result.success) {
-        const total = candidateIds.length
+        const total = applicationIds.length
         const failed = result.failed?.length || 0
         const succeeded = result.updated_count || 0
         
@@ -442,20 +456,34 @@ const JobDetails = () => {
         throw new Error('Agency license not available')
       }
 
-      // Convert Set to Array of candidate IDs
+      // Convert Set to Array of candidate IDs and extract application IDs
       const candidateIds = Array.from(selectedCandidates)
+      const applicationIds = []
       
-      // ✅ NEW: Use bulk shortlist API
+      for (const candidateId of candidateIds) {
+        const candidate = appliedCandidates.find(c => c.id === candidateId)
+        if (candidate) {
+          const applicationId = candidate.application?.id || candidate.application_id
+          if (applicationId) {
+            applicationIds.push(applicationId)
+          }
+        }
+      }
+      
+      if (applicationIds.length === 0) {
+        throw new Error('No valid applications found to shortlist')
+      }
+      
+      // ✅ NEW: Use bulk shortlist API with application IDs
       const result = await CandidateDataSource.bulkShortlistCandidates(
         license,
         id,
-        candidateIds,
-        license
+        applicationIds
       )
 
       // Show summary message
       if (result.success) {
-        const total = candidateIds.length
+        const total = applicationIds.length
         const failed = result.failed?.length || 0
         const succeeded = result.updated_count || 0
         
@@ -1101,10 +1129,10 @@ const JobDetails = () => {
                     <button
                       onClick={async () => {
                         const confirmed = await confirm({
-                          title: 'Reopen Job Posting',
-                          message: 'Are you sure you want to reopen this job posting?\n\nThis will allow new candidates to apply. Previously rejected candidates will NOT be automatically restored.',
-                          confirmText: 'Yes, Reopen Posting',
-                          cancelText: 'Cancel',
+                          title: tPage('dialog.reopenTitle'),
+                          message: tPage('dialog.reopenMessage'),
+                          confirmText: tPage('dialog.reopenConfirm'),
+                          cancelText: tPage('dialog.cancel'),
                           type: 'info'
                         })
                         
@@ -1270,6 +1298,7 @@ const JobDetails = () => {
               currentFilter={scheduledFilter}
               onFilterChange={handleScheduledFilterChange}
               onDataReload={loadAllData}
+              hideActionButtons={true}
             />
           </div>
         )

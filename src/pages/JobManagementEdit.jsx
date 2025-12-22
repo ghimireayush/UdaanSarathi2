@@ -517,8 +517,8 @@ const JobManagementEdit = () => {
       </div>
 
       <div className="flex gap-8">
-        {/* Sidebar Navigation */}
-        <div className="hidden lg:block w-48 flex-shrink-0">
+        {/* Sidebar Navigation - Hidden on tablet and below */}
+        <div className="hidden xl:block w-48 flex-shrink-0">
           <SectionNavigation
             activeSection={activeSection}
             onSectionClick={scrollToSection}
@@ -526,7 +526,7 @@ const JobManagementEdit = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 space-y-8 min-w-0">
           <div ref={sectionRefs.image} id="section-image">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Job Image</h2>

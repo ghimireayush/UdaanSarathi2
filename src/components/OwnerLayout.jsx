@@ -115,7 +115,7 @@ const OwnerLayout = ({ children, onRefresh }) => {
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
+          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 2xl:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -123,8 +123,8 @@ const OwnerLayout = ({ children, onRefresh }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
-          transform transition-transform duration-300 ease-in-out lg:translate-x-0
+          hidden 2xl:fixed 2xl:inset-y-0 2xl:left-0 2xl:z-30 2xl:w-64 2xl:bg-white dark:2xl:bg-gray-800 2xl:border-r 2xl:border-gray-200 dark:2xl:border-gray-700
+          transform transition-transform duration-300 ease-in-out 2xl:translate-x-0
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >

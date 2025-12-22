@@ -50,7 +50,10 @@
     "cannotUndo": "• This action cannot be undone",
     "rejectedNotified": "• Rejected candidates will be notified automatically",
     "confirm": "Yes, Complete Shortlisting",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "reopenTitle": "Reopen Job Posting",
+    "reopenMessage": "Are you sure you want to reopen this job posting?\n\nThis will allow new candidates to apply. Previously rejected candidates will NOT be automatically restored.",
+    "reopenConfirm": "Yes, Reopen Posting"
   },
   "messages": {
     "shortlistingCompleted": "Successfully rejected {{count}} non-shortlisted candidates",

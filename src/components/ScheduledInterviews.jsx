@@ -39,7 +39,7 @@ import { format, isToday, isTomorrow, isPast, addMinutes, parseISO } from 'date-
 import CandidateSummaryS2 from './CandidateSummaryS2.jsx'
 import { formatTime12Hour } from '../utils/helpers.js'
 
-const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, currentFilter, onFilterChange, onDataReload, showFilters = true }) => {
+const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, currentFilter, onFilterChange, onDataReload, showFilters = true, hideActionButtons = false }) => {
   const { agencyData } = useAgency()
   const { tPageSync } = useLanguage({ pageName: 'interviews', autoLoad: true })
   const { getStageLabel, getStageAction } = useStageTranslations()
@@ -74,7 +74,14 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
     if (!interview || interview.status !== 'scheduled' || !interview.scheduled_at) return false
     
     try {
-      const interviewEnd = addMinutes(parseISO(interview.scheduled_at), (interview.duration || 60) + gracePeriod)
+      // If interview has a separate time field, combine it with the date
+      let scheduledDateTime = interview.scheduled_at
+      if (interview.time && !interview.scheduled_at.includes('T')) {
+        // scheduled_at is just a date, combine with time field
+        scheduledDateTime = `${interview.scheduled_at}T${interview.time}:00Z`
+      }
+      
+      const interviewEnd = addMinutes(parseISO(scheduledDateTime), (interview.duration || 60) + gracePeriod)
       return isPast(interviewEnd)
     } catch (error) {
       console.error('Error parsing interview date:', error, interview)
@@ -607,6 +614,11 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
   }
 
   const getActionButtons = (candidate) => {
+    // Hide action buttons if requested
+    if (hideActionButtons) {
+      return null
+    }
+
     const interview = candidate.interview
     if (!interview?.scheduled_at) {
       return <div className="text-sm text-gray-600 dark:text-gray-400">No interview scheduled</div>
@@ -624,20 +636,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
       )
     }
 
-    // Today, Tomorrow: Send reminder, Take notes during interview, Mark Interviewed, Mark pass, Mark fail, Reject with reason
+    // Today, Tomorrow: Mark Interviewed, Mark pass, Mark fail
     if (isUpcoming && interview.status === 'scheduled' && !isUnattendedCandidate) {
       return (
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              handleAction(candidate, 'send_reminder')
-            }}
-            className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
-          >
-            <Send className="w-3 h-3 mr-1 inline" />
-            Send Reminder
-          </button>
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -668,24 +670,11 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             <XCircle className="w-3 h-3 mr-1 inline" />
             {getStageAction('markFail')}
           </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              console.log('Reject button clicked for candidate:', candidate.name)
-              setSelectedCandidate(candidate)
-              setActionType('reject')
-              setIsSidebarOpen(false) // Close sidebar if open
-            }}
-            className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
-          >
-            <X className="w-3 h-3 mr-1 inline" />
-            {getStageAction('reject')}
-          </button>
         </div>
       )
     }
 
-    // Unattended, All: Mark Pass | Fail | Reject with reason (removes from shortlisted list) | Reschedule (future date)
+    // Unattended, All: Mark Pass | Fail | Reschedule (future date)
     if (isUnattendedCandidate || activeSubtab === 'all' || activeSubtab === 'unattended') {
       return (
         <div className="flex flex-wrap gap-2">
@@ -708,19 +697,6 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
           >
             <XCircle className="w-3 h-3 mr-1 inline" />
             {getStageAction('markFail')}
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              console.log('Reject button clicked for candidate:', candidate.name)
-              setSelectedCandidate(candidate)
-              setActionType('reject')
-              setIsSidebarOpen(false) // Close sidebar if open
-            }}
-            className="text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
-          >
-            <X className="w-3 h-3 mr-1 inline" />
-            {getStageAction('reject')}
           </button>
           <button
             onClick={(e) => {
@@ -833,7 +809,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name || 'Unknown Candidate'}</h3>
-                          {candidate.priority_score !== undefined && candidate.priority_score !== null && (
+                          {candidate.priority_score !== undefined && candidate.priority_score !== null && candidate.priority_score > 0 && (
                             <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full">
                               <Star className="w-4 h-4 text-yellow-500" />
                               <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% Match</span>

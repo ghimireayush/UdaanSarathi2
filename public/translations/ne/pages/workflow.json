@@ -30,7 +30,8 @@
   },
   "search": {
     "byJobPlaceholder": "जागिर वा उम्मेदवारहरू खोज्नुहोस्...",
-    "byApplicantPlaceholder": "फोन, राहदानी, वा नामद्वारा खोज्नुहोस्..."
+    "byApplicantPlaceholder": "फोन, राहदानी, वा नामद्वारा खोज्नुहोस्...",
+    "searchPlaceholder": "नाम, फोन, राहदानी, इमेलद्वारा खोज्नुहोस्..."
   },
   "filters": {
     "all": "सबै ({{count}})",
@@ -47,7 +48,11 @@
     "updateStatus": "स्थिति अपडेट गर्नुहोस्",
     "attachDocument": "कागजात संलग्न गर्नुहोस्",
     "removeDocument": "कागजात हटाउनुहोस्",
-    "reject": "अस्वीकार गर्नुहोस्"
+    "reject": "अस्वीकार गर्नुहोस्",
+    "pass": "उत्तीर्ण",
+    "fail": "असफल",
+    "reschedule": "पुनः निर्धारण गर्नुहोस्",
+    "finalStage": "अन्तिम चरण"
   },
   "modals": {
     "stageTransition": {

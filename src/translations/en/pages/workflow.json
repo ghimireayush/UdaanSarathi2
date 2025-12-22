@@ -30,7 +30,8 @@
   },
   "search": {
     "byJobPlaceholder": "Search jobs or candidates...",
-    "byApplicantPlaceholder": "Search by phone, passport, or name..."
+    "byApplicantPlaceholder": "Search by phone, passport, or name...",
+    "searchPlaceholder": "Search by name, phone, passport, email..."
   },
   "filters": {
     "all": "All ({{count}})",
@@ -46,9 +47,18 @@
     "viewSummary": "View Summary",
     "updateStatus": "Update Status",
     "attachDocument": "Attach Document",
-    "removeDocument": "Remove Document"
+    "removeDocument": "Remove Document",
+    "pass": "Pass",
+    "fail": "Fail",
+    "reschedule": "Reschedule",
+    "finalStage": "Final Stage"
   },
   "modals": {
+    "common": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "cannotUndo": "This action cannot be undone."
+    },
     "stageTransition": {
       "invalidTitle": "Invalid Stage Transition",
       "invalidMessage": "You cannot move directly from \"{{currentStage}}\" to \"{{targetStage}}\". Please follow the proper workflow sequence.",
@@ -57,6 +67,9 @@
       "confirmButton": "Yes, Update Stage",
       "cancelButton": "Cancel",
       "okayButton": "Okay"
+    },
+    "interview": {
+      "failConfirmMessage": "Are you sure you want to mark this interview as failed? This action cannot be undone."
     },
     "documentAttachment": {
       "title": "Confirm Document Attachment",

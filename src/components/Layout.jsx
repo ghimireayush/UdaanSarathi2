@@ -197,7 +197,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col lg:flex-row transition-colors duration-200">
       {/* Skip to content link for accessibility */}
       <a
         href="#main-content"
@@ -381,43 +381,44 @@ const Layout = ({ children }) => {
 
       {/* Mobile Header */}
       <div className="lg:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
-        <div className="flex items-center justify-between px-3 py-2">
+        <div className="flex items-center justify-between px-2 py-1.5">
           <div className="flex items-center min-w-0 flex-1">
             <button
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright mr-2"
+              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright mr-1"
               onClick={toggleMobileMenu}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
               aria-label="Toggle main menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6" aria-hidden="true" />
+                <X className="w-5 h-5" aria-hidden="true" />
               ) : (
-                <Menu className="w-6 h-6" aria-hidden="true" />
+                <Menu className="w-5 h-5" aria-hidden="true" />
               )}
             </button>
             
             <Link
               to="/dashboard"
-              className="flex items-center min-w-0 flex-1 focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded-lg py-1 px-2"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded-lg py-0.5 px-1"
             >
               <img
                 src={resolveImageUrl(agencyLogo) || logo}
                 alt={`${agencyName} Logo`}
-                className="w-8 h-8 object-contain drop-shadow-sm flex-shrink-0"
+                className="w-6 h-6 object-contain drop-shadow-sm flex-shrink-0"
               />
-              <div className="ml-2 min-w-0">
-                <h1 className="text-sm font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent truncate">
+              {/* Hide agency name on mobile, show only on sm and up */}
+              <div className="hidden sm:block ml-1.5 min-w-0">
+                <h1 className="text-xs font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent truncate">
                   {agencyName}
                 </h1>
               </div>
             </Link>
           </div>
           
-          <div className="flex items-center space-x-1 flex-shrink-0">
+          <div className="flex items-center space-x-0.5 flex-shrink-0">
             <ThemeToggle />
             <button
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
+              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-navy dark:hover:text-white hover:bg-gray-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-brand-blue-bright"
               aria-label="View notifications"
             >
               <Bell className="w-5 h-5" aria-hidden="true" />

@@ -129,12 +129,12 @@ class CandidateDataSource {
    * Bulk shortlist candidates
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting ID
-   * @param {string[]} candidateIds - Array of candidate IDs to shortlist
+   * @param {string[]} applicationIds - Array of application IDs to shortlist
    * @returns {Promise<Object>} Result with success status and errors
    */
-  async bulkShortlistCandidates(license, jobId, candidateIds) {
+  async bulkShortlistCandidates(license, jobId, applicationIds) {
     return httpClient.post(`/agencies/${license}/jobs/${jobId}/candidates/bulk-shortlist`, {
-      candidate_ids: candidateIds
+      application_ids: applicationIds
     }, {
       headers: { 'Content-Type': 'application/json' }
     })
@@ -144,12 +144,12 @@ class CandidateDataSource {
    * Bulk reject candidates
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting ID
-   * @param {string[]} candidateIds - Array of candidate IDs to reject
+   * @param {string[]} applicationIds - Array of application IDs to reject
    * @param {string} reason - Optional rejection reason
    * @returns {Promise<Object>} Result with success status and errors
    */
-  async bulkRejectCandidates(license, jobId, candidateIds, reason = null) {
-    const body = { candidate_ids: candidateIds }
+  async bulkRejectCandidates(license, jobId, applicationIds, reason = null) {
+    const body = { application_ids: applicationIds }
     if (reason) {
       body.reason = reason
     }

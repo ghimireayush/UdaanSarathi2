@@ -110,31 +110,19 @@ const CandidateSummaryS2 = ({
   const { tPageSync } = useLanguage({ pageName: 'candidate-summary', autoLoad: true })
   const t = (key, params = {}) => tPageSync(key, params)
   
-  // Load documents from API when candidate changes
+  // Extract documents from candidate data (already included in /applications/:id/details)
   useEffect(() => {
-    const loadDocuments = async () => {
-      // Get candidate ID - this is all we need
-      const cId = candidate?.candidate?.id || candidateId
-      if (!cId) return
-      
-      try {
-        setLoadingDocuments(true)
-        setDocumentError(null)
-        // Get all document slots (uploaded + empty) for the candidate
-        const response = await DocumentDataSource.getCandidateDocuments(cId)
-        setApiDocuments(response)
-      } catch (error) {
-        console.error('Failed to load documents:', error)
-        setDocumentError(error.message || 'Failed to load documents')
-      } finally {
-        setLoadingDocuments(false)
-      }
+    if (candidate?.documents) {
+      // Transform documents array to match expected format
+      const formattedDocuments = candidate.documents.map(doc => ({
+        document_type: doc.document_type,
+        document: doc.document
+      }))
+      setApiDocuments({ data: formattedDocuments })
+      setLoadingDocuments(false)
+      setDocumentError(null)
     }
-    
-    if (isOpen && candidate) {
-      loadDocuments()
-    }
-  }, [candidate, isOpen, candidateId])
+  }, [candidate?.documents])
 
   // Load notes from API when candidate changes
   useEffect(() => {
@@ -578,13 +566,11 @@ const CandidateSummaryS2 = ({
 
     setIsUploading(true)
     try {
-      const cId = candidate?.candidate?.id || candidateId
-      
-      if (!cId) {
-        throw new Error('Candidate ID not available')
+      if (!applicationId) {
+        throw new Error('Application ID not available')
       }
 
-      console.log('📤 Uploading document:', { candidateId: cId, documentTypeId, fileName: file.name })
+      console.log('📤 Uploading document:', { applicationId, documentTypeId, fileName: file.name })
       
       if (!documentTypeId) {
         throw new Error('Document type ID is missing')
@@ -596,16 +582,23 @@ const CandidateSummaryS2 = ({
       formData.append('name', file.name)
       formData.append('notes', 'Uploaded by agency')
 
-      await DocumentDataSource.uploadAgencyCandidateDocument(
-        agencyData?.license,
-        candidate?.job_posting?.id,
-        cId,
+      await DocumentDataSource.uploadDocumentByApplication(
+        applicationId,
         formData
       )
 
-      // Reload documents
-      const response = await DocumentDataSource.getCandidateDocuments(cId)
-      setApiDocuments(response)
+      // Reload application details to refresh documents
+      const updatedData = await httpClient.get(`/applications/${applicationId}/details`)
+      setCandidate(updatedData)
+
+      // Update apiDocuments immediately for UI refresh
+      if (updatedData?.documents) {
+        const formattedDocuments = updatedData.documents.map(doc => ({
+          document_type: doc.document_type,
+          document: doc.document
+        }))
+        setApiDocuments({ data: formattedDocuments })
+      }
 
       await confirm({
         title: 'Upload Successful',
@@ -634,10 +627,10 @@ const CandidateSummaryS2 = ({
     if (status === 'rejected') {
       // Prompt for rejection reason using custom dialog
       rejectionReason = await dialogService.prompt(
-        t('document.rejectTitle'),
-        t('document.rejectMessage'),
+        t('documents.rejectTitle'),
+        t('documents.rejectMessage'),
         {
-          placeholder: t('document.rejectPlaceholder'),
+          placeholder: t('documents.rejectPlaceholder'),
           confirmText: t('common.confirm'),
           cancelText: t('common.cancel')
         }
@@ -648,12 +641,12 @@ const CandidateSummaryS2 = ({
     }
 
     const confirmed = await confirm({
-      title: status === 'approved' ? 'Approve Document' : 'Reject Document',
+      title: status === 'approved' ? t('documents.approveTitle') : t('documents.rejectTitle'),
       message: status === 'approved' 
-        ? `Are you sure you want to approve "${documentName}"?`
-        : `Are you sure you want to reject "${documentName}"?\n\nReason: ${rejectionReason}`,
-      confirmText: status === 'approved' ? 'Yes, Approve' : 'Yes, Reject',
-      cancelText: 'Cancel',
+        ? `${t('documents.approveMessage')} "${documentName}"`
+        : `${t('documents.rejectTitle')}: "${documentName}"?\n\nReason: ${rejectionReason}`,
+      confirmText: status === 'approved' ? t('common.yes') : t('common.yes'),
+      cancelText: t('common.cancel'),
       type: status === 'approved' ? 'info' : 'danger'
     })
 
@@ -672,22 +665,31 @@ const CandidateSummaryS2 = ({
         { status, rejection_reason: rejectionReason }
       )
 
-      // Reload documents
-      const docs = await DocumentDataSource.getCandidateDocumentsByApplication(applicationId)
-      setApiDocuments(docs)
+      // Reload application details to refresh documents
+      const updatedData = await httpClient.get(`/applications/${applicationId}/details`)
+      setCandidate(updatedData)
+
+      // Update apiDocuments immediately for UI refresh
+      if (updatedData?.documents) {
+        const formattedDocuments = updatedData.documents.map(doc => ({
+          document_type: doc.document_type,
+          document: doc.document
+        }))
+        setApiDocuments({ data: formattedDocuments })
+      }
 
       await confirm({
-        title: 'Success',
-        message: `Document ${status} successfully!`,
-        confirmText: 'Okay',
+        title: t('dialogs.success.title'),
+        message: status === 'approved' ? t('dialogs.success.documentApproved') : t('dialogs.success.documentRejected'),
+        confirmText: t('common.ok'),
         type: 'success'
       })
     } catch (error) {
       console.error('Failed to verify document:', error)
       await confirm({
-        title: 'Error',
-        message: error.response?.data?.message || error.message || 'Failed to update document status.',
-        confirmText: 'Okay',
+        title: t('dialogs.error.title'),
+        message: error.response?.data?.message || error.message || t('dialogs.error.updateFailed'),
+        confirmText: t('common.ok'),
         type: 'danger'
       })
     }
@@ -695,36 +697,32 @@ const CandidateSummaryS2 = ({
 
   const handleViewDocument = async (doc) => {
     try {
-      if (doc.file_data) {
-        // If we have base64 data, create a blob URL and open it
-        const byteCharacters = atob(doc.file_data.split(',')[1])
-        const byteNumbers = new Array(byteCharacters.length)
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i)
-        }
-        const byteArray = new Uint8Array(byteNumbers)
-        const blob = new Blob([byteArray], { type: doc.type })
-        const url = URL.createObjectURL(blob)
-        
-        // Open in new window/tab
-        window.open(url, '_blank')
-        
-        // Clean up the URL after a delay
-        setTimeout(() => URL.revokeObjectURL(url), 1000)
+      if (!doc.document_url) {
+        throw new Error('Document URL not available')
+      }
+
+      // Construct full URL
+      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+      const fullUrl = `${baseURL}/${doc.document_url}`
+
+      // Determine how to handle based on file type
+      const fileType = doc.file_type?.toLowerCase() || ''
+      
+      if (fileType.includes('pdf')) {
+        // Open PDF in new tab
+        window.open(fullUrl, '_blank')
+      } else if (fileType.includes('image')) {
+        // Open image in new tab
+        window.open(fullUrl, '_blank')
       } else {
-        // Fallback: show document info
-        await confirm({
-          title: 'Document Preview',
-          message: `Document: ${doc.name}\nSize: ${(doc.size / 1024 / 1024).toFixed(2)} MB\nType: ${doc.type}\nUploaded: ${format(new Date(doc.uploaded_at), 'MMM dd, yyyy HH:mm')}`,
-          confirmText: 'Close',
-          type: 'info'
-        })
+        // For other types, try to open in new tab
+        window.open(fullUrl, '_blank')
       }
     } catch (error) {
       console.error('Failed to view document:', error)
       await confirm({
         title: 'View Error',
-        message: 'Failed to open document for viewing. Please try again.',
+        message: error.message || 'Failed to open document for viewing. Please try again.',
         confirmText: 'Okay',
         type: 'danger'
       })
@@ -733,36 +731,47 @@ const CandidateSummaryS2 = ({
 
   const handleDownloadDocument = async (doc) => {
     try {
-      if (doc.file_data) {
-        // Create download link
-        const link = document.createElement('a')
-        link.href = doc.file_data
-        link.download = doc.name
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        
-        // Show success message
-        await confirm({
-          title: 'Download Started',
-          message: `Download of "${doc.name}" has started.`,
-          confirmText: 'Great!',
-          type: 'success'
-        })
-      } else {
-        await confirm({
-          title: 'Download Error',
-          message: 'Document data not available for download.',
-          confirmText: 'Okay',
-          type: 'danger'
-        })
+      if (!doc.document_url) {
+        throw new Error('Document URL not available')
       }
+
+      // Construct full URL
+      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+      const fullUrl = `${baseURL}/${doc.document_url}`
+
+      // Fetch the file to trigger browser's "Save As" dialog
+      const response = await fetch(fullUrl)
+      if (!response.ok) {
+        throw new Error('Failed to fetch document')
+      }
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      
+      // Create download link with proper filename
+      const link = document.createElement('a')
+      link.href = url
+      link.download = doc.name || 'document'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Clean up the blob URL
+      URL.revokeObjectURL(url)
+
+      // Show success message
+      await confirm({
+        title: t('documents.downloadStartedTitle'),
+        message: t('documents.downloadStartedMessage', { documentName: doc.name }),
+        confirmText: t('common.ok'),
+        type: 'success'
+      })
     } catch (error) {
       console.error('Failed to download document:', error)
       await confirm({
-        title: 'Download Error',
-        message: 'Failed to download document. Please try again.',
-        confirmText: 'Okay',
+        title: t('documents.downloadErrorTitle'),
+        message: error.message || t('documents.downloadErrorMessage'),
+        confirmText: t('common.ok'),
         type: 'danger'
       })
     }
@@ -1570,10 +1579,10 @@ const CandidateSummaryS2 = ({
                             <button
                               onClick={async () => {
                                 const confirmed = await confirm({
-                                  title: 'Reschedule Interview',
-                                  message: `Are you sure you want to reschedule the interview for ${candidate.name}?`,
-                                  confirmText: 'Yes, Reschedule',
-                                  cancelText: 'Cancel',
+                                  title: t('dialogs.reschedule.title'),
+                                  message: t('dialogs.reschedule.message'),
+                                  confirmText: t('dialogs.reschedule.confirm'),
+                                  cancelText: t('dialogs.reschedule.cancel'),
                                   type: 'info'
                                 })
                                 
@@ -1608,10 +1617,10 @@ const CandidateSummaryS2 = ({
                               <button
                                 onClick={async () => {
                                   const confirmed = await confirm({
-                                    title: 'Reschedule Interview',
-                                    message: `The interview time has elapsed. Would you like to reschedule for ${candidate.name}?`,
-                                    confirmText: 'Yes, Reschedule',
-                                    cancelText: 'Cancel',
+                                    title: t('dialogs.reschedule.title'),
+                                    message: t('dialogs.reschedule.messageElapsed'),
+                                    confirmText: t('dialogs.reschedule.confirm'),
+                                    cancelText: t('dialogs.reschedule.cancel'),
                                     type: 'warning'
                                   })
                                   
@@ -1721,9 +1730,9 @@ const CandidateSummaryS2 = ({
               )
               
               await confirm({
-                title: 'Success',
-                message: 'Interview rescheduled successfully!',
-                confirmText: 'OK',
+                title: t('dialogs.success.title'),
+                message: t('dialogs.success.interviewRescheduled'),
+                confirmText: t('common.ok'),
                 type: 'success'
               })
             } else {
@@ -1734,9 +1743,9 @@ const CandidateSummaryS2 = ({
               )
               
               await confirm({
-                title: 'Success',
-                message: 'Interview scheduled successfully!',
-                confirmText: 'OK',
+                title: t('dialogs.success.title'),
+                message: t('dialogs.success.interviewScheduled'),
+                confirmText: t('common.ok'),
                 type: 'success'
               })
             }

@@ -28,7 +28,11 @@
     "uploadSuccessTitle": "अपलोड सफल",
     "uploadSuccessMessage": "कागजात सफलतापूर्वक अपलोड भएको छ!",
     "uploadErrorTitle": "अपलोड त्रुटि",
-    "uploadErrorMessage": "कागजात अपलोड गर्न असफल। कृपया पुनः प्रयास गर्नुहोस्।"
+    "uploadErrorMessage": "कागजात अपलोड गर्न असफल। कृपया पुनः प्रयास गर्नुहोस्।",
+    "downloadStartedTitle": "डाउनलोड सुरु भएको",
+    "downloadStartedMessage": "\"{{documentName}}\" को डाउनलोड सुरु भएको छ।",
+    "downloadErrorTitle": "डाउनलोड त्रुटि",
+    "downloadErrorMessage": "कागजात डाउनलोड गर्न असफल। कृपया पुनः प्रयास गर्नुहोस्।"
   },
   "position": {
     "removeTitle": "पद हटाउनुहोस्",

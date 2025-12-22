@@ -28,7 +28,11 @@
     "uploadSuccessTitle": "Upload Successful",
     "uploadSuccessMessage": "Document uploaded successfully!",
     "uploadErrorTitle": "Upload Error",
-    "uploadErrorMessage": "Failed to upload document. Please try again."
+    "uploadErrorMessage": "Failed to upload document. Please try again.",
+    "downloadStartedTitle": "Download Started",
+    "downloadStartedMessage": "Download of \"{{documentName}}\" has started.",
+    "downloadErrorTitle": "Download Error",
+    "downloadErrorMessage": "Failed to download document. Please try again."
   },
   "position": {
     "removeTitle": "Remove Position",
