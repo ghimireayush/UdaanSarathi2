@@ -50,6 +50,12 @@ const JobManagementEdit = () => {
 
   // Get license from localStorage
   const license = localStorage.getItem('udaan_agency_license');
+  
+  // Check if running in dev mode (localhost)
+  const isDevMode = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  );
 
   // Fetch job details
   const fetchJobDetails = useCallback(async () => {
@@ -413,65 +419,69 @@ const JobManagementEdit = () => {
               {isTogglingDraft ? '...' : (jobData?.is_draft ? tPage('buttons.publishFromDraft') || 'Publish' : tPage('buttons.markAsDraft') || 'Mark as Draft')}
             </button>
             
-            {/* Basic Upload Button */}
-            <button
-              onClick={handleImageUpload}
-              disabled={isExtractingFromImage || isExtractingEnhanced}
-              className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
-                extractionSuccess
-                  ? 'bg-green-600 text-white'
-                  : isExtractingFromImage
-                  ? 'bg-blue-400 text-white cursor-wait'
-                  : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-md hover:shadow-lg'
-              }`}
-            >
-              {isExtractingFromImage ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {tPage('buttons.extracting')}
-                </>
-              ) : extractionSuccess ? (
-                <>
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  {tPage('buttons.filled')}
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  {tPage('buttons.basicExtract')}
-                </>
-              )}
-            </button>
+            {/* Basic Upload Button - Dev Mode Only */}
+            {isDevMode && (
+              <button
+                onClick={handleImageUpload}
+                disabled={isExtractingFromImage || isExtractingEnhanced}
+                className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
+                  extractionSuccess
+                    ? 'bg-green-600 text-white'
+                    : isExtractingFromImage
+                    ? 'bg-blue-400 text-white cursor-wait'
+                    : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-md hover:shadow-lg'
+                }`}
+              >
+                {isExtractingFromImage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {tPage('buttons.extracting')}
+                  </>
+                ) : extractionSuccess ? (
+                  <>
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    {tPage('buttons.filled')}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    {tPage('buttons.basicExtract')}
+                  </>
+                )}
+              </button>
+            )}
 
-            {/* Enhanced Upload Button */}
-            <button
-              onClick={handleEnhancedImageUpload}
-              disabled={isExtractingFromImage || isExtractingEnhanced}
-              className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
-                enhancedExtractionSuccess
-                  ? 'bg-green-600 text-white'
-                  : isExtractingEnhanced
-                  ? 'bg-orange-400 text-white cursor-wait'
-                  : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 shadow-md hover:shadow-lg'
-              }`}
-            >
-              {isExtractingEnhanced ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {tPage('buttons.extracting')}
-                </>
-              ) : enhancedExtractionSuccess ? (
-                <>
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  {tPage('buttons.filled')}
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  {tPage('buttons.basicExtract')}
-                </>
-              )}
-            </button>
+            {/* Enhanced Upload Button - Dev Mode Only */}
+            {isDevMode && (
+              <button
+                onClick={handleEnhancedImageUpload}
+                disabled={isExtractingFromImage || isExtractingEnhanced}
+                className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
+                  enhancedExtractionSuccess
+                    ? 'bg-green-600 text-white'
+                    : isExtractingEnhanced
+                    ? 'bg-orange-400 text-white cursor-wait'
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 shadow-md hover:shadow-lg'
+                }`}
+              >
+                {isExtractingEnhanced ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {tPage('buttons.extracting')}
+                  </>
+                ) : enhancedExtractionSuccess ? (
+                  <>
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    {tPage('buttons.filled')}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    {tPage('buttons.basicExtract')}
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-start justify-between">
