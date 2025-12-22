@@ -21,8 +21,8 @@ export const useRoleBasedAccess = () => {
   const normalizeRole = (role) => {
     // Map legacy 'agency_owner' to 'owner' for RBAC compatibility
     if (role === 'agency_owner') return 'owner';
-    // Map legacy 'agency_member' to 'staff' as default member role
-    if (role === 'agency_member') return 'staff';
+    // Map legacy 'agency_member' to 'recruiter' as default member role
+    if (role === 'agency_member') return 'recruiter';
     return role;
   };
 

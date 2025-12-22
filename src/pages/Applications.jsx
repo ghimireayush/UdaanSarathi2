@@ -39,12 +39,14 @@ import {
   jobService,
   constantsService,
 } from "../services/index.js";
+import CandidateDataSource from "../api/datasources/CandidateDataSource.js";
 import stageTransitionService from "../services/stageTransitionService.js";
 import InterviewScheduleDialog from "../components/InterviewScheduleDialog.jsx";
 import { format } from "date-fns";
 import performanceService from "../services/performanceService";
 import { useAccessibility } from "../hooks/useAccessibility";
 import { useLanguage } from "../hooks/useLanguage";
+import { useAgency } from "../contexts/AgencyContext.jsx";
 import {
   InteractiveButton,
   InteractiveCard,
@@ -58,6 +60,7 @@ import PaginationWrapper from "../components/PaginationWrapper.jsx";
 
 const Applications = () => {
   const { confirm } = useConfirm();
+  const { agencyData } = useAgency();
 
   const [filters, setFilters] = useState({
     search: "",
@@ -531,7 +534,19 @@ const Applications = () => {
     }
   };
 
-  const handleCandidateClick = (candidate) => {
+  const handleCandidateClick = (candidateOrApplication) => {
+    // Just pass the candidate object - CandidateSummaryS2 will fetch enriched data if it has application.id
+    let candidate = candidateOrApplication;
+    
+    // If it's an application object, extract the candidate
+    if (candidateOrApplication.candidate) {
+      candidate = candidateOrApplication.candidate;
+      // Ensure application ID is attached to candidate
+      if (!candidate.application) {
+        candidate.application = { id: candidateOrApplication.id };
+      }
+    }
+    
     setSelectedCandidate(candidate);
     setIsSidebarOpen(true);
   };
@@ -941,12 +956,7 @@ const Applications = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setSelectedCandidate({
-                        ...application.candidate,
-                        application: application,
-                        documents: application.documents || [],
-                      });
-                      setIsSidebarOpen(true);
+                      handleCandidateClick(application);
                     }}
                     variant="ghost"
                     size="sm"
@@ -962,12 +972,7 @@ const Applications = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setSelectedCandidate({
-                        ...application.candidate,
-                        application: application,
-                        documents: application.documents || [],
-                      });
-                      setIsSidebarOpen(true);
+                      handleCandidateClick(application);
                     }}
                     variant="ghost"
                     size="sm"
@@ -1170,12 +1175,7 @@ const Applications = () => {
                         </span>
                         <button
                           onClick={() => {
-                            setSelectedCandidate({
-                              ...application.candidate,
-                              application: application,
-                              documents: application.documents || [],
-                            });
-                            setIsSidebarOpen(true);
+                            handleCandidateClick(application);
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded border border-primary-200 dark:border-primary-700"
                           title={tPage("actions.viewSummary")}
@@ -1188,12 +1188,7 @@ const Applications = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => {
-                            setSelectedCandidate({
-                              ...application.candidate,
-                              application: application,
-                              documents: application.documents || [],
-                            });
-                            setIsSidebarOpen(true);
+                            handleCandidateClick(application);
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"
                           title={tPage("actions.viewSummary")}
@@ -1441,13 +1436,10 @@ const Applications = () => {
 
       {/* Candidate Summary Sidebar */}
       <CandidateSummaryS2
-        candidate={selectedCandidate}
+        applicationId={selectedCandidate?.application?.id}
+        candidateId={selectedCandidate?.id || selectedCandidate?.candidate?.id}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
-        onUpdateStatus={handleUpdateStatus}
-        onAttachDocument={handleAttachDocument}
-        onRemoveDocument={handleRemoveDocument}
-        workflowStages={workflowStages}
       />
 
       {/* Stage Selection Modal */}

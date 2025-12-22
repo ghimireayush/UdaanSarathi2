@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { 
   X, 
   Phone, 
@@ -25,38 +25,57 @@ import {
 import { format } from 'date-fns'
 import { useConfirm } from './ConfirmProvider.jsx'
 import { useAgency } from '../contexts/AgencyContext.jsx'
+import { WorkflowStagesContext } from '../contexts/WorkflowStagesContext.jsx'
 import ApplicationHistory from './ApplicationHistory.jsx'
 import ApplicationNotes from './ApplicationNotes.jsx'
 import DocumentDataSource from '../api/datasources/DocumentDataSource.js'
 import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
+import applicationNotesService from '../services/applicationNotesService.js'
+import httpClient from '../api/config/httpClient.js'
 import InterviewScheduleDialog from './InterviewScheduleDialog.jsx'
 import { formatTime12Hour } from '../utils/helpers.js'
 import { useLanguage } from '../hooks/useLanguage'
+import dialogService from '../services/dialogService.js'
 
 const CandidateSummaryS2 = ({ 
-  candidate, 
-  application,
+  applicationId,
+  candidateId,
   isOpen, 
-  onClose, 
-  onUpdateStatus, 
-  onAttachDocument,
-  onRemoveDocument,
-  workflowStages = [],
-  isFromJobsPage = false,
-  jobId = null,
-  // Interview-specific props
-  isInterviewContext = false,
-  onMarkPass = null,
-  onMarkFail = null,
-  onReject = null,
-  onReschedule = null,
-  onUpdateNotes = null,
-  onSendReminder = null
+  onClose
 }) => {
+  // Data fetching state
+  const [candidate, setCandidate] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const [isUpdating, setIsUpdating] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [showUploadSection, setShowUploadSection] = useState(false)
+  
+  // Get contexts
+  const workflowStages = useContext(WorkflowStagesContext)
+  
+  // Load data on mount
+  useEffect(() => {
+    if (!isOpen || !applicationId || !candidateId) return
+    
+    const loadData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const data = await httpClient.get(`/applications/${applicationId}/details`)
+        setCandidate(data)
+      } catch (err) {
+        console.error('Failed to load S2 data:', err)
+        setError(err.message || 'Failed to load candidate data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [isOpen, applicationId, candidateId])
   
   // Interview-specific state
   const [isProcessingInterview, setIsProcessingInterview] = useState(false)
@@ -94,15 +113,16 @@ const CandidateSummaryS2 = ({
   // Load documents from API when candidate changes
   useEffect(() => {
     const loadDocuments = async () => {
-      // Get candidate ID from either new or old structure
-      const candidateId = candidate?.candidate?.id || candidate?.id
-      if (!candidateId) return
+      // Get candidate ID - this is all we need
+      const cId = candidate?.candidate?.id || candidateId
+      if (!cId) return
       
       try {
         setLoadingDocuments(true)
         setDocumentError(null)
-        const docs = await DocumentDataSource.getCandidateDocuments(candidateId)
-        setApiDocuments(docs)
+        // Get all document slots (uploaded + empty) for the candidate
+        const response = await DocumentDataSource.getCandidateDocuments(cId)
+        setApiDocuments(response)
       } catch (error) {
         console.error('Failed to load documents:', error)
         setDocumentError(error.message || 'Failed to load documents')
@@ -114,7 +134,7 @@ const CandidateSummaryS2 = ({
     if (isOpen && candidate) {
       loadDocuments()
     }
-  }, [candidate, isOpen])
+  }, [candidate, isOpen, candidateId])
 
   // Load notes from API when candidate changes
   useEffect(() => {
@@ -145,18 +165,86 @@ const CandidateSummaryS2 = ({
     if (candidate) {
       console.log('🔍 CandidateSummaryS2 Debug:', {
         candidate,
-        isOpen,
-        isInterviewContext
+        isOpen
       })
     }
-  }, [candidate, isOpen, isInterviewContext])
+  }, [candidate, isOpen])
 
   // EARLY RETURN MUST BE AFTER ALL HOOKS
-  if (!isOpen || !candidate) return null
+  if (!isOpen) return null
+  
+  if (!applicationId || !candidateId) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
+        <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Error</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">Missing required IDs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
+        <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Loading...</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !candidate) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-30" onClick={onClose}></div>
+        <div className="absolute right-0 top-0 h-full bg-white dark:bg-gray-800 shadow-xl" style={{ width: '60vw' }}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Error</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">{error || 'Failed to load data'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Helper function to safely access candidate data (handles both old and new structure)
   const getCandidateData = () => {
-    // Stage mapping from backend format to frontend format
+    // Stage mapping from backend format (with underscores) to frontend format (with hyphens)
     const stageMap = {
       'applied': 'applied',
       'shortlisted': 'shortlisted',
@@ -166,67 +254,63 @@ const CandidateSummaryS2 = ({
       'interview_failed': 'interview-failed'
     }
 
-    // New unified endpoint structure (from getCandidateDetails)
-    if (candidate.candidate) {
+    // API response structure: /applications/:id/details
+    // Returns: { candidate: {...}, application: {...}, job: {...}, employer: {...}, documents: [...], job_profile: {...} }
+    if (candidate && candidate.candidate && candidate.application) {
+      const addr = candidate.candidate.address
+      const addressStr = typeof addr === 'string' ? addr : (addr?.name || 'N/A')
+      
+      // Map the stage from backend format to frontend format
+      const backendStage = candidate.application.stage
+      const mappedStage = stageMap[backendStage] || backendStage
+      
       return {
         id: candidate.candidate.id,
         name: candidate.candidate.name,
         phone: candidate.candidate.phone,
         email: candidate.candidate.email,
-        address: candidate.candidate.address?.formatted || candidate.candidate.address,
+        address: addressStr,
         passport_number: candidate.candidate.passport_number,
         profile_image: candidate.candidate.profile_image,
         
-        // Job profile data
-        experience: candidate.job_profile?.experience,
-        education: candidate.job_profile?.education,
+        // Job details from API response
+        job_title: candidate.job?.title,
+        job_company: candidate.job?.company,
+        job_location: candidate.job?.location,
+        job_salary: candidate.job?.salary,
+        job_description: candidate.job?.description,
+        
+        // Employer details
+        employer_name: candidate.employer?.name,
+        employer_country: candidate.employer?.country,
+        agency_name: candidate.employer?.agency,
+        agency_license: candidate.employer?.license,
+        agency_phone: candidate.employer?.agencyPhone,
+        agency_email: candidate.employer?.agencyEmail,
+        
+        // Application data
+        application: {
+          id: candidate.application.id,
+          stage: mappedStage,
+          created_at: candidate.application.created_at,
+          updated_at: candidate.application.updated_at,
+          history_blob: candidate.application.history_blob || []
+        },
+        
+        // Job Profile - Skills, Education, Experience, Trainings
+        job_profile: candidate.job_profile || {},
         skills: candidate.job_profile?.skills || [],
+        education: candidate.job_profile?.education || [],
+        experience: candidate.job_profile?.experience || [],
         trainings: candidate.job_profile?.trainings || [],
-        summary: candidate.job_profile?.summary,
         
-        // Job context
-        job_title: candidate.job_context?.job_title,
-        job_company: candidate.job_context?.job_company,
-        
-        // Application data - convert status to stage
-        application: {
-          ...candidate.application,
-          stage: stageMap[candidate.application?.status] || candidate.application?.status
-        },
-        
-        // Interview data
-        interviewed_at: candidate.interview?.interview_date_ad,
-        interview_remarks: candidate.interview?.notes,
-        interview: candidate.interview
+        // Documents
+        documents: candidate.documents || []
       }
     }
     
-    // Candidates list endpoint structure (from getJobCandidates)
-    // This has status field instead of application.stage
-    if (candidate.status && !candidate.application) {
-      return {
-        id: candidate.id,
-        name: candidate.name,
-        phone: candidate.phone,
-        email: candidate.email,
-        address: candidate.location?.city ? `${candidate.location.city}, ${candidate.location.country}` : 'N/A',
-        experience: candidate.experience,
-        skills: candidate.skills || [],
-        
-        // Create application object with converted stage
-        application: {
-          id: candidate.application_id,
-          stage: stageMap[candidate.status] || candidate.status,
-          created_at: candidate.applied_at
-        },
-        
-        // Interview data
-        interview: candidate.interview
-      }
-    }
-    
-    // Old structure (fallback)
-    return candidate
+    // Fallback for other structures
+    return candidate || {}
   }
   
   const candidateData = getCandidateData()
@@ -239,11 +323,11 @@ const CandidateSummaryS2 = ({
     { id: 'interview-passed', label: t('stages.interviewPassed') }
   ]
 
-  const currentStage = mainWorkflowStages.find(s => s.id === candidateData.application?.stage) || 
-                     workflowStages.find(s => s.id === candidateData.application?.stage)
+  const currentStage = mainWorkflowStages.find(s => s.id === candidate.application?.stage) || 
+                     workflowStages.find(s => s.id === candidate.application?.stage)
   const rejectedStage = workflowStages.find(s => s.label === 'Rejected')
-  // Use candidateData.application as the source of truth (handles both old and new API structures)
-  const currentApplication = candidateData.application
+  // Use candidate.application as the source of truth (handles both old and new API structures)
+  const currentApplication = candidate.application
   // Fix: Check for various rejected stage formats
   const isApplicationRejected = currentApplication?.stage === rejectedStage?.id || 
                                currentApplication?.stage === 'rejected' ||
@@ -274,61 +358,74 @@ const CandidateSummaryS2 = ({
   }
 
   const handleStatusUpdate = async (newStage) => {
-    console.log('🎯 handleStatusUpdate called with:', newStage)
     setIsUpdating(true)
     try {
-      const currentStage = candidateData.application?.stage
+      const currentStage = candidate.application?.stage
       
-      // Allow staying in the same stage
       if (currentStage === newStage) {
         setIsUpdating(false)
         return
       }
       
-      // Validate stage transition
       if (!validateStageTransition(currentStage, newStage)) {
-        const currentStageLabel = mainWorkflowStages.find(s => s.id === currentStage)?.label || currentStage
-        const newStageLabel = mainWorkflowStages.find(s => s.id === newStage)?.label || newStage
+        const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label || currentStage
+        const newStageLabel = workflowStages.find(s => s.id === newStage)?.label || newStage
         
         await confirm({
           title: 'Invalid Stage Transition',
-          message: `You cannot move directly from "${currentStageLabel}" to "${newStageLabel}". Please follow the proper workflow sequence.`,
+          message: `Cannot move from "${currentStageLabel}" to "${newStageLabel}".`,
           confirmText: 'Okay',
           type: 'warning'
         })
         return
       }
 
-      // Show confirmation dialog for valid transitions
-      const currentStageLabel = mainWorkflowStages.find(s => s.id === currentStage)?.label || currentStage
-      const newStageLabel = mainWorkflowStages.find(s => s.id === newStage)?.label || newStage
+      const currentStageLabel = workflowStages.find(s => s.id === currentStage)?.label || currentStage
+      const newStageLabel = workflowStages.find(s => s.id === newStage)?.label || newStage
       
       const confirmed = await confirm({
         title: 'Confirm Stage Update',
-        message: `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"? This action cannot be undone.`,
-        confirmText: 'Yes, Update Stage',
+        message: `Move from "${currentStageLabel}" to "${newStageLabel}"?`,
+        confirmText: 'Yes, Update',
         cancelText: 'Cancel',
         type: 'warning'
       })
 
       if (confirmed) {
-        console.log('✅ User confirmed stage update')
-        // Use the application ID from candidateData.application
-        const applicationId = candidateData.application?.id
-        console.log('📋 Application ID:', applicationId)
-        if (applicationId) {
-          console.log('🔄 Calling onUpdateStatus...')
-          await onUpdateStatus(applicationId, newStage)
-          console.log('✅ onUpdateStatus completed')
-        } else {
-          throw new Error('No application ID found')
+        let endpoint = ''
+        let body = {}
+        
+        if (newStage === 'shortlisted') {
+          endpoint = `/applications/${applicationId}/shortlist`
+        } else if (newStage === 'interview-scheduled') {
+          endpoint = `/applications/${applicationId}/schedule-interview`
+          body = { interview_date_ad: new Date().toISOString().split('T')[0], interview_time: '10:00', duration_minutes: 60, location: 'TBD', contact_person: 'HR', notes: 'Scheduled' }
+        } else if (newStage === 'interview-passed') {
+          endpoint = `/applications/${applicationId}/complete-interview`
+          body = { result: 'passed' }
+        } else if (newStage === 'interview-failed') {
+          endpoint = `/applications/${applicationId}/complete-interview`
+          body = { result: 'failed' }
+        }
+        
+        if (endpoint) {
+          await httpClient.post(endpoint, body)
+          const data = await httpClient.get(`/applications/${applicationId}/details`)
+          setCandidate(data)
+          
+          await confirm({
+            title: 'Success',
+            message: `Moved to ${newStageLabel}`,
+            confirmText: 'Okay',
+            type: 'success'
+          })
         }
       }
     } catch (error) {
       console.error('Failed to update status:', error)
       await confirm({
         title: 'Error',
-        message: 'Failed to update candidate status. Please try again.',
+        message: error.response?.data?.message || 'Failed to update status.',
         confirmText: 'Okay',
         type: 'danger'
       })
@@ -466,19 +563,6 @@ const CandidateSummaryS2 = ({
       return
     }
 
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png']
-    if (!allowedTypes.includes(file.type)) {
-      await confirm({
-        title: 'Invalid File Type',
-        message: 'Please upload a PDF, JPEG, or PNG file.',
-        confirmText: 'Okay',
-        type: 'danger'
-      })
-      event.target.value = ''
-      return
-    }
-
     const confirmed = await confirm({
       title: 'Upload Document',
       message: `Upload "${file.name}" as ${documentTypeName}?`,
@@ -494,14 +578,13 @@ const CandidateSummaryS2 = ({
 
     setIsUploading(true)
     try {
-      const candidateId = candidateData.id
-      const agencyLicense = agencyData?.license_number
+      const cId = candidate?.candidate?.id || candidateId
       
-      if (!agencyLicense || !jobId) {
-        throw new Error('Agency license or job ID not available')
+      if (!cId) {
+        throw new Error('Candidate ID not available')
       }
 
-      console.log('📤 Uploading document:', { candidateId, agencyLicense, jobId, documentTypeId, fileName: file.name })
+      console.log('📤 Uploading document:', { candidateId: cId, documentTypeId, fileName: file.name })
       
       if (!documentTypeId) {
         throw new Error('Document type ID is missing')
@@ -514,15 +597,15 @@ const CandidateSummaryS2 = ({
       formData.append('notes', 'Uploaded by agency')
 
       await DocumentDataSource.uploadAgencyCandidateDocument(
-        agencyLicense,
-        jobId,
-        candidateId,
+        agencyData?.license,
+        candidate?.job_posting?.id,
+        cId,
         formData
       )
 
       // Reload documents
-      const docs = await DocumentDataSource.getAgencyCandidateDocuments(agencyLicense, jobId, candidateId)
-      setApiDocuments(docs)
+      const response = await DocumentDataSource.getCandidateDocuments(cId)
+      setApiDocuments(response)
 
       await confirm({
         title: 'Upload Successful',
@@ -549,12 +632,19 @@ const CandidateSummaryS2 = ({
     let rejectionReason = null
     
     if (status === 'rejected') {
-      // Prompt for rejection reason
-      const reason = window.prompt('Please provide a reason for rejection:')
-      if (!reason) {
+      // Prompt for rejection reason using custom dialog
+      rejectionReason = await dialogService.prompt(
+        t('document.rejectTitle'),
+        t('document.rejectMessage'),
+        {
+          placeholder: t('document.rejectPlaceholder'),
+          confirmText: t('common.confirm'),
+          cancelText: t('common.cancel')
+        }
+      )
+      if (!rejectionReason) {
         return // User cancelled
       }
-      rejectionReason = reason
     }
 
     const confirmed = await confirm({
@@ -570,23 +660,20 @@ const CandidateSummaryS2 = ({
     if (!confirmed) return
 
     try {
-      const candidateId = candidateData.id
-      const agencyLicense = agencyData?.license_number
+      const applicationId = candidate?.application?.id
 
-      if (!agencyLicense || !jobId) {
-        throw new Error('Agency license or job ID not available')
+      if (!applicationId) {
+        throw new Error('Application ID not available')
       }
 
-      await DocumentDataSource.verifyAgencyCandidateDocument(
-        agencyLicense,
-        jobId,
-        candidateId,
+      await DocumentDataSource.verifyDocumentByApplication(
+        applicationId,
         documentId,
         { status, rejection_reason: rejectionReason }
       )
 
       // Reload documents
-      const docs = await DocumentDataSource.getAgencyCandidateDocuments(agencyLicense, jobId, candidateId)
+      const docs = await DocumentDataSource.getCandidateDocumentsByApplication(applicationId)
       setApiDocuments(docs)
 
       await confirm({
@@ -690,9 +777,6 @@ const CandidateSummaryS2 = ({
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('header.title')}</h2>
-              {isInterviewContext && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('header.interviewManagement')}</p>
-              )}
             </div>
             <button
               onClick={onClose}
@@ -846,20 +930,121 @@ const CandidateSummaryS2 = ({
               </div>
             </div>
 
+            {/* Job & Employer Details */}
+            {(candidateData.job_title || candidateData.employer_name) && (
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-amber-50 dark:bg-amber-900/20">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                  <Briefcase className="w-5 h-5 mr-2 text-amber-600" />
+                  {t('jobEmployer.title')}
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Job Details */}
+                  {candidateData.job_title && (
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-amber-200 dark:border-amber-600">
+                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('jobEmployer.position')}</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.jobTitle')}</div>
+                          <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{candidateData.job_title}</div>
+                        </div>
+                        {candidateData.job_company && (
+                          <div>
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.company')}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.job_company}</div>
+                          </div>
+                        )}
+                        {candidateData.job_location && (
+                          <div>
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.location')}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.job_location}</div>
+                          </div>
+                        )}
+                        {candidateData.job_salary && (
+                          <div>
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.salary')}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 font-medium text-green-600 dark:text-green-400">{candidateData.job_salary}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Employer Details */}
+                  {candidateData.employer_name && (
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-amber-200 dark:border-amber-600">
+                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('jobEmployer.employer')}</h5>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.companyName')}</div>
+                          <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{candidateData.employer_name}</div>
+                        </div>
+                        {candidateData.employer_country && (
+                          <div>
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.country')}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.employer_country}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Agency Details */}
+                {candidateData.agency_name && (
+                  <div className="mt-4 bg-white dark:bg-gray-700 rounded-lg p-4 border border-amber-200 dark:border-amber-600">
+                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('jobEmployer.recruitingAgency')}</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.agencyName')}</div>
+                        <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{candidateData.agency_name}</div>
+                      </div>
+                      {candidateData.agency_license && (
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.license')}</div>
+                          <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.agency_license}</div>
+                        </div>
+                      )}
+                      {candidateData.agency_phone && (
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.phone')}</div>
+                          <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.agency_phone}</div>
+                        </div>
+                      )}
+                      {candidateData.agency_email && (
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('jobEmployer.email')}</div>
+                          <div className="text-sm text-gray-900 dark:text-gray-100">{candidateData.agency_email}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Job Description */}
+                {candidateData.job_description && (
+                  <div className="mt-4 bg-white dark:bg-gray-700 rounded-lg p-4 border border-amber-200 dark:border-amber-600">
+                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('jobEmployer.jobDescription')}</h5>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{candidateData.job_description}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Professional Information */}
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                 <Briefcase className="w-5 h-5 mr-2" />
                 {t('professional.title')}
               </h4>
               
               <div className="space-y-4">
                 {/* Experience */}
-                {candidateData.experience && Array.isArray(candidateData.experience) && candidateData.experience.length > 0 ? (
+                {candidate.experience && Array.isArray(candidate.experience) && candidate.experience.length > 0 ? (
                   <div>
                     <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.experience')}</h5>
                     <div className="space-y-2">
-                      {candidateData.experience.map((exp, index) => (
+                      {candidate.experience.map((exp, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
                           <div className="font-medium text-gray-900 dark:text-gray-100">
                             {exp.formatted || `${exp.title} at ${exp.employer}`}
@@ -872,22 +1057,22 @@ const CandidateSummaryS2 = ({
                       ))}
                     </div>
                   </div>
-                ) : candidateData.experience ? (
+                ) : candidate.experience ? (
                   <div>
                     <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('professional.experience')}</h5>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{candidateData.experience}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{candidate.experience}</p>
                   </div>
                 ) : null}
                 
                 {/* Education */}
-                {candidateData.education && Array.isArray(candidateData.education) && candidateData.education.length > 0 && (
+                {candidate.education && Array.isArray(candidate.education) && candidate.education.length > 0 && (
                   <div>
                     <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                       <GraduationCap className="w-4 h-4 mr-1" />
                       {t('professional.education')}
                     </h5>
                     <div className="space-y-2">
-                      {candidateData.education.map((edu, index) => (
+                      {candidate.education.map((edu, index) => (
                         <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
                           <div className="font-medium text-gray-900 dark:text-gray-100">
                             {edu.formatted || edu.degree}
@@ -911,7 +1096,7 @@ const CandidateSummaryS2 = ({
                     <div className="flex flex-wrap gap-2">
                       {candidateData.skills.map((skill, index) => (
                         <span key={index} className="chip chip-blue text-xs">
-                          {typeof skill === 'string' ? skill : (skill.formatted || skill.title)}
+                          {skill.formatted || skill.title || (typeof skill === 'string' ? skill : 'Skill')}
                         </span>
                       ))}
                     </div>
@@ -947,7 +1132,7 @@ const CandidateSummaryS2 = ({
             </div>
 
             {/* Interview Details Section - Show when interview data exists */}
-            {candidateData.interview && (
+            {candidate.interview && (
               <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
@@ -958,39 +1143,59 @@ const CandidateSummaryS2 = ({
                     <div>
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.dateTime')}</div>
                       <div className="text-base text-gray-900 dark:text-gray-100 font-medium">
-                        {candidateData.interview.scheduled_at 
-                          ? format(new Date(candidateData.interview.scheduled_at), 'MMM dd, yyyy')
-                          : t('interview.notScheduled')}
+                        {candidate.interview.date || t('interview.notScheduled')}
                       </div>
-                      {candidateData.interview.time && (
+                      {candidate.interview.time && (
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {formatTime12Hour(candidateData.interview.time)}
+                          {candidate.interview.time}
                         </div>
                       )}
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.duration')}</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.duration || 60} {t('interview.minutes')}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.mode')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidate.interview.mode || 'In-person'}</div>
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.location')}</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.location || t('interview.notSpecified')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidate.interview.location || t('interview.notSpecified')}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.interviewer')}</div>
-                      <div className="text-base text-gray-900 dark:text-gray-100">{candidateData.interview.interviewer || t('interview.notAssigned')}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('interview.contactPerson')}</div>
+                      <div className="text-base text-gray-900 dark:text-gray-100">{candidate.interview.contactPerson || t('interview.notAssigned')}</div>
                     </div>
                   </div>
                   
+                  {/* Contact Details - Only show if phone or email are provided (not "Not provided") */}
+                  {(candidate.interview.contactPhone && candidate.interview.contactPhone !== 'Not provided') || 
+                   (candidate.interview.contactEmail && candidate.interview.contactEmail !== 'Not provided') ? (
+                    <div className="mt-4 bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-600">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t('interview.contactDetails')}</div>
+                      <div className="space-y-1 text-sm">
+                        {candidate.interview.contactPhone && candidate.interview.contactPhone !== 'Not provided' && (
+                          <div className="flex items-center text-gray-700 dark:text-gray-300">
+                            <Phone className="w-4 h-4 mr-2 text-green-600" />
+                            {candidate.interview.contactPhone}
+                          </div>
+                        )}
+                        {candidate.interview.contactEmail && candidate.interview.contactEmail !== 'Not provided' && (
+                          <div className="flex items-center text-gray-700 dark:text-gray-300">
+                            <Mail className="w-4 h-4 mr-2 text-green-600" />
+                            {candidate.interview.contactEmail}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  
                   {/* Required Documents */}
-                  {candidateData.interview.required_documents && candidateData.interview.required_documents.length > 0 && (
+                  {candidate.interview.documents && candidate.interview.documents.length > 0 && (
                     <div className="mt-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-600">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                         <Paperclip className="w-4 h-4 mr-2 text-purple-600" />
                         {t('interview.requiredDocuments')}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {candidateData.interview.required_documents.map((docType, index) => {
+                        {candidate.interview.documents.map((docType, index) => {
                           // Map document type IDs to readable names
                           const docNames = {
                             'cv': 'CV/Resume',
@@ -1000,7 +1205,8 @@ const CandidateSummaryS2 = ({
                             'hardcopy': 'Hardcopy Requirements',
                             'passport': 'Passport',
                             'medical': 'Medical Certificate',
-                            'police': 'Police Clearance'
+                            'police': 'Police Clearance',
+                            'experience_letters': 'Experience Letters'
                           }
                           return (
                             <span 
@@ -1020,13 +1226,13 @@ const CandidateSummaryS2 = ({
                   )}
                   
                   {/* Interview Notes */}
-                  {candidateData.interview.notes && (
+                  {candidate.interview.notes && (
                     <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 border border-yellow-200 dark:border-yellow-600">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
                         <MessageSquare className="w-4 h-4 mr-2 text-yellow-600" />
                         {t('interview.notes')}
                       </div>
-                      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{candidateData.interview.notes}</div>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">{candidate.interview.notes}</p>
                     </div>
                   )}
                 </div>
@@ -1034,10 +1240,10 @@ const CandidateSummaryS2 = ({
             )}
 
             {/* Application Notes Section */}
-            {candidateData.application?.id ? (
+            {candidate.application?.id ? (
               <>
               
-                <ApplicationNotes applicationId={candidateData.application.id} />
+                <ApplicationNotes applicationId={candidate.application.id} />
               </>
             ) : (
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -1055,16 +1261,16 @@ const CandidateSummaryS2 = ({
               </div>
             )}
 
-            {/* Documents Section - Read-Only for Admin */}
+            {/* Documents Section - Display from API Response */}
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                     <Paperclip className="w-5 h-5 mr-2" />
                     {t('documents.title')}
-                    {apiDocuments && (apiDocuments.slots || apiDocuments.data) && (
+                    {candidateData.documents && candidateData.documents.length > 0 && (
                       <span className="ml-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                        {(apiDocuments.slots || apiDocuments.data || []).filter(slot => slot.document).length} / {(apiDocuments.slots || apiDocuments.data || []).length}
+                        {candidateData.documents.length}
                       </span>
                     )}
                   </h4>
@@ -1074,152 +1280,101 @@ const CandidateSummaryS2 = ({
                 </div>
               </div>
               
-              {/* Loading State */}
-              {loadingDocuments ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('documents.loading')}</p>
-                </div>
-              ) : documentError ? (
-                <div className="text-center py-8">
-                  <div className="text-red-600 dark:text-red-400 mb-2">
-                    <AlertCircle className="w-8 h-8 mx-auto" />
-                  </div>
-                  <p className="text-sm text-red-600 dark:text-red-400">{documentError}</p>
-                </div>
-              ) : apiDocuments && (apiDocuments.slots || apiDocuments.data) ? (
+              {/* Documents List */}
+              {apiDocuments?.data && apiDocuments.data.length > 0 ? (
                 <div className="space-y-3">
-                  {(apiDocuments.slots || apiDocuments.data || []).map((slot) => {
-                    // Handle both old format (slots) and new format (data with document_type)
-                    const docType = slot.document_type || { name: slot.document_type_name, is_required: slot.is_required, id: slot.document_type_id }
-                    const doc = slot.document
-                    const isUploaded = !!doc
-                    // Get document type ID from slot or docType
-                    const typeId = slot.document_type_id || docType?.id
-                    
-                    return (
-                      <div 
-                        key={typeId} 
-                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {docType.name}
-                            </span>
-                            {docType.is_required && (
-                              <span className="text-xs text-red-600 dark:text-red-400 font-medium">{t('documents.required')}</span>
+                  {apiDocuments.data.map((slot, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-5 h-5 text-blue-600" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {slot.document_type?.name || 'Document'}
+                              {slot.document_type?.is_required && (
+                                <span className="ml-1 text-red-600">*</span>
+                              )}
+                            </p>
+                            {slot.document ? (
+                              <>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{slot.document.name}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{slot.document.file_size}</p>
+                                {slot.document.verification_status && (
+                                  <div className={`text-xs font-medium mt-1 ${
+                                    slot.document.verification_status === 'approved' 
+                                      ? 'text-green-600 dark:text-green-400' 
+                                      : slot.document.verification_status === 'rejected'
+                                      ? 'text-red-600 dark:text-red-400'
+                                      : 'text-yellow-600 dark:text-yellow-400'
+                                  }`}>
+                                    {slot.document.verification_status.charAt(0).toUpperCase() + slot.document.verification_status.slice(1)}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <p className="text-xs text-gray-400 dark:text-gray-500">Not uploaded</p>
                             )}
                           </div>
-                          
-                          {isUploaded ? (
-                            <div className="mt-2 space-y-1">
-                              <div className="text-sm text-gray-700 dark:text-gray-300">
-                                {doc.name}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {(doc.file_size / 1024).toFixed(2)} KB • 
-                                {doc.file_type} •
-                                Uploaded {format(new Date(doc.created_at), 'MMM dd, yyyy')}
-                              </div>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                  doc.verification_status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                                  doc.verification_status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                }`}>
-                                  {doc.verification_status}
-                                </span>
-                                {/* Approve/Reject buttons for pending documents */}
-                                {jobId && doc.verification_status === 'pending' && (
-                                  <>
-                                    <button
-                                      onClick={() => handleDocumentVerify(doc.id, 'approved', doc.name)}
-                                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-                                      title={t('documents.approve')}
-                                    >
-                                      <CheckCircle className="w-3 h-3 mr-1" />
-                                      {t('documents.approve')}
-                                    </button>
-                                    <button
-                                      onClick={() => handleDocumentVerify(doc.id, 'rejected', doc.name)}
-                                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
-                                      title={t('documents.reject')}
-                                    >
-                                      <AlertCircle className="w-3 h-3 mr-1" />
-                                      {t('documents.reject')}
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
-                              {t('documents.notUploaded')}
-                            </div>
-                          )}
                         </div>
-                        
-                        {/* Upload button for empty slots (agency can upload) */}
-                        {!isUploaded && jobId && (
-                          <label className={`ml-4 inline-flex items-center px-3 py-2 border border-blue-300 dark:border-blue-600 shadow-sm text-sm font-medium rounded-md text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                            <Upload className="w-4 h-4 mr-1" />
-                            {isUploading ? t('documents.uploading') : t('documents.upload')}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {slot.document ? (
+                          <>
+                            <button
+                              onClick={() => handleViewDocument(slot.document)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
+                              title="View document"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDownloadDocument(slot.document)}
+                              className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition"
+                              title="Download document"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                            {slot.document.verification_status === 'pending' && (
+                              <>
+                                <button
+                                  onClick={() => handleDocumentVerify(slot.document.id, 'approved', slot.document.name)}
+                                  className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition"
+                                  title="Approve document"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDocumentVerify(slot.document.id, 'rejected', slot.document.name)}
+                                  className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                                  title="Reject document"
+                                >
+                                  <AlertCircle className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <label className="p-2 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition cursor-pointer">
+                            <Upload className="w-4 h-4" />
                             <input
                               type="file"
                               className="hidden"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => handleDocumentUpload(e, typeId, docType.name)}
-                              disabled={isUploading}
+                              onChange={(e) => handleDocumentUpload(e, slot.document_type?.id, slot.document_type?.name)}
+                              accept={slot.document_type?.allowed_mime_types?.join(',') || '.pdf,.jpg,.jpeg,.png'}
                             />
                           </label>
                         )}
-
-                        {isUploaded && doc.document_url && (
-                          <div className="ml-4 flex items-center space-x-2">
-                            <a
-                              href={doc.document_url.startsWith('http') ? doc.document_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc.document_url}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                              title="Preview"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </a>
-                            <button
-                              onClick={async () => {
-                                const url = doc.document_url.startsWith('http') ? doc.document_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${doc.document_url}`
-                                try {
-                                  const response = await fetch(url)
-                                  const blob = await response.blob()
-                                  const blobUrl = window.URL.createObjectURL(blob)
-                                  const link = document.createElement('a')
-                                  link.href = blobUrl
-                                  link.download = doc.name || 'document'
-                                  document.body.appendChild(link)
-                                  link.click()
-                                  document.body.removeChild(link)
-                                  window.URL.revokeObjectURL(blobUrl)
-                                } catch (err) {
-                                  console.error('Download failed:', err)
-                                  window.open(url, '_blank')
-                                }
-                              }}
-                              className="inline-flex items-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                              title="Download"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        )}
                       </div>
-                    )
-                  })}
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  <Paperclip className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">{t('documents.noDocuments')}</p>
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">No document types available</p>
                 </div>
               )}
             </div>
@@ -1239,7 +1394,7 @@ const CandidateSummaryS2 = ({
               {/* Center: Workflow Actions - stage-specific buttons (no dropdown) */}
               <div className="flex flex-wrap gap-3">
                   {/* Applied -> Shortlist */}
-                  {currentApplication?.stage === 'applied' && (
+                  {candidateData.application?.stage === 'applied' && (
                     <button
                       onClick={async () => {
                         console.log('🔘 Shortlist button clicked!')
@@ -1254,12 +1409,12 @@ const CandidateSummaryS2 = ({
                   )}
 
                   {/* Shortlisted -> Schedule Interview */}
-                  {currentApplication?.stage === 'shortlisted' && (
+                  {candidateData.application?.stage === 'shortlisted' && (
                     <button
                       onClick={async () => {
                         const confirmed = await confirm({
                           title: 'Schedule Interview',
-                          message: `Are you sure you want to schedule an interview for ${candidateData.name}?`,
+                          message: `Are you sure you want to schedule an interview for ${candidate.name}?`,
                           confirmText: 'Yes, Schedule',
                           cancelText: 'Cancel',
                           type: 'info'
@@ -1280,14 +1435,14 @@ const CandidateSummaryS2 = ({
                   )}
 
                   {/* Interview Scheduled -> Pass / Fail (+Reschedule when elapsed) */}
-                  {currentApplication?.stage === 'interview-scheduled' && (
+                  {candidateData.application?.stage === 'interview-scheduled' && (
                     <>
                       <button
                         onClick={async () => {
                           // Show confirmation dialog first
                           const confirmed = await confirm({
                             title: t('dialogs.markPassed.title'),
-                            message: t('dialogs.markPassed.message', { name: candidateData.name }),
+                            message: t('dialogs.markPassed.message', { name: candidate.name }),
                             confirmText: t('dialogs.markPassed.confirm'),
                             cancelText: t('actions.cancel'),
                             type: 'warning'
@@ -1297,7 +1452,7 @@ const CandidateSummaryS2 = ({
                           
                           try {
                             setIsUpdating(true)
-                            const applicationId = candidateData.application?.id
+                            const applicationId = candidate.application?.id
                             if (!applicationId) {
                               throw new Error('Application ID not found')
                             }
@@ -1350,7 +1505,7 @@ const CandidateSummaryS2 = ({
                           // Show confirmation dialog first
                           const confirmed = await confirm({
                             title: t('dialogs.markFailed.title'),
-                            message: t('dialogs.markFailed.message', { name: candidateData.name }),
+                            message: t('dialogs.markFailed.message', { name: candidate.name }),
                             confirmText: t('dialogs.markFailed.confirm'),
                             cancelText: t('actions.cancel'),
                             type: 'danger'
@@ -1360,7 +1515,7 @@ const CandidateSummaryS2 = ({
                           
                           try {
                             setIsUpdating(true)
-                            const applicationId = candidateData.application?.id
+                            const applicationId = candidate.application?.id
                             if (!applicationId) {
                               throw new Error('Application ID not found')
                             }
@@ -1416,7 +1571,7 @@ const CandidateSummaryS2 = ({
                               onClick={async () => {
                                 const confirmed = await confirm({
                                   title: 'Reschedule Interview',
-                                  message: `Are you sure you want to reschedule the interview for ${candidateData.name}?`,
+                                  message: `Are you sure you want to reschedule the interview for ${candidate.name}?`,
                                   confirmText: 'Yes, Reschedule',
                                   cancelText: 'Cancel',
                                   type: 'info'
@@ -1425,12 +1580,12 @@ const CandidateSummaryS2 = ({
                                 if (confirmed) {
                                   setIsReschedule(true)
                                   setInitialInterviewData({
-                                    date: candidateData.interview?.interview_date_ad || '',
-                                    time: candidateData.interview?.interview_time?.substring(0, 5) || '',
-                                    location: candidateData.interview?.location || 'Office',
-                                    interviewer: candidateData.interview?.contact_person || '',
-                                    duration: candidateData.interview?.duration_minutes || 60,
-                                    requirements: candidateData.interview?.required_documents || [],
+                                    date: candidate.interview?.interview_date_ad || '',
+                                    time: candidate.interview?.interview_time?.substring(0, 5) || '',
+                                    location: candidate.interview?.location || 'Office',
+                                    interviewer: candidate.interview?.contact_person || '',
+                                    duration: candidate.interview?.duration_minutes || 60,
+                                    requirements: candidate.interview?.required_documents || [],
                                     notes: ''
                                   })
                                   setShowInterviewDialog(true)
@@ -1454,7 +1609,7 @@ const CandidateSummaryS2 = ({
                                 onClick={async () => {
                                   const confirmed = await confirm({
                                     title: 'Reschedule Interview',
-                                    message: `The interview time has elapsed. Would you like to reschedule for ${candidateData.name}?`,
+                                    message: `The interview time has elapsed. Would you like to reschedule for ${candidate.name}?`,
                                     confirmText: 'Yes, Reschedule',
                                     cancelText: 'Cancel',
                                     type: 'warning'
@@ -1463,12 +1618,12 @@ const CandidateSummaryS2 = ({
                                   if (confirmed) {
                                     setIsReschedule(true)
                                     setInitialInterviewData({
-                                      date: candidateData.interview?.interview_date_ad || '',
-                                      time: candidateData.interview?.interview_time?.substring(0, 5) || '',
-                                      location: candidateData.interview?.location || 'Office',
-                                      interviewer: candidateData.interview?.contact_person || '',
-                                      duration: candidateData.interview?.duration_minutes || 60,
-                                      requirements: candidateData.interview?.required_documents || [],
+                                      date: candidate.interview?.interview_date_ad || '',
+                                      time: candidate.interview?.interview_time?.substring(0, 5) || '',
+                                      location: candidate.interview?.location || 'Office',
+                                      interviewer: candidate.interview?.contact_person || '',
+                                      duration: candidate.interview?.duration_minutes || 60,
+                                      requirements: candidate.interview?.required_documents || [],
                                       notes: ''
                                     })
                                     setShowInterviewDialog(true)
@@ -1525,7 +1680,7 @@ const CandidateSummaryS2 = ({
               <button
                 onClick={() => {
                   setIsProcessingInterview(true)
-                  onReject(candidateData.id, rejectionReason).finally(() => {
+                  onReject(candidate.id, rejectionReason).finally(() => {
                     setIsProcessingInterview(false)
                     setInterviewActionType('')
                     setRejectionReason('')
@@ -1551,22 +1706,17 @@ const CandidateSummaryS2 = ({
         }}
         onSubmit={async (interviewDetails) => {
           try {
-            const applicationId = candidateData.application?.id
+            const applicationId = candidate.application?.id
             
             if (!applicationId) {
               throw new Error('Missing application ID')
             }
             
             if (isReschedule) {
-              // Reschedule existing interview
-              const interviewId = candidateData.interview?.id
-              if (!interviewId) {
-                throw new Error('Missing interview ID')
-              }
-              
+              // Reschedule existing interview - use the application ID directly
+              // The backend will find the interview_details record by application_id
               await InterviewDataSource.rescheduleInterview(
                 applicationId,
-                interviewId,
                 interviewDetails
               )
               
@@ -1598,7 +1748,7 @@ const CandidateSummaryS2 = ({
             throw error // Let the dialog handle the error display
           }
         }}
-        candidateName={candidateData.name}
+        candidateName={candidate.name}
         initialData={initialInterviewData}
         isReschedule={isReschedule}
       />

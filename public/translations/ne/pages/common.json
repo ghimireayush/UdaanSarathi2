@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-21",
+    "type": "common"
+  },
+  "loading": "लोड हुँदै...",
+  "error": "त्रुटि",
+  "success": "सफल",
+  "cancel": "रद्द गर्नुहोस्",
+  "save": "बचत गर्नुहोस्",
+  "delete": "हटाउनुहोस्",
+  "edit": "सम्पादन गर्नुहोस्",
+  "view": "हेर्नुहोस्",
+  "search": "खोज्नुहोस्",
+  "filter": "फिल्टर गर्नुहोस्",
+  "sort": "क्रमबद्ध गर्नुहोस्",
+  "next": "अगाडि",
+  "previous": "पछाडि",
+  "page": "पृष्ठ",
+  "of": "को",
+  "items": "वस्तुहरू",
+  "selected": "चयन गरिएको",
+  "language": "भाषा",
+  "changeLanguage": "भाषा परिवर्तन गर्नुहोस्",
+  "validation": {
+    "required": "यो क्षेत्र आवश्यक छ",
+    "invalid": "अमान्य इनपुट",
+    "tooShort": "इनपुट बहुत छोटो छ",
+    "tooLong": "इनपुट बहुत लामो छ",
+    "invalidEmail": "अमान्य इमेल ठेगाना",
+    "invalidPhone": "अमान्य फोन नम्बर"
+  },
+  "buttons": {
+    "submit": "पेश गर्नुहोस्",
+    "reset": "रिसेट गर्नुहोस्",
+    "close": "बन्द गर्नुहोस्",
+    "confirm": "पुष्टि गर्नुहोस्",
+    "back": "पछाडि",
+    "continue": "जारी राख्नुहोस्"
+  },
+  "navigation": {
+    "home": "गृह",
+    "dashboard": "ड्यासबोर्ड",
+    "applications": "आवेदनहरू",
+    "interviews": "अन्तर्वार्ताहरू",
+    "settings": "सेटिङहरू",
+    "logout": "लगआउट"
+  },
+  "pagination": {
+    "showing": "{{start}} देखि {{end}} सम्म {{total}} परिणामहरू मध्ये देखाइँदै",
+    "page": "पृष्ठ {{current}} को {{total}}"
+  },
+  "roles": {
+    "owner": {
+      "label": "एजेन्सी मालिक",
+      "description": "सबै सुविधा र सेटिङहरूमा पूर्ण पहुँच",
+      "shortDescription": "पूर्ण पहुँच"
+    },
+    "admin": {
+      "label": "प्रशासक",
+      "description": "संचालन, टोली सदस्य, र रिपोर्ट व्यवस्थापन गर्छ",
+      "shortDescription": "संचालन प्रबन्धक"
+    },
+    "recruiter": {
+      "label": "भर्तीकर्ता",
+      "description": "उम्मेदवार खोज र स्क्रीनिङमा ध्यान केन्द्रित",
+      "shortDescription": "उम्मेदवार खोज"
+    },
+    "coordinator": {
+      "label": "अन्तर्वार्ता समन्वयक",
+      "description": "अन्तर्वार्ता समयतालिका र समन्वय व्यवस्थापन गर्छ",
+      "shortDescription": "अन्तर्वार्ता व्यवस्थापन"
+    },
+    "visa_officer": {
+      "label": "भिसा अधिकृत",
+      "description": "कागजात प्रमाणीकरण र भिसा प्रक्रिया सम्भाल्छ",
+      "shortDescription": "कागजात प्रक्रिया"
+    },
+    "viewer": {
+      "label": "दर्शक",
+      "description": "जानकारी हेर्नको लागि पढ्न-मात्र पहुँच",
+      "shortDescription": "पढ्न-मात्र पहुँच"
+    }
+  }
+}

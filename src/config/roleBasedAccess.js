@@ -6,6 +6,14 @@
  * 
  * IMPORTANT: Role definitions come from src/config/roles.js
  * This file only defines permissions for each role.
+ * 
+ * SUPPORTED ROLES (from backend):
+ * - owner: Agency owner (full access)
+ * - admin: Operations manager (manage team, settings, reports)
+ * - recruiter: Candidate sourcing and screening
+ * - coordinator: Interview scheduling and coordination
+ * - visa_officer: Document and visa processing
+ * - viewer: Read-only access
  */
 
 import ROLES from './roles';
@@ -19,6 +27,7 @@ export const ROLE_FEATURES = {
     features: {
       dashboard: true,
       jobs: true,
+      jobManagement: true,
       drafts: true,
       applications: true,
       interviews: true,
@@ -29,13 +38,10 @@ export const ROLE_FEATURES = {
       analytics: true,
       candidateManagement: true,
       documentManagement: true,
-      paymentTracking: true,
-      visaProcessing: true,
-      complianceReports: true,
     }
   },
 
-  // Admin - Manages operations, team, and most features
+  // Admin - Manages operations, team, and reports
   [ROLES.ADMIN.value]: {
     label: ROLES.ADMIN.label,
     description: ROLES.ADMIN.description,
@@ -43,6 +49,7 @@ export const ROLE_FEATURES = {
     features: {
       dashboard: true,
       jobs: true,
+      jobManagement: true,
       drafts: true,
       applications: true,
       interviews: true,
@@ -53,57 +60,6 @@ export const ROLE_FEATURES = {
       analytics: true,
       candidateManagement: true,
       documentManagement: true,
-      paymentTracking: true,
-      visaProcessing: true,
-      complianceReports: false, // Cannot view compliance reports
-    }
-  },
-
-  // Manager - Manages recruitment process and team
-  [ROLES.MANAGER.value]: {
-    label: ROLES.MANAGER.label,
-    description: ROLES.MANAGER.description,
-    color: ROLES.MANAGER.color,
-    features: {
-      dashboard: true,
-      jobs: true,
-      drafts: true,
-      applications: true,
-      interviews: true,
-      workflow: true,
-      teamMembers: false, // Cannot manage team members
-      auditLog: false,
-      settings: false,
-      analytics: true,
-      candidateManagement: true,
-      documentManagement: true,
-      paymentTracking: false, // Cannot track payments
-      visaProcessing: true,
-      complianceReports: false,
-    }
-  },
-
-  // Staff - Basic access to job and application management
-  [ROLES.STAFF.value]: {
-    label: ROLES.STAFF.label,
-    description: ROLES.STAFF.description,
-    color: ROLES.STAFF.color,
-    features: {
-      dashboard: true,
-      jobs: true,
-      drafts: false, // Cannot create drafts
-      applications: true,
-      interviews: false, // Cannot schedule interviews
-      workflow: true,
-      teamMembers: false,
-      auditLog: false,
-      settings: false,
-      analytics: false,
-      candidateManagement: true,
-      documentManagement: true,
-      paymentTracking: false,
-      visaProcessing: false,
-      complianceReports: false,
     }
   },
 
@@ -125,9 +81,6 @@ export const ROLE_FEATURES = {
       analytics: false,
       candidateManagement: true,
       documentManagement: true,
-      paymentTracking: false,
-      visaProcessing: false,
-      complianceReports: false,
     }
   },
 
@@ -149,13 +102,10 @@ export const ROLE_FEATURES = {
       analytics: false,
       candidateManagement: false,
       documentManagement: false,
-      paymentTracking: false,
-      visaProcessing: false,
-      complianceReports: false,
     }
   },
 
-  // Visa Officer - Handles visa and document processing
+  // Visa Officer - Handles document and visa processing
   [ROLES.VISA_OFFICER.value]: {
     label: ROLES.VISA_OFFICER.label,
     description: ROLES.VISA_OFFICER.description,
@@ -173,17 +123,14 @@ export const ROLE_FEATURES = {
       analytics: false,
       candidateManagement: true,
       documentManagement: true,
-      paymentTracking: false,
-      visaProcessing: true,
-      complianceReports: false,
     }
   },
 
-  // Accountant - Handles payments and financial tracking
-  [ROLES.ACCOUNTANT.value]: {
-    label: ROLES.ACCOUNTANT.label,
-    description: ROLES.ACCOUNTANT.description,
-    color: ROLES.ACCOUNTANT.color,
+  // Viewer - Read-only access
+  [ROLES.VIEWER.value]: {
+    label: ROLES.VIEWER.label,
+    description: ROLES.VIEWER.description,
+    color: ROLES.VIEWER.color,
     features: {
       dashboard: true,
       jobs: false,
@@ -194,12 +141,9 @@ export const ROLE_FEATURES = {
       teamMembers: false,
       auditLog: false,
       settings: false,
-      analytics: true,
+      analytics: false,
       candidateManagement: false,
       documentManagement: false,
-      paymentTracking: true,
-      visaProcessing: false,
-      complianceReports: true,
     }
   },
 };
@@ -208,6 +152,8 @@ export const ROLE_FEATURES = {
  * Navigation items configuration
  * Maps to navbar items with role-based visibility
  * Order matters - items appear in sidebar in this order
+ * 
+ * Only includes roles supported by backend: owner, admin, recruiter, coordinator, visa_officer, viewer
  */
 export const NAVIGATION_ITEMS = {
   dashboard: {
@@ -216,7 +162,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'dashboard',
     icon: 'BarChart3',
     description: 'View agency overview and metrics',
-    roles: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
+    roles: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
   },
   jobs: {
     path: '/jobs',
@@ -224,7 +170,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'jobs',
     icon: 'Briefcase',
     description: 'Manage job postings',
-    roles: ['owner', 'admin', 'manager', 'staff', 'recruiter'],
+    roles: ['owner', 'admin', 'recruiter'],
   },
   jobManagement: {
     path: '/job-management',
@@ -232,7 +178,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'jobManagement',
     icon: 'FileEdit',
     description: 'Create and edit job postings',
-    roles: ['owner', 'admin', 'manager'],
+    roles: ['owner', 'admin'],
   },
   applications: {
     path: '/applications',
@@ -240,7 +186,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'applications',
     icon: 'Users',
     description: 'Review candidate applications',
-    roles: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
+    roles: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
   },
   interviews: {
     path: '/interviews',
@@ -248,7 +194,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'interviews',
     icon: 'Calendar',
     description: 'Schedule and manage interviews',
-    roles: ['owner', 'admin', 'manager', 'recruiter', 'coordinator'],
+    roles: ['owner', 'admin', 'recruiter', 'coordinator'],
   },
   workflow: {
     path: '/workflow',
@@ -256,7 +202,7 @@ export const NAVIGATION_ITEMS = {
     translationKey: 'workflow',
     icon: 'GitBranch',
     description: 'Track candidate workflow stages',
-    roles: ['owner', 'admin', 'manager', 'staff', 'visaOfficer'],
+    roles: ['owner', 'admin', 'visa_officer'],
   },
   teamMembers: {
     path: '/teammembers',
@@ -287,51 +233,41 @@ export const NAVIGATION_ITEMS = {
 /**
  * Feature-level access control
  * Defines what actions are available for each feature
+ * 
+ * Only includes roles supported by backend: owner, admin, recruiter, coordinator, visa_officer, viewer
  */
 export const FEATURE_PERMISSIONS = {
   jobs: {
-    view: ['owner', 'admin', 'manager', 'staff', 'recruiter'],
-    create: ['owner', 'admin', 'manager'],
-    edit: ['owner', 'admin', 'manager'],
-    delete: ['owner', 'admin'],
-    publish: ['owner', 'admin', 'manager'],
+    view: ['owner', 'admin', 'recruiter'],
+    create: ['owner', 'admin'],
+    edit: ['owner', 'admin'],
+    delete: ['owner'],
+    publish: ['owner', 'admin'],
   },
   applications: {
-    view: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
-    shortlist: ['owner', 'admin', 'manager', 'recruiter'],
-    reject: ['owner', 'admin', 'manager', 'recruiter'],
-    approve: ['owner', 'admin', 'manager'],
+    view: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
+    shortlist: ['owner', 'admin', 'recruiter'],
+    reject: ['owner', 'admin', 'recruiter'],
+    approve: ['owner', 'admin'],
   },
   interviews: {
-    view: ['owner', 'admin', 'manager', 'recruiter', 'coordinator'],
-    schedule: ['owner', 'admin', 'manager', 'recruiter', 'coordinator'],
-    edit: ['owner', 'admin', 'manager', 'coordinator'],
-    cancel: ['owner', 'admin', 'manager', 'coordinator'],
+    view: ['owner', 'admin', 'recruiter', 'coordinator'],
+    schedule: ['owner', 'admin', 'recruiter', 'coordinator'],
+    edit: ['owner', 'admin', 'coordinator'],
+    cancel: ['owner', 'admin', 'coordinator'],
   },
   candidates: {
-    view: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
-    edit: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'visaOfficer'],
+    view: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
+    edit: ['owner', 'admin', 'recruiter', 'visa_officer'],
     delete: ['owner', 'admin'],
-    export: ['owner', 'admin', 'manager'],
+    export: ['owner', 'admin'],
   },
   documents: {
-    view: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
-    upload: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'visaOfficer'],
-    download: ['owner', 'admin', 'manager', 'staff', 'recruiter', 'coordinator', 'visaOfficer', 'accountant'],
-    delete: ['owner', 'admin', 'manager'],
-  },
-  payments: {
-    view: ['owner', 'admin', 'accountant'],
-    create: ['owner', 'admin', 'accountant'],
-    edit: ['owner', 'admin', 'accountant'],
+    view: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
+    upload: ['owner', 'admin', 'recruiter', 'visa_officer'],
+    download: ['owner', 'admin', 'recruiter', 'coordinator', 'visa_officer', 'viewer'],
     delete: ['owner', 'admin'],
-    export: ['owner', 'admin', 'accountant'],
-  },
-  visaProcessing: {
-    view: ['owner', 'admin', 'manager', 'visaOfficer'],
-    update: ['owner', 'admin', 'manager', 'visaOfficer'],
-    approve: ['owner', 'admin', 'manager'],
-    reject: ['owner', 'admin', 'manager'],
+    verify: ['owner', 'admin', 'visa_officer'],
   },
   teamMembers: {
     view: ['owner', 'admin'],
@@ -341,9 +277,9 @@ export const FEATURE_PERMISSIONS = {
     changeRole: ['owner', 'admin'],
   },
   reports: {
-    view: ['owner', 'admin', 'accountant'],
-    generate: ['owner', 'admin', 'accountant'],
-    export: ['owner', 'admin', 'accountant'],
+    view: ['owner', 'admin', 'visa_officer'],
+    generate: ['owner', 'admin'],
+    export: ['owner', 'admin'],
   },
 };
 
@@ -403,7 +339,7 @@ export const getAccessibleFeatures = (role) => {
  */
 const normalizeRole = (role) => {
   if (role === 'agency_owner') return 'owner';
-  if (role === 'agency_member') return 'staff';
+  if (role === 'agency_member') return 'recruiter'; // Default agency member to recruiter
   return role;
 };
 

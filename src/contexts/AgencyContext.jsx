@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { agencyService } from '../services/index.js'
 import { useAuth } from './AuthContext'
+import { needsAgencySetup } from '../utils/roleHelpers.js'
 
 const AgencyContext = createContext()
 
@@ -29,8 +30,7 @@ export const AgencyProvider = ({ children }) => {
     }
 
     // Don't fetch if user is an owner without an agency
-    const isOwner = user.role === 'agency_owner' || user.role === 'owner' || user.userType === 'owner'
-    if (isOwner && !user.agencyId && !user.agency_id) {
+    if (needsAgencySetup(user)) {
       console.log('User is an owner without an agency, skipping agency data fetch')
       setIsLoading(false)
       setAgencyData(null)

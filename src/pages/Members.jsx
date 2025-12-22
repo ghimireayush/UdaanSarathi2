@@ -7,20 +7,29 @@ import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '
 import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
 import { usePagination } from '../hooks/usePagination.js';
 import PaginationWrapper from '../components/PaginationWrapper.jsx';
-import { getAssignableRoles, getRoleLabel } from '../config/roles';
-import { useAdvancedRoles } from '../hooks/useAdvancedRoles';
+import { getRoleLabel } from '../config/roles';
+import { useAvailableRoles } from '../hooks/useAvailableRoles';
 import rolesStorageService from '../services/rolesStorageService';
 
 const Members = () => {
-  const { isEnabled: advancedRolesEnabled, toggle: toggleAdvancedRoles } = useAdvancedRoles();
-  const allAssignableRoles = getAssignableRoles();
-  const filteredRoles = rolesStorageService.getFilteredRoles(allAssignableRoles);
+  const { roles: availableRoles, loading: rolesLoading, error: rolesError } = useAvailableRoles();
+  const { t, tPageSync } = useLanguage({ pageName: 'common', autoLoad: true });
   
   const [formData, setFormData] = useState({
     full_name: '',
-    role: filteredRoles[0]?.value || 'staff',
+    role: 'recruiter',
     phone: ''
   });
+
+  // Update form role when roles are loaded
+  useEffect(() => {
+    if (availableRoles.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        role: prev.role || availableRoles[0].value
+      }));
+    }
+  }, [availableRoles]);
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -59,14 +68,27 @@ const Members = () => {
   
   const { isAdmin, hasPermission, PERMISSIONS } = useAuth();
   const { confirm } = useConfirm();
-  const { tPageSync } = useLanguage({ 
+  const { tPageSync: tPageSync_teamMembers } = useLanguage({ 
     pageName: 'team-members', 
     autoLoad: true 
   });
 
   // Helper function to get page translations
   const tPage = (key, params = {}) => {
-    return tPageSync(key, params);
+    return tPageSync_teamMembers(key, params);
+  };
+
+  // Helper to get translated role label
+  const getTranslatedRoleLabel = (roleValue) => {
+    const translationKey = `roles.${roleValue}.label`;
+    // Use tPageSync to get from page translations (common.json)
+    const translated = tPageSync(translationKey);
+    // If translation exists and is different from the key, use it
+    if (translated && translated !== translationKey) {
+      return translated;
+    }
+    // Otherwise use the label from role configuration
+    return getRoleLabel(roleValue);
   };
 
   useEffect(() => {
@@ -166,14 +188,15 @@ const Members = () => {
     }
   };
 
-  // Update form default role when advanced roles toggle changes
+  // Update form default role when available roles change
   useEffect(() => {
-    const updatedFilteredRoles = rolesStorageService.getFilteredRoles(allAssignableRoles);
-    setFormData(prev => ({
-      ...prev,
-      role: updatedFilteredRoles[0]?.value || 'staff'
-    }));
-  }, [advancedRolesEnabled]);
+    if (availableRoles.length > 0 && !availableRoles.find(r => r.value === formData.role)) {
+      setFormData(prev => ({
+        ...prev,
+        role: availableRoles[0]?.value || 'recruiter'
+      }));
+    }
+  }, [availableRoles]);
 
   const getRoleDisplayName = (role) => {
     // Try to get translation first, fallback to role label from config
@@ -217,27 +240,6 @@ const Members = () => {
             <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
           </div>
           <div className="mt-4 sm:mt-0 flex items-center gap-4">
-            {/* Advanced Roles Toggle */}
-            <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-              <label htmlFor="advanced-roles-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                {tPage('settings.advancedRoles.label')}
-              </label>
-              <button
-                id="advanced-roles-toggle"
-                onClick={toggleAdvancedRoles}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  advancedRolesEnabled 
-                    ? 'bg-brand-blue-bright' 
-                    : 'bg-gray-300 dark:bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    advancedRolesEnabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
             <LanguageSwitch />
           </div>
         </div>
@@ -287,9 +289,9 @@ const Members = () => {
                 required
                 className="form-select"
               >
-                {filteredRoles.map(role => (
+                {availableRoles.map(role => (
                   <option key={role.value} value={role.value}>
-                    {getRoleDisplayName(role.value)}
+                    {getTranslatedRoleLabel(role.value)}
                   </option>
                 ))}
               </select>
@@ -359,9 +361,9 @@ const Members = () => {
                 className="form-select-sm"
               >
                 <option value="all">{tPage('search.filters.allRoles')}</option>
-                {filteredRoles.map(role => (
+                {availableRoles.map(role => (
                   <option key={role.value} value={role.value}>
-                    {getRoleDisplayName(role.value)}
+                    {getTranslatedRoleLabel(role.value)}
                   </option>
                 ))}
               </select>

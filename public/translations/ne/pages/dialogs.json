@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-21",
+    "page": "dialogs"
+  },
+  "common": {
+    "confirm": "पुष्टि गर्नुहोस्",
+    "cancel": "रद्द गर्नुहोस्",
+    "ok": "ठीक छ",
+    "yes": "हो",
+    "no": "होइन",
+    "remove": "हटाउनुहोस्",
+    "delete": "मेटाउनुहोस्",
+    "save": "सुरक्षित गर्नुहोस्",
+    "close": "बन्द गर्नुहोस्"
+  },
+  "document": {
+    "rejectTitle": "कागजात अस्वीकार गर्नुहोस्",
+    "rejectMessage": "कृपया अस्वीकारको कारण प्रदान गर्नुहोस्:",
+    "rejectPlaceholder": "अस्वीकारको कारण प्रविष्ट गर्नुहोस्...",
+    "approveTitle": "कागजात स्वीकृत गर्नुहोस्",
+    "approveMessage": "के तपाईं यो कागजात स्वीकृत गर्न चाहनुहुन्छ?",
+    "removeTitle": "कागजात हटाउनुहोस्",
+    "removeMessage": "के तपाईं यो कागजात हटाउन चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।",
+    "uploadTitle": "कागजात अपलोड गर्नुहोस्",
+    "uploadMessage": "के तपाईं यो कागजात अपलोड गर्न चाहनुहुन्छ?",
+    "uploadSuccessTitle": "अपलोड सफल",
+    "uploadSuccessMessage": "कागजात सफलतापूर्वक अपलोड भएको छ!",
+    "uploadErrorTitle": "अपलोड त्रुटि",
+    "uploadErrorMessage": "कागजात अपलोड गर्न असफल। कृपया पुनः प्रयास गर्नुहोस्।"
+  },
+  "position": {
+    "removeTitle": "पद हटाउनुहोस्",
+    "removeMessage": "के तपाईं यो पद हटाउन चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।",
+    "addTitle": "पद थप्नुहोस्",
+    "addMessage": "यो जागिर पोस्टिङमा नयाँ पद थप्नुहोस्?",
+    "editTitle": "पद सम्पादन गर्नुहोस्",
+    "editMessage": "यो पद अपडेट गर्नुहोस्?"
+  },
+  "member": {
+    "removeTitle": "सदस्य हटाउनुहोस्",
+    "removeMessage": "के तपाईं यो सदस्य हटाउन चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।",
+    "inviteTitle": "सदस्य आमन्त्रण गर्नुहोस्",
+    "inviteMessage": "यो सदस्यलाई आमन्त्रण पठाउनुहोस्?",
+    "removeSuccessTitle": "सदस्य हटाइयो",
+    "removeSuccessMessage": "सदस्य सफलतापूर्वक हटाइएको छ।"
+  },
+  "interview": {
+    "scheduleTitle": "अन्तर्वार्ता निर्धारण गर्नुहोस्",
+    "scheduleMessage": "यो उम्मेदवारको लागि अन्तर्वार्ता निर्धारण गर्नुहोस्?",
+    "rescheduleTitle": "अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्",
+    "rescheduleMessage": "यो उम्मेदवारको अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्?",
+    "datePromptTitle": "अन्तर्वार्ता मिति",
+    "datePromptMessage": "अन्तर्वार्ताको मिति प्रविष्ट गर्नुहोस्",
+    "datePlaceholder": "YYYY-MM-DD",
+    "timePromptTitle": "अन्तर्वार्ता समय",
+    "timePromptMessage": "अन्तर्वार्ताको समय प्रविष्ट गर्नुहोस्",
+    "timePlaceholder": "HH:MM",
+    "locationPromptTitle": "अन्तर्वार्ता स्थान",
+    "locationPromptMessage": "अन्तर्वार्ताको स्थान प्रविष्ट गर्नुहोस्",
+    "locationPlaceholder": "स्थान",
+    "interviewerPromptTitle": "अन्तर्वार्ताकर्ताको नाम",
+    "interviewerPromptMessage": "अन्तर्वार्ताकर्ताको नाम प्रविष्ट गर्नुहोस् (वैकल्पिक)",
+    "notesPromptTitle": "अतिरिक्त नोटहरू",
+    "notesPromptMessage": "कुनै पनि अतिरिक्त नोटहरू प्रविष्ट गर्नुहोस् (वैकल्पिक)",
+    "notesPlaceholder": "नोटहरू"
+  },
+  "workflow": {
+    "passTitle": "उत्तीर्ण गर्नुहोस्",
+    "passMessage": "के तपाईं यो अन्तर्वार्ता उत्तीर्ण गर्न चाहनुहुन्छ?",
+    "failTitle": "असफल गर्नुहोस्",
+    "failMessage": "के तपाईं यो अन्तर्वार्ता असफल गर्न चाहनुहुन्छ?",
+    "rescheduleTitle": "अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्",
+    "rescheduleMessage": "यो अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्?",
+    "stageUpdateTitle": "चरण अपडेट पुष्टि गर्नुहोस्",
+    "stageUpdateMessage": "\"{currentStage}\" बाट \"{newStage}\" मा सार्न चाहनुहुन्छ?",
+    "invalidTransitionTitle": "अमान्य चरण संक्रमण",
+    "invalidTransitionMessage": "\"{currentStage}\" बाट \"{newStage}\" मा सार्न सकिँदैन।"
+  },
+  "auth": {
+    "accessDeniedTitle": "पहुँच अस्वीकृत",
+    "accessDeniedMessage": "तपाईंलाई यो संसाधनमा पहुँच गर्ने अनुमति छैन।",
+    "unauthorizedTitle": "अनुमति विहीन पहुँच",
+    "unauthorizedMessage": "तपाईंको सत्र समाप्त भएको छ वा तपाईं यो संसाधनमा पहुँच गर्न अनुमति प्राप्त छैन।"
+  },
+  "error": {
+    "title": "त्रुटि",
+    "message": "एक त्रुटि भएको छ। कृपया पुनः प्रयास गर्नुहोस्।",
+    "retryTitle": "पुनः प्रयास गर्नुहोस्",
+    "retryMessage": "के तपाईं यो कार्य पुनः प्रयास गर्न चाहनुहुन्छ?"
+  },
+  "success": {
+    "title": "सफल",
+    "message": "कार्य सफलतापूर्वक पूर्ण भएको छ!"
+  },
+  "confirmation": {
+    "title": "कार्य पुष्टि गर्नुहोस्",
+    "message": "के तपाईं अगाडि बढ्न चाहनुहुन्छ?"
+  }
+}

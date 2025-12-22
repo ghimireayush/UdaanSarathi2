@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-21",
+    "type": "common",
+    "description": "टोली सदस्य व्यवस्थापनको लागि भूमिका परिभाषा र विवरण"
+  },
+  "owner": {
+    "label": "एजेन्सी मालिक",
+    "description": "सबै सुविधा र सेटिङहरूमा पूर्ण पहुँच",
+    "shortDescription": "पूर्ण पहुँच"
+  },
+  "admin": {
+    "label": "Admin",
+    "description": "संचालन, टोली सदस्य, र रिपोर्ट व्यवस्थापन गर्छ",
+    "shortDescription": "संचालन प्रबन्धक"
+  },
+  "recruiter": {
+    "label": "भर्तीकर्ता",
+    "description": "उम्मेदवार खोज र स्क्रीनिङमा ध्यान केन्द्रित गर्छ",
+    "shortDescription": "उम्मेदवार खोज"
+  },
+  "coordinator": {
+    "label": "अन्तर्वार्ता समन्वयक",
+    "description": "अन्तर्वार्ता समयतालिका र समन्वय व्यवस्थापन गर्छ",
+    "shortDescription": "अन्तर्वार्ता व्यवस्थापन"
+  },
+  "visa_officer": {
+    "label": "भिसा अधिकृत",
+    "description": "कागजात प्रमाणीकरण र भिसा प्रक्रिया सम्भाल्छ",
+    "shortDescription": "कागजात प्रक्रिया"
+  },
+  "viewer": {
+    "label": "दर्शक",
+    "description": "जानकारी हेर्नको लागि पढ्न-मात्र पहुँच",
+    "shortDescription": "पढ्न-मात्र पहुँच"
+  },
+  "permissions": {
+    "owner": {
+      "count": 19,
+      "actions": ["shortlist", "schedule_interview", "reschedule_interview", "complete_interview", "reject", "bulk_shortlist", "bulk_reject", "bulk_schedule", "multi_batch_schedule", "delete_document", "verify_document", "add_note", "edit_note", "delete_note", "create_job", "update_job", "publish_job", "close_job", "manage_positions"]
+    },
+    "admin": {
+      "count": 18,
+      "actions": ["shortlist", "schedule_interview", "reschedule_interview", "complete_interview", "reject", "bulk_shortlist", "bulk_reject", "bulk_schedule", "multi_batch_schedule", "delete_document", "verify_document", "add_note", "edit_note", "delete_note", "create_job", "update_job", "publish_job", "manage_team"]
+    },
+    "recruiter": {
+      "count": 13,
+      "actions": ["shortlist", "schedule_interview", "reschedule_interview", "complete_interview", "reject", "bulk_shortlist", "bulk_reject", "bulk_schedule", "multi_batch_schedule", "delete_document", "verify_document", "add_note", "edit_note"]
+    },
+    "coordinator": {
+      "count": 6,
+      "actions": ["schedule_interview", "reschedule_interview", "complete_interview", "add_note", "edit_note", "delete_note"]
+    },
+    "visa_officer": {
+      "count": 7,
+      "actions": ["verify_document", "delete_document", "complete_interview", "add_note", "edit_note", "delete_note", "view_reports"]
+    },
+    "viewer": {
+      "count": 0,
+      "actions": []
+    }
+  }
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Users, Plus, Edit2, Trash2, Save, X, Loader2, AlertCircle } from 'lucide-react';
 import countryService from '../../services/countryService';
 import jobTitleService from '../../services/jobTitleService';
+import dialogService from '../../services/dialogService.js';
 
 const PositionsSection = ({ positions, onAdd, onUpdate, onRemove }) => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -100,7 +101,16 @@ const PositionsSection = ({ positions, onAdd, onUpdate, onRemove }) => {
                   position={position}
                   onEdit={() => setEditingId(position.id)}
                   onDelete={async () => {
-                    if (window.confirm('Are you sure you want to remove this position?')) {
+                    const confirmed = await dialogService.confirm(
+                      'पद हटाउनुहोस्',
+                      'के तपाईं यो पद हटाउन चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।',
+                      {
+                        type: 'danger',
+                        confirmText: 'हटाउनुहोस्',
+                        cancelText: 'रद्द गर्नुहोस्'
+                      }
+                    );
+                    if (confirmed) {
                       try {
                         setError(null);
                         await onRemove(position.id);

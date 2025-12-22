@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-21",
+    "type": "common",
+    "description": "Role definitions and descriptions for team member management"
+  },
+  "owner": {
+    "label": "Agency Owner",
+    "description": "Full access to all features and settings",
+    "shortDescription": "Full access"
+  },
+  "admin": {
+    "label": "Admin",
+    "description": "Manages operations, team members, and reports",
+    "shortDescription": "Operations manager"
+  },
+  "recruiter": {
+    "label": "Recruiter",
+    "description": "Focuses on candidate sourcing and screening",
+    "shortDescription": "Candidate sourcing"
+  },
+  "coordinator": {
+    "label": "Interview Coordinator",
+    "description": "Manages interview scheduling and coordination",
+    "shortDescription": "Interview management"
+  },
+  "visa_officer": {
+    "label": "Visa Officer",
+    "description": "Handles document verification and visa processing",
+    "shortDescription": "Document processing"
+  },
+  "viewer": {
+    "label": "Viewer",
+    "description": "Read-only access to view information",
+    "shortDescription": "Read-only access"
+  },
+  "permissions": {
+    "owner": {
+      "count": 19,
+      "actions": [
+        "shortlist",
+        "schedule_interview",
+        "reschedule_interview",
+        "complete_interview",
+        "reject",
+        "bulk_shortlist",
+        "bulk_reject",
+        "bulk_schedule",
+        "multi_batch_schedule",
+        "delete_document",
+        "verify_document",
+        "add_note",
+        "edit_note",
+        "delete_note",
+        "create_job",
+        "update_job",
+        "publish_job",
+        "close_job",
+        "manage_positions"
+      ]
+    },
+    "admin": {
+      "count": 18,
+      "actions": [
+        "shortlist",
+        "schedule_interview",
+        "reschedule_interview",
+        "complete_interview",
+        "reject",
+        "bulk_shortlist",
+        "bulk_reject",
+        "bulk_schedule",
+        "multi_batch_schedule",
+        "delete_document",
+        "verify_document",
+        "add_note",
+        "edit_note",
+        "delete_note",
+        "create_job",
+        "update_job",
+        "publish_job",
+        "manage_team"
+      ]
+    },
+    "recruiter": {
+      "count": 13,
+      "actions": [
+        "shortlist",
+        "schedule_interview",
+        "reschedule_interview",
+        "complete_interview",
+        "reject",
+        "bulk_shortlist",
+        "bulk_reject",
+        "bulk_schedule",
+        "multi_batch_schedule",
+        "delete_document",
+        "verify_document",
+        "add_note",
+        "edit_note"
+      ]
+    },
+    "coordinator": {
+      "count": 6,
+      "actions": [
+        "schedule_interview",
+        "reschedule_interview",
+        "complete_interview",
+        "add_note",
+        "edit_note",
+        "delete_note"
+      ]
+    },
+    "visa_officer": {
+      "count": 7,
+      "actions": [
+        "verify_document",
+        "delete_document",
+        "complete_interview",
+        "add_note",
+        "edit_note",
+        "delete_note",
+        "view_reports"
+      ]
+    },
+    "viewer": {
+      "count": 0,
+      "actions": []
+    }
+  }
+}

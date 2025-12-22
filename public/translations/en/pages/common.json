@@ -47,40 +47,40 @@
     "settings": "Settings",
     "logout": "Logout"
   },
-  "page": {
-    "navigation": {
-      "items": {
-        "dashboard": "Dashboard",
-        "jobs": "Jobs",
-        "drafts": "Drafts",
-        "applications": "Applications",
-        "interviews": "Interviews",
-        "workflow": "Workflow",
-        "teamMembers": "Team Members",
-        "auditLog": "Audit Log",
-        "agencySettings": "Agency Settings"
-      },
-      "userMenu": {
-        "logout": "Logout"
-      }
-    }
-  },
-  "items": {
-    "dashboard": "Dashboard",
-    "jobs": "Jobs",
-    "drafts": "Drafts",
-    "applications": "Applications",
-    "interviews": "Interviews",
-    "workflow": "Workflow",
-    "teamMembers": "Team Members",
-    "auditLog": "Audit Log",
-    "agencySettings": "Agency Settings"
-  },
-  "userMenu": {
-    "logout": "Logout"
-  },
   "pagination": {
     "showing": "Showing {{start}} to {{end}} of {{total}} results",
     "page": "Page {{current}} of {{total}}"
+  },
+  "roles": {
+    "owner": {
+      "label": "Agency Owner",
+      "description": "Full access to all features and settings",
+      "shortDescription": "Full access"
+    },
+    "admin": {
+      "label": "Admin",
+      "description": "Manages operations, team members, and reports",
+      "shortDescription": "Operations manager"
+    },
+    "recruiter": {
+      "label": "Recruiter",
+      "description": "Focuses on candidate sourcing and screening",
+      "shortDescription": "Candidate sourcing"
+    },
+    "coordinator": {
+      "label": "Interview Coordinator",
+      "description": "Manages interview scheduling and coordination",
+      "shortDescription": "Interview management"
+    },
+    "visa_officer": {
+      "label": "Visa Officer",
+      "description": "Handles document verification and visa processing",
+      "shortDescription": "Document processing"
+    },
+    "viewer": {
+      "label": "Viewer",
+      "description": "Read-only access to view information",
+      "shortDescription": "Read-only access"
+    }
   }
 }

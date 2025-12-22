@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { User, Lock, ArrowLeft, Moon, Sun } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
+import { isOwnerRole } from '../utils/roleHelpers.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import OTPInput from '../components/ui/OTPInput'
 import LanguageSwitch from '../components/LanguageSwitch'
@@ -71,16 +72,12 @@ const OwnerLogin = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       // If user is owner, redirect to owner dashboard
-      if (user.isOwner || user.id === 'user_owner' || user.email === 'owner@udaan.com') {
+      if (isOwnerRole(user)) {
         const from = location.state?.from?.pathname || '/owner/dashboard'
         navigate(from, { replace: true })
       } else {
         // Non-owner trying to access owner portal - redirect to appropriate portal
-        if (user.role === 'admin') {
-          navigate('/dashboard', { replace: true })
-        } else if (user.role === 'recipient' || user.role === 'interview-coordinator') {
-          navigate('/dashboard', { replace: true })
-        }
+        navigate('/dashboard', { replace: true })
       }
     }
   }, [isAuthenticated, user, navigate, location])

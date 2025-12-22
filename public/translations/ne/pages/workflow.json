@@ -37,16 +37,17 @@
     "applicantDistribution": "जागिरअनुसार आवेदक वितरण"
   },
   "candidateCard": {
-    "passport": "राहदानी: {{number}}",
-    "documents": "{{count}} कागजात{{plural}} संलग्न",
-    "interviewedAt": "अन्तर्वार्ता: {{date}}",
-    "remarks": "टिप्पणी: {{remarks}}"
+    "passport": "राहदानी:",
+    "documents": "कागजात संलग्न",
+    "interviewedAt": "अन्तर्वार्ता:",
+    "remarks": "टिप्पणी:"
   },
   "actions": {
     "viewSummary": "सारांश हेर्नुहोस्",
     "updateStatus": "स्थिति अपडेट गर्नुहोस्",
     "attachDocument": "कागजात संलग्न गर्नुहोस्",
-    "removeDocument": "कागजात हटाउनुहोस्"
+    "removeDocument": "कागजात हटाउनुहोस्",
+    "reject": "अस्वीकार गर्नुहोस्"
   },
   "modals": {
     "stageTransition": {
@@ -58,11 +59,19 @@
       "cancelButton": "रद्द गर्नुहोस्",
       "okayButton": "ठीक छ"
     },
+    "interview": {
+      "failConfirmMessage": "के तपाईं यो अन्तर्वार्तालाई असफल भनी चिन्हित गर्न चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।"
+    },
     "documentAttachment": {
       "title": "कागजात संलग्न पुष्टि गर्नुहोस्",
       "message": "के तपाईं \"{{documentName}}\" कागजात यो उम्मेदवारमा संलग्न गर्न चाहनुहुन्छ?",
       "confirmButton": "हो, संलग्न गर्नुहोस्",
       "cancelButton": "रद्द गर्नुहोस्"
+    },
+    "common": {
+      "confirm": "पुष्टि गर्नुहोस्",
+      "cancel": "रद्द गर्नुहोस्",
+      "cannotUndo": "यो कार्य पूर्ववत गर्न सकिँदैन।"
     },
     "error": {
       "title": "त्रुटि",
@@ -87,5 +96,44 @@
   "error": {
     "failedToLoad": "लोड गर्न असफल",
     "retry": "पुनः प्रयास गर्नुहोस्"
+  },
+  "interviewSchedule": {
+    "scheduleTitle": "अन्तर्वार्ता निर्धारण गर्नुहोस्",
+    "rescheduleTitle": "अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्",
+    "candidateLabel": "उम्मेदवार:",
+    "dateLabel": "अन्तर्वार्ता मिति",
+    "dateRequired": "अन्तर्वार्ता मिति आवश्यक छ",
+    "dateFuture": "अन्तर्वार्ता मिति भविष्यमा हुनुपर्छ",
+    "timeLabel": "अन्तर्वार्ता समय",
+    "timeRequired": "अन्तर्वार्ता समय आवश्यक छ",
+    "locationLabel": "स्थान",
+    "locationPlaceholder": "जस्तै, मुख्य कार्यालय - सम्मेलन कक्ष A, वा अनलाइन (Zoom)",
+    "locationRequired": "अन्तर्वार्ता स्थान आवश्यक छ",
+    "interviewerLabel": "अन्तर्वार्ताकार",
+    "interviewerRequired": "अन्तर्वार्ताकार आवश्यक छ",
+    "interviewerPlaceholder": "अन्तर्वार्ताकारको नाम प्रविष्ट गर्नुहोस्",
+    "loadingMembers": "टोली सदस्यहरू लोड गर्दै...",
+    "durationLabel": "अवधि (मिनेट)",
+    "durationInvalid": "अवधि १५ र ४८० मिनेटको बीचमा हुनुपर्छ",
+    "documentsLabel": "आवश्यक कागजातहरू",
+    "documentsSelected": "चयनित: {{count}} कागजात",
+    "notesLabel": "अतिरिक्त नोटहरू",
+    "notesPlaceholder": "उम्मेदवारका लागि कुनै पनि अतिरिक्त निर्देशन वा नोटहरू...",
+    "documentTypes": {
+      "cv": "सीभी",
+      "citizenship": "नागरिकता",
+      "education": "शिक्षा प्रमाणपत्र",
+      "photo": "पासपोर्ट फोटो",
+      "hardcopy": "हार्डकपी आवश्यकताहरू",
+      "passport": "राहदानी",
+      "experience_letters": "अनुभव पत्रहरू"
+    },
+    "buttons": {
+      "cancel": "रद्द गर्नुहोस्",
+      "schedule": "अन्तर्वार्ता निर्धारण गर्नुहोस्",
+      "reschedule": "अन्तर्वार्ता पुनः निर्धारण गर्नुहोस्",
+      "scheduling": "निर्धारण गर्दै...",
+      "rescheduling": "पुनः निर्धारण गर्दै..."
+    }
   }
 }

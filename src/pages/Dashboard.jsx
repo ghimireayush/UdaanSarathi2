@@ -26,7 +26,7 @@ import { InteractiveCard, InteractiveButton, InteractiveDropdown, InteractiveLoa
 import DateRangePicker from '../components/DateRangePicker.jsx'
 import LanguageSwitch from '../components/LanguageSwitch.jsx'
 import { useLanguage } from '../hooks/useLanguage'
-
+import { needsAgencySetup } from '../utils/roleHelpers.js'
 import { useNotificationContext } from '../contexts/NotificationContext'
 import LoadingScreen from '../components/LoadingScreen'
 
@@ -99,8 +99,7 @@ const Dashboard = () => {
 
   // Redirect owner without agency to setup page
   useEffect(() => {
-    const isOwner = user?.role === 'agency_owner' || user?.role === 'owner' || user?.userType === 'owner'
-    if (isOwner && !user?.agencyId && !user?.agency_id) {
+    if (needsAgencySetup(user)) {
       navigate('/setup-company', { replace: true })
     }
   }, [user, navigate])

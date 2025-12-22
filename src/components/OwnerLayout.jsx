@@ -18,7 +18,6 @@ import { useTheme } from "../contexts/ThemeContext";
 import LanguageSwitch from "./LanguageSwitch";
 import { useLanguage } from "../hooks/useLanguage";
 import logo from "../assets/logo.svg";
-import RoleSwitcher from "./DevTools/RoleSwitcher.jsx";
 
 const OwnerLayout = ({ children, onRefresh }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -257,9 +256,6 @@ const OwnerLayout = ({ children, onRefresh }) => {
         {/* Page content */}
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
-
-      {/* Dev Tools - Role Switcher (only on localhost) */}
-      <RoleSwitcher />
     </div>
   );
 };

@@ -20,6 +20,8 @@ import {
 import { formatInNepalTz, getRelativeTime, isToday } from '../utils/nepaliDate'
 import { useConfirm } from './ConfirmProvider.jsx'
 import CandidateSummaryS2 from './CandidateSummaryS2'
+import CandidateDataSource from '../api/datasources/CandidateDataSource.js'
+import { useAgency } from '../contexts/AgencyContext.jsx'
 import { applicationService } from '../services/index.js'
 import Pagination from './ui/Pagination'
 import { useLanguage } from '../hooks/useLanguage'
@@ -34,6 +36,7 @@ const CandidateShortlist = ({
   workflowStages = []
 }) => {
   const { confirm } = useConfirm()
+  const { agencyData } = useAgency()
   const { tPageSync } = useLanguage({ 
     pageName: 'shortlist',
     autoLoad: true 
@@ -188,9 +191,21 @@ const CandidateShortlist = ({
     return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-300'
   }
 
-  const handleCandidateClick = (candidate) => {
-    setSelectedCandidate(candidate)
-    setIsSidebarOpen(true)
+  const handleCandidateClick = (candidateOrApplication) => {
+    // Just pass the candidate object - let CandidateSummaryS2 handle API calls
+    let candidate = candidateOrApplication;
+    
+    // If it's an application object, extract the candidate
+    if (candidateOrApplication.candidate) {
+      candidate = candidateOrApplication.candidate;
+      // Ensure application ID is attached to candidate
+      if (!candidate.application) {
+        candidate.application = { id: candidateOrApplication.id };
+      }
+    }
+    
+    setSelectedCandidate(candidate);
+    setIsSidebarOpen(true);
   }
 
   const handleCloseSidebar = () => {
@@ -702,13 +717,10 @@ const CandidateShortlist = ({
 
       {/* Candidate Summary Modal */}
       <CandidateSummaryS2
-        candidate={selectedCandidate}
+        applicationId={selectedCandidate?.application?.id}
+        candidateId={selectedCandidate?.id}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
-        onUpdateStatus={handleUpdateStatus}
-        onAttachDocument={handleAttachDocument}
-        onRemoveDocument={handleRemoveDocument}
-        workflowStages={workflowStages}
       />
     </div>
   )

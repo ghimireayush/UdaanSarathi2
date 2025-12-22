@@ -583,7 +583,7 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                           
                           {/* Position Info */}
                           {candidate.position && (
-                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1 mb-2">
                               {candidate.position.title}
                               {(candidate.position.salary || candidate.position.monthly_salary_amount) && (
                                 <span className="text-gray-600 dark:text-gray-400">
@@ -596,8 +596,8 @@ const EnhancedInterviewScheduling = ({ candidates, jobId, onScheduled }) => {
                             </div>
                           )}
                           
-                          {/* Status Badge - On its own line */}
-                          <div className="mt-2">
+                          {/* Status Badge - On its own line with proper spacing */}
+                          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
                             {getStatusBadge(candidateStatuses[candidate.id] || 'not_scheduled')}
                           </div>
                         </div>

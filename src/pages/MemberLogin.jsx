@@ -9,6 +9,7 @@ import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
 import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
+import dialogService from '../services/dialogService.js'
 
 const MemberLogin = () => {
   const [username, setUsername] = useState('')
@@ -166,7 +167,11 @@ const MemberLogin = () => {
       }
       
       if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('admin')) {
-        window.alert(tPage('messages.unauthorizedAccess'))
+        await dialogService.alert(
+          'Unauthorized Access',
+          tPage('messages.unauthorizedAccess'),
+          { type: 'danger' }
+        )
       }
       setError(msg)
     } finally {

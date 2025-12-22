@@ -253,10 +253,30 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.DELETE_DOCUMENTS
   ],
   
+  'visa_officer': [
+    // Application management
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.EDIT_APPLICATION,
+    // Workflow management
+    PERMISSIONS.VIEW_WORKFLOW,
+    PERMISSIONS.UPDATE_WORKFLOW_STAGE,
+    // Documents
+    PERMISSIONS.MANAGE_DOCUMENTS,
+    PERMISSIONS.UPLOAD_DOCUMENTS,
+    PERMISSIONS.EDIT_DOCUMENTS,
+    PERMISSIONS.DELETE_DOCUMENTS
+  ],
+  
   'accountant': [
     // View permissions
     PERMISSIONS.VIEW_APPLICATIONS,
     // No workflow or job permissions
+  ],
+  
+  'viewer': [
+    // View permissions only
+    PERMISSIONS.VIEW_APPLICATIONS,
+    PERMISSIONS.VIEW_JOBS
   ]
 }
 
@@ -495,10 +515,19 @@ class AuthService {
     const data = await AuthDataSource.memberLoginVerify({ phone, otp })
     // { token, user_id, agency_id, user_type, phone, full_name }
 
+    // Decode JWT token to get the actual role
+    let actualRole = ROLES.AGENCY_MEMBER; // fallback
+    try {
+      const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+      actualRole = tokenPayload.role || ROLES.AGENCY_MEMBER;
+    } catch (error) {
+      console.warn('Failed to decode JWT token, using fallback role:', error);
+    }
+
     const backendUser = {
       id: data.user_id,
       phone: data.phone || phone,
-      role: ROLES.AGENCY_MEMBER,
+      role: actualRole, // Use actual role from JWT token
       name: data.full_name || 'Agency Member',
       fullName: data.full_name || null,
       isActive: true,

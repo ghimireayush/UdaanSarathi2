@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-21",
+    "page": "dialogs"
+  },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No",
+    "remove": "Remove",
+    "delete": "Delete",
+    "save": "Save",
+    "close": "Close"
+  },
+  "document": {
+    "rejectTitle": "Reject Document",
+    "rejectMessage": "Please provide a reason for rejection:",
+    "rejectPlaceholder": "Enter rejection reason...",
+    "approveTitle": "Approve Document",
+    "approveMessage": "Are you sure you want to approve this document?",
+    "removeTitle": "Remove Document",
+    "removeMessage": "Are you sure you want to remove this document? This action cannot be undone.",
+    "uploadTitle": "Upload Document",
+    "uploadMessage": "Are you sure you want to upload this document?",
+    "uploadSuccessTitle": "Upload Successful",
+    "uploadSuccessMessage": "Document uploaded successfully!",
+    "uploadErrorTitle": "Upload Error",
+    "uploadErrorMessage": "Failed to upload document. Please try again."
+  },
+  "position": {
+    "removeTitle": "Remove Position",
+    "removeMessage": "Are you sure you want to remove this position? This action cannot be undone.",
+    "addTitle": "Add Position",
+    "addMessage": "Add a new position to this job posting?",
+    "editTitle": "Edit Position",
+    "editMessage": "Update this position?"
+  },
+  "member": {
+    "removeTitle": "Remove Member",
+    "removeMessage": "Are you sure you want to remove this member? This action cannot be undone.",
+    "inviteTitle": "Invite Member",
+    "inviteMessage": "Send invitation to this member?",
+    "removeSuccessTitle": "Member Removed",
+    "removeSuccessMessage": "Member has been removed successfully."
+  },
+  "interview": {
+    "scheduleTitle": "Schedule Interview",
+    "scheduleMessage": "Schedule an interview for this candidate?",
+    "rescheduleTitle": "Reschedule Interview",
+    "rescheduleMessage": "Reschedule the interview for this candidate?",
+    "datePromptTitle": "Interview Date",
+    "datePromptMessage": "Enter the interview date",
+    "datePlaceholder": "YYYY-MM-DD",
+    "timePromptTitle": "Interview Time",
+    "timePromptMessage": "Enter the interview time",
+    "timePlaceholder": "HH:MM",
+    "locationPromptTitle": "Interview Location",
+    "locationPromptMessage": "Enter the interview location",
+    "locationPlaceholder": "Location",
+    "interviewerPromptTitle": "Interviewer Name",
+    "interviewerPromptMessage": "Enter the interviewer name (optional)",
+    "notesPromptTitle": "Additional Notes",
+    "notesPromptMessage": "Enter any additional notes (optional)",
+    "notesPlaceholder": "Notes"
+  },
+  "workflow": {
+    "passTitle": "Mark as Passed",
+    "passMessage": "Are you sure you want to mark this interview as passed?",
+    "failTitle": "Mark as Failed",
+    "failMessage": "Are you sure you want to mark this interview as failed?",
+    "rescheduleTitle": "Reschedule Interview",
+    "rescheduleMessage": "Reschedule this interview?",
+    "stageUpdateTitle": "Confirm Stage Update",
+    "stageUpdateMessage": "Move from \"{currentStage}\" to \"{newStage}\"?",
+    "invalidTransitionTitle": "Invalid Stage Transition",
+    "invalidTransitionMessage": "Cannot move from \"{currentStage}\" to \"{newStage}\"."
+  },
+  "auth": {
+    "accessDeniedTitle": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to access this resource.",
+    "unauthorizedTitle": "Unauthorized Access",
+    "unauthorizedMessage": "Your session has expired or you are not authorized to access this resource."
+  },
+  "error": {
+    "title": "Error",
+    "message": "An error occurred. Please try again.",
+    "retryTitle": "Retry",
+    "retryMessage": "Would you like to retry this action?"
+  },
+  "success": {
+    "title": "Success",
+    "message": "Operation completed successfully!"
+  },
+  "confirmation": {
+    "title": "Confirm Action",
+    "message": "Are you sure you want to proceed?"
+  }
+}

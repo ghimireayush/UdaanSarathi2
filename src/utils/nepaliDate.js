@@ -13,10 +13,10 @@ const NEPAL_OFFSET_MINUTES = 5 * 60 + 45
 
 // Helper function to convert UTC to Nepal time
 const convertUtcToNepalTime = (date) => {
-  const utcTime = new Date(date.getTime())
-  // Add Nepal offset (UTC+5:45)
-  utcTime.setMinutes(utcTime.getMinutes() + NEPAL_OFFSET_MINUTES)
-  return utcTime
+  // The nepali-date-converter library works with local JavaScript dates
+  // We don't need to manually add offset - just pass the date as-is
+  // The library handles the conversion internally
+  return date
 }
 
 // Nepali month names
@@ -51,11 +51,10 @@ export const englishToNepali = (englishDate) => {
       throw new Error('Invalid date provided')
     }
     
-    // Convert to Nepal timezone first
-    const nepalTime = convertUtcToNepalTime(date)
-    const nepaliDate = new NepaliDate(nepalTime)
+    // Pass the date directly to NepaliDate - it handles timezone conversion internally
+    const nepaliDate = new NepaliDate(date)
     
-    return {
+    const result = {
       year: nepaliDate.getYear(),
       month: nepaliDate.getMonth() + 1, // NepaliDate uses 0-based months
       day: nepaliDate.getDate(),
@@ -65,6 +64,18 @@ export const englishToNepali = (englishDate) => {
       dayName: NEPALI_DAYS[nepaliDate.getDay()],
       dayNameEn: NEPALI_DAYS_EN[nepaliDate.getDay()]
     }
+    
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('englishToNepali debug:', {
+        input: englishDate,
+        parsed: date.toISOString(),
+        nepaliMonth: nepaliDate.getMonth(),
+        result
+      })
+    }
+    
+    return result
   } catch (error) {
     console.error('Error converting English to Nepali date:', error)
     return null
@@ -210,7 +221,7 @@ export const getRelativeTime = (date, useNepali = false) => {
   const targetDate = typeof date === 'string' ? parseISO(date) : date
   const nepalTargetDate = convertUtcToNepalTime(targetDate)
   
-  const diffMs = nepalTargetDate.getTime() - now.getTime()
+  const diffMs = now.getTime() - nepalTargetDate.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
   const diffMinutes = Math.floor(diffMs / (1000 * 60))
@@ -239,28 +250,33 @@ export const getRelativeTime = (date, useNepali = false) => {
   
   if (Math.abs(diffMinutes) < 1) {
     return labels.just_now
-  } else if (Math.abs(diffDays) === 0) {
+  } else if (diffDays === 0) {
+    // Same day
     return labels.today
-  } else if (diffDays === -1) {
-    return labels.yesterday
   } else if (diffDays === 1) {
+    // Target date is 1 day in the past
+    return labels.yesterday
+  } else if (diffDays === -1) {
+    // Target date is 1 day in the future
     return labels.tomorrow
   } else if (Math.abs(diffDays) < 1) {
+    // Less than a day difference
     const hours = Math.abs(diffHours)
     if (hours < 1) {
       const minutes = Math.abs(diffMinutes)
       return diffMs > 0 
-        ? `${labels.in} ${minutes} ${labels.minutes}`
-        : `${minutes} ${labels.minutes} ${labels.ago}`
+        ? `${minutes} ${labels.minutes} ${labels.ago}`
+        : `${labels.in} ${minutes} ${labels.minutes}`
     }
     return diffMs > 0 
-      ? `${labels.in} ${hours} ${labels.hours}`
-      : `${hours} ${labels.hours} ${labels.ago}`
+      ? `${hours} ${labels.hours} ${labels.ago}`
+      : `${labels.in} ${hours} ${labels.hours}`
   } else {
+    // More than a day difference
     const days = Math.abs(diffDays)
     return diffMs > 0 
-      ? `${labels.in} ${days} ${labels.days}`
-      : `${days} ${labels.days} ${labels.ago}`
+      ? `${days} ${labels.days} ${labels.ago}`
+      : `${labels.in} ${days} ${labels.days}`
   }
 }
 

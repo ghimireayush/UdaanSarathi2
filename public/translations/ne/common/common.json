@@ -1,9 +1,4 @@
 {
-  "meta": {
-    "version": "1.0.0",
-    "lastUpdated": "2024-09-25",
-    "type": "common"
-  },
   "loading": "लोड हुँदै...",
   "error": "त्रुटि",
   "success": "सफल",
@@ -45,38 +40,6 @@
     "applications": "आवेदनहरू",
     "interviews": "अन्तर्वार्ताहरू",
     "settings": "सेटिङहरू",
-    "logout": "लगआउट"
-  },
-  "page": {
-    "navigation": {
-      "items": {
-        "dashboard": "ड्यासबोर्ड",
-        "jobs": "कामहरू",
-        "drafts": "मस्यौदाहरू",
-        "applications": "आवेदनहरू",
-        "interviews": "अन्तर्वार्ताहरू",
-        "workflow": "कार्यप्रवाह",
-        "teamMembers": "टोली सदस्यहरू",
-        "auditLog": "अडिट लग",
-        "agencySettings": "एजेन्सी सेटिङहरू"
-      },
-      "userMenu": {
-        "logout": "लगआउट"
-      }
-    }
-  },
-  "items": {
-    "dashboard": "ड्यासबोर्ड",
-    "jobs": "कामहरू",
-    "drafts": "मस्यौदाहरू",
-    "applications": "आवेदनहरू",
-    "interviews": "अन्तर्वार्ताहरू",
-    "workflow": "कार्यप्रवाह",
-    "teamMembers": "टोली सदस्यहरू",
-    "auditLog": "अडिट लग",
-    "agencySettings": "एजेन्सी सेटिङहरू"
-  },
-  "userMenu": {
     "logout": "लगआउट"
   },
   "pagination": {

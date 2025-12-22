@@ -44,6 +44,10 @@
     "resendOtp": "Resend OTP"
   },
   "legal": {
-    "terms": "By registering, you agree to our Terms & Conditions and Privacy Policy"
+    "terms": "By registering, you agree to our Terms & Conditions and Privacy Policy",
+    "agreeToThe": "I agree to the",
+    "termsAndConditions": "Terms & Conditions",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy"
   }
 }

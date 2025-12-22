@@ -247,6 +247,58 @@ export const formatTime12Hour = (time24) => {
   return `${hours}:${minutes} ${period}`
 }
 
+/**
+ * Format date with relative time labels (today, yesterday, tomorrow, or absolute date)
+ * Handles Nepal timezone correctly
+ * @param {Date|string} date - Date to format
+ * @param {Object} options - Formatting options
+ * @param {string} options.format - Date format ('MMM dd, yyyy', 'yyyy-MM-dd', etc.)
+ * @param {boolean} options.useRelative - Use relative labels (default: true)
+ * @param {boolean} options.useNepali - Use Nepali labels (default: false)
+ * @returns {string} Formatted date string
+ * @example
+ * formatDateWithRelative(new Date()) // 'today'
+ * formatDateWithRelative(yesterday) // 'yesterday'
+ * formatDateWithRelative(futureDate) // 'Dec 25, 2025'
+ */
+export const formatDateWithRelative = (date, options = {}) => {
+  const {
+    format: dateFormat = 'MMM dd, yyyy',
+    useRelative = true,
+    useNepali = false
+  } = options
+
+  if (!date) return 'N/A'
+
+  try {
+    // Import date-fns functions
+    const { format: dfFormat, isToday: dfIsToday, isYesterday, isTomorrow, parseISO } = require('date-fns')
+    
+    const dateObj = typeof date === 'string' ? parseISO(date) : date
+    
+    if (!useRelative) {
+      return dfFormat(dateObj, dateFormat)
+    }
+
+    // Check relative dates
+    if (dfIsToday(dateObj)) {
+      return useNepali ? 'आज' : 'today'
+    }
+    if (isYesterday(dateObj)) {
+      return useNepali ? 'हिजो' : 'yesterday'
+    }
+    if (isTomorrow(dateObj)) {
+      return useNepali ? 'भोलि' : 'tomorrow'
+    }
+
+    // Fall back to absolute date format
+    return dfFormat(dateObj, dateFormat)
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'Invalid Date'
+  }
+}
+
 export default {
   delay,
   deepClone,
@@ -265,5 +317,6 @@ export default {
   sortBy,
   groupBy,
   filterBySearch,
-  formatTime12Hour
+  formatTime12Hour,
+  formatDateWithRelative
 }

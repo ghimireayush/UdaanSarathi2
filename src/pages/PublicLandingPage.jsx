@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
+import { isOwnerRole, needsAgencySetup } from "../utils/roleHelpers.js";
 import Navbar from "../components/public/Navbar";
 import HeroSection from "../components/public/HeroSection";
 import StatsSection from "../components/public/StatsSection";
@@ -28,13 +29,12 @@ const PublicLandingPage = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       // Check if user is an owner
-      const isOwner = user.role === 'agency_owner' || user.role === 'owner' || user.userType === 'owner'
-      if (isOwner) {
+      if (isOwnerRole(user)) {
         // Check if they have an agency
-        if (user.agencyId || user.agency_id) {
-          navigate('/dashboard', { replace: true });
-        } else {
+        if (needsAgencySetup(user)) {
           navigate('/setup-company', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
         }
       } else {
         // Member or other user types go to dashboard

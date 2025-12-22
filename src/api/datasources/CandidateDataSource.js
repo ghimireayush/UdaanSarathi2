@@ -7,12 +7,23 @@ import { mapStageToBackend } from '../../utils/stageMapper.js'
  */
 class CandidateDataSource {
   /**
+   * Get complete candidate details by application ID only
+   * Simpler endpoint that only requires application ID
+   * @param {string} applicationId - Application UUID
+   * @returns {Promise<Object>} Complete candidate details with application context
+   */
+  async getCandidateDetailsByApplication(applicationId) {
+    return httpClient.get(`/applications/${applicationId}/candidate-details`)
+  }
+
+  /**
    * Get complete candidate details for a job application
    * @param {string} license - Agency license number
    * @param {string} jobId - Job posting UUID
    * @param {string} candidateId - Candidate UUID
    * @param {string} applicationId - Application UUID (optional, for specific application)
    * @returns {Promise<Object>} Complete candidate details
+   * @deprecated Use getCandidateDetailsByApplication instead
    */
   async getCandidateDetails(license, jobId, candidateId, applicationId = null) {
     let url = `/agencies/${license}/jobs/${jobId}/candidates/${candidateId}/details`

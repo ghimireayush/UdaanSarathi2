@@ -1,19 +1,26 @@
 /**
- * SINGLE SOURCE OF TRUTH FOR ALL ROLES
+ * FRONTEND ROLES CONFIGURATION
  * 
- * This file defines all roles in the system.
- * Any changes to roles (add, remove, rename) should be made here.
+ * IMPORTANT: These roles are now fetched from the backend via /roles/available endpoint.
+ * This file serves as a fallback and reference.
  * 
- * All other files (RBAC, team members, auth service) reference this file.
+ * Backend is the source of truth for available roles.
+ * See: code/src/config/rolePermissions.ts
+ * 
+ * Supported roles (from backend):
+ * - owner: Agency owner (not assignable to team members)
+ * - admin: Manages operations, team, and reports
+ * - recruiter: Focuses on candidate sourcing and screening
+ * - coordinator: Manages interview scheduling and coordination
+ * - visa_officer: Handles document verification and visa processing
+ * - viewer: Read-only access to view information
  */
 
 /**
  * Role definitions with metadata
  * 
- * To add a new role:
- * 1. Add it to this ROLES object with key, value, label, description, and color
- * 2. Add permissions in roleBasedAccess.js ROLE_FEATURES
- * 3. That's it! The role will automatically appear in team member dropdowns
+ * NOTE: This is now primarily used as a fallback when the API is unavailable.
+ * The useAvailableRoles hook fetches the actual roles from the backend.
  */
 export const ROLES = {
   // Top-level roles
@@ -29,28 +36,9 @@ export const ROLES = {
   ADMIN: {
     key: 'admin',
     value: 'admin',
-    label: 'Administrator',
-    description: 'Manages operations, team, and most features',
+    label: 'Admin',
+    description: 'Manages operations, team, and reports',
     color: 'bg-blue-100 text-blue-800',
-    canBeAssignedToMembers: true,
-  },
-  
-  MANAGER: {
-    key: 'manager',
-    value: 'manager',
-    label: 'Manager',
-    description: 'Manages recruitment process and team coordination',
-    color: 'bg-green-100 text-green-800',
-    canBeAssignedToMembers: true,
-  },
-  
-  // Staff roles
-  STAFF: {
-    key: 'staff',
-    value: 'staff',
-    label: 'Staff',
-    description: 'Handles job postings and candidate applications',
-    color: 'bg-yellow-100 text-yellow-800',
     canBeAssignedToMembers: true,
   },
   
@@ -72,22 +60,21 @@ export const ROLES = {
     canBeAssignedToMembers: true,
   },
   
-  // Specialized roles
   VISA_OFFICER: {
-    key: 'visaOfficer',
-    value: 'visaOfficer',
+    key: 'visa_officer',
+    value: 'visa_officer',
     label: 'Visa Officer',
-    description: 'Handles visa processing and documentation',
-    color: 'bg-cyan-100 text-cyan-800',
+    description: 'Handles document verification and visa processing',
+    color: 'bg-green-100 text-green-800',
     canBeAssignedToMembers: true,
   },
   
-  ACCOUNTANT: {
-    key: 'accountant',
-    value: 'accountant',
-    label: 'Accountant',
-    description: 'Manages payments and financial tracking',
-    color: 'bg-orange-100 text-orange-800',
+  VIEWER: {
+    key: 'viewer',
+    value: 'viewer',
+    label: 'Viewer',
+    description: 'Read-only access to view information',
+    color: 'bg-gray-100 text-gray-800',
     canBeAssignedToMembers: true,
   },
 };

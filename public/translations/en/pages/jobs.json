@@ -45,7 +45,9 @@
     },
     "applicationStatus": {
       "applicants": "Applicants ({{count}})",
+      "applied": "Applied: {{count}}",
       "shortlisted": "Shortlisted: {{count}}",
+      "withdrawn": "Withdrawn: {{count}}",
       "interviews": "Interviews: {{today}} of {{total}} today"
     },
     "actions": {

@@ -9,6 +9,7 @@ import LanguageSwitch from '../components/LanguageSwitch'
 import { useLanguage } from '../hooks/useLanguage'
 import LoadingScreen from '../components/LoadingScreen'
 import logo from '../assets/logo.svg'
+import dialogService from '../services/dialogService.js'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -154,7 +155,11 @@ const Login = () => {
       }
       
       if (msg.includes('Access Denied') || msg.toLowerCase().includes('administrator')) {
-        window.alert(tPage('messages.accessDenied'))
+        await dialogService.alert(
+          'Access Denied',
+          tPage('messages.accessDenied'),
+          { type: 'danger' }
+        )
       }
       setError(msg)
     } finally {

@@ -224,21 +224,21 @@ const Register = () => {
                     className="mt-1 h-4 w-4 text-brand-navy focus:ring-brand-blue-bright border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700"
                   />
                   <label htmlFor="terms" className="text-sm text-gray-700 dark:text-gray-300">
-                    I agree to the{' '}
+                    {tPage('legal.agreeToThe')}{' '}
                     <Link
                       to="/terms-and-conditions"
                       target="_blank"
                       className="text-brand-navy hover:text-brand-navy/80 font-semibold underline dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
                     >
-                      Terms & Conditions
+                      {tPage('legal.termsAndConditions')}
                     </Link>
-                    {' '}and{' '}
+                    {' '}{tPage('legal.and')}{' '}
                     <Link
                       to="/privacy-policy"
                       target="_blank"
                       className="text-brand-navy hover:text-brand-navy/80 font-semibold underline dark:text-brand-blue-bright dark:hover:text-brand-blue-bright/80"
                     >
-                      Privacy Policy
+                      {tPage('legal.privacyPolicy')}
                     </Link>
                   </label>
                 </div>

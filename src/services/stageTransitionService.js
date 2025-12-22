@@ -25,6 +25,7 @@
 import ApplicationDataSource from '../api/datasources/ApplicationDataSource.js'
 import InterviewDataSource from '../api/datasources/InterviewDataSource.js'
 import authService from './authService.js'
+import dialogService from './dialogService.js'
 
 // Stage transition rules - matching backend
 const STAGE_TRANSITIONS = {
@@ -53,6 +54,12 @@ class StageTransitionService {
   validateStageTransition(currentStage, targetStage) {
     // Allow pass/fail from interview_scheduled stage
     if (currentStage === 'interview_scheduled' && 
+        (targetStage === 'interview_passed' || targetStage === 'interview_failed')) {
+      return true
+    }
+    
+    // Allow pass/fail from interview_rescheduled stage (same as scheduled)
+    if (currentStage === 'interview_rescheduled' && 
         (targetStage === 'interview_passed' || targetStage === 'interview_failed')) {
       return true
     }
@@ -140,18 +147,61 @@ class StageTransitionService {
    * @returns {Promise<Object|null>} Interview details or null
    */
   async promptForInterviewDetails() {
-    // This is a simple implementation - in a real app, you'd use a proper modal/dialog
-    const date = window.prompt('Enter interview date (YYYY-MM-DD):')
+    // Use custom dialog service instead of browser prompts
+    const date = await dialogService.prompt(
+      'Interview Date',
+      'Enter the interview date',
+      {
+        placeholder: 'YYYY-MM-DD',
+        confirmText: 'Next',
+        cancelText: 'Cancel'
+      }
+    )
     if (!date) return null
     
-    const time = window.prompt('Enter interview time (HH:MM):', '10:00')
+    const time = await dialogService.prompt(
+      'Interview Time',
+      'Enter the interview time',
+      {
+        defaultValue: '10:00',
+        placeholder: 'HH:MM',
+        confirmText: 'Next',
+        cancelText: 'Cancel'
+      }
+    )
     if (!time) return null
     
-    const location = window.prompt('Enter interview location:', 'Office')
+    const location = await dialogService.prompt(
+      'Interview Location',
+      'Enter the interview location',
+      {
+        defaultValue: 'Office',
+        placeholder: 'Location',
+        confirmText: 'Next',
+        cancelText: 'Cancel'
+      }
+    )
     if (!location) return null
     
-    const interviewer = window.prompt('Enter interviewer name (optional):')
-    const notes = window.prompt('Enter additional notes (optional):')
+    const interviewer = await dialogService.prompt(
+      'Interviewer Name',
+      'Enter the interviewer name (optional)',
+      {
+        placeholder: 'Name',
+        confirmText: 'Next',
+        cancelText: 'Cancel'
+      }
+    )
+    
+    const notes = await dialogService.prompt(
+      'Additional Notes',
+      'Enter any additional notes (optional)',
+      {
+        placeholder: 'Notes',
+        confirmText: 'Done',
+        cancelText: 'Cancel'
+      }
+    )
     
     return {
       date,

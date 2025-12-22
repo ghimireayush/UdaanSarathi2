@@ -37,16 +37,17 @@
     "applicantDistribution": "Applicant Distribution by Job"
   },
   "candidateCard": {
-    "passport": "Passport: {{number}}",
-    "documents": "{{count}} document{{plural}} attached",
-    "interviewedAt": "Interviewed: {{date}}",
-    "remarks": "Remarks: {{remarks}}"
+    "passport": "Passport:",
+    "documents": "documents attached",
+    "interviewedAt": "Interviewed:",
+    "remarks": "Remarks:"
   },
   "actions": {
     "viewSummary": "View Summary",
     "updateStatus": "Update Status",
     "attachDocument": "Attach Document",
-    "removeDocument": "Remove Document"
+    "removeDocument": "Remove Document",
+    "reject": "Reject"
   },
   "modals": {
     "stageTransition": {
@@ -58,11 +59,19 @@
       "cancelButton": "Cancel",
       "okayButton": "Okay"
     },
+    "interview": {
+      "failConfirmMessage": "Are you sure you want to mark this interview as FAILED? This action cannot be undone."
+    },
     "documentAttachment": {
       "title": "Confirm Document Attachment",
       "message": "Are you sure you want to attach the document \"{{documentName}}\" to this candidate?",
       "confirmButton": "Yes, Attach",
       "cancelButton": "Cancel"
+    },
+    "common": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "cannotUndo": "This action cannot be undone."
     },
     "error": {
       "title": "Error",
@@ -87,5 +96,44 @@
   "error": {
     "failedToLoad": "Failed to Load",
     "retry": "Retry"
+  },
+  "interviewSchedule": {
+    "scheduleTitle": "Schedule Interview",
+    "rescheduleTitle": "Reschedule Interview",
+    "candidateLabel": "Candidate:",
+    "dateLabel": "Interview Date",
+    "dateRequired": "Interview date is required",
+    "dateFuture": "Interview date must be in the future",
+    "timeLabel": "Interview Time",
+    "timeRequired": "Interview time is required",
+    "locationLabel": "Location",
+    "locationPlaceholder": "e.g., Main Office - Conference Room A, or Online (Zoom)",
+    "locationRequired": "Interview location is required",
+    "interviewerLabel": "Interviewer",
+    "interviewerRequired": "Interviewer is required",
+    "interviewerPlaceholder": "Enter interviewer name",
+    "loadingMembers": "Loading team members...",
+    "durationLabel": "Duration (minutes)",
+    "durationInvalid": "Duration must be between 15 and 480 minutes",
+    "documentsLabel": "Required Documents",
+    "documentsSelected": "Selected: {{count}} document(s)",
+    "notesLabel": "Additional Notes",
+    "notesPlaceholder": "Any additional instructions or notes for the candidate...",
+    "documentTypes": {
+      "cv": "CV",
+      "citizenship": "Citizenship",
+      "education": "Education Certificate",
+      "photo": "PP Photo",
+      "hardcopy": "Hardcopy Requirements",
+      "passport": "Passport",
+      "experience_letters": "Experience Letters"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "schedule": "Schedule Interview",
+      "reschedule": "Reschedule Interview",
+      "scheduling": "Scheduling...",
+      "rescheduling": "Rescheduling..."
+    }
   }
 }

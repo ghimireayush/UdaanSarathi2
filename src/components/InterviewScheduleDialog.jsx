@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Calendar, Clock, MapPin, User, FileText, AlertCircle } from 'lucide-react'
 import { getMembersList } from '../services/memberService'
+import { useLanguage } from '../hooks/useLanguage'
 
 /**
  * Interview Schedule Dialog
@@ -21,6 +22,7 @@ const InterviewScheduleDialog = ({
   initialData = null,
   isReschedule = false
 }) => {
+  const { tPageSync } = useLanguage({ pageName: 'workflow', autoLoad: true })
   const [formData, setFormData] = useState({
     date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow by default
     time: '10:00',
@@ -39,13 +41,13 @@ const InterviewScheduleDialog = ({
 
   // Document types that can be required (matching JobDetails)
   const documentTypes = [
-    { id: 'cv', label: 'CV' },
-    { id: 'citizenship', label: 'Citizenship' },
-    { id: 'education', label: 'Education Certificate' },
-    { id: 'photo', label: 'PP Photo' },
-    { id: 'hardcopy', label: 'Hardcopy Requirements' },
-    { id: 'passport', label: 'Passport' },
-    { id: 'experience_letters', label: 'Experience Letters' }
+    { id: 'cv', label: tPageSync('interviewSchedule.documentTypes.cv') },
+    { id: 'citizenship', label: tPageSync('interviewSchedule.documentTypes.citizenship') },
+    { id: 'education', label: tPageSync('interviewSchedule.documentTypes.education') },
+    { id: 'photo', label: tPageSync('interviewSchedule.documentTypes.photo') },
+    { id: 'hardcopy', label: tPageSync('interviewSchedule.documentTypes.hardcopy') },
+    { id: 'passport', label: tPageSync('interviewSchedule.documentTypes.passport') },
+    { id: 'experience_letters', label: tPageSync('interviewSchedule.documentTypes.experience_letters') }
   ]
 
   // Load team members on mount
@@ -89,30 +91,30 @@ const InterviewScheduleDialog = ({
     const newErrors = {}
 
     if (!formData.date) {
-      newErrors.date = 'Interview date is required'
+      newErrors.date = tPageSync('interviewSchedule.dateRequired')
     } else {
       // Validate date is not in the past
       const selectedDate = new Date(`${formData.date}T${formData.time}`)
       const now = new Date()
       if (selectedDate < now) {
-        newErrors.date = 'Interview date must be in the future'
+        newErrors.date = tPageSync('interviewSchedule.dateFuture')
       }
     }
 
     if (!formData.time) {
-      newErrors.time = 'Interview time is required'
+      newErrors.time = tPageSync('interviewSchedule.timeRequired')
     }
 
     if (!formData.location || formData.location.trim() === '') {
-      newErrors.location = 'Interview location is required'
+      newErrors.location = tPageSync('interviewSchedule.locationRequired')
     }
 
     if (!formData.interviewer && !formData.interviewerName) {
-      newErrors.interviewer = 'Interviewer is required'
+      newErrors.interviewer = tPageSync('interviewSchedule.interviewerRequired')
     }
 
     if (formData.duration < 15 || formData.duration > 480) {
-      newErrors.duration = 'Duration must be between 15 and 480 minutes'
+      newErrors.duration = tPageSync('interviewSchedule.durationInvalid')
     }
 
     setErrors(newErrors)
@@ -207,11 +209,11 @@ const InterviewScheduleDialog = ({
           <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                {isReschedule ? 'Reschedule Interview' : 'Schedule Interview'}
+                {isReschedule ? tPageSync('interviewSchedule.rescheduleTitle') : tPageSync('interviewSchedule.scheduleTitle')}
               </h2>
               {candidateName && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Candidate: {candidateName}
+                  {tPageSync('interviewSchedule.candidateLabel')} {candidateName}
                 </p>
               )}
             </div>
@@ -231,7 +233,7 @@ const InterviewScheduleDialog = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  Interview Date *
+                  {tPageSync('interviewSchedule.dateLabel')} *
                 </label>
                 <input
                   type="date"
@@ -254,7 +256,7 @@ const InterviewScheduleDialog = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Clock className="w-4 h-4 inline mr-1" />
-                  Interview Time *
+                  {tPageSync('interviewSchedule.timeLabel')} *
                 </label>
                 <input
                   type="time"
@@ -286,13 +288,13 @@ const InterviewScheduleDialog = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
-                Location *
+                {tPageSync('interviewSchedule.locationLabel')} *
               </label>
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Main Office - Conference Room A, or Online (Zoom)"
+                placeholder={tPageSync('interviewSchedule.locationPlaceholder')}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
                   errors.location ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
@@ -309,11 +311,11 @@ const InterviewScheduleDialog = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <User className="w-4 h-4 inline mr-1" />
-                  Interviewer *
+                  {tPageSync('interviewSchedule.interviewerLabel')} *
                 </label>
                 {loadingMembers ? (
                   <div className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                    Loading team members...
+                    {tPageSync('interviewSchedule.loadingMembers')}
                   </div>
                 ) : teamMembers.length > 0 ? (
                   <select
@@ -324,7 +326,7 @@ const InterviewScheduleDialog = ({
                     }`}
                     required
                   >
-                    <option value="">Select interviewer</option>
+                    <option value="">{tPageSync('interviewSchedule.interviewerLabel')}</option>
                     {teamMembers.map(member => (
                       <option key={member.id} value={member.id}>
                         {member.full_name || member.name} - {member.role}
@@ -336,7 +338,7 @@ const InterviewScheduleDialog = ({
                     type="text"
                     value={formData.interviewerName}
                     onChange={(e) => setFormData({ ...formData, interviewerName: e.target.value })}
-                    placeholder="Enter interviewer name"
+                    placeholder={tPageSync('interviewSchedule.interviewerPlaceholder')}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
                       errors.interviewer ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                     }`}
@@ -352,7 +354,7 @@ const InterviewScheduleDialog = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Clock className="w-4 h-4 inline mr-1" />
-                  Duration (minutes)
+                  {tPageSync('interviewSchedule.durationLabel')}
                 </label>
                 <input
                   type="number"
@@ -375,7 +377,7 @@ const InterviewScheduleDialog = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <FileText className="w-4 h-4 inline mr-1" />
-                Required Documents
+                {tPageSync('interviewSchedule.documentsLabel')}
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {documentTypes.map(doc => (
@@ -394,20 +396,20 @@ const InterviewScheduleDialog = ({
                 ))}
               </div>
               <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Selected: {formData.requirements.length} document(s)
+                {tPageSync('interviewSchedule.documentsSelected').replace('{{count}}', formData.requirements.length)}
               </p>
             </div>
 
             {/* Notes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Additional Notes
+                {tPageSync('interviewSchedule.notesLabel')}
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows="3"
-                placeholder="Any additional instructions or notes for the candidate..."
+                placeholder={tPageSync('interviewSchedule.notesPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
@@ -430,14 +432,14 @@ const InterviewScheduleDialog = ({
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 disabled={isSubmitting}
               >
-                Cancel
+                {tPageSync('interviewSchedule.buttons.cancel')}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Scheduling...' : (isReschedule ? 'Reschedule Interview' : 'Schedule Interview')}
+                {isSubmitting ? (isReschedule ? tPageSync('interviewSchedule.buttons.rescheduling') : tPageSync('interviewSchedule.buttons.scheduling')) : (isReschedule ? tPageSync('interviewSchedule.buttons.reschedule') : tPageSync('interviewSchedule.buttons.schedule'))}
               </button>
             </div>
           </form>

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNotificationContext } from '../contexts/NotificationContext'
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService'
 import { getAssignableRoles, getRoleLabel } from '../config/roles'
+import dialogService from '../services/dialogService.js'
 
 const MemberManagement = () => {
   const [members, setMembers] = useState([])
@@ -72,7 +73,16 @@ const MemberManagement = () => {
   }
 
   const handleRemoveMember = async (memberId) => {
-    if (!window.confirm('Are you sure you want to remove this member?')) return
+    const confirmed = await dialogService.confirm(
+      'Remove Member',
+      'Are you sure you want to remove this member? This action cannot be undone.',
+      {
+        type: 'danger',
+        confirmText: 'Remove',
+        cancelText: 'Cancel'
+      }
+    )
+    if (!confirmed) return
 
     try {
       setLoading(true)

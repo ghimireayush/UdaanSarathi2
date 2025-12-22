@@ -82,7 +82,11 @@
     "confirmStageUpdate": {
       "title": "Confirm Stage Update",
       "message": "Are you sure you want to move this candidate from \"{{from}}\" to \"{{to}}\"? This action cannot be undone.",
-      "confirm": "Yes, Update Stage"
+      "confirm": "Yes, Update Stage",
+      "cancel": "Cancel",
+      "invalidTitle": "Invalid Stage Transition",
+      "invalidMessage": "You cannot move directly from \"{{from}}\" to \"{{to}}\". Please follow the proper workflow sequence.",
+      "invalidConfirm": "Okay"
     },
     "scheduleInterview": {
       "title": "Schedule Interview",

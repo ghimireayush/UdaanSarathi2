@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
+import { needsAgencySetup } from '../utils/roleHelpers.js'
 import Loading from './Loading'
 
 const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null, requiredPermissions = [], requiresAgency = true }) => {
@@ -74,8 +75,7 @@ const PrivateRoute = ({ children, requiredRole = null, requiredPermission = null
   // Check access permissions
   const hasAccess = () => {
     // Check if agency is required
-    const isOwner = user?.role === 'agency_owner' || user?.role === 'owner' || user?.userType === 'owner'
-    if (requiresAgency && isOwner && !user?.agencyId && !user?.agency_id) return false
+    if (requiresAgency && needsAgencySetup(user)) return false
     if (requiredRole && !hasRole(requiredRole)) return false
     if (requiredPermission && !hasPermission(requiredPermission)) return false
     if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) return false

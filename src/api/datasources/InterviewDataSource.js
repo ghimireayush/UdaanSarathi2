@@ -35,22 +35,41 @@ class InterviewDataSource {
   /**
    * Reschedule an interview
    * @param {string} applicationId - Application ID
-   * @param {string} interviewId - Interview ID
-   * @param {Object} updates - Updated interview details
+   * @param {Object|string} interviewIdOrUpdates - Interview ID (legacy) or updates object
+   * @param {Object} updates - Updated interview details (optional, for backward compatibility)
    * @returns {Promise<Object>} Updated interview
    */
-  async rescheduleInterview(applicationId, interviewId, updates) {
-    return httpClient.post(`/applications/${applicationId}/reschedule-interview`, {
-      interview_id: interviewId,
-      interview_date_ad: updates.date,
-      interview_time: updates.time,
-      duration_minutes: updates.duration,
-      location: updates.location,
-      contact_person: updates.interviewer,
-      required_documents: updates.requirements,
-      notes: updates.notes,
-      updatedBy: updates.updatedBy || 'agency'
-    })
+  async rescheduleInterview(applicationId, interviewIdOrUpdates, updates) {
+    // Handle both old (3 params) and new (2 params) signatures
+    let updateData
+    if (typeof interviewIdOrUpdates === 'string') {
+      // Old signature: rescheduleInterview(appId, interviewId, updates)
+      updateData = {
+        interview_id: interviewIdOrUpdates,
+        interview_date_ad: updates.date,
+        interview_time: updates.time,
+        duration_minutes: updates.duration,
+        location: updates.location,
+        contact_person: updates.interviewer,
+        required_documents: updates.requirements,
+        notes: updates.notes,
+        updatedBy: updates.updatedBy || 'agency'
+      }
+    } else {
+      // New signature: rescheduleInterview(appId, updates)
+      updateData = {
+        interview_date_ad: interviewIdOrUpdates.date,
+        interview_time: interviewIdOrUpdates.time,
+        duration_minutes: interviewIdOrUpdates.duration,
+        location: interviewIdOrUpdates.location,
+        contact_person: interviewIdOrUpdates.interviewer,
+        required_documents: interviewIdOrUpdates.requirements,
+        notes: interviewIdOrUpdates.notes,
+        updatedBy: interviewIdOrUpdates.updatedBy || 'agency'
+      }
+    }
+    
+    return httpClient.post(`/applications/${applicationId}/reschedule-interview`, updateData)
   }
 
   /**

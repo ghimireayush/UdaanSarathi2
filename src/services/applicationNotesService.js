@@ -1,4 +1,4 @@
-import api from '../api/axiosConfig'
+import httpClient from '../api/config/httpClient.js'
 
 const applicationNotesService = {
   /**
@@ -10,7 +10,7 @@ const applicationNotesService = {
    */
   async createNote(applicationId, noteText, isPrivate = true) {
     try {
-      const response = await api.post('/application-notes', {
+      const response = await httpClient.post('/application-notes', {
         job_application_id: applicationId,
         note_text: noteText,
         is_private: isPrivate,
@@ -29,7 +29,7 @@ const applicationNotesService = {
    */
   async getNotesByApplication(applicationId) {
     try {
-      const response = await api.get(`/application-notes/application/${applicationId}`)
+      const response = await httpClient.get(`/application-notes/application/${applicationId}`)
       return response.data
     } catch (error) {
       console.error('Error fetching notes:', error)
@@ -45,7 +45,7 @@ const applicationNotesService = {
    */
   async updateNote(noteId, updates) {
     try {
-      const response = await api.put(`/application-notes/${noteId}`, updates)
+      const response = await httpClient.put(`/application-notes/${noteId}`, updates)
       return response.data
     } catch (error) {
       console.error('Error updating note:', error)
@@ -60,7 +60,7 @@ const applicationNotesService = {
    */
   async deleteNote(noteId) {
     try {
-      const response = await api.delete(`/application-notes/${noteId}`)
+      const response = await httpClient.delete(`/application-notes/${noteId}`)
       return response.data
     } catch (error) {
       console.error('Error deleting note:', error)

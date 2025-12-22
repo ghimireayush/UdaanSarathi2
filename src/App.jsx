@@ -12,7 +12,6 @@ import MemberManagement from "./pages/MemberManagement";
 
 import Applications from "./pages/Applications";
 import Interviews from "./pages/Interviews";
-import Workflow from "./pages/Workflow";
 import WorkflowV2 from "./pages/WorkflowV2";
 import Drafts from "./pages/Drafts";
 import DraftWizard from "./pages/DraftWizard";
@@ -37,15 +36,18 @@ import PolicyPage from "./pages/PolicyPage";
 import TermsPage from "./pages/TermsPage";
 
 import MVPTestingDashboard from "./components/MVPTestingDashboard.jsx";
+import S2TestHarness from "./components/S2TestHarness.jsx";
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ToastProvider from "./components/ToastProvider";
 import ConfirmProvider from "./components/ConfirmProvider";
+import DialogProvider from "./components/DialogProvider";
 import LoadingScreen from "./components/LoadingScreen";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { AgencyProvider } from "./contexts/AgencyContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { WorkflowStagesProvider } from "./contexts/WorkflowStagesContext";
 import { useAuth } from "./contexts/AuthContext";
 import { PERMISSIONS } from "./services/authService.js";
 import i18nService from "./services/i18nService";
@@ -80,10 +82,12 @@ function App() {
         <LanguageProvider>
           <NotificationProvider>
             <AgencyProvider>
-              <ToastProvider>
-                <ConfirmProvider>
-                  <Suspense fallback={<LoadingScreen />}>
-                    <Routes>
+              <WorkflowStagesProvider>
+                <ToastProvider>
+                  <ConfirmProvider>
+                    <DialogProvider>
+                      <Suspense fallback={<LoadingScreen />}>
+                        <Routes>
                     {/* Public Routes */}
                     <Route path="/public" element={<PublicLandingPage />} />
                     <Route path="/about" element={<AboutPage />} />
@@ -248,18 +252,6 @@ function App() {
                       }
                     />
                     <Route
-                      path="/workflow-old"
-                      element={
-                        <Layout>
-                          <PrivateRoute
-                            requiredPermission={PERMISSIONS.VIEW_WORKFLOW}
-                          >
-                            <Workflow />
-                          </PrivateRoute>
-                        </Layout>
-                      }
-                    />
-                    <Route
                       path="/drafts"
                       element={
                         <Layout>
@@ -339,6 +331,16 @@ function App() {
                       }
                     />
                     <Route
+                      path="/s2-test"
+                      element={
+                        <Layout>
+                          <PrivateRoute>
+                            <S2TestHarness />
+                          </PrivateRoute>
+                        </Layout>
+                      }
+                    />
+                    <Route
                       path="/job-management"
                       element={
                         <Layout>
@@ -369,9 +371,11 @@ function App() {
                       }
                     />
                   </Routes>
-                  </Suspense>
-                </ConfirmProvider>
-              </ToastProvider>
+                      </Suspense>
+                    </DialogProvider>
+                  </ConfirmProvider>
+                </ToastProvider>
+              </WorkflowStagesProvider>
             </AgencyProvider>
           </NotificationProvider>
         </LanguageProvider>

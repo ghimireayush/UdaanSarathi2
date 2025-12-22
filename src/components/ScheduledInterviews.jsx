@@ -99,48 +99,21 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
   }
 
   // Handle candidate click to open sidebar
-  const handleCandidateClick = async (candidate) => {
-    try {
-      setIsLoadingFiltered(true)
-      
-      // Get agency license
-      const license = agencyData?.license_number
-      if (!license) {
-        throw new Error('Agency license not available')
+  const handleCandidateClick = (candidateOrApplication) => {
+    // Just pass the candidate object - let CandidateSummaryS2 handle API calls
+    let candidate = candidateOrApplication;
+    
+    // If it's an application object, extract the candidate
+    if (candidateOrApplication.candidate) {
+      candidate = candidateOrApplication.candidate;
+      // Ensure application ID is attached to candidate
+      if (!candidate.application) {
+        candidate.application = { id: candidateOrApplication.id };
       }
-      
-      // Get the application ID
-      const applicationId = candidate.application_id || candidate.application?.id
-      
-      if (!applicationId) {
-        console.warn('No application ID found, using candidate data as-is')
-        setSelectedCandidate(candidate)
-        setIsSidebarOpen(true)
-        return
-      }
-      
-      // Fetch complete candidate details from unified endpoint
-      const candidateDetails = await CandidateDataSource.getCandidateDetails(
-        license,
-        jobId,
-        candidate.id,
-        applicationId
-      )
-      
-      console.log('✅ Loaded candidate details:', candidateDetails)
-      
-      setSelectedCandidate(candidateDetails)
-      setIsSidebarOpen(true)
-      
-    } catch (error) {
-      console.error('❌ Failed to load candidate details:', error)
-      
-      // Fallback: use the candidate data we already have
-      setSelectedCandidate(candidate)
-      setIsSidebarOpen(true)
-    } finally {
-      setIsLoadingFiltered(false)
     }
+    
+    setSelectedCandidate(candidate);
+    setIsSidebarOpen(true);
   }
 
   useEffect(() => {
@@ -787,32 +760,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
     <div className="space-y-6">
       {/* Candidate Sidebar - Unified Component */}
       <CandidateSummaryS2
-        key={selectedCandidate?.id || 'sidebar'}
-        candidate={selectedCandidate}
+        applicationId={selectedCandidate?.application?.id}
+        candidateId={selectedCandidate?.id}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
-        isInterviewContext={true}
-        jobId={jobId || selectedCandidate?.job_id || selectedCandidate?.interview?.job_posting_id}
-        onMarkPass={async (candidateId) => {
-          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
-          await handleAction({ id: candidateId }, 'pass')
-        }}
-        onMarkFail={async (candidateId) => {
-          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
-          await handleAction({ id: candidateId }, 'fail')
-        }}
-        onReject={async (candidateId) => {
-          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
-          setActionType('reject')
-        }}
-        onReschedule={async (candidateId) => {
-          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
-          setActionType('reschedule')
-        }}
-        onSendReminder={async (candidateId) => {
-          setSelectedCandidate(prev => ({ ...prev, id: candidateId }))
-          await handleAction({ id: candidateId }, 'reminder')
-        }}
       />
 
       {/* Subtabs/Chips - Only show in Contemporary mode */}

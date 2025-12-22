@@ -1,0 +1,49 @@
+{
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "view": "View",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "next": "Next",
+  "previous": "Previous",
+  "page": "Page",
+  "of": "of",
+  "items": "items",
+  "selected": "selected",
+  "language": "Language",
+  "changeLanguage": "Change language",
+  "validation": {
+    "required": "This field is required",
+    "invalid": "Invalid input",
+    "tooShort": "Input is too short",
+    "tooLong": "Input is too long",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number"
+  },
+  "buttons": {
+    "submit": "Submit",
+    "reset": "Reset",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "continue": "Continue"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "interviews": "Interviews",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} results",
+    "page": "Page {{current}} of {{total}}"
+  }
+}

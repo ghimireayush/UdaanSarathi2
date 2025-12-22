@@ -45,7 +45,9 @@
     },
     "applicationStatus": {
       "applicants": "आवेदकहरू ({{count}})",
+      "applied": "आवेदन दिएको: {{count}}",
       "shortlisted": "छनोट सूचीमा: {{count}}",
+      "withdrawn": "फिर्ता लिइएको: {{count}}",
       "interviews": "अन्तर्वार्ता: आज {{today}} मध्ये {{total}}"
     },
     "actions": {

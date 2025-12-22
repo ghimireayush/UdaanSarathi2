@@ -284,11 +284,19 @@ const Jobs = () => {
                               <Users className="w-4 h-4 mr-1" />
                               <span className="font-medium">{tPageSync('table.applicationStatus.applicants', { count: job.applications_count || 0 })}</span>
                             </div>
-                            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1">
+                            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1 text-xs">
+                              <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-1.5"></span>
+                              <span>{tPageSync('table.applicationStatus.applied', { count: job.applied_count || 0 })}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1 text-xs">
                               <UserCheck className="w-4 h-4 mr-1" />
                               <span>{tPageSync('table.applicationStatus.shortlisted', { count: job.shortlisted_count || 0 })}</span>
                             </div>
-                            <div className="flex items-center text-gray-600">
+                            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1 text-xs">
+                              <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1.5"></span>
+                              <span>{tPageSync('table.applicationStatus.withdrawn', { count: job.withdrawn_count || 0 })}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600 dark:text-gray-400">
                               <Clock className="w-4 h-4 mr-1" />
                               <span>{tPageSync('table.applicationStatus.interviews', { today: job.interviews_today || 0, total: job.total_interviews || 0 })}</span>
                             </div>

@@ -31,6 +31,7 @@ import InterviewScheduleDialog from '../components/InterviewScheduleDialog.jsx'
 import { useAgency } from '../contexts/AgencyContext.jsx'
 import { formatExperience, formatLocation } from '../utils/candidateFormatter.js'
 import { format } from 'date-fns'
+import { formatDateWithRelative } from '../utils/helpers.js'
 import { useConfirm } from '../components/ConfirmProvider.jsx'
 import EnhancedInterviewScheduling from '../components/EnhancedInterviewScheduling.jsx'
 import ScheduledInterviews from '../components/ScheduledInterviews.jsx'
@@ -43,7 +44,7 @@ const JobDetails = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { confirm } = useConfirm()
-  const { agencyData } = useAgency()
+  const { agencyData, isLoading: agencyLoading } = useAgency()
   const { tPageSync } = useLanguage({ 
     pageName: 'job-details', 
     autoLoad: true 
@@ -92,8 +93,18 @@ const JobDetails = () => {
 
   // Load data on mount and when filters change
   useEffect(() => {
-    loadAllData()
-  }, [id, topNFilter, selectedTags])
+    // Wait for agency data to load before fetching job details
+    if (!agencyLoading) {
+      loadAllData()
+    }
+  }, [id, topNFilter, selectedTags, agencyLoading])
+
+  // Load only scheduled candidates when filter changes (no full page reload)
+  useEffect(() => {
+    if (activeTab === 'scheduled' && scheduledFilter) {
+      loadScheduledCandidates()
+    }
+  }, [scheduledFilter])
 
   // Handle ESC key to close sidebar
   useEffect(() => {
@@ -115,8 +126,8 @@ const JobDetails = () => {
       // Check if agency license is available
       const license = agencyData?.license_number
       if (!license) {
-        console.warn('Agency license not available yet, waiting...')
-        // Don't set error, just wait for AgencyContext to load
+        console.warn('Agency license not available, cannot load job details')
+        setError(new Error('Agency information not available. Please try again.'))
         setIsLoading(false)
         return
       }
@@ -214,6 +225,40 @@ const JobDetails = () => {
       setError(err)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Load only scheduled candidates when filter changes (no full page reload)
+  const loadScheduledCandidates = async () => {
+    try {
+      const license = agencyData?.license_number
+      if (!license) {
+        console.warn('Agency license not available')
+        return
+      }
+
+      console.log(`📋 Loading scheduled candidates with filter: ${scheduledFilter}`)
+      
+      const scheduledResponse = await CandidateDataSource.getCandidates(
+        license,
+        id,
+        {
+          stage: 'interview-scheduled',
+          limit: 100,
+          offset: 0,
+          sortBy: 'priority_score',
+          sortOrder: 'desc',
+          interviewFilter: scheduledFilter // today, tomorrow, unattended, all
+        },
+        license
+      )
+      
+      setScheduledCandidates(scheduledResponse.candidates)
+      console.log(`✅ Loaded ${scheduledResponse.candidates.length} scheduled candidates`)
+      
+    } catch (err) {
+      console.error('Error loading scheduled candidates:', err)
+      // Don't set global error, just log it
     }
   }
 
@@ -449,45 +494,36 @@ const JobDetails = () => {
 
   const handleCandidateClick = async (candidate) => {
     try {
-      setIsSidebarLoading(true)
-      
-      // Get agency license
-      const license = agencyData?.license_number
-      if (!license) {
-        throw new Error('Agency license not available')
-      }
-      
       // Get the application ID - it could be in different places depending on data source
       const applicationId = candidate.application?.id || candidate.application_id
+      const candidateId = candidate.id || candidate.candidate_id
       
-      if (!applicationId) {
-        console.warn('No application ID found, using candidate data as-is')
-        setSelectedCandidate(candidate)
-        setIsSidebarOpen(true)
+      console.log('📋 Candidate clicked:', { candidateId, applicationId, candidate })
+      
+      if (!applicationId || !candidateId) {
+        console.warn('❌ Missing required IDs:', { applicationId, candidateId })
+        setError('Missing candidate or application ID')
         return
       }
       
-      // Fetch complete candidate details from unified endpoint
-      // Pass applicationId so backend returns the correct application
-      const candidateDetails = await CandidateDataSource.getCandidateDetails(
-        license,
-        id, // jobId
-        candidate.id,
-        applicationId // Pass the specific application ID
-      )
+      // Transform candidate to have the structure S2 expects
+      const transformedCandidate = {
+        ...candidate,
+        id: candidateId,
+        application: {
+          id: applicationId,
+          stage: candidate.status // Map status to stage
+        }
+      }
       
-      console.log('✅ Loaded candidate details:', candidateDetails)
-      
-      setSelectedCandidate(candidateDetails)
+      // Set the candidate - S2 will use applicationId and candidateId from the object
+      console.log('✅ Setting candidate for S2:', { id: candidateId, application: { id: applicationId } })
+      setSelectedCandidate(transformedCandidate)
       setIsSidebarOpen(true)
       
     } catch (error) {
-      console.error('❌ Failed to load candidate details:', error)
-      setError(error.message || 'Failed to load candidate details')
-      
-      // Fallback: use the candidate data we already have
-      setSelectedCandidate(candidate)
-      setIsSidebarOpen(true)
+      console.error('❌ Failed to handle candidate click:', error)
+      setError(error.message || 'Failed to load candidate')
     } finally {
       setIsSidebarLoading(false)
     }
@@ -1256,19 +1292,10 @@ const JobDetails = () => {
 
       {/* Unified Candidate Summary (Workflow-style) */}
       <CandidateSummaryS2
-        candidate={selectedCandidate}
+        applicationId={selectedCandidate?.application?.id}
+        candidateId={selectedCandidate?.id}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
-        onUpdateStatus={handleUpdateStatus}
-        onAttachDocument={handleAttachDocument}
-        onRemoveDocument={handleRemoveDocument}
-        workflowStages={workflowStages}
-        isFromJobsPage={true}
-        jobId={id}
-        isInterviewContext={true}
-        onMarkPass={(candidateId) => handleUpdateStatus(candidateId, 'interview-passed')}
-        onMarkFail={(candidateId) => handleUpdateStatus(candidateId, 'interview-failed')}
-        onReschedule={(candidateId) => console.log('Reschedule interview for:', candidateId)}
       />
 
       {/* Breadcrumb */}
@@ -1314,7 +1341,7 @@ const JobDetails = () => {
                     <Calendar className="w-4 h-4 mr-1" />
                     <span>
                       Posted {job.created_at || job.posted_date 
-                        ? format(new Date(job.created_at || job.posted_date), 'MMM dd, yyyy')
+                        ? formatDateWithRelative(job.created_at || job.posted_date, { format: 'MMM dd, yyyy' })
                         : 'Recently'
                       }
                     </span>

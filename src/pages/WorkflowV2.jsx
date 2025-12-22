@@ -17,21 +17,19 @@ import {
 import workflowApiService from '../services/workflowApiService'
 import stageTransitionService from '../services/stageTransitionService'
 import InterviewScheduleDialog from '../components/InterviewScheduleDialog'
+import CandidateSummaryS2 from '../components/CandidateSummaryS2'
 import { useAgency } from '../contexts/AgencyContext'
 import { useLanguage } from '../hooks/useLanguage'
 import { useStageTranslations } from '../hooks/useStageTranslations'
+import { useConfirm } from '../components/ConfirmProvider'
 import { format } from 'date-fns'
 
 const WorkflowV2 = () => {
   const { agencyData, isLoading: agencyLoading } = useAgency()
   const { tPageSync } = useLanguage({ pageName: 'workflow', autoLoad: true })
   const { getStageLabel, getStageAction } = useStageTranslations()
+  const { confirm } = useConfirm()
   
-  // Helper function for translations with fallback
-  const t = (key, fallback = key) => {
-    const result = tPageSync(key)
-    return result === key ? fallback : result
-  }
   // State
   const [candidates, setCandidates] = useState([])
   const [analytics, setAnalytics] = useState(null)
@@ -56,6 +54,10 @@ const WorkflowV2 = () => {
   const [showInterviewDialog, setShowInterviewDialog] = useState(false)
   const [selectedCandidateForInterview, setSelectedCandidateForInterview] = useState(null)
   const [isReschedule, setIsReschedule] = useState(false)
+
+  // Candidate Summary Sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [selectedCandidate, setSelectedCandidate] = useState(null)
 
   const loadData = useCallback(async () => {
     try {
@@ -235,7 +237,12 @@ const WorkflowV2 = () => {
       const currentStageLabel = stageTransitionService.getStageLabel(currentStage)
       const newStageLabel = stageTransitionService.getStageLabel(newStage)
       
-      alert(`❌ Invalid stage transition!\n\nYou cannot move directly from "${currentStageLabel}" to "${newStageLabel}".\n\nPlease follow the proper workflow sequence:\napplied → shortlisted → interview_scheduled → interview_passed`)
+      await confirm({
+        title: tPageSync('modals.stageTransition.invalidTitle'),
+        message: `${tPageSync('modals.stageTransition.invalidMessage').replace('{{currentStage}}', currentStageLabel).replace('{{targetStage}}', newStageLabel)}\n\napplied → shortlisted → interview_scheduled → interview_passed`,
+        confirmText: tPageSync('modals.stageTransition.okayButton'),
+        type: 'warning'
+      })
       return
     }
 
@@ -243,9 +250,13 @@ const WorkflowV2 = () => {
     const currentStageLabel = stageTransitionService.getStageLabel(currentStage)
     const newStageLabel = stageTransitionService.getStageLabel(newStage)
     
-    const confirmed = window.confirm(
-      `Are you sure you want to move this candidate from "${currentStageLabel}" to "${newStageLabel}"?\n\nThis action cannot be undone.`
-    )
+    const confirmed = await confirm({
+      title: tPageSync('modals.stageTransition.confirmTitle'),
+      message: `${tPageSync('modals.stageTransition.confirmMessage').replace('{{currentStage}}', currentStageLabel).replace('{{targetStage}}', newStageLabel)}\n\n${tPageSync('modals.common.cannotUndo')}`,
+      confirmText: tPageSync('modals.common.confirm'),
+      cancelText: tPageSync('modals.common.cancel'),
+      type: 'warning'
+    })
 
     if (!confirmed) return
 
@@ -256,11 +267,21 @@ const WorkflowV2 = () => {
         interviewDetails: interviewDetails
       })
 
-      alert(`✓ Successfully moved candidate to ${newStageLabel}`)
+      await confirm({
+        title: tPageSync('modals.stageTransition.confirmTitle'),
+        message: `✓ ${tPageSync('modals.stageTransition.confirmMessage').replace('{{currentStage}}', currentStageLabel).replace('{{targetStage}}', newStageLabel)}`,
+        confirmText: tPageSync('modals.stageTransition.okayButton'),
+        type: 'success'
+      })
       loadData() // Reload data
     } catch (err) {
       console.error('Stage update error:', err)
-      alert(`✗ Error: ${err.message}`)
+      await confirm({
+        title: tPageSync('modals.error.title'),
+        message: tPageSync('modals.error.updateStatusMessage'),
+        confirmText: tPageSync('modals.error.okayButton'),
+        type: 'danger'
+      })
     }
   }
 
@@ -304,7 +325,7 @@ const WorkflowV2 = () => {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Error Loading Data</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button onClick={loadData} className="btn-primary">
-            {t('actions.retry', 'Retry')}
+            {tPageSync('error.retry')}
           </button>
         </div>
       </div>
@@ -316,10 +337,10 @@ const WorkflowV2 = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          {t('title', 'Workflow Management')}
+          {tPageSync('title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          {t('subtitle', 'Manage candidates through post-interview workflow stages')}
+          {tPageSync('subtitle')}
         </p>
       </div>
 
@@ -331,7 +352,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">{t('analytics.totalCandidates', 'Total Candidates')}</p>
+                  <p className="text-blue-100 text-sm font-medium">{tPageSync('analytics.totalCandidates')}</p>
                   <p className="text-3xl font-bold">{analytics.total_candidates || 0}</p>
                 </div>
                 <Users className="w-10 h-10 text-blue-200" />
@@ -341,7 +362,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-green-500 to-green-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">{t('analytics.interviewPassed', 'Interview Passed')}</p>
+                  <p className="text-green-100 text-sm font-medium">{tPageSync('analytics.interviewPassed')}</p>
                   <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
                 <CheckCircle className="w-10 h-10 text-green-200" />
@@ -351,7 +372,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">{t('analytics.totalProcessed', 'Total Processed')}</p>
+                  <p className="text-purple-100 text-sm font-medium">{tPageSync('analytics.totalProcessed')}</p>
                   <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
                 <Users className="w-10 h-10 text-purple-200" />
@@ -361,7 +382,7 @@ const WorkflowV2 = () => {
             <div className="card p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-100 text-sm font-medium">{t('analytics.successRate', 'Success Rate')}</p>
+                  <p className="text-orange-100 text-sm font-medium">{tPageSync('analytics.successRate')}</p>
                   <p className="text-3xl font-bold">
                     {analytics.conversion_rates?.overall_success_rate?.toFixed(1) || 0}%
                   </p>
@@ -465,9 +486,9 @@ const WorkflowV2 = () => {
         {!isLoading && candidates.length === 0 ? (
           <div className="card p-8 text-center">
             <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('empty.noCandidates')}</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPageSync('empty.noCandidates')}</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              {searchQuery ? t('empty.noSearchResults') : t('empty.noStageResults')}
+              {searchQuery ? tPageSync('empty.noSearchResults') : tPageSync('empty.noStageResults')}
             </p>
           </div>
         ) : (
@@ -478,6 +499,10 @@ const WorkflowV2 = () => {
               stages={stages}
               onUpdateStage={handleUpdateStage}
               getValidNextStages={getValidNextStages}
+              onCandidateClick={() => {
+                setSelectedCandidate(candidate)
+                setIsSidebarOpen(true)
+              }}
               onScheduleInterview={() => {
                 setSelectedCandidateForInterview(candidate)
                 setIsReschedule(false)
@@ -488,7 +513,7 @@ const WorkflowV2 = () => {
                 setIsReschedule(true)
                 setShowInterviewDialog(true)
               }}
-              t={t}
+              tPageSync={tPageSync}
             />
           ))
         )}
@@ -518,10 +543,20 @@ const WorkflowV2 = () => {
                   interviewDetails
                 )
                 
-                alert('✓ Interview rescheduled successfully')
+                await confirm({
+                  title: tPageSync('modals.stageTransition.confirmTitle'),
+                  message: tPageSync('modals.documentAttachment.title'),
+                  confirmText: tPageSync('modals.stageTransition.okayButton'),
+                  type: 'success'
+                })
                 loadData()
               } catch (err) {
-                alert(`✗ Error: ${err.message}`)
+                await confirm({
+                  title: tPageSync('modals.error.title'),
+                  message: tPageSync('modals.error.updateStatusMessage'),
+                  confirmText: tPageSync('modals.error.okayButton'),
+                  type: 'danger'
+                })
               }
             } else {
               // Schedule new interview
@@ -562,28 +597,38 @@ const WorkflowV2 = () => {
               disabled={pagination.current_page === 1}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              {t('actions.previous', 'Previous')}
+              {tPageSync('actions.previous')}
             </button>
             <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
-              {t('pagination.page', 'Page {{current}} of {{total}}').replace('{{current}}', pagination.current_page).replace('{{total}}', pagination.total_pages)}
+              {tPageSync('pagination.page').replace('{{current}}', pagination.current_page).replace('{{total}}', pagination.total_pages)}
             </span>
             <button
               onClick={() => setCurrentPage(p => Math.min(pagination.total_pages, p + 1))}
               disabled={pagination.current_page === pagination.total_pages}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              {t('actions.next', 'Next')}
+              {tPageSync('actions.next')}
             </button>
           </div>
         </div>
       )}
 
+      {/* Candidate Summary Sidebar */}
+      <CandidateSummaryS2
+        applicationId={selectedCandidate?.application?.id}
+        candidateId={selectedCandidate?.id}
+        isOpen={isSidebarOpen}
+        onClose={() => {
+          setIsSidebarOpen(false)
+          setSelectedCandidate(null)
+        }}
+      />
     </div>
   )
 }
 
 // Candidate Card Component (matching original Workflow design)
-const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextStages, onScheduleInterview, onRescheduleInterview, t }) => {
+const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextStages, onCandidateClick, onScheduleInterview, onRescheduleInterview, tPageSync }) => {
   const [isUpdating, setIsUpdating] = useState(false)
 
   const handleStatusUpdate = async (newStage, interviewDetails = null) => {
@@ -611,9 +656,12 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-3 mb-1">
-                <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 truncate">
+                <button
+                  onClick={onCandidateClick}
+                  className="text-base font-medium text-gray-900 dark:text-gray-100 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                >
                   {candidate.full_name}
-                </h3>
+                </button>
                 {currentStage && (
                   <span className="chip chip-blue text-xs flex-shrink-0">
                     {currentStage.label}
@@ -630,7 +678,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 {candidate.passport_number && (
                   <div className="flex items-center">
                     <CreditCard className="w-3 h-3 mr-1" />
-                    <span>{t('candidateCard.passportLabel', 'Passport')}: {candidate.passport_number}</span>
+                    <span>{tPageSync('candidateCard.passport')} {candidate.passport_number}</span>
                   </div>
                 )}
 
@@ -651,7 +699,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 {candidate.documents && candidate.documents.length > 0 && (
                   <div className="flex items-center">
                     <Paperclip className="w-3 h-3 mr-1 text-gray-400 dark:text-gray-500" />
-                    <span>{candidate.documents.length} docs</span>
+                    <span>{candidate.documents.length} {tPageSync('candidateCard.documents')}</span>
                   </div>
                 )}
               </div>
@@ -668,7 +716,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors"
                 title="Shortlist candidate"
               >
-                {t('actions.shortlist', 'Shortlist')}
+                {tPageSync('stages.shortlisted')}
               </button>
             )}
 
@@ -679,7 +727,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 className="text-xs px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors"
                 title="Schedule interview"
               >
-                {t('actions.scheduleInterview', 'Schedule Interview')}
+                {tPageSync('stages.shortlisted')}
               </button>
             )}
 
@@ -692,13 +740,17 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 transition-colors"
                   title="Mark interview as passed"
                 >
-                  {t('actions.pass', 'Pass')}
+                  {tPageSync('actions.pass')}
                 </button>
                 <button
                   onClick={async () => {
-                    const confirmed = window.confirm(
-                      `Are you sure you want to mark this interview as FAILED?\n\nThis action cannot be undone.`
-                    )
+                    const confirmed = await confirm({
+                      title: tPageSync('modals.stageTransition.confirmTitle'),
+                      message: tPageSync('modals.interview.failConfirmMessage'),
+                      confirmText: tPageSync('modals.common.confirm'),
+                      cancelText: tPageSync('modals.common.cancel'),
+                      type: 'warning'
+                    })
                     if (confirmed) {
                       await handleStatusUpdate('interview_failed')
                     }
@@ -707,7 +759,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 transition-colors"
                   title="Mark interview as failed"
                 >
-                  {t('actions.fail', 'Fail')}
+                  {tPageSync('actions.fail')}
                 </button>
                 <button
                   onClick={() => onRescheduleInterview(candidate)}
@@ -715,14 +767,14 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                   className="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   title="Reschedule interview"
                 >
-                  {t('actions.reschedule', 'Reschedule')}
+                  {tPageSync('actions.reschedule')}
                 </button>
               </>
             )}
 
             {candidate.application?.status === 'interview_passed' && (
               <span className="text-xs px-3 py-1.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                {t('actions.finalStage', 'Final Stage')}
+                {tPageSync('actions.finalStage')}
               </span>
             )}
           </div>
