@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Briefcase, MapPin, AlertCircle, Loader2 } from 'lucide-react';
 import JobDataSource from '../api/datasources/JobDataSource.js';
 import countryService from '../services/countryService';
+import { useLanguage } from '../hooks/useLanguage';
 
 /**
  * Create Template Modal
@@ -22,6 +23,7 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { tPageSync } = useLanguage({ pageName: 'dialogs', autoLoad: true });
 
   // Load countries on mount
   useEffect(() => {
@@ -44,11 +46,11 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
     const newErrors = {};
 
     if (!formData.posting_title || formData.posting_title.trim() === '') {
-      newErrors.posting_title = 'Job title is required';
+      newErrors.posting_title = tPageSync('createJob.jobTitleError');
     }
 
     if (!formData.country) {
-      newErrors.country = 'Country is required';
+      newErrors.country = tPageSync('createJob.countryError');
     }
 
     setErrors(newErrors);
@@ -75,7 +77,7 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
       onSuccess(result);
     } catch (error) {
       console.error('Failed to create template job:', error);
-      setErrors({ submit: error.message || 'Failed to create job posting' });
+      setErrors({ submit: error.message || tPageSync('createJob.submitError') });
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +105,7 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
             <div className="flex items-center">
               <Briefcase className="w-5 h-5 text-blue-600 mr-2" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Create New Job
+                {tPageSync('createJob.title')}
               </h2>
             </div>
             <button
@@ -120,13 +122,13 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
             {/* Job Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Job Title *
+                {tPageSync('createJob.jobTitleLabel')}
               </label>
               <input
                 type="text"
                 value={formData.posting_title}
                 onChange={(e) => setFormData({ ...formData, posting_title: e.target.value })}
-                placeholder="e.g., Construction Worker, Domestic Helper"
+                placeholder={tPageSync('createJob.jobTitlePlaceholder')}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
                   errors.posting_title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
@@ -144,12 +146,12 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
-                Country *
+                {tPageSync('createJob.countryLabel')}
               </label>
               {loadingCountries ? (
                 <div className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center">
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Loading countries...
+                  {tPageSync('createJob.loadingCountries')}
                 </div>
               ) : (
                 <select
@@ -159,7 +161,7 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
                     errors.country ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
-                  <option value="">Select country</option>
+                  <option value="">{tPageSync('createJob.countryPlaceholder')}</option>
                   {countries.map(country => (
                     <option key={country} value={country}>
                       {country}
@@ -178,13 +180,13 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
             {/* City (Optional) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                City <span className="text-gray-400 font-normal">(optional)</span>
+                {tPageSync('createJob.cityLabel')} <span className="text-gray-400 font-normal">{tPageSync('createJob.cityOptional')}</span>
               </label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                placeholder="e.g., Dubai, Riyadh"
+                placeholder={tPageSync('createJob.cityPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
@@ -207,7 +209,7 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 disabled={isSubmitting}
               >
-                Cancel
+                {tPageSync('createJob.cancel')}
               </button>
               <button
                 type="submit"
@@ -217,10 +219,10 @@ const CreateTemplateModal = ({ license, onClose, onSuccess }) => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating...
+                    {tPageSync('createJob.creating')}
                   </>
                 ) : (
-                  'Create Job'
+                  tPageSync('createJob.createButton')
                 )}
               </button>
             </div>

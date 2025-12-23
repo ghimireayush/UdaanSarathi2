@@ -101,5 +101,22 @@
   "confirmation": {
     "title": "कार्य पुष्टि गर्नुहोस्",
     "message": "के तपाईं अगाडि बढ्न चाहनुहुन्छ?"
+  },
+  "createJob": {
+    "title": "नयाँ जागिर सिर्जना गर्नुहोस्",
+    "jobTitleLabel": "जागिरको शीर्षक *",
+    "jobTitlePlaceholder": "उदाहरण: निर्माण कार्यकर्ता, घरेलु सहायक",
+    "jobTitleError": "जागिरको शीर्षक आवश्यक छ",
+    "countryLabel": "देश *",
+    "countryPlaceholder": "देश चयन गर्नुहोस्",
+    "countryError": "देश आवश्यक छ",
+    "cityLabel": "शहर",
+    "cityOptional": "(वैकल्पिक)",
+    "cityPlaceholder": "उदाहरण: दुबई, रियाद",
+    "loadingCountries": "देशहरू लोड हो दै छ...",
+    "submitError": "जागिर पोस्टिङ सिर्जना गर्न असफल",
+    "cancel": "रद्द गर्नुहोस्",
+    "createButton": "जागिर सिर्जना गर्नुहोस्",
+    "creating": "सिर्जना हो दै छ..."
   }
 }

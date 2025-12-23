@@ -101,5 +101,22 @@
   "confirmation": {
     "title": "Confirm Action",
     "message": "Are you sure you want to proceed?"
+  },
+  "createJob": {
+    "title": "Create New Job",
+    "jobTitleLabel": "Job Title *",
+    "jobTitlePlaceholder": "e.g., Construction Worker, Domestic Helper",
+    "jobTitleError": "Job title is required",
+    "countryLabel": "Country *",
+    "countryPlaceholder": "Select country",
+    "countryError": "Country is required",
+    "cityLabel": "City",
+    "cityOptional": "(optional)",
+    "cityPlaceholder": "e.g., Dubai, Riyadh",
+    "loadingCountries": "Loading countries...",
+    "submitError": "Failed to create job posting",
+    "cancel": "Cancel",
+    "createButton": "Create Job",
+    "creating": "Creating..."
   }
 }
