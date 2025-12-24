@@ -744,7 +744,7 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
 
       {/* Subtabs/Chips - Only show in Contemporary mode */}
       {showFilters && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1 sm:gap-2 w-full overflow-x-auto pb-2">
           {[
             { id: 'today', label: t('filters.today', 'Today'), count: getSubtabCounts().today },
             { id: 'tomorrow', label: t('filters.tomorrow', 'Tomorrow'), count: getSubtabCounts().tomorrow },
@@ -762,14 +762,14 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                   console.warn('⚠️ onFilterChange is not defined!')
                 }
               }}
-              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeSubtab === subtab.id
+              className={`inline-flex items-center px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeSubtab === subtab.id
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
             >
               {subtab.label}
               {subtab.count > 0 && (
-                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeSubtab === subtab.id
+                <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-xs ${activeSubtab === subtab.id
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                   }`}>
@@ -794,58 +794,58 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
             return (
               <div
                 key={`${candidate.id}-${candidate.application_id || index}`}
-                className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 sm:p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer bg-white dark:bg-gray-800"
                 onClick={() => handleCandidateClick(candidate)}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                      <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm sm:text-lg font-medium text-gray-600 dark:text-gray-300">
                         {candidate.name?.charAt(0) || '?'}
                       </span>
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{candidate.name || 'Unknown Candidate'}</h3>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                          <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{candidate.name || 'Unknown Candidate'}</h3>
                           {candidate.priority_score !== undefined && candidate.priority_score !== null && candidate.priority_score > 0 && (
-                            <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-1 rounded-full">
-                              <Star className="w-4 h-4 text-yellow-500" />
-                              <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% Match</span>
+                            <div className="flex items-center space-x-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap text-xs sm:text-sm">
+                              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                              <span className="font-bold text-yellow-700 dark:text-yellow-300">{candidate.priority_score}% Match</span>
                             </div>
                           )}
                         </div>
-                        {getStatusBadge(interview)}
+                        <div className="sm:ml-auto flex-shrink-0">{getStatusBadge(interview)}</div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          <span>{format(interviewDate, 'MMM dd, yyyy')}</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                          <span className="truncate">{format(interviewDate, 'MMM dd, yyyy')}</span>
                         </div>
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-2" />
-                          <span>{interview.time ? formatTime12Hour(interview.time) : format(interviewDate, 'h:mm a')} ({interview.duration || 60} min)</span>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                          <span className="truncate">{interview.time ? formatTime12Hour(interview.time) : format(interviewDate, 'h:mm a')} ({interview.duration || 60} min)</span>
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-2">
                           {getLocationIcon(interview.location)}
-                          <span className="ml-2">{interview.location || 'Not specified'}</span>
+                          <span className="truncate ml-1">{interview.location || 'Not specified'}</span>
                         </div>
                       </div>
 
                       {/* Position Information */}
                       {candidate.position && (
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1">
-                              <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">{candidate.position.title}</p>
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-2 sm:p-3 mb-3">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs sm:text-sm font-semibold text-blue-900 dark:text-blue-100 truncate">{candidate.position.title}</p>
                               
                               {/* Salary Information */}
                               {(candidate.position.salary || candidate.position.monthly_salary_amount) && (
-                                <div className="mt-1 space-y-1">
+                                <div className="mt-1 space-y-0.5">
                                   {/* Base Salary */}
-                                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                                  <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
                                     💰 {(candidate.position.salary?.amount || candidate.position.monthly_salary_amount)?.toLocaleString()} {candidate.position.salary?.currency || candidate.position.salary_currency || 'AED'}
                                   </p>
                                   
@@ -882,39 +882,39 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                         </div>
                       )}
 
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        <User className="w-4 h-4 mr-2" />
-                        <span>{t('actions.interviewer', 'Interviewer')}: {interview.interviewer || t('status.notScheduled', 'Not assigned')}</span>
+                      <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 gap-2">
+                        <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                        <span className="truncate">{t('actions.interviewer', 'Interviewer')}: {interview.interviewer || t('status.notScheduled', 'Not assigned')}</span>
                       </div>
 
                       {/* Interview Type */}
                       {interview.type && (
-                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          <span className="mr-2">{getInterviewTypeIcon(interview.type)}</span>
-                          <span>{interview.type}</span>
+                        <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 gap-2">
+                          <span className="flex-shrink-0">{getInterviewTypeIcon(interview.type)}</span>
+                          <span className="truncate">{interview.type}</span>
                         </div>
                       )}
 
                       {/* Rescheduled Indicator */}
                       {interview.rescheduled_at && (
-                        <div className="flex items-center text-xs text-purple-600 dark:text-purple-400 mb-3">
-                          <RotateCcw className="w-3 h-3 mr-1" />
-                          Rescheduled on {format(new Date(interview.rescheduled_at), 'MMM dd, yyyy')}
+                        <div className="flex items-center text-xs text-purple-600 dark:text-purple-400 mb-3 gap-1">
+                          <RotateCcw className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">Rescheduled on {format(new Date(interview.rescheduled_at), 'MMM dd, yyyy')}</span>
                         </div>
                       )}
 
                       {interview.notes && (
-                        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-3">
-                          <p className="text-sm text-yellow-800 dark:text-yellow-300 whitespace-pre-wrap break-words">{interview.notes}</p>
+                        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-3 text-xs sm:text-sm">
+                          <p className="text-yellow-800 dark:text-yellow-300 whitespace-pre-wrap break-words line-clamp-2">{interview.notes}</p>
                         </div>
                       )}
 
                       {/* Unattended Flag */}
                       {isUnattendedCandidate && (
                         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded p-2 mb-3">
-                          <div className="flex items-center">
-                            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
-                            <p className="text-sm text-red-800 dark:text-red-300">
+                          <div className="flex items-start gap-2">
+                            <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs sm:text-sm text-red-800 dark:text-red-300">
                               {t('card.unattendedFlag', 'Automatically flagged as unattended (grace period expired)')}
                             </p>
                           </div>
@@ -932,20 +932,21 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
                       e.stopPropagation()
                       handleCandidateClick(candidate)
                     }}
-                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors flex items-center"
+                    className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors flex items-center flex-shrink-0 whitespace-nowrap"
                   >
-                    <Eye className="w-4 h-4 mr-1" />
-                    {t('actions.viewDetails', 'View Details')}
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
+                    <span className="hidden sm:inline">{t('actions.viewDetails', 'View Details')}</span>
+                    <span className="sm:hidden">View</span>
                   </button>
                 </div>
               </div>
             )
           })
         ) : (
-          <div className="text-center py-8">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('empty.noInterviews', 'No scheduled interviews')}</h3>
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="text-center py-6 sm:py-8">
+            <Calendar className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-1 sm:mb-2">{t('empty.noInterviews', 'No scheduled interviews')}</h3>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               {activeSubtab === 'all'
                 ? 'No interviews have been scheduled yet.'
                 : `No interviews match the "${activeSubtab}" filter.`}
