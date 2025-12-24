@@ -4,7 +4,7 @@ import { useConfirm } from '../components/ConfirmProvider';
 import { useLanguage } from '../hooks/useLanguage';
 import LanguageSwitch from '../components/LanguageSwitch';
 import { inviteMember, getMembersList, deleteMember, updateMemberStatus } from '../services/memberService';
-import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX } from 'lucide-react';
+import { Trash2, Mail, Phone, Calendar, Search, Filter, MoreVertical, Edit, UserCheck, UserX, Users, Plus, ChevronRight } from 'lucide-react';
 import { usePagination } from '../hooks/usePagination.js';
 import PaginationWrapper from '../components/PaginationWrapper.jsx';
 import { getRoleLabel } from '../config/roles';
@@ -231,94 +231,108 @@ const Members = () => {
   }, [searchTerm, roleFilter, statusFilter, resetPagination]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{tPage('title')}</h1>
-            <p className="text-gray-600 dark:text-gray-400">{tPage('subtitle')}</p>
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25 flex-shrink-0">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{tPage('subtitle')}</p>
+            </div>
           </div>
-          <div className="mt-4 sm:mt-0 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <span className="text-xs text-gray-500 dark:text-gray-400">Total:</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{members.length}</span>
+            </div>
             <LanguageSwitch />
           </div>
         </div>
       </div>
 
       {/* Invite Team Member Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {tPage('sections.invite.title')}
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{tPage('sections.invite.subtitle')}</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <Plus className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+            <h2 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {tPage('sections.invite.title')}
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 ml-7">{tPage('sections.invite.subtitle')}</p>
         </div>
         
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+            <div className="mb-4 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-xs sm:text-sm text-red-800 dark:text-red-200">{error}</p>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {tPage('form.fullName.label')}
-              </label>
-              <input
-                type="text"
-                id="full_name"
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder={tPage('form.fullName.placeholder')}
-              />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div>
+                <label htmlFor="full_name" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {tPage('form.fullName.label')}
+                </label>
+                <input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder={tPage('form.fullName.placeholder')}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="role" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {tPage('form.role.label')}
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                  className="form-select text-sm py-2.5"
+                >
+                  {availableRoles.map(role => (
+                    <option key={role.value} value={role.value}>
+                      {getTranslatedRoleLabel(role.value)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {tPage('form.phone.label')}
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  pattern="[0-9]{10}"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder={tPage('form.phone.placeholder')}
+                />
+              </div>
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {tPage('form.role.label')}
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                required
-                className="form-select"
-              >
-                {availableRoles.map(role => (
-                  <option key={role.value} value={role.value}>
-                    {getTranslatedRoleLabel(role.value)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {tPage('form.phone.label')}
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                pattern="[0-9]{10}"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder={tPage('form.phone.placeholder')}
-              />
-            </div>
-
-            <div className="md:col-span-2 lg:col-span-3">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-brand-blue-bright text-white px-6 py-2 rounded-lg hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="w-full sm:w-auto min-h-[44px] bg-primary-600 text-white px-6 py-2.5 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-sm font-medium"
               >
                 {loading ? (
                   <>
@@ -327,6 +341,7 @@ const Members = () => {
                   </>
                 ) : (
                   <>
+                    <Plus className="w-4 h-4" />
                     {tPage('form.actions.sendInvitation')}
                   </>
                 )}
@@ -337,71 +352,185 @@ const Members = () => {
       </div>
 
       {/* Team Members Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.members.title', { count: totalItems })}</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-gray-100">{tPage('sections.members.title', { count: totalItems })}</h2>
+              <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                {filteredMembers.length} members
+              </span>
+            </div>
             
             {/* Search and Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                  <Search className="text-gray-500 dark:text-gray-400 w-4 h-4" />
+                </div>
                 <input
                   type="text"
                   placeholder={tPage('search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-bright focus:border-brand-blue-bright focus:ring-offset-2 dark:focus:ring-offset-gray-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  className="pl-14 pr-4 py-2.5 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
               
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="form-select-sm"
-              >
-                <option value="all">{tPage('search.filters.allRoles')}</option>
-                {availableRoles.map(role => (
-                  <option key={role.value} value={role.value}>
-                    {getTranslatedRoleLabel(role.value)}
-                  </option>
-                ))}
-              </select>
-              
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="form-select-sm"
-              >
-                <option value="all">{tPage('search.filters.allStatus')}</option>
-                <option value="pending">{tPage('status.pending')}</option>
-                <option value="active">{tPage('status.active')}</option>
-                <option value="suspended">{tPage('status.suspended')}</option>
-              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="form-select-sm text-xs sm:text-sm py-2.5 rounded-lg"
+                >
+                  <option value="all">{tPage('search.filters.allRoles')}</option>
+                  {availableRoles.map(role => (
+                    <option key={role.value} value={role.value}>
+                      {getTranslatedRoleLabel(role.value)}
+                    </option>
+                  ))}
+                </select>
+                
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="form-select-sm text-xs sm:text-sm py-2.5 rounded-lg"
+                >
+                  <option value="all">{tPage('search.filters.allStatus')}</option>
+                  <option value="pending">{tPage('status.pending')}</option>
+                  <option value="active">{tPage('status.active')}</option>
+                  <option value="suspended">{tPage('status.suspended')}</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {loadingMembers ? (
+            <div className="p-8 text-center">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                <span className="ml-3 text-gray-500 dark:text-gray-400">{tPage('loading.members')}</span>
+              </div>
+            </div>
+          ) : paginatedMembers.length === 0 ? (
+            <div className="p-8 text-center">
+              <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">
+                {filteredMembers.length === 0 && members.length > 0 ? 
+                  tPage('empty.noSearchResults') : 
+                  tPage('empty.noMembers')
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {paginatedMembers.map((member) => (
+                <div key={member.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  {/* Header: Avatar, Name, Status */}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+                      {(member.name || member.full_name || '?').charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                          {member.name || member.full_name}
+                        </h3>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border flex-shrink-0 ${getStatusBadgeClass(member.status)}`}>
+                          {member.status}
+                        </span>
+                      </div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 mt-1">
+                        {getRoleDisplayName(member.role)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Info Row */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 mb-3 pl-[52px]">
+                    <div className="flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      <span>{member.mobileNumber || member.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(member.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Dev Password (if exists) */}
+                  {member.dev_password && (
+                    <div className="text-xs text-blue-600 dark:text-blue-400 mb-3 pl-[52px]">
+                      {tPage('table.memberInfo.tempPassword', { password: member.dev_password })}
+                    </div>
+                  )}
+                  
+                  {/* Actions - Disabled for Agency Owner */}
+                  <div className="flex items-center gap-2 pl-[52px]">
+                    {member.role === 'agency_owner' || member.role === 'owner' ? (
+                      <span className="flex-1 min-h-[36px] flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                        {tPage('actions.ownerProtected') || 'Owner account protected'}
+                      </span>
+                    ) : (
+                      <>
+                        {member.status === 'active' ? (
+                          <button
+                            onClick={() => handleStatusUpdate(member.id, 'suspended')}
+                            className="flex-1 min-h-[36px] flex items-center justify-center gap-1.5 text-xs font-medium text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800 transition-colors"
+                          >
+                            <UserX className="w-3.5 h-3.5" />
+                            {tPage('actions.suspend')}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleStatusUpdate(member.id, 'active')}
+                            className="flex-1 min-h-[36px] flex items-center justify-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 transition-colors"
+                          >
+                            <UserCheck className="w-3.5 h-3.5" />
+                            {tPage('actions.activate')}
+                          </button>
+                        )}
+                        
+                        <button
+                          onClick={() => handleDelete(member.id, member.name)}
+                          className="min-h-[36px] min-w-[36px] flex items-center justify-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800 transition-colors"
+                          title={tPage('actions.delete')}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.member')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.role')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.contact')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.joined')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tPage('table.headers.actions')}
                 </th>
               </tr>
@@ -411,7 +540,7 @@ const Members = () => {
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-bright"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                       <span className="ml-3 text-gray-500 dark:text-gray-400">{tPage('loading.members')}</span>
                     </div>
                   </td>
@@ -428,10 +557,10 @@ const Members = () => {
               ) : (
                 paginatedMembers.map((member) => (
                   <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-brand-blue-bright text-white flex items-center justify-center font-medium">
+                          <div className="h-10 w-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-medium">
                             {(member.name || member.full_name || '?').charAt(0).toUpperCase()}
                           </div>
                         </div>
@@ -440,59 +569,69 @@ const Members = () => {
                           {member.dev_password && (
                             <div className="text-xs text-blue-600 dark:text-blue-400">{tPage('table.memberInfo.tempPassword', { password: member.dev_password })}</div>
                           )}
+                          <div className="lg:hidden text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                            <Phone className="w-3 h-3" />
+                            {member.mobileNumber || member.phone}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
                         {getRoleDisplayName(member.role)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td className="hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1">
                         <Phone className="w-4 h-4" />
                         {member.mobileNumber || member.phone}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusBadgeClass(member.status)}`}>
                         {member.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td className="hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         {new Date(member.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center gap-2">
-                        {member.status === 'active' ? (
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      {member.role === 'agency_owner' || member.role === 'owner' ? (
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">
+                          {tPage('actions.ownerProtected') || 'Protected'}
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          {member.status === 'active' ? (
+                            <button
+                              onClick={() => handleStatusUpdate(member.id, 'suspended')}
+                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              title={tPage('actions.suspend')}
+                            >
+                              <UserX className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleStatusUpdate(member.id, 'active')}
+                              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                              title={tPage('actions.activate')}
+                            >
+                              <UserCheck className="w-4 h-4" />
+                            </button>
+                          )}
+                          
                           <button
-                            onClick={() => handleStatusUpdate(member.id, 'suspended')}
-                            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                            title={tPage('actions.suspend')}
+                            onClick={() => handleDelete(member.id, member.name)}
+                            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            title={tPage('actions.delete')}
                           >
-                            <UserX className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => handleStatusUpdate(member.id, 'active')}
-                            className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 p-1 rounded hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                            title={tPage('actions.activate')}
-                          >
-                            <UserCheck className="w-4 h-4" />
-                          </button>
-                        )}
-                        
-                        <button
-                          onClick={() => handleDelete(member.id, member.name)}
-                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                          title={tPage('actions.delete')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -503,7 +642,7 @@ const Members = () => {
 
         {/* Pagination */}
         {filteredMembers.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <PaginationWrapper
               currentPage={currentPage}
               totalPages={totalPages}
