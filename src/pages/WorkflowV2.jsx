@@ -334,68 +334,82 @@ const WorkflowV2 = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          {tPageSync('title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {tPageSync('subtitle')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+        <div className="flex items-center gap-3 mb-3 sm:mb-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+              {tPageSync('title')}
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              {tPageSync('subtitle')}
+            </p>
+          </div>
+        </div>
+        {/* Total Count Badge */}
+        {analytics && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-full self-start sm:self-auto">
+            <span className="text-xs text-gray-500 dark:text-gray-400">Total:</span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{analytics.total_candidates || 0}</span>
+          </div>
+        )}
       </div>
 
       {/* Analytics */}
       {analytics && (
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           {/* Summary Cards */}
-          <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 transition-all duration-300 ${searchQuery ? 'opacity-50' : 'opacity-100'}`}>
-            <div className="card p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">{tPageSync('analytics.totalCandidates')}</p>
-                  <p className="text-3xl font-bold">{analytics.total_candidates || 0}</p>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-300 ${searchQuery ? 'opacity-50' : 'opacity-100'}`}>
+            <div className="card p-3 sm:p-4 md:p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-blue-100 text-xs sm:text-sm font-medium truncate">{tPageSync('analytics.totalCandidates')}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{analytics.total_candidates || 0}</p>
                 </div>
-                <Users className="w-10 h-10 text-blue-200" />
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-blue-200 flex-shrink-0" />
               </div>
             </div>
 
-            <div className="card p-6 bg-gradient-to-r from-green-500 to-green-600 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100 text-sm font-medium">{tPageSync('analytics.interviewPassed')}</p>
-                  <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
+            <div className="card p-3 sm:p-4 md:p-6 bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-green-100 text-xs sm:text-sm font-medium truncate">{tPageSync('analytics.interviewPassed')}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
-                <CheckCircle className="w-10 h-10 text-green-200" />
+                <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-200 flex-shrink-0" />
               </div>
             </div>
 
-            <div className="card p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">{tPageSync('analytics.totalProcessed')}</p>
-                  <p className="text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
+            <div className="card p-3 sm:p-4 md:p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-purple-100 text-xs sm:text-sm font-medium truncate">{tPageSync('analytics.totalProcessed')}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{analytics.by_stage?.interview_passed || 0}</p>
                 </div>
-                <Users className="w-10 h-10 text-purple-200" />
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-purple-200 flex-shrink-0" />
               </div>
             </div>
 
-            <div className="card p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm font-medium">{tPageSync('analytics.successRate')}</p>
-                  <p className="text-3xl font-bold">
+            <div className="card p-3 sm:p-4 md:p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-orange-100 text-xs sm:text-sm font-medium truncate">{tPageSync('analytics.successRate')}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {analytics.conversion_rates?.overall_success_rate?.toFixed(1) || 0}%
                   </p>
                 </div>
-                <AlertCircle className="w-10 h-10 text-orange-200" />
+                <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-orange-200 flex-shrink-0" />
               </div>
             </div>
           </div>
 
           {/* Circular Stage Overview - Hidden when searching */}
           {!searchQuery && (
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               {stages
                 .filter(stage => stage.id !== 'interview_rescheduled') // Hide interview_rescheduled from filters
                 .map((stage) => {
@@ -413,13 +427,13 @@ const WorkflowV2 = () => {
                     onClick={() => handleStageChange(stage.id)}
                   >
                     <div className={`
-                      w-16 h-16 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600
-                      text-gray-900 dark:text-gray-100 font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:border-gray-400 dark:hover:border-gray-500
+                      w-12 sm:w-14 lg:w-16 h-12 sm:h-14 lg:h-16 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600
+                      text-gray-900 dark:text-gray-100 font-semibold text-sm sm:text-base lg:text-lg transition-all duration-300 hover:shadow-lg hover:border-gray-400 dark:hover:border-gray-500
                       ${isActive ? 'ring-4 ring-primary-300 dark:ring-primary-500/50 scale-110 border-primary-500 dark:border-primary-400 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : ''}
                     `}>
                       {count}
                     </div>
-                    <p className={`text-xs text-center mt-2 font-medium leading-tight whitespace-nowrap ${
+                    <p className={`text-xs sm:text-sm text-center mt-1 sm:mt-2 font-medium leading-tight line-clamp-2 ${
                       isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-400'
                     }`}>
                       {getStageLabel(stage.id)}
@@ -432,9 +446,9 @@ const WorkflowV2 = () => {
 
           {/* Search mode indicator */}
           {searchQuery && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                <Search className="w-4 h-4 inline mr-2" />
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300">
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-2" />
                 Searching across all workflow stages
               </p>
             </div>
@@ -447,7 +461,7 @@ const WorkflowV2 = () => {
       {/* Search */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <input
             ref={searchInputRef}
             type="text"
@@ -457,9 +471,9 @@ const WorkflowV2 = () => {
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
             autoComplete="off"
-            className="pl-10 pr-10 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="pl-9 sm:pl-10 pr-9 sm:pr-10 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs sm:text-sm placeholder-gray-500 dark:placeholder-gray-400"
           />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
             {searchInput !== searchQuery && (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
             )}
@@ -470,7 +484,7 @@ const WorkflowV2 = () => {
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 title="Clear search"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             )}
           </div>
@@ -485,38 +499,40 @@ const WorkflowV2 = () => {
           </div>
         )}
         {!isLoading && candidates.length === 0 ? (
-          <div className="card p-8 text-center">
-            <Users className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPageSync('empty.noCandidates')}</h3>
-            <p className="text-gray-600 dark:text-gray-400">
+          <div className="card p-6 sm:p-8 text-center">
+            <Users className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{tPageSync('empty.noCandidates')}</h3>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               {searchQuery ? tPageSync('empty.noSearchResults') : tPageSync('empty.noStageResults')}
             </p>
           </div>
         ) : (
-          candidates.map((candidate) => (
-            <CandidateWorkflowCard
-              key={candidate.application?.id || candidate.id}
-              candidate={candidate}
-              stages={stages}
-              onUpdateStage={handleUpdateStage}
-              getValidNextStages={getValidNextStages}
-              onCandidateClick={() => {
-                setSelectedCandidate(candidate)
-                setIsSidebarOpen(true)
-              }}
-              onScheduleInterview={() => {
-                setSelectedCandidateForInterview(candidate)
-                setIsReschedule(false)
-                setShowInterviewDialog(true)
-              }}
-              onRescheduleInterview={(candidate) => {
-                setSelectedCandidateForInterview(candidate)
-                setIsReschedule(true)
-                setShowInterviewDialog(true)
-              }}
-              tPageSync={tPageSync}
-            />
-          ))
+          <div className="space-y-3 sm:space-y-4">
+            {candidates.map((candidate) => (
+              <CandidateWorkflowCard
+                key={candidate.application?.id || candidate.id}
+                candidate={candidate}
+                stages={stages}
+                onUpdateStage={handleUpdateStage}
+                getValidNextStages={getValidNextStages}
+                onCandidateClick={() => {
+                  setSelectedCandidate(candidate)
+                  setIsSidebarOpen(true)
+                }}
+                onScheduleInterview={() => {
+                  setSelectedCandidateForInterview(candidate)
+                  setIsReschedule(false)
+                  setShowInterviewDialog(true)
+                }}
+                onRescheduleInterview={(candidate) => {
+                  setSelectedCandidateForInterview(candidate)
+                  setIsReschedule(true)
+                  setShowInterviewDialog(true)
+                }}
+                tPageSync={tPageSync}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -580,32 +596,76 @@ const WorkflowV2 = () => {
         isReschedule={isReschedule}
       />
 
-      {/* Pagination */}
+      {/* Pagination - Mobile Optimized */}
       {pagination && pagination.total_pages > 1 && (
-        <div className="flex items-center justify-between card p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {((pagination.current_page - 1) * pagination.items_per_page) + 1} to{' '}
-            {Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items)} of{' '}
-            {pagination.total_items} candidates
+        <div className="card p-3 sm:p-4">
+          {/* Mobile Layout - Stacked */}
+          <div className="flex flex-col sm:hidden gap-3">
+            {/* Compact Info */}
+            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+              <span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {((pagination.current_page - 1) * pagination.items_per_page) + 1}-{Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items)}
+                </span>
+                <span className="text-gray-400 dark:text-gray-500"> / </span>
+                <span>{pagination.total_items}</span>
+              </span>
+              <span className="text-gray-500 dark:text-gray-400">
+                {pagination.current_page} / {pagination.total_pages}
+              </span>
+            </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={pagination.current_page === 1}
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                {tPageSync('actions.previous')}
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(pagination.total_pages, p + 1))}
+                disabled={pagination.current_page === pagination.total_pages}
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                {tPageSync('actions.next')}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={pagination.current_page === 1}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              {tPageSync('actions.previous')}
-            </button>
-            <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
-              {tPageSync('pagination.page').replace('{{current}}', pagination.current_page).replace('{{total}}', pagination.total_pages)}
-            </span>
-            <button
-              onClick={() => setCurrentPage(p => Math.min(pagination.total_pages, p + 1))}
-              disabled={pagination.current_page === pagination.total_pages}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              {tPageSync('actions.next')}
-            </button>
+          
+          {/* Desktop Layout - Horizontal */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Showing {((pagination.current_page - 1) * pagination.items_per_page) + 1} to{' '}
+              {Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items)} of{' '}
+              {pagination.total_items} candidates
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={pagination.current_page === 1}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                {tPageSync('actions.previous')}
+              </button>
+              <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                {tPageSync('pagination.page').replace('{{current}}', pagination.current_page).replace('{{total}}', pagination.total_pages)}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(pagination.total_pages, p + 1))}
+                disabled={pagination.current_page === pagination.total_pages}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                {tPageSync('actions.next')}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -627,6 +687,7 @@ const WorkflowV2 = () => {
 // Candidate Card Component (matching original Workflow design)
 const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextStages, onCandidateClick, onScheduleInterview, onRescheduleInterview, tPageSync }) => {
   const [isUpdating, setIsUpdating] = useState(false)
+  const { getStageLabel } = useStageTranslations()
 
   const handleStatusUpdate = async (newStage, interviewDetails = null) => {
     setIsUpdating(true)
@@ -640,33 +701,157 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
   const currentStage = stages.find(s => s.id === candidate.application.status)
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md dark:hover:shadow-gray-900/20 transition-shadow bg-white dark:bg-gray-800">
-      <div className="p-4">
-        <div className="flex items-center justify-between">
+    <div 
+      className="border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md dark:hover:shadow-gray-900/20 transition-all bg-white dark:bg-gray-800 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700/50"
+      onClick={onCandidateClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onCandidateClick()
+        }
+      }}
+    >
+      <div className="p-3 sm:p-4">
+        {/* Mobile Layout */}
+        <div className="block sm:hidden">
+          {/* Header: Avatar, Name, Stage */}
+          <div className="flex items-start gap-3 mb-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+              <span className="text-sm font-semibold text-white">
+                {candidate.full_name?.charAt(0)}
+              </span>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate mb-1">
+                {candidate.full_name}
+              </h3>
+              {currentStage && (
+                <span className="chip chip-blue text-xs">
+                  {getStageLabel(currentStage.id)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Info Grid */}
+          <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 dark:text-gray-400 mb-3 pl-[52px]">
+            <div className="flex items-center gap-1">
+              <Phone className="w-3 h-3 text-gray-400 flex-shrink-0" />
+              <span className="truncate">{candidate.phone}</span>
+            </div>
+
+            {candidate.passport_number && (
+              <div className="flex items-center gap-1">
+                <CreditCard className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                <span className="truncate">{candidate.passport_number}</span>
+              </div>
+            )}
+
+            {candidate.job?.posting_title && (
+              <div className="flex items-center gap-1 col-span-2">
+                <Briefcase className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                <span className="truncate font-medium">{candidate.job.posting_title}</span>
+              </div>
+            )}
+
+            {candidate.interview?.interview_date_ad && (
+              <div className="flex items-center gap-1 col-span-2">
+                <Calendar className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                <span>{candidate.interview.interview_date_ad} {candidate.interview.interview_time?.substring(0, 5)}</span>
+              </div>
+            )}
+
+            {candidate.documents && candidate.documents.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Paperclip className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                <span>{candidate.documents.length} docs</span>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons - Stop propagation */}
+          <div className="flex flex-wrap gap-2 pl-[52px]" onClick={(e) => e.stopPropagation()}>
+            {candidate.application?.status === 'applied' && (
+              <button
+                onClick={() => handleStatusUpdate('shortlisted')}
+                disabled={isUpdating}
+                className="flex-1 min-h-[36px] text-xs px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white disabled:opacity-50 transition-colors font-medium"
+              >
+                {isUpdating ? '...' : tPageSync('stages.shortlisted')}
+              </button>
+            )}
+
+            {candidate.application?.status === 'shortlisted' && (
+              <button
+                onClick={onScheduleInterview}
+                disabled={isUpdating}
+                className="flex-1 min-h-[36px] text-xs px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white disabled:opacity-50 transition-colors font-medium"
+              >
+                {tPageSync('actions.scheduleInterview') || 'Schedule Interview'}
+              </button>
+            )}
+
+            {(candidate.application?.status === 'interview_scheduled' || 
+              candidate.application?.status === 'interview_rescheduled') && (
+              <>
+                <button
+                  onClick={() => handleStatusUpdate('interview_passed')}
+                  disabled={isUpdating}
+                  className="flex-1 min-h-[36px] text-xs px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 text-white disabled:opacity-50 transition-colors font-medium"
+                >
+                  {tPageSync('actions.pass')}
+                </button>
+                <button
+                  onClick={() => handleStatusUpdate('interview_failed')}
+                  disabled={isUpdating}
+                  className="flex-1 min-h-[36px] text-xs px-3 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white disabled:opacity-50 transition-colors font-medium"
+                >
+                  {tPageSync('actions.fail')}
+                </button>
+                <button
+                  onClick={() => onRescheduleInterview(candidate)}
+                  disabled={isUpdating}
+                  className="w-full min-h-[36px] text-xs px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                >
+                  {tPageSync('actions.reschedule')}
+                </button>
+              </>
+            )}
+
+            {candidate.application?.status === 'interview_passed' && (
+              <span className="flex-1 min-h-[36px] text-xs px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex items-center justify-center font-medium">
+                ✓ {tPageSync('actions.finalStage')}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex items-center justify-between">
           {/* Left side - Candidate info */}
-          <div className="flex items-center space-x-4 flex-1">
-            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          <div className="flex items-center space-x-4 flex-1 min-w-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+              <span className="text-sm font-semibold text-white">
                 {candidate.full_name?.charAt(0)}
               </span>
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-3 mb-1">
-                <button
-                  onClick={onCandidateClick}
-                  className="text-base font-medium text-gray-900 dark:text-gray-100 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
-                >
+                <span className="text-base font-medium text-gray-900 dark:text-gray-100 truncate">
                   {candidate.full_name}
-                </button>
+                </span>
                 {currentStage && (
                   <span className="chip chip-blue text-xs flex-shrink-0">
-                    {currentStage.label}
+                    {getStageLabel(currentStage.id)}
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center">
                   <Phone className="w-3 h-3 mr-1" />
                   <span>{candidate.phone}</span>
@@ -704,13 +889,13 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
           </div>
 
           {/* Right side - Action buttons */}
-          <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
+          <div className="flex items-center space-x-2 ml-4 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
             {/* Stage-specific action buttons */}
             {candidate.application?.status === 'applied' && (
               <button
                 onClick={() => handleStatusUpdate('shortlisted')}
                 disabled={isUpdating}
-                className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors font-medium"
                 title="Shortlist candidate"
               >
                 {tPageSync('stages.shortlisted')}
@@ -721,10 +906,10 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
               <button
                 onClick={onScheduleInterview}
                 disabled={isUpdating}
-                className="text-xs px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors font-medium"
                 title="Schedule interview"
               >
-                {tPageSync('stages.shortlisted')}
+                {tPageSync('actions.scheduleInterview') || 'Schedule'}
               </button>
             )}
 
@@ -734,7 +919,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 <button
                   onClick={() => handleStatusUpdate('interview_passed')}
                   disabled={isUpdating}
-                  className="text-xs px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 transition-colors font-medium"
                   title="Mark interview as passed"
                 >
                   {tPageSync('actions.pass')}
@@ -742,7 +927,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 <button
                   onClick={() => handleStatusUpdate('interview_failed')}
                   disabled={isUpdating}
-                  className="text-xs px-3 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-50 transition-colors font-medium"
                   title="Mark interview as failed"
                 >
                   {tPageSync('actions.fail')}
@@ -750,7 +935,7 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
                 <button
                   onClick={() => onRescheduleInterview(candidate)}
                   disabled={isUpdating}
-                  className="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                   title="Reschedule interview"
                 >
                   {tPageSync('actions.reschedule')}
@@ -759,8 +944,8 @@ const CandidateWorkflowCard = ({ candidate, stages, onUpdateStage, getValidNextS
             )}
 
             {candidate.application?.status === 'interview_passed' && (
-              <span className="text-xs px-3 py-1.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                {tPageSync('actions.finalStage')}
+              <span className="text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 font-medium">
+                ✓ {tPageSync('actions.finalStage')}
               </span>
             )}
           </div>

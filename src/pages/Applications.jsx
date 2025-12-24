@@ -1024,21 +1024,6 @@ const Applications = () => {
             >
               {/* Header: Avatar, Name, Stage */}
               <div className="flex items-start gap-3 mb-3">
-                {/* Checkbox - stop propagation */}
-                <div onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={selectedApplications.has(application.id)}
-                    onChange={() => handleApplicationSelect(application.id)}
-                    disabled={application.stage === applicationStages.REJECTED}
-                    className={`rounded border-gray-300 text-primary-600 focus:ring-primary-500 mt-1 ${
-                      application.stage === applicationStages.REJECTED
-                        ? "opacity-30 cursor-not-allowed"
-                        : ""
-                    }`}
-                  />
-                </div>
-                
                 {/* Avatar */}
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-sm">
                   <span className="text-sm font-semibold text-white">
@@ -1135,26 +1120,6 @@ const Applications = () => {
               <tr>
                 <th
                   scope="col"
-                  className="w-12 px-3 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                >
-                  <input
-                    ref={headerCheckboxRef}
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={
-                      applications.filter(
-                        (app) => app.stage !== applicationStages.REJECTED
-                      ).length > 0 &&
-                      selectedApplications.size ===
-                        applications.filter(
-                          (app) => app.stage !== applicationStages.REJECTED
-                        ).length
-                    }
-                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                </th>
-                <th
-                  scope="col"
                   className="px-3 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap"
                 >
                   {tPage("table.headers.candidate")}
@@ -1199,26 +1164,6 @@ const Applications = () => {
                     className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                     onClick={() => handleCandidateClick(application)}
                   >
-                    <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={selectedApplications.has(application.id)}
-                        onChange={() => handleApplicationSelect(application.id)}
-                        disabled={
-                          application.stage === applicationStages.REJECTED
-                        }
-                        className={`rounded border-gray-300 text-primary-600 focus:ring-primary-500 ${
-                          application.stage === applicationStages.REJECTED
-                            ? "opacity-30 cursor-not-allowed"
-                            : ""
-                        }`}
-                        title={
-                          application.stage === applicationStages.REJECTED
-                            ? "Rejected applications cannot be selected"
-                            : ""
-                        }
-                      />
-                    </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-3">
                         <div className="flex-shrink-0 h-9 w-9">
@@ -1500,31 +1445,6 @@ const Applications = () => {
               </select>
             </div>
             
-            {/* View Toggle - Desktop */}
-            <div className="hidden sm:flex rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              <InteractiveButton
-                onClick={(e) => {
-                  e.preventDefault();
-                  setViewMode("grid");
-                }}
-                variant={viewMode === "grid" ? "primary" : "outline"}
-                size="sm"
-                icon={Grid3X3}
-                className="rounded-r-none border-r-0 px-3"
-                title="Grid view"
-              />
-              <InteractiveButton
-                onClick={(e) => {
-                  e.preventDefault();
-                  setViewMode("list");
-                }}
-                variant={viewMode === "list" ? "primary" : "outline"}
-                size="sm"
-                icon={List}
-                className="rounded-l-none px-3"
-                title="List view"
-              />
-            </div>
           </div>
           
           {/* Active Filters Summary */}
@@ -1579,7 +1499,7 @@ const Applications = () => {
         </div>
       </div>
 
-      {/* Results Info & Mobile View Toggle */}
+      {/* Results Info */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           <span className="hidden sm:inline">
@@ -1596,27 +1516,11 @@ const Applications = () => {
             {applications.length > 0 ? `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, totalItems)}` : '0'} of {totalItems}
           </span>
         </div>
-        
-        {/* Mobile View Toggle */}
-        <div className="flex sm:hidden rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-2 ${viewMode === "grid" ? "bg-primary-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400"} rounded-l-lg transition-colors`}
-          >
-            <Grid3X3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={`p-2 ${viewMode === "list" ? "bg-primary-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400"} rounded-r-lg transition-colors`}
-          >
-            <List className="w-4 h-4" />
-          </button>
-        </div>
       </div>
 
       {/* Applications View */}
       <div className="grid grid-cols-1 gap-4 sm:gap-6" ref={containerRef}>
-        {viewMode === "grid" ? renderGridView() : renderListView()}
+        {renderListView()}
       </div>
 
       {/* Pagination */}
