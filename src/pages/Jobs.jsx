@@ -368,7 +368,19 @@ const Jobs = () => {
               const relativeDate = getRelativeTime(publishedDate, useNepali)
               
               return (
-                <div key={job.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-100 dark:active:bg-gray-700">
+                <div 
+                  key={job.id} 
+                  className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-100 dark:active:bg-gray-700 cursor-pointer"
+                  onClick={() => navigate(`/jobs/${job.id}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      navigate(`/jobs/${job.id}`)
+                    }
+                  }}
+                >
                   {/* Job Header with Status Badge */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1 min-w-0">
@@ -419,17 +431,8 @@ const Jobs = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons - Full Width Touch Targets */}
-                  <div className="flex gap-2">
-                    <PermissionGuard permission={PERMISSIONS.VIEW_JOBS}>
-                      <Link 
-                        to={`/jobs/${job.id}`}
-                        className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-medium rounded-lg transition-all shadow-sm hover:shadow"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span>View Details</span>
-                      </Link>
-                    </PermissionGuard>
+                  {/* Quick Action Buttons - Stop propagation to prevent card click */}
+                  <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                     <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
                       <Link 
                         to={`/jobs/${job.id}?tab=shortlisted`}
@@ -437,6 +440,15 @@ const Jobs = () => {
                       >
                         <UserCheck className="w-4 h-4" />
                         <span>Shortlist</span>
+                      </Link>
+                    </PermissionGuard>
+                    <PermissionGuard permission={PERMISSIONS.SCHEDULE_INTERVIEW}>
+                      <Link 
+                        to={`/jobs/${job.id}?tab=interviews`}
+                        className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg transition-all"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>Interviews</span>
                       </Link>
                     </PermissionGuard>
                   </div>
