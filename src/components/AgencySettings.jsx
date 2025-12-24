@@ -278,12 +278,12 @@ const AgencySettings = () => {
 
   if (isInitialLoading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6 sm:mb-8"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-2">
-              <div className="card p-6">
+              <div className="card p-3 sm:p-4 md:p-6">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
                 <div className="space-y-4">
                   {[1, 2, 3, 4].map(i => (
@@ -312,24 +312,24 @@ const AgencySettings = () => {
     const isAuthError = contextError?.includes('Bearer') || contextError?.includes('Unauthorized') || contextError?.includes('401')
     
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
         </div>
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-6">
-          <div className="flex items-start">
-            <AlertCircle className="w-6 h-6 text-red-500 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0" />
-            <div>
-              <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Unable to Load Settings</h3>
-              <p className="text-red-700 dark:text-red-300 mb-2">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 sm:p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-400 mt-0.5 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base sm:text-lg font-medium text-red-800 dark:text-red-200 mb-2">Unable to Load Settings</h3>
+              <p className="text-xs sm:text-sm text-red-700 dark:text-red-300 mb-2">
                 {contextError || 'Failed to fetch agency data'}
               </p>
               {isAuthError && (
-                <p className="text-red-600 dark:text-red-300 text-sm mb-4">
+                <p className="text-xs sm:text-sm text-red-600 dark:text-red-300 mb-4">
                   💡 <strong>Authentication Issue:</strong> Please log in again to refresh your session.
                 </p>
               )}
-              <p className="text-red-600 dark:text-red-300 text-sm mb-4">
+              <p className="text-xs sm:text-sm text-red-600 dark:text-red-300 mb-4">
                 <strong>Troubleshooting:</strong>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                   <li>Ensure the backend server is running at http://localhost:3000</li>
@@ -338,17 +338,17 @@ const AgencySettings = () => {
                   <li>Check browser console for more details</li>
                 </ul>
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={() => window.location.reload()}
-                  className="btn-primary text-sm"
+                  className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-2"
                 >
                   Retry
                 </button>
                 {isAuthError && (
                   <button
                     onClick={() => window.location.href = '/owner/login'}
-                    className="btn-secondary text-sm"
+                    className="btn-secondary text-xs sm:text-sm px-3 sm:px-4 py-2"
                   >
                     Log In Again
                   </button>
@@ -371,17 +371,17 @@ const AgencySettings = () => {
   ]
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{tPage('title')}</h1>
+            <p className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               {tPage('subtitle')}
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div>
             <LanguageSwitch />
           </div>
         </div>
@@ -389,40 +389,40 @@ const AgencySettings = () => {
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4">
-          <div className="flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400 mr-2" />
-            <p className="text-green-800 dark:text-green-200">{success}</p>
+        <div className="mb-4 sm:mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-3 sm:p-4">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 dark:text-green-400 flex-shrink-0" />
+            <p className="text-xs sm:text-sm text-green-800 dark:text-green-200">{success}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
-          <div className="flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 mr-2" />
-            <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="mb-4 sm:mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 sm:p-4">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 dark:text-red-400 flex-shrink-0" />
+            <p className="text-xs sm:text-sm text-red-800 dark:text-red-200">{error}</p>
           </div>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="mb-8">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto">
+      <div className="mb-6 sm:mb-8">
+        <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+          <nav className="-mb-px flex gap-1 sm:gap-2 md:space-x-8">
             {tabs.map(tab => {
               const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  className={`flex items-center gap-1 sm:gap-2 py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${
                     activeTab === tab.id
                       ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                       : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
-                  <Icon className="w-4 h-4 mr-2" />
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   {tab.label}
                 </button>
               )
@@ -432,7 +432,7 @@ const AgencySettings = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="lg:col-span-2">
           {activeTab === 'basic' && (
             <BasicInfoSection
