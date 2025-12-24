@@ -319,38 +319,45 @@ const Interviews = () => {
       </div>
 
       {/* Common Filters: Job and Search - Above tabs */}
-      <div className="card p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="card p-3 sm:p-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div className="min-w-0">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {tPage('filters.filterByJob') || 'Filter by Job'}
             </label>
             <select
               value={selectedJob}
               onChange={(e) => handleJobSelect(e.target.value)}
-              className="form-select"
+              className="form-select w-full text-xs sm:text-sm max-w-full"
+              style={{ textOverflow: 'ellipsis' }}
             >
               <option value="">{tPage('filters.allJobs') || 'All Jobs'}</option>
-              {jobs.map(job => (
-                <option key={job.id} value={job.id}>
-                  {job.title} - {job.company}
-                </option>
-              ))}
+              {jobs.map(job => {
+                // Truncate long job titles for mobile
+                const displayTitle = job.title.length > 30 
+                  ? `${job.title.substring(0, 30)}...` 
+                  : job.title;
+                return (
+                  <option key={job.id} value={job.id}>
+                    {displayTitle}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {tPage('filters.searchCandidate') || 'Search Candidate'}
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <input
                 type="text"
                 placeholder={tPage('filters.searchPlaceholder') || 'Search by name, email, phone...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                className="pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 w-full text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
           </div>
