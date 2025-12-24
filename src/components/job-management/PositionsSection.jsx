@@ -28,11 +28,11 @@ const PositionsSection = ({ positions, onAdd, onUpdate, onRemove }) => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Users className="w-5 h-5 text-blue-600 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Positions</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Positions</h2>
           <span className="ml-2 px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
             {positions.length}
           </span>
@@ -40,17 +40,17 @@ const PositionsSection = ({ positions, onAdd, onUpdate, onRemove }) => {
         <button
           onClick={() => setShowAddForm(true)}
           disabled={showAddForm}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center text-sm font-medium disabled:opacity-50"
+          className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center text-xs sm:text-sm font-medium disabled:opacity-50 whitespace-nowrap"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-1 sm:mr-2" />
           Add Position
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-600 dark:text-red-400 flex items-center">
-            <AlertCircle className="w-4 h-4 mr-2" />{error}
+        <div className="mb-4 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" /><span>{error}</span>
           </p>
         </div>
       )}
@@ -73,9 +73,9 @@ const PositionsSection = ({ positions, onAdd, onUpdate, onRemove }) => {
       )}
 
       {/* Positions List */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {positions.length === 0 && !showAddForm ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-6 sm:py-8 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             No positions added yet. Click "Add Position" to create one.
           </div>
         ) : (
@@ -133,30 +133,30 @@ const PositionCard = ({ position, onEdit, onDelete }) => {
   const totalVacancies = (position.male_vacancies || 0) + (position.female_vacancies || 0);
   
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="font-medium text-gray-900 dark:text-white">{position.title}</h3>
-          <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-            <p>
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-medium text-sm sm:text-base text-gray-900 dark:text-white truncate">{position.title}</h3>
+          <div className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <p className="truncate">
               Vacancies: {totalVacancies} total 
               ({position.male_vacancies || 0} male, {position.female_vacancies || 0} female)
             </p>
-            <p>
+            <p className="truncate">
               Salary: {position.salary_currency || 'USD'} {position.monthly_salary_amount?.toLocaleString() || 0}/month
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onEdit}
-            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
-            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>

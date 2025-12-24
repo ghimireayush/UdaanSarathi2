@@ -402,32 +402,34 @@ const JobManagementEdit = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
           <button
             onClick={() => navigate('/job-management')}
-            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm sm:text-base flex-shrink-0"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {tPage('buttons.backToJobManagement')}
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">{tPage('buttons.backToJobManagement')}</span>
+            <span className="sm:hidden">Back</span>
           </button>
           
           {/* Draft Toggle and Upload Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2 flex-wrap justify-end">
             {/* Draft Toggle Button */}
             <button
               onClick={handleToggleDraft}
               disabled={isTogglingDraft}
-              className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-2 sm:px-4 py-2 rounded-lg flex items-center text-xs sm:text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
                 jobData?.is_draft
                   ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-800'
                   : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800'
               }`}
             >
-              <FileText className="w-4 h-4 mr-2" />
-              {isTogglingDraft ? '...' : (jobData?.is_draft ? tPage('buttons.publishFromDraft') || 'Publish' : tPage('buttons.markAsDraft') || 'Mark as Draft')}
+              <FileText className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{isTogglingDraft ? '...' : (jobData?.is_draft ? tPage('buttons.publishFromDraft') || 'Publish' : tPage('buttons.markAsDraft') || 'Mark as Draft')}</span>
+              <span className="sm:hidden">{isTogglingDraft ? '...' : (jobData?.is_draft ? 'Publish' : 'Draft')}</span>
             </button>
             
             {/* Basic Upload Button - Dev Mode Only */}
@@ -435,7 +437,7 @@ const JobManagementEdit = () => {
               <button
                 onClick={handleImageUpload}
                 disabled={isExtractingFromImage || isExtractingEnhanced}
-                className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
+                className={`px-2 sm:px-4 py-2 rounded-lg flex items-center text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                   extractionSuccess
                     ? 'bg-green-600 text-white'
                     : isExtractingFromImage
@@ -445,18 +447,19 @@ const JobManagementEdit = () => {
               >
                 {isExtractingFromImage ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {tPage('buttons.extracting')}
+                    <Loader2 className="w-4 h-4 mr-1 sm:mr-2 animate-spin" />
+                    <span className="hidden sm:inline">{tPage('buttons.extracting')}</span>
                   </>
                 ) : extractionSuccess ? (
                   <>
-                    <ImageIcon className="w-4 h-4 mr-2" />
-                    {tPage('buttons.filled')}
+                    <ImageIcon className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{tPage('buttons.filled')}</span>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4 mr-2" />
-                    {tPage('buttons.basicExtract')}
+                    <Upload className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{tPage('buttons.basicExtract')}</span>
+                    <span className="sm:hidden">Extract</span>
                   </>
                 )}
               </button>
@@ -467,7 +470,7 @@ const JobManagementEdit = () => {
               <button
                 onClick={handleEnhancedImageUpload}
                 disabled={isExtractingFromImage || isExtractingEnhanced}
-                className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-all ${
+                className={`px-2 sm:px-4 py-2 rounded-lg flex items-center text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                   enhancedExtractionSuccess
                     ? 'bg-green-600 text-white'
                     : isExtractingEnhanced
@@ -477,35 +480,36 @@ const JobManagementEdit = () => {
               >
                 {isExtractingEnhanced ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {tPage('buttons.extracting')}
+                    <Loader2 className="w-4 h-4 mr-1 sm:mr-2 animate-spin" />
+                    <span className="hidden sm:inline">{tPage('buttons.extracting')}</span>
                   </>
                 ) : enhancedExtractionSuccess ? (
                   <>
-                    <ImageIcon className="w-4 h-4 mr-2" />
-                    {tPage('buttons.filled')}
+                    <ImageIcon className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{tPage('buttons.filled')}</span>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4 mr-2" />
-                    {tPage('buttons.basicExtract')}
+                    <Upload className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{tPage('buttons.basicExtract')}</span>
+                    <span className="sm:hidden">Extract</span>
                   </>
                 )}
               </button>
             )}
           </div>
         </div>
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-start justify-between gap-3 sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               {jobData?.posting_title || 'Edit Job Posting'}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
               {jobData?.country}{jobData?.city ? `, ${jobData.city}` : ''}
             </p>
           </div>
-          <div className="flex gap-2">
-            <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+          <div className="flex gap-2 flex-shrink-0">
+            <span className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
               jobData?.is_draft
                 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                 : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
@@ -516,9 +520,9 @@ const JobManagementEdit = () => {
         </div>
       </div>
 
-      <div className="flex gap-8">
-        {/* Sidebar Navigation - Hidden on tablet and below */}
-        <div className="hidden xl:block w-48 flex-shrink-0">
+      <div className="flex gap-4 md:gap-8 flex-col md:flex-row">
+        {/* Sidebar Navigation - Hidden on mobile and tablet, visible on xl and up */}
+        <div className="hidden xl:block w-full xl:w-48 xl:flex-shrink-0">
           <SectionNavigation
             activeSection={activeSection}
             onSectionClick={scrollToSection}
@@ -526,7 +530,7 @@ const JobManagementEdit = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-8 min-w-0">
+        <div className="flex-1 space-y-6 sm:space-y-8 min-w-0">
           <div ref={sectionRefs.image} id="section-image">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Job Image</h2>
@@ -594,12 +598,12 @@ const JobManagementEdit = () => {
 
       {/* Draft Toggle Error Snackbar */}
       {draftToggleError && (
-        <div className="fixed bottom-4 right-4 max-w-md z-50 animate-in slide-in-from-bottom-5 duration-300">
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg shadow-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+        <div className="fixed bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 max-w-md z-50 animate-in slide-in-from-bottom-5 duration-300">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg shadow-lg p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-red-900 dark:text-red-200 text-sm">
+                <h3 className="font-semibold text-red-900 dark:text-red-200 text-xs sm:text-sm">
                   {draftToggleError.message}
                 </h3>
                 {draftToggleError.details && draftToggleError.details.length > 0 && (

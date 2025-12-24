@@ -107,54 +107,54 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
         <div className="flex items-center">
-          <FileText className="w-5 h-5 text-blue-600 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h2>
+          <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2" />
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h2>
         </div>
         <button
           onClick={handleSave}
           disabled={!isDirty || isSaving}
-          className={`px-4 py-2 rounded-lg flex items-center text-sm font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-2 rounded-lg flex items-center text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
             isDirty
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed'
           }`}
         >
           {isSaving ? (
-            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+            <><Loader2 className="w-4 h-4 mr-1 sm:mr-2 animate-spin" />Saving...</>
           ) : success ? (
-            <><Check className="w-4 h-4 mr-2" />Saved</>
+            <><Check className="w-4 h-4 mr-1 sm:mr-2" />Saved</>
           ) : (
-            <><Save className="w-4 h-4 mr-2" />Save</>
+            <><Save className="w-4 h-4 mr-1 sm:mr-2" />Save</>
           )}
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-600 dark:text-red-400 flex items-center">
-            <AlertCircle className="w-4 h-4 mr-2" />{error}
+        <div className="mb-4 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" /><span>{error}</span>
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="sm:col-span-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Job Title *
           </label>
           <input
             type="text"
             value={formData.posting_title}
             onChange={(e) => handleChange('posting_title', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Country *
           </label>
           <div className="relative">
@@ -162,7 +162,7 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
               disabled={countriesLoading}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
             >
               <option value="">Select a country</option>
               {countries.map(country => (
@@ -184,73 +184,73 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             City
           </label>
           <input
             type="text"
             value={formData.city}
             onChange={(e) => handleChange('city', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             LT Number
           </label>
           <input
             type="text"
             value={formData.lt_number}
             onChange={(e) => handleChange('lt_number', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Chalani Number
           </label>
           <input
             type="text"
             value={formData.chalani_number}
             onChange={(e) => handleChange('chalani_number', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Approval Date
           </label>
           <input
             type="date"
             value={formData.approval_date_ad}
             onChange={(e) => handleChange('approval_date_ad', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Posting Date
           </label>
           <input
             type="date"
             value={formData.posting_date_ad}
             onChange={(e) => handleChange('posting_date_ad', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Announcement Type
           </label>
           <select
             value={formData.announcement_type}
             onChange={(e) => handleChange('announcement_type', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           >
             {announcementTypes.map(type => (
               <option key={type.value} value={type.value}>{type.label}</option>
@@ -258,15 +258,15 @@ const BasicInfoSection = ({ data, onSave, isFromExtraction = false }) => {
           </select>
         </div>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className="sm:col-span-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Notes
           </label>
           <textarea
             value={formData.notes}
             onChange={(e) => handleChange('notes', e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
