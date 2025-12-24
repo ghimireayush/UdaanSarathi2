@@ -20,18 +20,18 @@ const InterviewDateNavigation = ({
     const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
     return (
-      <div className="flex items-center gap-2 py-4">
+      <div className="flex items-center gap-1 sm:gap-2 py-3 sm:py-4 overflow-x-auto">
         {/* Previous Week Button */}
         <button
           onClick={onPrevious}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
+          className="p-1 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
           title="Previous week"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
         {/* Days of the week - Take full available width */}
-        <div className="flex gap-2 flex-1">
+        <div className="flex gap-1 sm:gap-2 flex-1 min-w-0">
           {days.map((day) => {
             const isSelected = isSameDay(day, selectedDate)
             const isTodayDate = isToday(day)
@@ -41,7 +41,7 @@ const InterviewDateNavigation = ({
                 key={day.toISOString()}
                 onClick={() => onDateChange(day)}
                 className={`
-                  flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                  flex-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap
                   ${isSelected 
                     ? 'bg-blue-600 text-white shadow-md' 
                     : isTodayDate
@@ -51,7 +51,7 @@ const InterviewDateNavigation = ({
                 `}
               >
                 <div className="text-xs">{format(day, 'EEE')}</div>
-                <div className="text-lg font-bold">{format(day, 'd')}</div>
+                <div className="text-base sm:text-lg font-bold">{format(day, 'd')}</div>
               </button>
             )
           })}
@@ -60,10 +60,10 @@ const InterviewDateNavigation = ({
         {/* Next Week Button */}
         <button
           onClick={onNext}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
+          className="p-1 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
           title="Next week"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
         </button>
       </div>
     )
@@ -74,38 +74,38 @@ const InterviewDateNavigation = ({
     const isTodayDate = isToday(selectedDate)
 
     return (
-      <div className="flex items-center justify-center space-x-4 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-2 sm:gap-4 py-3 sm:py-4">
         {/* Previous Day Button */}
         <button
           onClick={onPrevious}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+          className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
           title="Previous day"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
         {/* Current Day Display */}
         <div
           className={`
-            px-6 py-3 rounded-lg text-center min-w-[280px]
+            px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-center
             ${isTodayDate
               ? 'bg-blue-600 text-white shadow-lg'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
             }
           `}
         >
-          <div className="text-sm font-medium">{format(selectedDate, 'EEEE')}</div>
-          <div className="text-2xl font-bold">{format(selectedDate, 'MMMM d, yyyy')}</div>
+          <div className="text-xs sm:text-sm font-medium">{format(selectedDate, 'EEEE')}</div>
+          <div className="text-lg sm:text-2xl font-bold">{format(selectedDate, 'MMM d, yyyy')}</div>
           {isTodayDate && <div className="text-xs mt-1 opacity-90">Today</div>}
         </div>
 
         {/* Next Day Button */}
         <button
           onClick={onNext}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+          className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
           title="Next day"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
         </button>
       </div>
     )

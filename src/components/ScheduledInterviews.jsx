@@ -636,20 +636,10 @@ const ScheduledInterviews = ({ candidates, jobId, interviews: propInterviews, cu
       )
     }
 
-    // Today, Tomorrow: Mark Interviewed, Mark pass, Mark fail
+    // Today, Tomorrow: Mark pass, Mark fail
     if (isUpcoming && interview.status === 'scheduled' && !isUnattendedCandidate) {
       return (
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              handleAction(candidate, 'mark_interviewed')
-            }}
-            className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors"
-          >
-            <Check className="w-3 h-3 mr-1 inline" />
-            Mark Interviewed
-          </button>
           <button
             onClick={(e) => {
               e.stopPropagation()

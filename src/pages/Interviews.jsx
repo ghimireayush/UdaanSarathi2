@@ -360,11 +360,11 @@ const Interviews = () => {
       {/* Tabs: Contemporary | Calendar */}
       <div className="card mb-6">
         {/* Tab Headers */}
-        <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           <div className="flex">
             <button
               onClick={() => setMode('contemporary')}
-              className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+              className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 text-xs sm:text-sm whitespace-nowrap ${
                 mode === 'contemporary'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
@@ -374,7 +374,7 @@ const Interviews = () => {
             </button>
             <button
               onClick={() => setMode('calendar')}
-              className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+              className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 text-xs sm:text-sm whitespace-nowrap ${
                 mode === 'calendar'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
@@ -386,7 +386,7 @@ const Interviews = () => {
         </div>
 
         {/* Tab Body */}
-        <div className="p-4">
+        <div className="p-3 sm:p-4 md:p-6">
           {/* Contemporary Mode Content */}
           {mode === 'contemporary' && (
             <div>
@@ -399,20 +399,20 @@ const Interviews = () => {
 
           {/* Calendar Mode Content */}
           {mode === 'calendar' && (
-        <div className="card p-4 mb-6">
-          <div className="space-y-4">
+        <div className="card p-3 sm:p-4 md:p-6 mb-6">
+          <div className="space-y-3 sm:space-y-4">
             {/* Calendar View Mode Selector */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {tPage('calendar.dateRange')}
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={() => {
                     setCalendarViewMode('week')
                     setCustomDateRange({ from: '', to: '' })
                   }}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                     calendarViewMode === 'week'
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -432,7 +432,7 @@ const Interviews = () => {
                     setCalendarViewMode('custom')
                     setIsDaySelected(false) // Clear day selection
                   }}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                     calendarViewMode === 'custom'
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -458,25 +458,26 @@ const Interviews = () => {
 
             {/* Custom Date Range Inputs (only shown in custom mode) */}
             {calendarViewMode === 'custom' && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <input
                   type="date"
                   value={customDateRange.from}
                   onChange={(e) => setCustomDateRange(prev => ({ ...prev, from: e.target.value }))}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
-                <span className="text-gray-500 dark:text-gray-400">{tPage('calendar.to')}</span>
+                <span className="hidden sm:inline text-gray-500 dark:text-gray-400 text-xs sm:text-sm">{tPage('calendar.to')}</span>
+                <span className="sm:hidden text-gray-500 dark:text-gray-400 text-xs ml-0.5">{tPage('calendar.to')}</span>
                 <input
                   type="date"
                   value={customDateRange.to}
                   onChange={(e) => setCustomDateRange(prev => ({ ...prev, to: e.target.value }))}
                   min={customDateRange.from}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
                 {customDateRange.from && customDateRange.to && (
                   <button
                     onClick={() => setCustomDateRange({ from: '', to: '' })}
-                    className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    className="px-2 sm:px-3 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap"
                   >
                     {tPage('calendar.clear')}
                   </button>
