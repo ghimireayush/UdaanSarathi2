@@ -321,7 +321,7 @@ const Jobs = () => {
                             </PermissionGuard>
                             <PermissionGuard permission={PERMISSIONS.VIEW_APPLICATIONS}>
                               <Link 
-                                to={`/jobs/${job.id}/shortlist`}
+                                to={`/jobs/${job.id}?tab=shortlisted`}
                                 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center"
                               >
                                 <UserCheck className="w-4 h-4 mr-1" />
