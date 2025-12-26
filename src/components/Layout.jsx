@@ -27,7 +27,6 @@ import { getAccessibleNavItems } from "../config/roleBasedAccess.js";
 import { needsAgencySetup } from "../utils/roleHelpers.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useLanguage } from "../hooks/useLanguage";
-import logo from "../assets/inspire-agency-logo.svg";
 import { resolveImageUrl } from "../utils/imageHelpers";
 
 const Layout = ({ children }) => {
@@ -37,7 +36,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, hasPermission, hasAnyPermission, isAdmin } = useAuth();
-  const { agencyName, agencyLogo } = useAgency();
+  const { agencyName, agencyLogo, hasAgencyData } = useAgency();
   const { tPageSync, pageLoaded, locale } = useLanguage({
     pageName: "navigation",
     autoLoad: true,
@@ -230,14 +229,16 @@ const Layout = ({ children }) => {
               to="/dashboard"
               className={`w-full flex ${sidebarCollapsed ? 'justify-center' : 'flex-col'} items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300`}
             >
-              <img
-                src={resolveImageUrl(agencyLogo) || logo}
-                alt={`${agencyName} Logo`}
-                className={`object-contain drop-shadow-md transition-all duration-300 ${
-                  sidebarCollapsed ? 'w-12 h-12' : 'w-20 h-20'
-                }`}
-              />
-              {!sidebarCollapsed && (
+              {hasAgencyData && agencyLogo && (
+                <img
+                  src={resolveImageUrl(agencyLogo)}
+                  alt={`${agencyName} Logo`}
+                  className={`object-contain drop-shadow-md transition-all duration-300 ${
+                    sidebarCollapsed ? 'w-12 h-12' : 'w-20 h-20'
+                  }`}
+                />
+              )}
+              {!sidebarCollapsed && hasAgencyData && agencyName && (
                 <h1 className="text-lg font-bold text-brand-navy dark:text-brand-blue-bright mt-3 text-center bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
                   {agencyName}
                 </h1>
@@ -401,17 +402,21 @@ const Layout = ({ children }) => {
               to="/dashboard"
               className="flex items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded-lg py-0.5 px-1"
             >
-              <img
-                src={resolveImageUrl(agencyLogo) || logo}
-                alt={`${agencyName} Logo`}
-                className="w-6 h-6 object-contain drop-shadow-sm flex-shrink-0"
-              />
+              {hasAgencyData && agencyLogo && (
+                <img
+                  src={resolveImageUrl(agencyLogo)}
+                  alt={`${agencyName} Logo`}
+                  className="w-6 h-6 object-contain drop-shadow-sm flex-shrink-0"
+                />
+              )}
               {/* Hide agency name on mobile, show only on sm and up */}
-              <div className="hidden sm:block ml-1.5 min-w-0">
-                <h1 className="text-xs font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent truncate">
-                  {agencyName}
-                </h1>
-              </div>
+              {hasAgencyData && agencyName && (
+                <div className="hidden sm:block ml-1.5 min-w-0">
+                  <h1 className="text-xs font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent truncate">
+                    {agencyName}
+                  </h1>
+                </div>
+              )}
             </Link>
           </div>
           
@@ -459,14 +464,18 @@ const Layout = ({ children }) => {
                 className="flex items-center focus:outline-none focus:ring-2 focus:ring-brand-blue-bright rounded-lg p-1"
                 id="mobile-menu-title"
               >
-                <img
-                  src={resolveImageUrl(agencyLogo) || logo}
-                  alt={`${agencyName} Logo`}
-                  className="w-10 h-10 object-contain drop-shadow-sm"
-                />
-                <h1 className="ml-3 text-lg font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
-                  {agencyName}
-                </h1>
+                {hasAgencyData && agencyLogo && (
+                  <img
+                    src={resolveImageUrl(agencyLogo)}
+                    alt={`${agencyName} Logo`}
+                    className="w-10 h-10 object-contain drop-shadow-sm"
+                  />
+                )}
+                {hasAgencyData && agencyName && (
+                  <h1 className="ml-3 text-lg font-bold text-brand-navy dark:text-brand-blue-bright bg-gradient-to-r from-brand-navy to-brand-blue-bright bg-clip-text text-transparent">
+                    {agencyName}
+                  </h1>
+                )}
               </Link>
               <button
                 onClick={closeMobileMenu}

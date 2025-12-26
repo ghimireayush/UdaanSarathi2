@@ -138,13 +138,14 @@ export const AgencyProvider = ({ children }) => {
     refreshAgencyData,
     fetchAgencyData,
     
-    // Helpers
-    agencyName: agencyData?.name || 'Inspire International Employment Pvt. Ltd',
+    // Helpers - no fallbacks, return actual data or null/empty
+    agencyName: agencyData?.name || null,
     agencyLogo: agencyData?.logo_url || null,
     agencyAddress: agencyData?.address || '',
     agencyPhone: agencyData?.phone || '',
     agencyEmail: agencyData?.email || '',
     agencyWebsite: agencyData?.website || '',
+    hasAgencyData: !!agencyData,
   }
 
   return (
